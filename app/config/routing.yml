@@ -1,0 +1,8 @@
+tn_t:
+    resource: "@TnTBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+app:
+    resource: "@AppBundle/Controller/"
+    type:     annotation

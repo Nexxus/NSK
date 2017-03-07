@@ -1,0 +1,16 @@
+#content {
+background-color:red;
+}
+
+.table td, .table th {
+    border: 1px solid;
+}
+
+.table{
+    border: 1px solid;
+}
+
+.navbar-gradient {
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#a4b357+0,75890c+100;Olive+3D+%233 */
+    background: #006e2e;
+}
