@@ -20,7 +20,6 @@
           <div class="container-fluid">
             <div class="container">
             <div class="navbar-collapse collapse">
-              <ul class="nav navbar-nav">
                 {% block navlist %}
                   {#
                   <li><a href="/"><img height="28" src="{{ asset('images/logos/header-logoGlow.png') }}"></a></li>
@@ -29,9 +28,8 @@
                   <li><a href="#">Klanten</a></li>
                   <li><a href="#">Track & Trace</a></li>
                   #}
-                  {{ knp_menu_render('AppBundle:Builder:mainMenu') }}
+                  {{ knp_menu_render('AppBundle:Builder:createMainMenu', {'currentClass': 'active', 'allow_safe_labels': true}) }}
                 {% endblock %}
-              </ul>
             </div>
             </div>
           </div>
@@ -39,10 +37,13 @@
         {% endblock %}
         <div class="container">
             <ol class="breadcrumb">
-                
+                {% block breadcrumb %}
+                <li>Start</li>
+                <li>Homepagina</li>
+                {% endblock %}
             </ol>
             {% block body %}
-            Hello World !
+            <h2>Welkom op het nieuwe ERCP Systeem!</h2>
             {% endblock %}
         </div>
         {% block javascripts %}{% endblock %}
