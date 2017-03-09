@@ -19,7 +19,15 @@
         <nav class="navbar navbar-default navbar-gradient">
           <div class="container-fluid">
             <div class="container">
-            <div class="navbar-collapse collapse">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#mainMenu">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span> 
+              </button>
+              <a class="navbar-brand" href="#"><img height="28" src="{{ asset('images/logos/header-logoGlow.png') }}"></a>
+            </div>
+            <div class="navbar-collapse collapse" id="mainMenu">
                 {% block navlist %}
                   {#
                   <li><a href="/"><img height="28" src="{{ asset('images/logos/header-logoGlow.png') }}"></a></li>
@@ -36,15 +44,14 @@
         </nav>
         {% endblock %}
         <div class="container">
-            <ol class="breadcrumb">
-                {% block breadcrumb %}
-                <li>Start</li>
-                <li>Homepagina</li>
-                {% endblock %}
-            </ol>
+            
+            {% block breadcrumb %}
+            {% endblock %}
+            
             {% block body %}
             <h2>Welkom op het nieuwe ERCP Systeem!</h2>
             {% endblock %}
+            
         </div>
         {% block javascripts %}{% endblock %}
     </body>

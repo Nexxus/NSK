@@ -11,11 +11,30 @@ class DefaultController extends Controller
     /**
      * @Route("/tnt", name="tnt")
      */
-    public function TnTAction()
+    public function workloadAction()
     {
-        //$builder = $this->get('app.menubuilder');
-        //$crumb = $builder->createBreadcrumb();
+        $bread = array('Start', 'Track & Trace');
         
-        return $this->render('TnTBundle:Default:index.html.twig');
+        return $this->render('TnTBundle/Default/workload.html.twig',array('bread' =>$bread));
+    }
+    
+    /**
+     * @Route("/tnt/inventaris", name="tnt_inventaris")
+     */
+    public function inventarisAction()
+    {
+        $bread = array('Start', 'Track & Trace');
+        
+        return $this->render('TnTBundle/Default/workload.html.twig',array('bread' =>$bread));
+    }
+    
+    /**
+     * @Route("/tnt/verkopen", name="tnt_verkopen")
+     */
+    public function verkopenAction()
+    {
+        $bread = array('Start', 'Track & Trace');
+        
+        return $this->render('TnTBundle/Default/workload.html.twig',array('bread' =>$bread));
     }
 }
