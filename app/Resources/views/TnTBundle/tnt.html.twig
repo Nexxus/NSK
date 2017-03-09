@@ -5,19 +5,17 @@
 {% endblock %}
 
 {% block body %}
-    Track & Trace Page!
+    {% block tabmenu %}
+      {{ knp_menu_render('AppBundle:Builder:createTntMenu', {'currentClass': 'active'}) }}
+    {% endblock %}
     
-    {#<ul class="nav nav-tabs">
-      <li role="presentation" class="active"><a href="#">Workload</a></li>
-      <li role="presentation"><a href="#">Inventaris</a></li>
-      <li role="presentation"><a href="#">Verkopen</a></li>
-    </ul>#}
-    {{ knp_menu_render('AppBundle:Builder:createTntMenu', {'currentClass': 'active'}) }}
+    {% block bodycontent %}
+    
+    {% endblock %}
     
 {% endblock %}
 
 {% block breadcrumb %}
-  
   {% if bread is defined %}
     <ol class="breadcrumb">
     

@@ -13,19 +13,15 @@ class DefaultController extends Controller
      */
     public function workloadAction()
     {
-        $bread = array('Start', 'Track & Trace');
-        
-        return $this->render('TnTBundle/Default/workload.html.twig',array('bread' =>$bread));
+        return $this->render('TnTBundle/Default/workload.html.twig');
     }
     
     /**
      * @Route("/tnt/inventaris", name="tnt_inventaris")
      */
     public function inventarisAction()
-    {
-        $bread = array('Start', 'Track & Trace');
-        
-        return $this->render('TnTBundle/Default/workload.html.twig',array('bread' =>$bread));
+    {   
+        return $this->render('TnTBundle/Default/inventaris.html.twig');
     }
     
     /**
@@ -33,8 +29,6 @@ class DefaultController extends Controller
      */
     public function verkopenAction()
     {
-        $bread = array('Start', 'Track & Trace');
-        
-        return $this->render('TnTBundle/Default/workload.html.twig',array('bread' =>$bread));
+        return $this->render('TnTBundle/Default/verkopen.html.twig');
     }
 }
