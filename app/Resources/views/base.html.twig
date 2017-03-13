@@ -6,11 +6,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}Copiatek ERCP{% endblock %}</title>
         
-        {% block bootstrap %}
-            <link href="{{ asset('bootstrap/stylesheet/bootstrap.css') }}" rel="stylesheet"/>
-            <link href="{{ asset('bootstrap/test.css') }}" rel="stylesheet"/>
-            <script src="{{ asset('bootstrap/js/bootstrap.min.js') }}"></script>
-		{% endblock %}
+        {# Bootstrap block #}
+        <link href="{{ asset('bootstrap/stylesheet/bootstrap.css') }}" rel="stylesheet"/>
+        <script src="{{ asset('bootstrap/js/jquery.min.js') }}"></script>
+        <script src="{{ asset('bootstrap/js/bootstrap.min.js') }}"></script>
+        {# endblock #}
+        
+        <link href="{{ asset('bootstrap/test.css') }}" rel="stylesheet"/>
         
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
@@ -20,10 +22,10 @@
           <div class="container-fluid">
             <div class="container">
             <div class="navbar-header">
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#mainMenu">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
-                <span class="icon-bar"></span> 
+                <span class="icon-bar"></span>
               </button>
               <a class="navbar-brand" href="#"><img height="28" src="{{ asset('images/logos/header-logoGlow.png') }}"></a>
             </div>
