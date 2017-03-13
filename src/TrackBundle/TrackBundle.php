@@ -1,9 +1,9 @@
 <?php
 
-namespace TnTBundle;
+namespace TrackBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class TnTBundle extends Bundle
+class TrackBundle extends Bundle
 {
 }

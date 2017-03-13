@@ -1,6 +1,6 @@
 <?php
 
-namespace TnTBundle\Controller;
+namespace TrackBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -9,26 +9,26 @@ use Appbundle\Builder;
 class DefaultController extends Controller
 {   
     /**
-     * @Route("/tnt", name="tnt")
+     * @Route("/track", name="track")
      */
     public function workloadAction()
     {
-        return $this->render('TnTBundle/Default/workload.html.twig');
+        return $this->render('TrackBundle/Default/workload.html.twig');
     }
     
     /**
-     * @Route("/tnt/inventaris", name="tnt_inventaris")
+     * @Route("/track/inventaris", name="track_inventaris")
      */
     public function inventarisAction()
     {   
-        return $this->render('TnTBundle/Default/inventaris.html.twig');
+        return $this->render('TrackBundle/Default/inventaris.html.twig');
     }
     
     /**
-     * @Route("/tnt/verkopen", name="tnt_verkopen")
+     * @Route("/track/verkopen", name="track_verkopen")
      */
     public function verkopenAction()
     {
-        return $this->render('TnTBundle/Default/verkopen.html.twig');
+        return $this->render('TrackBundle/Default/verkopen.html.twig');
     }
 }

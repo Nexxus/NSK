@@ -1,4 +1,4 @@
 services:
 #    tn_t.example:
-#        class: TnTBundle\Example
+#        class: TrackBundle\Example
 #        arguments: ["@service_id", "plain_value", "%parameter%"]

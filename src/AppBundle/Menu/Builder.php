@@ -25,20 +25,20 @@ class Builder implements ContainerAwareInterface
           ));*/
 
         $menu->addChild('Home', array('route' => 'home'));
-        $menu->addChild('Track & Trace', array('route' => 'tnt'));
+        $menu->addChild('Track & Trace', array('route' => 'track'));
         
         return $menu;
     }
     
-    public function createTntMenu(FactoryInterface $factory, array $options)
+    public function createtrackMenu(FactoryInterface $factory, array $options)
     {
-        $menu = $factory->createItem('tnt');
+        $menu = $factory->createItem('track');
         
         $menu->setChildrenAttribute('class', 'nav nav-tabs');
         
-        $menu->addChild('Workload', array('route' => 'tnt'));
-        $menu->addChild('Inventaris', array('route' => 'tnt_inventaris'));
-        $menu->addChild('Verkopen', array('route' => 'tnt_verkopen'));
+        $menu->addChild('Workload', array('route' => 'track'));
+        $menu->addChild('Inventaris', array('route' => 'track_inventaris'));
+        $menu->addChild('Verkopen', array('route' => 'track_verkopen'));
         
         return $menu;
     }

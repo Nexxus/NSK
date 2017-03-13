@@ -1,5 +1,5 @@
 tn_t:
-    resource: "@TnTBundle/Controller/"
+    resource: "@TrackBundle/Controller/"
     type:     annotation
     prefix:   /
 
