@@ -11,14 +11,6 @@ class DefaultController extends Controller
     /**
      * @Route("/track", name="track")
      */
-    public function workloadAction()
-    {
-        return $this->render('TrackBundle/Default/workload.html.twig');
-    }
-    
-    /**
-     * @Route("/track/inventaris", name="track_inventaris")
-     */
     public function inventarisAction()
     {   
         return $this->render('TrackBundle/Default/inventaris.html.twig');

@@ -36,8 +36,7 @@ class Builder implements ContainerAwareInterface
         
         $menu->setChildrenAttribute('class', 'nav nav-tabs');
         
-        $menu->addChild('Workload', array('route' => 'track'));
-        $menu->addChild('Inventaris', array('route' => 'track_inventaris'));
+        $menu->addChild('Inventaris', array('route' => 'track'));
         $menu->addChild('Verkopen', array('route' => 'track_verkopen'));
         
         return $menu;
