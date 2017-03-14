@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Products list</h1>
+    
+    <h4>
+        <a href="{{ path('track_new') }}">Create a new product</a>
+    </h4>
+    <table class="table-bordered">
+        <thead>
+            <tr>
+                <th>SKU</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Brand</th>
+                <th>Department</th>
+                <th>Owner</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for product in products %}
+            <tr>
+                <td><a href="{{ path('track_show', { 'id': product.id }) }}">{{ product.sku }}</a></td>
+                <td>{{ product.name }}</td>
+                <td>{{ product.location }}</td>
+                <td>{{ product.description }}</td>
+                <td>{{ product.status }}</td>
+                <td>{{ product.brand }}</td>
+                <td>{{ product.department }}</td>
+                <td>{{ product.owner }}</td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('track_show', { 'id': product.id }) }}">show</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('track_edit', { 'id': product.id }) }}">edit</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
