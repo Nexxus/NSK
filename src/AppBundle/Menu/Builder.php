@@ -31,7 +31,7 @@ class Builder implements ContainerAwareInterface
     }
     
     public function createtrackMenu(FactoryInterface $factory, array $options)
-    {
+    {/*
         $menu = $factory->createItem('track');
         
         $menu->setChildrenAttribute('class', 'nav nav-tabs');
@@ -40,5 +40,6 @@ class Builder implements ContainerAwareInterface
         $menu->addChild('Verkopen', array('uri' => '#'));
         
         return $menu;
+     */
     }
 }
