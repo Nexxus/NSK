@@ -31,13 +31,6 @@ class Product
     /**
      * @var string
      *
-     * @ORM\Column(name="group_sku", type="string", length=255, nullable=true)
-     */
-    private $groupSku;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="name", type="string", length=255)
      */
     private $name;
@@ -116,30 +109,6 @@ class Product
     public function getSku()
     {
         return $this->sku;
-    }
-
-    /**
-     * Set groupSku
-     *
-     * @param string $groupSku
-     *
-     * @return Product
-     */
-    public function setGroupSku($groupSku)
-    {
-        $this->groupSku = $groupSku;
-
-        return $this;
-    }
-
-    /**
-     * Get groupSku
-     *
-     * @return string
-     */
-    public function getGroupSku()
-    {
-        return $this->groupSku;
     }
 
     /**

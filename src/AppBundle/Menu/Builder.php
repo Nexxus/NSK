@@ -25,7 +25,7 @@ class Builder implements ContainerAwareInterface
           ));*/
 
         $menu->addChild('Home', array('route' => 'home'));
-        $menu->addChild('Track & Trace', array('route' => 'track'));
+        $menu->addChild('Track & Trace', array('route' => 'track_index'));
         
         return $menu;
     }
@@ -36,8 +36,8 @@ class Builder implements ContainerAwareInterface
         
         $menu->setChildrenAttribute('class', 'nav nav-tabs');
         
-        $menu->addChild('Inventaris', array('route' => 'track'));
-        $menu->addChild('Verkopen', array('route' => 'track_verkopen'));
+        $menu->addChild('Inventaris', array('route' => 'track_product_index'));
+        $menu->addChild('Verkopen', array('uri' => '#'));
         
         return $menu;
     }
