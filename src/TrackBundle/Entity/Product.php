@@ -39,6 +39,8 @@ class Product
      * @var int
      *
      * @ORM\Column(name="location", type="integer", nullable=true)
+     * @ORM\ManyToOne(targetEntity="Location", inversedBy="products")
+     * @ORM\JoinColumn(name="location", referencedColumnName="id")
      */
     private $location;
 

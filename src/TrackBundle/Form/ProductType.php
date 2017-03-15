@@ -3,6 +3,8 @@
 namespace TrackBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -13,12 +15,15 @@ class ProductType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('sku')
-                ->add('name')
-                ->add('location')
-                ->add('description')
+        $builder->add('sku', TextType::class)
+                ->add('name', TextType::class)
+                ->add('location',  EntityType::class, array(
+                    'class' => 'TrackBundle:Location',
+                    'choice_label' => 'name'
+                ))
+                ->add('description', TextType::class)
                 ->add('status')
-                ->add('brand')
+                ->add('brand', TextType::class)
                 ->add('department')
                 ->add('owner');
     }
