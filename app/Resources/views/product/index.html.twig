@@ -2,12 +2,12 @@
 
 {% block body %}
     <h1>Products list</h1>
-
-    <table>
+    
+    <h4><a href="{{ path('track_new') }}">Create a new product</a></h4>
+    <table class="table table-striped">
         <thead>
             <tr>
-                <th>Sku</th>
-                <th>Groupsku</th>
+                <th>SKU</th>
                 <th>Name</th>
                 <th>Location</th>
                 <th>Description</th>
@@ -22,7 +22,6 @@
         {% for product in products %}
             <tr>
                 <td><a href="{{ path('track_show', { 'id': product.id }) }}">{{ product.sku }}</a></td>
-                <td>{{ product.groupSku }}</td>
                 <td>{{ product.name }}</td>
                 <td>{{ product.location }}</td>
                 <td>{{ product.description }}</td>
@@ -31,23 +30,12 @@
                 <td>{{ product.department }}</td>
                 <td>{{ product.owner }}</td>
                 <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('track_show', { 'id': product.id }) }}">show</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('track_edit', { 'id': product.id }) }}">edit</a>
-                        </li>
-                    </ul>
+                    <div class="list-group">
+                        <a class="list-group-item" href="{{ path('track_edit', { 'id': product.id }) }}">Edit</a>
+                    </div>
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
-
-    <ul>
-        <li>
-            <a href="{{ path('track_new') }}">Create a new product</a>
-        </li>
-    </ul>
 {% endblock %}

@@ -1,21 +1,83 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Product edit</h1>
+    <div class="container">
+        <h1>Product edit</h1>
+        {{ form_start(edit_form, {'attr': {'class': 'form-horizontal'} }) }}
+        {{ form_errors(edit_form) }}
+            <div class="form-group">
+                <label class="control-label col-lg-2">
+                    {{ form_label(edit_form.sku) }}
+                    {{ form_errors(edit_form.sku) }}
+                </label>
+                <div class="col-lg-10">
+                    {{ form_widget(edit_form.sku) }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-lg-2">
+                    {{ form_label(edit_form.name) }}
+                    {{ form_errors(edit_form.name) }}
+                </label>
+                <div class="col-lg-10">
+                    {{ form_widget(edit_form.name) }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-lg-2">
+                    {{ form_label(edit_form.description) }}
+                    {{ form_errors(edit_form.description) }}
+                </label>
+                <div class="col-lg-10">
+                    {{ form_widget(edit_form.description) }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-lg-2">
+                    {{ form_label(edit_form.location) }}
+                    {{ form_errors(edit_form.location) }}
+                </label>
+                <div class="col-lg-10">
+                    {{ form_widget(edit_form.location) }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-lg-2">
+                    {{ form_label(edit_form.brand) }}
+                    {{ form_errors(edit_form.brand) }}
+                </label>
+                <div class="col-lg-10">
+                    {{ form_widget(edit_form.brand) }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-lg-2">
+                    {{ form_label(edit_form.owner) }}
+                    {{ form_errors(edit_form.owner) }}
+                </label>
+                <div class="col-lg-10">
+                    {{ form_widget(edit_form.owner) }}
+                </div>
+            </div>
+            {{ form_row(edit_form._token) }}
+            <div class="form-group"> 
+                <div class="col-lg-offset-2 col-lg-10">
+                    <input type="submit" value="Edit" />
+                </div>
+            </div>
+        </form>
 
-    {{ form_start(edit_form) }}
-        {{ form_widget(edit_form) }}
-        <input type="submit" value="Edit" />
-    {{ form_end(edit_form) }}
-
-    <ul>
-        <li>
-            <a href="{{ path('track_index') }}">Back to the list</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+        <div class="form-group"> 
+            <div class="col-lg-offset-2 col-lg-10">
+                <a href="{{ path('track_index') }}">Back to the list</a>
+            </div>
+        </div>
+        <div class="form-group"> 
+            <div class="col-lg-offset-2 col-lg-10">
+                {{ form_start(delete_form) }}
+                    <input type="submit" value="Delete">
+                {{ form_end(delete_form) }}
+            </div>
+        </div>
+    </div>
 {% endblock %}

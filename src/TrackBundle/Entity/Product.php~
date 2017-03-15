@@ -279,3 +279,4 @@ class Product
         return $this->owner;
     }
 }
+
