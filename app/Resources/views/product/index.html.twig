@@ -2,10 +2,12 @@
 
 {% block body %}
     <h1>Products list</h1>
+    <h2>{{ app.request.get('order') }}</h2>
     <h4><a href="{{ path('track_new') }}">Create a new product</a></h4>
     <table class="table table-striped">
         <thead>
             <tr>
+                <th>#</th>
                 <th>SKU</th>
                 <th>Name</th>
                 <th>Location</th>
@@ -20,7 +22,8 @@
         <tbody>
         {% for product in products %}
             <tr>
-                <td><a href="{{ path('track_show', { 'id': product.id }) }}">{{ product.sku }}</a></td>
+                <td><a href="{{ path('track_show', { 'id': product.id }) }}">{{ product.id }}</a></td>
+                <td><b>{{ product.sku }}</b></td>
                 <td>{{ product.name }}</td>
                 <td>{{ product.location }}</td>
                 <td>{{ product.description }}</td>

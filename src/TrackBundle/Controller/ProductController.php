@@ -17,14 +17,15 @@ class ProductController extends Controller
     /**
      * Lists all product entities.
      *
-     * @Route("/", name="track_index")
+     * @Route("/{page}/{sortBy}", name="track_index", defaults={"page" = 1, "sortBy" = "id=ASC"})
      * @Method("GET")
      */
-    public function indexAction()
+    public function indexAction($page, $sortBy)
     {
         $em = $this->getDoctrine()->getManager();
-
-        $products = $em->getRepository('TrackBundle:Product')->findAll();
+        
+        $order = $em->getRepository('TrackBundle:Product')->serializeSort($sortBy);
+        $products = $em->getRepository('TrackBundle:Product')->findSpecific($order);
 
         return $this->render('product/index.html.twig', array(
             'products' => $products,
@@ -47,6 +48,8 @@ class ProductController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($product);
             $em->flush($product);
+            
+            // fill in product id if sku is left blank
 
             return $this->redirectToRoute('track_show', array('id' => $product->getId()));
         }

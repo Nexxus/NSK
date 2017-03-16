@@ -10,4 +10,25 @@ namespace TrackBundle\Repository;
  */
 class ProductRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findSpecific($ord = array('id' => 'desc'))
+    {
+        return $this->findBy(array(),$ord);
+    }
+    
+    /**
+     * Explode for url sort string
+     */
+    public function serializeSort($param = array())
+    {
+        $order = array();
+        $ordArray = explode(",",$param);
+        
+        foreach($ordArray as $key)
+        {
+            $v = explode("=",$key);
+            $order[$v[0]] = $v[1];
+        }
+        
+        return $order;
+    }
 }
