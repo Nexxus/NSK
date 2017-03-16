@@ -2,16 +2,8 @@
 
 {% block body %}
     <h1>Products list</h1>
-    
-<<<<<<< HEAD
     <h4><a href="{{ path('track_new') }}">Create a new product</a></h4>
     <table class="table table-striped">
-=======
-    <h4>
-        <a href="{{ path('track_new') }}">Create a new product</a>
-    </h4>
-    <table class="table-bordered">
->>>>>>> 41d639d70c9242217f0f548c91165216c37d1f60
         <thead>
             <tr>
                 <th>SKU</th>
@@ -37,20 +29,9 @@
                 <td>{{ product.department }}</td>
                 <td>{{ product.owner }}</td>
                 <td>
-<<<<<<< HEAD
                     <div class="list-group">
                         <a class="list-group-item" href="{{ path('track_edit', { 'id': product.id }) }}">Edit</a>
                     </div>
-=======
-                    <ul>
-                        <li>
-                            <a href="{{ path('track_show', { 'id': product.id }) }}">show</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('track_edit', { 'id': product.id }) }}">edit</a>
-                        </li>
-                    </ul>
->>>>>>> 41d639d70c9242217f0f548c91165216c37d1f60
                 </td>
             </tr>
         {% endfor %}

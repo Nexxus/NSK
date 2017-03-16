@@ -43,26 +43,9 @@
             </tr>
         </tbody>
     </table>
-<<<<<<< HEAD
         <a href="{{ path('track_edit', { 'id': product.id }) }}"><button>Edit</button></a><br>
         {{ form_start(delete_form) }}
         <input type="submit" value="Delete">
         {{ form_end(delete_form) }}<br>
         <a href="{{ path('track_index') }}">Back to the list</a><br>
-=======
-
-    <ul>
-        <li>
-            <a href="{{ path('track_index') }}">Back to the list</a>
-        </li>
-        <li>
-            <a href="{{ path('track_edit', { 'id': product.id }) }}">Edit</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
->>>>>>> 41d639d70c9242217f0f548c91165216c37d1f60
 {% endblock %}
