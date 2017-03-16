@@ -1,5 +1,11 @@
 {% extends 'base.html.twig' %}
 
+{% if app.request.get('page') is defined %}
+    {% set page = app.request.get('page') %}
+  {% else %}
+    {% set page = 1 %}
+{% endif %}
+
 {% block body %}
     <h1>Products list</h1>
     <h2>{{ app.request.get('order') }}</h2>
@@ -7,16 +13,79 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>#</th>
-                <th>SKU</th>
-                <th>Name</th>
-                <th>Location</th>
-                <th>Description</th>
-                <th>Status</th>
-                <th>Brand</th>
-                <th>Department</th>
-                <th>Owner</th>
-                <th>Actions</th>
+                <th>
+                    <table>
+                        <tr>
+                            <td>
+                                <a href="{{ path('track_index', {'page': page, 'sortBy': 'id=ASC'}) }}">
+                                    <small><span class="glyphicon glyphicon-menu-up"></span></small>
+                                </a>
+                            </td>
+                            <td rowspan="2">&nbsp;#</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a href="{{ path('track_index', {'page': page, 'sortBy': 'id=DESC'}) }}">
+                                    <small><span class="glyphicon glyphicon-menu-down"></span></small>
+                                </a>
+                            </td>
+                            
+                        </tr>
+                    </table>
+                </th>
+                <th>
+                    <table>
+                        <tr>
+                            
+                            <td>
+                                <a href="{{ path('track_index', {'page': page, 'sortBy': 'sku=ASC'}) }}">
+                                    <small><span class="glyphicon glyphicon-menu-up"></span></small>
+                                </a>
+                            </td>
+                            <td rowspan="2">&nbsp;SKU</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a href="{{ path('track_index', {'page': page, 'sortBy': 'sku=DESC'}) }}">
+                                    <small><span class="glyphicon glyphicon-menu-down"></span></small>
+                                </a>
+                            </td>
+                            
+                        </tr>
+                    </table>
+                </th>
+                
+                <th>
+                    Name
+                </th>
+                
+                <th>
+                    Location
+                </th>
+                
+                <th>
+                    Description
+                </th>
+                
+                <th>
+                    Status
+                </th>
+                
+                <th>
+                    Brand
+                </th>
+                
+                <th>
+                    Department
+                </th>
+                
+                <th>
+                    Owner
+                </th>
+                
+                <th>
+                    Actions
+                </th>
             </tr>
         </thead>
         <tbody>

@@ -17,7 +17,7 @@ class ProductController extends Controller
     /**
      * Lists all product entities.
      *
-     * @Route("/{page}/{sortBy}", name="track_index", defaults={"page" = 1, "sortBy" = "id=ASC"})
+     * @Route("/index/{page}/{sortBy}", name="track_index", defaults={"page" = 1, "sortBy" = "id=ASC"})
      * @Method("GET")
      */
     public function indexAction($page, $sortBy)
@@ -63,7 +63,7 @@ class ProductController extends Controller
     /**
      * Finds and displays a product entity.
      *
-     * @Route("/{id}", name="track_show")
+     * @Route("/{id}/show", name="track_show")
      * @Method("GET")
      */
     public function showAction(Product $product)
