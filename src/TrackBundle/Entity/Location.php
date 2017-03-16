@@ -25,7 +25,6 @@ class Location
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, unique=true)
-     * @ORM\OneToMany(targetEntity="Product", mappedBy="location")
      */
     private $name;
 
@@ -63,5 +62,14 @@ class Location
     {
         return $this->name;
     }
+    
+    /**
+     * If object is treated like a string: return name
+     * 
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->name;
+    }
 }
-
