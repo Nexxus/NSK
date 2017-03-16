@@ -1,3 +1,8 @@
+admin:
+    resource: "@AdminBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
 tn_t:
     resource: "@TrackBundle/Controller/"
     type:     annotation
