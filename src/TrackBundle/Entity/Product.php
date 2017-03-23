@@ -53,7 +53,8 @@ class Product
     /**
      * @var int
      *
-     * @ORM\Column(name="status", type="integer")
+     * @ORM\ManyToOne(targetEntity="ProductStatus")
+     * @ORM\JoinColumn(name="status", referencedColumnName="id")
      */
     private $status=1;
 

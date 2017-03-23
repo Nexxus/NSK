@@ -34,6 +34,15 @@
             </div>
             <div class="form-group">
                 <label class="control-label col-lg-2">
+                    {{ form_label(edit_form.status) }}
+                    {{ form_errors(edit_form.status) }}
+                </label>
+                <div class="col-lg-10">
+                    {{ form_widget(edit_form.status) }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-lg-2">
                     {{ form_label(edit_form.location) }}
                     {{ form_errors(edit_form.location) }}
                 </label>
