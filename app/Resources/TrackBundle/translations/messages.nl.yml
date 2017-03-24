@@ -1,6 +1,7 @@
 ## YAML Template.
 Home: Home
 Track & Trace: Track & Trace
+Admin: Beheer
 
 ## Track
 Product List: Producten lijst
@@ -10,6 +11,7 @@ Edit: Wijzig
 Name: Naam
 Location: Locatie
 Description: Omschrijving
+Status: Status
 Brand: Merk
 Department: Afdeling
 Owner: Eigenaar

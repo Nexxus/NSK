@@ -26,7 +26,7 @@ class Builder implements ContainerAwareInterface
 
         $menu->addChild('Home', array('route' => 'home'));
         $menu->addChild('Track & Trace', array('route' => 'track_index'));
-        $menu->addChild('Beheer', array('route' => 'admin_index'));
+        $menu->addChild('Admin', array('route' => 'admin_index'));
         
         return $menu;
     }
