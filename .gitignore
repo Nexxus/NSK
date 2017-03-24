@@ -14,9 +14,19 @@
 !var/SymfonyRequirements.php
 /vendor/
 /web/bundles/
-<<<<<<< HEAD
-/nbproject/
-=======
 /nbproject/
 thumbs.db
->>>>>>> 41d639d70c9242217f0f548c91165216c37d1f60
+
+*~
+.bash
+.bash_logout
+.bashrc
+.cache/
+.config/
+.local/
+.profile
+.usermin/
+Maildir/
+etc/
+fcgi-bin/
+logs/
