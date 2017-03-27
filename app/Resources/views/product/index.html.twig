@@ -16,6 +16,7 @@
     <table class="table table-striped">
         <thead>
             <tr>
+                <th></th>
                 {#<th>
                     <table>
                         <tr>
@@ -36,6 +37,25 @@
                         </tr>
                     </table>
                 </th>#}
+                <th>
+                    <table>
+                        <tr>
+                            <td>
+                                <a href="{{ path('track_index', {'page': page, 'sortBy': 'updatedAt=ASC'}) }}">
+                                    <small><span class="glyphicon glyphicon-menu-up"></span></small>
+                                </a>
+                            </td>
+                            <td rowspan="2">&nbsp;{% trans %} Changed On {% endtrans %}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <a href="{{ path('track_index', {'page': page, 'sortBy': 'updatedAt=DESC'}) }}">
+                                    <small><span class="glyphicon glyphicon-menu-down"></span></small>
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </th>
                 <th>
                     <table>
                         <tr>
@@ -91,8 +111,12 @@
             </tr>
         </thead>
         <tbody>
+        {% set product_row = 0 %} 
         {% for product in products %}
+            {% set product_row = product_row+1 %}
             <tr>
+                <td>{{ product_row }}</td>
+                <td>{{ product.updatedAt }}</td>
                 <td><b><a href="{{ path('track_show', { 'id': product.id }) }}">{{ product.sku }}</a></b></td>
                 <td>{{ product.name }}</td>
                 <td>{{ product.location }}</td>

@@ -10,7 +10,7 @@
                 <th>SKU</th>
                 <td>
                     {{ product.sku }}
-                    &nbsp;<a href="#"><img src="{{ asset('images/barcode.png') }}"></a>
+                    &nbsp;<a href="{{ path('track_print_barcode', {'id': product.id }) }}"><img src="{{ asset('images/barcode.png') }}"></a>
                 </td>
             </tr>
             <tr>

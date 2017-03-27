@@ -93,7 +93,6 @@ class Product
     {
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
-        
     }
     
     /**
@@ -304,5 +303,15 @@ class Product
     public function getOwner()
     {
         return $this->owner;
+    }
+    
+    public function getCreatedAt()
+    {
+        return $this->updatedAt->format('d M Y H:i');
+    }
+    
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt->format('d M Y H:i');
     }
 }

@@ -5,7 +5,9 @@ namespace TrackBundle\Controller;
 use TrackBundle\Entity\Product;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Product controller.
@@ -17,7 +19,7 @@ class ProductController extends Controller
     /**
      * Lists all product entities.
      *
-     * @Route("/index/{page}/{sortBy}", name="track_index", defaults={"page" = 1, "sortBy" = "id=ASC"})
+     * @Route("/index/{page}/{sortBy}", name="track_index", defaults={"page" = 1, "sortBy" = "updatedAt=DESC"})
      * @Method("GET")
      */
     public function indexAction($page, $sortBy)
@@ -35,14 +37,16 @@ class ProductController extends Controller
     /**
      * Prints a barcode PDF page
      * 
-     * @Route("{id}/printBarcode", name="track_print_barcode")
+     * @Route("/{id}/printBarcode", name="track_print_barcode")
      */
     public function printAction()
     {
         $mpdfService = $this->get('tfox.mpdfport');
         
         $html = "Hello World!";
-        $mpdfService->generatePdfResponse($html);
+        return new Response(    
+            $mpdfService->generatePdfResponse($html)
+        );
     }
 
     /**
