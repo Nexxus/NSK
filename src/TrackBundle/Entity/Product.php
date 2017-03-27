@@ -80,6 +80,31 @@ class Product
     private $owner;
 
     /**
+     * @ORM\Column(type="datetime")
+     */
+    protected $createdAt;
+    
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    protected $updatedAt;
+    
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
+        
+    }
+    
+    /**
+     * @ORM\PreUpdate()
+     */
+    public function preUpdate()
+    {
+        $this->updatedAt= new \DateTime();
+    }
+    
+    /**
      * Get id
      *
      * @return int

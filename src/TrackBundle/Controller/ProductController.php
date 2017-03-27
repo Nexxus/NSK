@@ -39,10 +39,10 @@ class ProductController extends Controller
      */
     public function printAction()
     {
-        //$mpdf = new Mpdf();
-        return new Response(
-                'Hello World!'
-        );
+        $mpdfService = $this->get('tfox.mpdfport');
+        
+        $html = "Hello World!";
+        $mpdfService->generatePdfResponse($html);
     }
 
     /**

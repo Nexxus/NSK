@@ -16,7 +16,7 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>
+                {#<th>
                     <table>
                         <tr>
                             <td>
@@ -35,7 +35,7 @@
                             
                         </tr>
                     </table>
-                </th>
+                </th>#}
                 <th>
                     <table>
                         <tr>
@@ -57,7 +57,6 @@
                         </tr>
                     </table>
                 </th>
-                
                 <th>
                     {% trans %}Name{% endtrans %}
                 </th>
@@ -94,8 +93,7 @@
         <tbody>
         {% for product in products %}
             <tr>
-                <td><a href="{{ path('track_show', { 'id': product.id }) }}">{{ product.id }}</a></td>
-                <td><b>{{ product.sku }}</b></td>
+                <td><b><a href="{{ path('track_show', { 'id': product.id }) }}">{{ product.sku }}</a></b></td>
                 <td>{{ product.name }}</td>
                 <td>{{ product.location }}</td>
                 <td>{{ product.description }}</td>
