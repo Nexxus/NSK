@@ -19,6 +19,7 @@ class AppKernel extends Kernel
             new TrackBundle\TrackBundle(),
             new Knp\Bundle\MenuBundle\KnpMenuBundle(),
             new AdminBundle\AdminBundle(),
+            new TFox\MpdfPortBundle\TFoxMpdfPortBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

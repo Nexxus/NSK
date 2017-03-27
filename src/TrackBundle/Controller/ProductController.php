@@ -31,6 +31,19 @@ class ProductController extends Controller
             'products' => $products,
         ));
     }
+    
+    /**
+     * Prints a barcode PDF page
+     * 
+     * @Route("{id}/printBarcode", name="track_print_barcode")
+     */
+    public function printAction()
+    {
+        //$mpdf = new Mpdf();
+        return new Response(
+                'Hello World!'
+        );
+    }
 
     /**
      * Creates a new product entity.
@@ -147,19 +160,6 @@ class ProductController extends Controller
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         ));
-    }
-    
-    /**
-     * Prints a barcode PDF page
-     * 
-     * @Route("{id}/printBarcode", name="track_print_barcode")
-     */
-    public function printAction()
-    {
-        //$mpdf = new Mpdf();
-        return new Response(
-                'Hello World!'
-        );
     }
     
     /**
