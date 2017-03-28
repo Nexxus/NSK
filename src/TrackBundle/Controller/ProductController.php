@@ -46,12 +46,36 @@ class ProductController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $em->persist($product);
-            $em->flush($product);
             
-            // fill in product id if sku is left blank
+            // check for sku
+            $skuquery = $em->createQuery(
+                    'SELECT p.sku'
+                    . ' FROM TrackBundle:Product p'
+                    . ' WHERE p.sku = :givensku')
+                    ->setParameter('givensku', $product->getSku());
+            $result = $skuquery->getResult();
+            
+            if(count($result)==0)
+            {
+                $em->persist($product);
+                $em->flush($product);
+            
+                // fill in product id if sku is left blank
+            
+                //
 
-            return $this->redirectToRoute('track_show', array('id' => $product->getId()));
+                return $this->redirectToRoute('track_show', array('id' => $product->getId()));
+            } 
+            else 
+            {
+                return $this->render('product/new.html.twig', array(
+                    'product' => $product,
+                    'form' => $form->createView(),
+                    'error_msg' => 'DuplicateSku',
+                ));
+            }
+            
+            
         }
 
         return $this->render('product/new.html.twig', array(
@@ -89,9 +113,33 @@ class ProductController extends Controller
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $em = $this->getDoctrine()->getManager();
 
-            return $this->redirectToRoute('track_edit', array('id' => $product->getId()));
+            // check for sku
+            $skuquery = $em->createQuery(
+                    'SELECT p.sku'
+                    . ' FROM TrackBundle:Product p'
+                    . ' WHERE p.sku = :givensku'
+                    . ' AND p.id <> :id')
+                    ->setParameter('givensku', $product->getSku())
+                    ->setParameter('id', $product->getId());
+            $result = $skuquery->getResult();
+            
+            if(count($result)==0)
+            {
+                $em->persist($product);
+                $em->flush($product);
+            
+                // fill in product id if sku is left blank
+            
+                //
+
+                return $this->redirectToRoute('track_show', array('id' => $product->getId()));
+            } 
+            else 
+            {
+                return $this->redirectToRoute('track_edit', array('id' => $product->getId()));
+            }
         }
 
         return $this->render('product/edit.html.twig', array(

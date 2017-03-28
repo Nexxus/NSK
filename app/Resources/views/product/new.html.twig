@@ -1,8 +1,18 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Product creation</h1>
-
+    <h1>Create a New Product</h1>
+    
+    {% if error_msg is defined %}
+        
+        {% if error_msg == 'DuplicateSku' %}
+          <div class="alert alert-danger">
+           <strong>{% trans %}Error{% endtrans %}:</strong>
+           {% trans %} SKU code already exists.{% endtrans %}
+          </div>
+        {% endif %}
+        
+    {% endif %}
     {{ form_start(form) }}
         {{ form_widget(form) }}
         <input type="submit" value="Create" />
