@@ -38,7 +38,7 @@
                     {{ form_errors(edit_form.status) }}
                 </label>
                 <div class="col-lg-10">
-                    {{ form_widget(edit_form.status) }}
+                    {{ form_widget(edit_form.status, {'choice_translation_domain': 'messages'} ) }}
                 </div>
             </div>
             <div class="form-group">
