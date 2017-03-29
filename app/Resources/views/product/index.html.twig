@@ -1,10 +1,13 @@
 {% extends 'base.html.twig' %}
+{% trans_default_domain "product" %}
 
+{# Check for page number#}
 {% if app.request.get('page') is defined %}
     {% set page = app.request.get('page') %}
   {% else %}
     {% set page = 1 %}
 {% endif %}
+
 
 {% block body %}
     <h1>{% trans %}Product List{% endtrans %}</h1>
@@ -102,7 +105,9 @@
                 <td>{{ product.owner }}</td>
                 <td>
                     <div class="list-group">
-                        <a class="list-group-item" href="{{ path('track_edit', { 'id': product.id }) }}">Edit</a>
+                        <a class="list-group-item" href="{{ path('track_edit', { 'id': product.id }) }}">
+                            {% trans %}Edit{% endtrans %}
+                        </a>
                     </div>
                 </td>
             </tr>

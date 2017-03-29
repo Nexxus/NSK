@@ -1,51 +1,51 @@
 {% extends 'base.html.twig' %}
+{% trans_default_domain "product" %}
 
 {% block body %}
     <h1>Product</h1>
 
-    <table>
+    <table class="table table-bordered">
         <tbody>
             <tr>
-                <th>Id</th>
-                <td>{{ product.id }}</td>
+                <th>SKU</th>
+                <td>
+                    {{ product.sku }}
+                    &nbsp;<a href="#"><img src="{{ asset('images/barcode.png') }}"></a>
+                </td>
             </tr>
             <tr>
-                <th>Sku</th>
-                <td>{{ product.sku }}</td>
-            </tr>
-            <tr>
-                <th>Name</th>
+                <th>{% trans %} Name {% endtrans %}</th>
                 <td>{{ product.name }}</td>
             </tr>
             <tr>
-                <th>Location</th>
+                <th>{% trans %} Location {% endtrans %}</th>
                 <td>{{ product.location }}</td>
             </tr>
             <tr>
-                <th>Description</th>
+                <th>{% trans %} Description {% endtrans %}</th>
                 <td>{{ product.description }}</td>
             </tr>
             <tr>
-                <th>Status</th>
+                <th>{% trans %} Status {% endtrans %}</th>
                 <td>{{ product.status }}</td>
             </tr>
             <tr>
-                <th>Brand</th>
+                <th>{% trans %} Brand {% endtrans %}</th>
                 <td>{{ product.brand }}</td>
             </tr>
             <tr>
-                <th>Department</th>
+                <th>{% trans %} Department {% endtrans %}</th>
                 <td>{{ product.department }}</td>
             </tr>
             <tr>
-                <th>Owner</th>
+                <th>{% trans %} Owner {% endtrans %}</th>
                 <td>{{ product.owner }}</td>
             </tr>
         </tbody>
     </table>
-        <a href="{{ path('track_edit', { 'id': product.id }) }}"><button>Edit</button></a><br>
+        <a href="{{ path('track_edit', { 'id': product.id }) }}"><button>{% trans %}Edit{% endtrans %}</button></a><br>
         {{ form_start(delete_form) }}
         <input type="submit" value="Delete">
         {{ form_end(delete_form) }}<br>
-        <a href="{{ path('track_index') }}">Back to the list</a><br>
+        <a href="{{ path('track_index') }}">{% trans %}Back to the list{% endtrans %}</a><br>
 {% endblock %}

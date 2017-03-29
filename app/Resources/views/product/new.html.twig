@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% trans_default_domain "product" %}
 
 {% block body %}
     <h1>Create a New Product</h1>
@@ -6,10 +7,11 @@
     {% if error_msg is defined %}
         
         {% if error_msg == 'DuplicateSku' %}
-          <div class="alert alert-danger">
-           <strong>{% trans %}Error{% endtrans %}:</strong>
-           {% trans %} SKU code already exists.{% endtrans %}
-          </div>
+            <div class="alert alert-danger">
+                <strong>Error:</strong>
+                
+                {% trans %} SKU code already exists.{% endtrans %}
+            </div>
         {% endif %}
         
     {% endif %}

@@ -2,28 +2,3 @@
 Home: Home
 Track & Trace: Track & Trace
 Admin: Beheer
-
-## Track
-Product List: Producten lijst
-Create a new product: Creëer een nieuw product
-Edit: Wijzig
-
-SKU: SKU
-Name: Naam
-Location: Locatie
-Description: Omschrijving
-Status: Status
-Brand: Merk
-Department: Afdeling
-Owner: Eigenaar
-Actions: Acties
-
-## Product edit form
-# Status
-Registered: Ingeschreven
-Cleaned: Schoongemaakt
-In Repair: Reparatie nodig
-Check and/or Test OK: Check en/of Test klaar
-Refurbished/Imaged: Refurbished/Ge-Imaged
-Inventory/Stock: In de Inventaris
-Ready For Sale: Klaar voor Verkoop

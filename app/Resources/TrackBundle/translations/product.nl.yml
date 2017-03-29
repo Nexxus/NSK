@@ -1,0 +1,21 @@
+## YAML Template.
+## Track
+Product List: Producten lijst
+
+# Page Headers
+Create a new product: Creëer een nieuw product
+Edit Product: Wijzig Product
+
+# Product Table
+SKU: SKU
+Name: Naam
+Location: Locatie
+Description: Omschrijving
+Status: Status
+Brand: Merk
+Department: Afdeling
+Owner: Eigenaar
+
+Actions: Acties
+Edit: Wijzig
+Back to the list: Terug naar de Lijst

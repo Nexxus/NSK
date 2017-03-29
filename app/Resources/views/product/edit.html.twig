@@ -1,14 +1,14 @@
 {% extends 'base.html.twig' %}
+{% trans_default_domain "product" %}
 
 {% block body %}
     <div class="container">
-        <h1>Product edit</h1>
+        <h1>{% trans %}Edit Product{% endtrans %}</h1>
         {{ form_start(edit_form, {'attr': {'class': 'form-horizontal'} }) }}
         {{ form_errors(edit_form) }}
             <div class="form-group">
                 <label class="control-label col-lg-2">
-                    {{ form_label(edit_form.sku) }}
-                    {{ form_errors(edit_form.sku) }}
+                    {% trans %} SKU {% endtrans %}
                 </label>
                 <div class="col-lg-10">
                     {{ form_widget(edit_form.sku, {'attr': {'readonly': 'readonly'} }) }}
@@ -16,8 +16,7 @@
             </div>
             <div class="form-group">
                 <label class="control-label col-lg-2">
-                    {{ form_label(edit_form.name) }}
-                    {{ form_errors(edit_form.name) }}
+                    {% trans %} Name {% endtrans %}
                 </label>
                 <div class="col-lg-10">
                     {{ form_widget(edit_form.name) }}
@@ -25,8 +24,7 @@
             </div>
             <div class="form-group">
                 <label class="control-label col-lg-2">
-                    {{ form_label(edit_form.description) }}
-                    {{ form_errors(edit_form.description) }}
+                    {% trans %} Description {% endtrans %}
                 </label>
                 <div class="col-lg-10">
                     {{ form_widget(edit_form.description) }}
@@ -34,17 +32,15 @@
             </div>
             <div class="form-group">
                 <label class="control-label col-lg-2">
-                    {{ form_label(edit_form.status) }}
-                    {{ form_errors(edit_form.status) }}
+                    {% trans %} Status {% endtrans %}
                 </label>
                 <div class="col-lg-10">
-                    {{ form_widget(edit_form.status, {'choice_translation_domain': 'messages'} ) }}
+                    {{ form_widget(edit_form.status, {'choice_translation_domain': 'status'} ) }}
                 </div>
             </div>
             <div class="form-group">
                 <label class="control-label col-lg-2">
-                    {{ form_label(edit_form.location) }}
-                    {{ form_errors(edit_form.location) }}
+                    {% trans %} Location {% endtrans %}
                 </label>
                 <div class="col-lg-10">
                     {{ form_widget(edit_form.location) }}
@@ -52,8 +48,7 @@
             </div>
             <div class="form-group">
                 <label class="control-label col-lg-2">
-                    {{ form_label(edit_form.brand) }}
-                    {{ form_errors(edit_form.brand) }}
+                    {% trans %} Brand {% endtrans %}
                 </label>
                 <div class="col-lg-10">
                     {{ form_widget(edit_form.brand) }}
@@ -61,8 +56,7 @@
             </div>
             <div class="form-group">
                 <label class="control-label col-lg-2">
-                    {{ form_label(edit_form.owner) }}
-                    {{ form_errors(edit_form.owner) }}
+                    {% trans %} Owner {% endtrans %}
                 </label>
                 <div class="col-lg-10">
                     {{ form_widget(edit_form.owner) }}
@@ -78,7 +72,9 @@
 
         <div class="form-group"> 
             <div class="col-lg-offset-2 col-lg-10">
-                <a href="{{ path('track_index') }}">Back to the list</a>
+                <a href="{{ path('track_index') }}">
+                    {% trans %} Back to the list {% endtrans %}
+                </a>
             </div>
         </div>
         <div class="form-group"> 
