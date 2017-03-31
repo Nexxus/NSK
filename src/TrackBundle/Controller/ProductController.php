@@ -6,8 +6,8 @@ use TrackBundle\Entity\Product;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+
 
 /**
  * Product controller.
@@ -32,21 +32,6 @@ class ProductController extends Controller
         return $this->render('product/index.html.twig', array(
             'products' => $products,
         ));
-    }
-    
-    /**
-     * Prints a barcode PDF page
-     * 
-     * @Route("/{id}/printBarcode", name="track_print_barcode")
-     */
-    public function printAction()
-    {
-        $mpdfService = $this->get('tfox.mpdfport');
-        
-        $html = "Hello World!";
-        return new Response(    
-            $mpdfService->generatePdfResponse($html)
-        );
     }
 
     /**

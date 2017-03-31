@@ -307,11 +307,11 @@ class Product
     
     public function getCreatedAt()
     {
-        return $this->updatedAt->format('d M Y H:i');
+        return $this->updatedAt->format('d-m-Y H:i');
     }
     
     public function getUpdatedAt()
     {
-        return $this->updatedAt->format('d M Y H:i');
+        return $this->updatedAt->format('d-m-Y H:i');
     }
 }
