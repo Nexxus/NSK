@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>{% trans %}Status List{% endtrans %}</h1>
+    <h4><a href="#">{% trans %}Create a new Status{% endtrans %}</a></h4>
+    <table class="table table-striped">
+        <tr>
+            <th>#</th>
+            <th>Index</th>
+            <th>{% trans %}Name{% endtrans %}</th>
+            <th>&nbsp;</th>
+        </tr>
+    {% for a in productstatus %}
+        <tr>
+            <td>{{ a.id }} </td>
+            <td>{{ a.pindex }} </td>
+            <td>{{ a.name }} </td>
+            <td>
+                <a href="{{ path("status_edit", {id: a.id}) }}">
+                    <button type="button" class="btn btn-default">
+                        {% trans %}Edit{% endtrans %}
+                    </button>
+                </a>
+                <a href="#">
+                    <button type="button" class="btn btn-danger" href="#">
+                        {% trans %}Delete{% endtrans %}
+                    </button>
+                </a>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endblock %}
