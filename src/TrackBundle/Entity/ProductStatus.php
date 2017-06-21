@@ -69,7 +69,7 @@ class ProductStatus
     {
         return $this->pindex;
     }
-
+    
     /**
      * Set name
      *
@@ -104,4 +104,3 @@ class ProductStatus
         return $this->name;
     }
 }
-
