@@ -13,6 +13,7 @@
     <h1>{% trans %}Product List{% endtrans %}</h1>
     <h2>{{ app.request.get('order') }}</h2>
     <h4><a href="{{ path('track_new') }}">{% trans %}Create a new product{% endtrans %}</a></h4>
+    <input type="text" name="barcode_search" id="barcode_search" placeholder="{% trans %}Scan Item Here{% endtrans %}">
     <table class="table table-striped">
         <thead>
             <tr>
@@ -136,4 +137,18 @@
         {% endfor %}
         </tbody>
     </table>
+      
+{% endblock %}
+
+{% block javascripts %}
+   <script>
+        console.log("bing");
+        $("#barcode_search").keyup(function (e) {
+            if (e.keyCode === 13) {
+               var barcode = document.getElementById('barcode_search').value;
+               var product_url = "{{ path('track_show', {'id': "PLACEHOLDER" })}}";
+               window.location = product_url.replace("PLACEHOLDER", barcode);
+            }
+        });
+    </script> 
 {% endblock %}

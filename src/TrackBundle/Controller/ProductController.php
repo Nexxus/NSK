@@ -171,6 +171,13 @@ class ProductController extends Controller
         return $this->redirectToRoute('track_index');
     }
 
+    /*
+     * Retrieves an SKU and gets an item
+     */
+    public function searchBySku() {
+        
+    }
+    
     /**
      * Creates a form to delete a product entity.
      *
