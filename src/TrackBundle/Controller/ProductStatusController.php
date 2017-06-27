@@ -10,7 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * @Route("/admin/status")
@@ -99,14 +99,18 @@ class ProductStatusController extends Controller
      * 
      * @return int
      */
-    public function shiftIndex($pindex)
+    public function shiftIndex(EntityManagerInterface $em, $pindex)
     {
-        $em = $this->getDoctrine()->getManager();
-        $query = $em->createQuery(
+        //https://stackoverflow.com/questions/4337751/doctrine-2-update-query-with-query-builder
+        $repository = $em->getRepository('Trackbundle:ProductStatus');
+        
+        /*$query = $repository->createQueryBuilder('s')
+                ->update*/
+        /*$query = $em->createQuery(
                 "UPDATE TrackBundle:ProductStatus s"
                 . " SET s.pindex=(s.pindex+1)"
                 . " WHERE s.pindex <= :space"
         )->setParameter('space', $pindex);
-        $result = $query->getQuery();
+        $result = $query->getQuery();*/
     }
 }
