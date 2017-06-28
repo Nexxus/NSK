@@ -146,7 +146,7 @@
         $("#barcode_search").keyup(function (e) {
             if (e.keyCode === 13) {
                var barcode = document.getElementById('barcode_search').value;
-               var product_url = "{{ path('track_show', {'id': "PLACEHOLDER" })}}";
+               var product_url = "{{ path('track_searchSku', {'sku': "PLACEHOLDER" })}}";
                window.location = product_url.replace("PLACEHOLDER", barcode);
             }
         });

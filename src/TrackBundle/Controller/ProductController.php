@@ -3,6 +3,7 @@
 namespace TrackBundle\Controller;
 
 use TrackBundle\Entity\Product;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -171,11 +172,20 @@ class ProductController extends Controller
         return $this->redirectToRoute('track_index');
     }
 
-    /*
+    /**
      * Retrieves an SKU and gets an item
+     * 
+     * @Route("/s/sku/{sku}", name="track_searchSku")
+     * @Method("GET")
      */
-    public function searchBySku() {
+    public function searchBySku($sku) {
+        $em = $this->getDoctrine()->getManager();
         
+        $product = $em->getRepository('TrackBundle:Product')
+                ->findOneBySku($sku);
+        $id = $product->getId();  
+        
+        return $this->redirectToRoute("track_show", array('id' => $id));
     }
     
     /**
