@@ -183,9 +183,17 @@ class ProductController extends Controller
         
         $product = $em->getRepository('TrackBundle:Product')
                 ->findOneBySku($sku);
-        $id = $product->getId();  
+        if($product) {
+            $id = $product->getId();  
         
-        return $this->redirectToRoute("track_show", array('id' => $id));
+            return $this->redirectToRoute("track_show", array('id' => $id));
+        } 
+        else
+        {
+            return $this->redirectToRoute("track_index",
+                    array('err' => 'nif'));
+        }
+        
     }
     
     /**
