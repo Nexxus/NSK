@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+     <h1>{% trans %}Product Type List{% endtrans %}</h1>
+    <h2>{{ app.request.get('order') }}</h2>
+    <h4><a href="{{ path('producttype_new') }}">{% trans %}Create a new product type{% endtrans %}</a></h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Pindex</th>
+            </tr>
+        </thead>
+    {% for i in products %}
+        <tr>
+            <td>{{ i.id }}</td>
+            <td>{{ i.name }}</td>
+            <td>{{ i.pindex }}</td>
+        </tr>
+    {% endfor %}
+{% endblock %}
+    
