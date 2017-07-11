@@ -37,6 +37,14 @@ class Product
 
     /**
      * @var int
+     * 
+     * @ORM\ManyToOne(targetEntity="ProductType")
+     * @ORM\JoinColumn(name="type", referencedColumnName="id")
+     */
+    private $type;
+    
+    /**
+     * @var int
      *
      * @ORM\ManyToOne(targetEntity="Location")
      * @ORM\JoinColumn(name="location", referencedColumnName="id")
@@ -161,6 +169,30 @@ class Product
         return $this->name;
     }
 
+    /**
+     * Set type
+     *
+     * @param \TrackBundle\Entity\ProductType $type
+     *
+     * @return Product
+     */
+    public function setType(\TrackBundle\Entity\ProductType $type = null)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * Get type
+     *
+     * @return \TrackBundle\Entity\ProductType
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+    
     /**
      * Set location
      *

@@ -124,5 +124,14 @@ class ProductType
     {
         return $this->comment;
     }
+    
+    /**
+     * If object is treated like a string: return name
+     * 
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->name;
+    }
 }
-
