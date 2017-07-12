@@ -63,14 +63,18 @@ class ProductStatusController extends Controller
             
             // get before or after field, does not actually exist in object
             $pm = $form->get('placement')->getData();
+            $pindex = $_POST['form']['pindex'];
             
             // make space for new entry
             if($pm=='before') {
-                $status->setPindex($status->getPindex()-1);
+                $pindex = $pindex-1;
             }
-            ////echo "<pre>";print_r($status);echo "</pre>";exit;
             
-            $this->shiftIndex($status->getPindex());
+            $status->setPindex($pindex);
+            
+            echo "<pre>";print_r($status);echo "</pre>";exit;
+            
+            $this->shiftIndex($pindex);
             
             // save object
             $em->persist($task);
@@ -99,18 +103,20 @@ class ProductStatusController extends Controller
      * 
      * @return int
      */
-    public function shiftIndex(EntityManagerInterface $em, $pindex)
+    public function shiftIndex($pindex)
     {
+        // !! unfinished function, not yet able to update multiple entries
         //https://stackoverflow.com/questions/4337751/doctrine-2-update-query-with-query-builder
-        $repository = $em->getRepository('Trackbundle:ProductStatus');
+        $em = $this->getDoctrine()->getManager();
         
-        /*$query = $repository->createQueryBuilder('s')
-                ->update*/
-        /*$query = $em->createQuery(
-                "UPDATE TrackBundle:ProductStatus s"
-                . " SET s.pindex=(s.pindex+1)"
+        $query = $em->createQuery(
+                "SELECT s "
+                . " FROM TrackBundle:ProductStatus s"
                 . " WHERE s.pindex <= :space"
         )->setParameter('space', $pindex);
-        $result = $query->getQuery();*/
+        
+        $result = $query->getResult();
+        
+        return false;
     }
 }
