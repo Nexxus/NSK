@@ -13,6 +13,11 @@ class SecurityController extends Controller
      */
     public function loginAction(Request $request)
     {
+        if($_POST) {
+            print_r($_POST);
+            exit;
+        }
+        
         return $this->render("security/login.html.twig", array(
             "error" => "",
         ));
