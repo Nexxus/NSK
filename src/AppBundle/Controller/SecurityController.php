@@ -12,7 +12,7 @@ class SecurityController extends Controller
      * @Route("/login", name="login")
      */
     public function loginAction(Request $request)
-    {        
+    {   
         if($request->getMethod() == "POST") {
             $username = $request->request->get('_username');
             $password = $request->request->get('_password');

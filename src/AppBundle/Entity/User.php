@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @ORM\Table(name="user")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
  */
-class User implements UserInterface, \Serializable
+abstract class User implements UserInterface, \Serializable
 {
     /**
      * @var int
@@ -187,7 +187,8 @@ class User implements UserInterface, \Serializable
     {
         return $this->lastname;
     }
-
+    
+    /** @see \Serializable::serialize() */
     public function serialize() {
         return serialize(array(
             $this->id,
@@ -196,6 +197,7 @@ class User implements UserInterface, \Serializable
         ));
     }
 
+    /** @see \Serializable::unserialize() */
     public function unserialize($serialized) {
         list (
             $this->id,
