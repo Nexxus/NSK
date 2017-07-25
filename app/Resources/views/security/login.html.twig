@@ -8,8 +8,7 @@
     {% if error %}
         <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     {% endif %}
-
-    <div class="container">
+    <div class="container col-sm-6">
         <form action="{{ path('login') }}" method="post">
             <div class="form-group">
                 <label for="username">User ID:</label>

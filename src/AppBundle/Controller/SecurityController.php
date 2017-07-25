@@ -12,14 +12,15 @@ class SecurityController extends Controller
      * @Route("/login", name="login")
      */
     public function loginAction(Request $request)
-    {
-        if($_POST) {
-            print_r($_POST);
-            exit;
+    {        
+        if($request->getMethod() == "POST") {
+            $username = $request->request->get('_username');
+            $password = $request->request->get('_password');
+        } 
+        else {   
+            return $this->render("security/login.html.twig", array(
+                "error" => "",
+            ));
         }
-        
-        return $this->render("security/login.html.twig", array(
-            "error" => "",
-        ));
     }
 }
