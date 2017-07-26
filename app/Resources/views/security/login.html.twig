@@ -5,7 +5,7 @@
         <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     {% endif %}
 
-    <form action="{{ path('login') }}" method="post">
+   {# <form action="{{ path('login') }}" method="post">
         <label for="username">User ID:</label>
         <input type="text" id="username" name="_username" value='{{ last_username }}' />
 
@@ -13,5 +13,10 @@
         <input type="password" id="password" name="_password" />
 
         <button type="submit">Login</button>
-    </form>
+    </form> #}
+   
+   <h2>Login Page</h2>
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
 {% endblock %}

@@ -58,6 +58,13 @@ class User
 
 
     /**
+     * @var int
+     * 
+     * @ORM\Column(name="role", type="integer", length=255, nullable=true)
+     */
+    private $role;
+    
+    /**
      * Get id
      *
      * @return int
@@ -185,6 +192,30 @@ class User
     public function getLastname()
     {
         return $this->lastname;
+    }
+    
+    /**
+     * Set role
+     *
+     * @param int $lastname
+     *
+     * @return User
+     */
+    public function setRole($role)
+    {
+        $this->role = $role;
+
+        return $this;
+    }
+
+    /**
+     * Get role
+     *
+     * @return int
+     */
+    public function getRole()
+    {
+        return $this->role;
     }
 }
 
