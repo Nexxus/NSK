@@ -25,17 +25,20 @@ class DefaultController extends Controller
     /**
      * @Route("/login", name="login")
      */
-    public function loginAction(Request $request, AuthenticationUtils $authUtils)
+    public function loginAction(Request $request)
     {
+        // get auth utils object
+        $authUtils = $this->get('security.authentication_utils');
+        
         $error = $authUtils->getLastAuthenticationError();
         
         // last username entered by the user
-        $lastUsername = $authUtils->getLastUsername();
+        //$lastUsername = $authUtils->getLastUsername();
 
         
-        $form = $this->createFormBuilder()
-                ->add('username', TextType::class)
-                ->add('password', PasswordType::class)
+        /*$form = $this->createFormBuilder()
+                ->add('_username', TextType::class)
+                ->add('_password', PasswordType::class)
                 ->add('save', SubmitType::class)
                 ->getForm();
         
@@ -44,12 +47,10 @@ class DefaultController extends Controller
         if($form->isSubmitted())
         {
             $user = $form->getData();
-            
-            return $this->redirectToRoute("home");
-        }
+        }*/
         
         return $this->render('security/login.html.twig', array(
-            "form" => $form->createView(),
+            //"form" => $form->createView(),
             "error" => $error,
         ));
         
