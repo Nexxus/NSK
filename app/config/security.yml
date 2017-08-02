@@ -15,6 +15,10 @@ security:
                         password: test123
                         roles: 'ROLE_ADMIN'
 
+    encoders:
+        Symfony\Component\Security\Core\User\User:
+            algorithm: plaintext
+    
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
         dev:

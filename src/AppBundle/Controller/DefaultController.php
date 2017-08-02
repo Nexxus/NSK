@@ -33,24 +33,10 @@ class DefaultController extends Controller
         $error = $authUtils->getLastAuthenticationError();
         
         // last username entered by the user
-        //$lastUsername = $authUtils->getLastUsername();
+        $lastUsername = $authUtils->getLastUsername();
 
-        
-        /*$form = $this->createFormBuilder()
-                ->add('_username', TextType::class)
-                ->add('_password', PasswordType::class)
-                ->add('save', SubmitType::class)
-                ->getForm();
-        
-        $form->handleRequest($request);
-        
-        if($form->isSubmitted())
-        {
-            $user = $form->getData();
-        }*/
-        
         return $this->render('security/login.html.twig', array(
-            //"form" => $form->createView(),
+            "last_username" => $lastUsername,
             "error" => $error,
         ));
         
