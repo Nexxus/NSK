@@ -11,3 +11,6 @@ tn_t:
 app:
     resource: "@AppBundle/Controller/"
     type:     annotation
+
+logout:
+    path:    /logout
