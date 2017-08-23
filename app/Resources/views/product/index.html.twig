@@ -91,6 +91,11 @@
                 </th>
                 
                 <th>
+                    {% trans %}Type{% endtrans %}
+                </th>
+                
+                
+                <th>
                     {% trans %}Status{% endtrans %}
                 </th>
                 
@@ -122,6 +127,7 @@
                 <td>{{ product.name }}</td>
                 <td>{{ product.location }}</td>
                 <td>{{ product.description }}</td>
+                <td>{{ product.type }}</td>
                 <td>{{ product.status }}</td>
                 <td>{{ product.brand }}</td>
                 <td>{{ product.department }}</td>
