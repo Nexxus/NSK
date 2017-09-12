@@ -41,7 +41,7 @@ class ProductTypeController extends Controller
         $form = $this->createFormBuilder($producttype)
                     ->add('name', TextType::class)
                     ->add('pindex', IntegerType::class)
-                    ->add('comment', TextType::class)
+                    ->add('comment', TextType::class, array('required' => false))
                     ->add('save', SubmitType::class, array('label' => 'Create Type'))
                     ->getForm();
         
@@ -49,6 +49,13 @@ class ProductTypeController extends Controller
         
         if ($form->isSubmitted()) {
             $task = $form->getData();
+            /*echo "<pre>";
+            print_r($task);
+            echo "</pre>";
+            exit;*/
+            $em = $em->getManager();
+            $em->persist($task);
+            $em->flush();
             
             return $this->redirectToRoute('producttype_index');
         } 

@@ -40,7 +40,7 @@ class ProductType
      *
      * @ORM\Column(name="comment", type="text", nullable=true)
      */
-    private $comment;
+    private $comment = null;
 
 
     /**

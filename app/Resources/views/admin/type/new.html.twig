@@ -2,8 +2,23 @@
 
 {% block body %}
     <h1>Create a New Type</h1>    
+    <table>
     {{ form_start(form) }}
-    {{ form_widget(form) }}
-    {{ form_end(form) }}
+    <tr>
+        <td>{% trans %}Name{% endtrans %}:</td>
+        <td>{{ form_widget(form.name) }}</td>
+    </tr>
+    <tr>
+        <td>{% trans %}Index{% endtrans %}:</td>
+        <td>{{ form_widget(form.pindex) }}</td>
+    </tr>
+    <tr>
+        <td>{% trans %}Comment{% endtrans %}:</td>
+        <td>{{ form_widget(form.comment) }}</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>{{ form_end(form) }}</td>
+    </table>
 {% endblock %}
     
