@@ -11,19 +11,19 @@
             </tr>
         </tbody>
     </table>
-            
+         
     <table class="table table-bordered">
         <tr>
             <th colspan="9">
                 Attributes
             </th>
-        <tr>
-            <td colspan="1">
-                <button class="btn btn-success">+ Attribute</button>
-            </td>
         </tr>
     </table>
+    
     {{ form_end(form) }}
+    <a href="{{ path('producttype_edit_attradd', {'id': type_id }) }}">
+       <button class="btn btn-success">+ Attribute</button>
+    </a>
             
     <a href="{{ path('producttype_index') }}">{% trans %}Back to the list{% endtrans %}</a><br>
 {% endblock %}

@@ -12,6 +12,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use TrackBundle\Entity\ProductType;
+use TrackBundle\Entity\ProductTypeAttribute;
 
 /**
  * @Route("admin/type")
@@ -109,7 +110,6 @@ class ProductTypeController extends Controller
         // get type's attributes
         $typeattributes = $em->getRepository('TrackBundle:ProductTypeAttribute')
                 ->findBy(array("typeId" => $id));
-        
         $editForm = $this->createFormBuilder($producttype)
                 ->add('name', TextType::class);
                 
@@ -123,10 +123,24 @@ class ProductTypeController extends Controller
     }
     
     /**
+     * For creating new attributes for Product Types 
+     * (affects templates, not existing products)
+     * 
      * @Route("/edit/{id}/addattr", name="producttype_edit_attradd")
      */
-    public function addTypeAttribute()
+    public function addTypeAttribute($id)
     {
+        $em = $this->getDoctrine()->getManager();
         
+        $pt_attribute = new ProductTypeAttribute();
+        $pt_attribute->setTypeId($id);
+        $pt_attribute->setAttrId(1);
+        
+        $em->persist($pt_attribute);
+        $em->flush();
+        
+        return $this->redirectToRoute('producttype_edit', 
+            array('id' => $id)
+        );
     }
 }
