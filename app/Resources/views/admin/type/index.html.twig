@@ -10,6 +10,7 @@
                 <th>#</th>
                 <th>Name</th>
                 <th>Pindex</th>
+                <th>Actions</th>
             </tr>
         </thead>
     {% for i in products %}
@@ -17,6 +18,10 @@
             <td>{{ i.id }}</td>
             <td>{{ i.name }}</td>
             <td>{{ i.pindex }}</td>
+            <td>
+                <button name="Edit">Edit</button>
+                <button name="Delete">Delete</button>
+            </td>
         </tr>
     {% endfor %}
 {% endblock %}
