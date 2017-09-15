@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <h1>Location</h1>
+
+    <table class="table table-bordered">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ producttype.id }}</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>{{ producttype.name }}</td>
+            </tr>
+        </tbody>
+    </table>
+            
+    <a href="{{ path('producttype_index') }}">{% trans %}Back to the list{% endtrans %}</a><br>
+{% endblock %}

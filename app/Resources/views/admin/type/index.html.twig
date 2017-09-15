@@ -16,7 +16,7 @@
     {% for i in products %}
         <tr>
             <td>{{ i.id }}</td>
-            <td>{{ i.name }}</td>
+            <td><a href="{{ path('producttype_show', {'id': i.id}) }}">{{ i.name }}</a></td>
             <td>{{ i.pindex }}</td>
             <td>
                 <button name="Edit">Edit</button>

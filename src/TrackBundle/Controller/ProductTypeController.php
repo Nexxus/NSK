@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use TrackBundle\Entity\ProductType;
@@ -65,5 +66,29 @@ class ProductTypeController extends Controller
                 'form' => $form->createView(),
             ));
         }
+    }
+    
+    /**
+     * @Route("/show/{id}", name="producttype_show")
+     * @Method("GET")
+     */
+    public function showAction($id)
+    {
+        $em = $this->getDoctrine();
+        
+        // get product
+        $producttype = $em->getRepository('TrackBundle:ProductType')
+                ->find($id);
+        // get all attributes with correct order
+        $query = $em->getRepository('TrackBundle:Attribute')
+                ->createQueryBuilder('a')
+                ->orderBy('a.id', 'ASC')
+                ->getQuery();
+        $attributes = $query->getResult();
+        
+        return $this->render('admin/type/show.html.twig', array(
+            'producttype' => $producttype,
+            'attributes' => $attributes,
+        ));
     }
 }
