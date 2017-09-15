@@ -19,7 +19,7 @@
             <td><a href="{{ path('producttype_show', {'id': i.id}) }}">{{ i.name }}</a></td>
             <td>{{ i.pindex }}</td>
             <td>
-                <button name="Edit">Edit</button>
+                <a href="{{ path('producttype_edit', {'id': i.id} ) }}"><button name="Edit">Edit</button></a>
                 <button name="Delete">Delete</button>
             </td>
         </tr>

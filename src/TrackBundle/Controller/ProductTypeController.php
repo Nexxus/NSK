@@ -91,4 +91,42 @@ class ProductTypeController extends Controller
             'attributes' => $attributes,
         ));
     }
+    
+    /**
+     * @Route("/edit/{id}", name="producttype_edit")
+     */
+    public function editAction($id)
+    {
+        $em = $this->getDoctrine();
+        
+        // get product type data
+        $producttype = $em->getRepository('TrackBundle:ProductType')
+                ->find($id);
+        
+        // get all attributes
+        $attributes = $em->getRepository('TrackBundle:Attribute');
+                
+        // get type's attributes
+        $typeattributes = $em->getRepository('TrackBundle:ProductTypeAttribute')
+                ->findBy(array("typeId" => $id));
+        
+        $editForm = $this->createFormBuilder($producttype)
+                ->add('name', TextType::class);
+                
+        $editForm = $editForm->add('save', SubmitType::class)
+                ->getForm();
+        
+        return $this->render('admin/type/edit.html.twig', array(
+            'form' => $editForm->createView(),
+            'type_id' => $id,
+        ));
+    }
+    
+    /**
+     * @Route("/edit/{id}/addattr", name="producttype_edit_attradd")
+     */
+    public function addTypeAttribute()
+    {
+        
+    }
 }

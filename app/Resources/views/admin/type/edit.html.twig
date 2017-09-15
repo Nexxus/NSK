@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <h1>Product Type #{{ type_id }}</h1>
+
+    {{ form_start(form) }}
+    <table class="table table-bordered">
+        <tbody>
+            <tr>
+                <th>Name</th>
+                <td>{{ form_widget(form.name) }}</td>
+            </tr>
+        </tbody>
+    </table>
+            
+    <table class="table table-bordered">
+        <tr>
+            <th colspan="9">
+                Attributes
+            </th>
+        <tr>
+            <td colspan="1">
+                <button class="btn btn-success">+ Attribute</button>
+            </td>
+        </tr>
+    </table>
+    {{ form_end(form) }}
+            
+    <a href="{{ path('producttype_index') }}">{% trans %}Back to the list{% endtrans %}</a><br>
+{% endblock %}
