@@ -6,6 +6,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Location
+ * 
+ * Locations bound to products by ID
  *
  * @ORM\Table(name="location")
  * @ORM\Entity(repositoryClass="TrackBundle\Repository\LocationRepository")

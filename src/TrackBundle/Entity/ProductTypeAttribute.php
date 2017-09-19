@@ -6,6 +6,9 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ProductTypeAttribute
+ * 
+ * This determines which product types get 
+ * which attributes by default
  *
  * @ORM\Table(name="product_type_attribute")
  * @ORM\Entity(repositoryClass="TrackBundle\Repository\ProductTypeAttributeRepository")
@@ -30,11 +33,10 @@ class ProductTypeAttribute
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="attr_id", type="integer")
+     * @ORM\ManyToOne(targetEntity="Attribute")
+     * @ORM\JoinColumn(name="attr_id", referencedColumnName="id")
      */
-    private $attrId;
-
+    private $attrId = 1;
 
     /**
      * Get id

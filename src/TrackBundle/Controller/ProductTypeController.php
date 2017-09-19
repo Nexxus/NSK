@@ -96,29 +96,36 @@ class ProductTypeController extends Controller
     /**
      * @Route("/edit/{id}", name="producttype_edit")
      */
-    public function editAction($id)
+    public function editAction(ProductType $producttype)
     {
         $em = $this->getDoctrine();
         
-        // get product type data
-        $producttype = $em->getRepository('TrackBundle:ProductType')
-                ->find($id);
-        
         // get all attributes
         $attributes = $em->getRepository('TrackBundle:Attribute');
-                
+        
+        
         // get type's attributes
         $typeattributes = $em->getRepository('TrackBundle:ProductTypeAttribute')
-                ->findBy(array("typeId" => $id));
+                ->findBy(array("typeId" => $producttype->getId()));
+        
+        // build basic form
         $editForm = $this->createFormBuilder($producttype)
-                ->add('name', TextType::class);
-                
-        $editForm = $editForm->add('save', SubmitType::class)
-                ->getForm();
+                ->add('name', TextType::class)
+                ->add('save', SubmitType::class);
+        
+        foreach($typeattributes as $attr) 
+        {
+            $editForm->add("attribute_".$attr->getId(), TextType::class, array(
+                'label'     => "Attribute #".$attr->getId(),
+                'data'      => $attr->getAttrId(),
+                'mapped'    => false,
+            ));
+        }
+        $editForm = $editForm->getForm();
         
         return $this->render('admin/type/edit.html.twig', array(
             'form' => $editForm->createView(),
-            'type_id' => $id,
+            'producttype' => $producttype,
         ));
     }
     
@@ -126,9 +133,9 @@ class ProductTypeController extends Controller
      * For creating new attributes for Product Types 
      * (affects templates, not existing products)
      * 
-     * @Route("/edit/{id}/addattr", name="producttype_edit_attradd")
+     * @Route("/edit/{id}/addattr", name="producttype_edit_attradd") 
      */
-    public function addTypeAttribute($id)
+    public function addAttribute(Product $product)
     {
         $em = $this->getDoctrine()->getManager();
         
@@ -142,5 +149,17 @@ class ProductTypeController extends Controller
         return $this->redirectToRoute('producttype_edit', 
             array('id' => $id)
         );
+    }
+    
+    /**
+     * Get all attributes that belong to this producttype
+     */
+    public function getAttribute(Product $product)
+    {
+        
+        $typeattributes = $em->getRepository('TrackBundle:ProductTypeAttribute')
+                ->findBy(array("typeId" => $this->getId()));
+        
+        $this->attributes = $typeattributes;
     }
 }

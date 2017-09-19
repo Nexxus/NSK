@@ -6,6 +6,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ProductAttribute
+ * 
+ * Attributes unique to specific products are stored here
  *
  * @ORM\Table(name="product_attribute")
  * @ORM\Entity(repositoryClass="TrackBundle\Repository\ProductAttributeRepository")
@@ -33,7 +35,7 @@ class ProductAttribute
      *
      * @ORM\Column(name="attr_id", type="integer")
      */
-    private $attrId;
+    private $attrId = 1;
 
     /**
      * @var string

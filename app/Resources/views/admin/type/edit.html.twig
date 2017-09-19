@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-    <h1>Product Type #{{ type_id }}</h1>
+    <h1>Product Type #{{ producttype.id }}</h1>
 
     {{ form_start(form) }}
     <table class="table table-bordered">
@@ -21,7 +21,7 @@
     </table>
     
     {{ form_end(form) }}
-    <a href="{{ path('producttype_edit_attradd', {'id': type_id }) }}">
+    <a href="{{ path('producttype_edit_attradd', {'id': producttype.id }) }}">
        <button class="btn btn-success">+ Attribute</button>
     </a>
             
