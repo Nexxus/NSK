@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -101,8 +102,7 @@ class ProductTypeController extends Controller
         $em = $this->getDoctrine();
         
         // get all attributes
-        $attributes = $em->getRepository('TrackBundle:Attribute');
-        
+        $attributes = $em->getRepository('TrackBundle:Attribute')->findAll();
         
         // get type's attributes
         $typeattributes = $em->getRepository('TrackBundle:ProductTypeAttribute')
@@ -113,14 +113,21 @@ class ProductTypeController extends Controller
                 ->add('name', TextType::class)
                 ->add('save', SubmitType::class);
         
-        foreach($typeattributes as $attr) 
-        {
-            $editForm->add("attribute_".$attr->getId(), TextType::class, array(
-                'label'     => "Attribute #".$attr->getId(),
-                'data'      => $attr->getAttrId(),
-                'mapped'    => false,
-            ));
+        // create attr name list
+        $attrList = [];
+        foreach($attributes as $attr) {
+            $attrList[$attr->getName()] = $attr->getId();
         }
+        
+        // foreach type attribute, show dropdown option
+        foreach($typeattributes as $tAttr) {
+            $editForm = $editForm->add('attribute_'.$tAttr->getId(), ChoiceType::class,[
+                'choices'   => $attrList, 
+                'mapped'    => false,
+                ]
+            );
+        }
+        
         $editForm = $editForm->getForm();
         
         return $this->render('admin/type/edit.html.twig', array(
@@ -134,8 +141,9 @@ class ProductTypeController extends Controller
      * (affects templates, not existing products)
      * 
      * @Route("/edit/{id}/addattr", name="producttype_edit_attradd") 
+     * @Method("GET")
      */
-    public function addAttribute(Product $product)
+    public function addAttribute($id)
     {
         $em = $this->getDoctrine()->getManager();
         
@@ -156,6 +164,7 @@ class ProductTypeController extends Controller
      */
     public function getAttribute(Product $product)
     {
+        $em = $this->getDoctrine()->getManager();
         
         $typeattributes = $em->getRepository('TrackBundle:ProductTypeAttribute')
                 ->findBy(array("typeId" => $this->getId()));
