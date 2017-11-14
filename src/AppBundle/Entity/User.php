@@ -123,6 +123,11 @@ class User implements UserInterface, \Serializable
         return $this->password;
     }
 
+    public function getSalt()
+    {
+        return null;
+    }
+    
     /**
      * Set email
      *
