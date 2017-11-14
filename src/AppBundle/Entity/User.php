@@ -223,5 +223,24 @@ class User implements UserInterface, \Serializable
     {
         return $this->role;
     }
+    
+    
+    public function serialize()
+    {
+        return serialize([
+            $this->id,
+            $this->username,
+            $this->password,
+        ]);
+    }
+    
+    public function unserialize($serialized)
+    {
+        list(
+            $this->id,
+            $this->username,
+            $this->password,
+        ) = unserialize($serialized);
+    }
 }
 
