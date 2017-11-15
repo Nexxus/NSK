@@ -2,69 +2,52 @@
 
 namespace AppBundle\Entity;
 
+use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * User
- *
- * @ORM\Table(name="user")
- * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
+ * @ORM\Entity
+ * @ORM\Table(name="fos_user")
  */
 
-class User implements UserInterface, \Serializable
+class User extends BaseUser 
 {
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
+     * @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="username", type="string", length=255, unique=true)
-     */
-    private $username;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="password", type="string", length=256, nullable=true)
-     */
-    private $password;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="email", type="string", length=255, nullable=true)
-     */
-    private $email;
+    protected $id;
 
     /**
      * @var string
      * 
      * @ORM\Column(name="firstname", type="string", length=255, nullable=true)
      */
-    private $firstname;
+    protected $firstname;
     
     /**
      * @var string
      *
      * @ORM\Column(name="lastname", type="string", length=255, nullable=true)
      */
-    private $lastname;
-
+    protected $lastname;
 
     /**
      * @var int
      * 
      * @ORM\Column(name="role", type="integer", length=255, nullable=true)
      */
-    private $role;
+    protected $role;
+    
+    public function __construct()
+    {
+        parent::__construct();
+        
+    }
     
     /**
      * Get id
@@ -124,11 +107,6 @@ class User implements UserInterface, \Serializable
         return $this->password;
     }
 
-    public function getSalt()
-    {
-        return null;
-    }
-    
     /**
      * Set email
      *
@@ -223,25 +201,6 @@ class User implements UserInterface, \Serializable
     public function getRole()
     {
         return $this->role;
-    }
-    
-    
-    public function serialize()
-    {
-        return serialize([
-            $this->id,
-            $this->username,
-            $this->password,
-        ]);
-    }
-    
-    public function unserialize($serialized)
-    {
-        list(
-            $this->id,
-            $this->username,
-            $this->password,
-        ) = unserialize($serialized);
     }
 }
 

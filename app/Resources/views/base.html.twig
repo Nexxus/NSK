@@ -33,6 +33,10 @@
                  <ul class="nav navbar-nav navbar-right">
                      <li><a href="{{ path('logout') }}">Logout</a></li>
                  </ul>
+                {% else %}
+                    <ul class="nav navbar-nav navbar-right">
+                     <li><a href="{{ path('login') }}">Login</a></li>
+                    </ul>
                 {% endif %}
                  </div>
             </div>
