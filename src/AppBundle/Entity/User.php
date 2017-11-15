@@ -11,7 +11,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @ORM\Table(name="user")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
  */
-abstract class User implements UserInterface, \Serializable
+
+class User implements UserInterface, \Serializable
 {
     /**
      * @var int
@@ -123,6 +124,11 @@ abstract class User implements UserInterface, \Serializable
         return $this->password;
     }
 
+    public function getSalt()
+    {
+        return null;
+    }
+    
     /**
      * Set email
      *
@@ -217,6 +223,25 @@ abstract class User implements UserInterface, \Serializable
     public function getRole()
     {
         return $this->role;
+    }
+    
+    
+    public function serialize()
+    {
+        return serialize([
+            $this->id,
+            $this->username,
+            $this->password,
+        ]);
+    }
+    
+    public function unserialize($serialized)
+    {
+        list(
+            $this->id,
+            $this->username,
+            $this->password,
+        ) = unserialize($serialized);
     }
 }
 

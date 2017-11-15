@@ -8,21 +8,32 @@ security:
     
     # http://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
     providers:
-        in_memory:
-            memory:
-                users:
-                    testadmin:
-                        password: test123
-                        roles: 'ROLE_ADMIN'
-                    guest:
-                        password: test123
-                        roles: 'ROLE_USER'
+        our_db_provider:
+            entity:
+                class: AppBundle:User
+                property: username
+        
+        # in_memory:
+        #    memory:
+        #        users:
+        #            testadmin:
+        #                password: $2y$12$qeTJHj8IoWVe8IkLzktyd.0oz.IYw4hcVvfk/G4YoV/UUzixlKmFu
+        #                roles: 'ROLE_ADMIN'
+        #            guest:
+        #                password: $2y$12$qeTJHj8IoWVe8IkLzktyd.0oz.IYw4hcVvfk/G4YoV/UUzixlKmFu
+        #                roles: 'ROLE_USER'
 
     encoders:
         Symfony\Component\Security\Core\User\User:
-            algorithm: plaintext
+            algorithm: bcrypt
+            cost: 12
     
     firewalls:
+        main:
+            pattern: ^/
+            http_basic: ~
+            provider: our_db_provider
+        
         # disables authentication for assets and the profiler, adapt it according to your needs
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/

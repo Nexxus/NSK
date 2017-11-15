@@ -6,6 +6,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * ProductType
+ * 
+ * Types bound to products by ID
  *
  * @ORM\Table(name="product_type")
  * @ORM\Entity(repositoryClass="TrackBundle\Repository\ProductTypeRepository")
@@ -40,7 +42,7 @@ class ProductType
      *
      * @ORM\Column(name="comment", type="text", nullable=true)
      */
-    private $comment;
+    private $comment = null;
 
 
     /**

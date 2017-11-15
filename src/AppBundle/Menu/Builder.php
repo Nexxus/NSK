@@ -19,14 +19,6 @@ class Builder implements ContainerAwareInterface
         
         $menu->setChildrenAttribute('class', 'nav navbar-nav');
         
-        /*$menu->addChild("<img height=24 src='images/logos/header-logoGlow.png' >",
-          array(
-            'uri' => '/',
-            'extras' => array(
-              'safe_label' => true
-            )
-          ));*/
-
         $menu->addChild('Home', array('route' => 'home'));
         
         // add user menu items

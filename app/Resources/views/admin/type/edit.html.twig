@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <h1>Product Type #{{ producttype.id }}</h1>
+
+    {{ form_start(form) }}
+    <table class="table table-bordered">
+        <tbody>
+            <tr>
+                <th>Name</th>
+                <td>{{ form_widget(form.name) }}</td>
+            </tr>
+        </tbody>
+    </table>
+         
+    <table class="table table-bordered">
+        <tr>
+            <th colspan="9">
+                Attributes
+            </th>
+        </tr>
+    </table>
+    
+    {{ form_end(form) }}
+    <a href="{{ path('producttype_edit_attradd', {'id': producttype.id }) }}">
+       <button class="btn btn-success">+ Attribute</button>
+    </a>
+            
+    <a href="{{ path('producttype_index') }}">{% trans %}Back to the list{% endtrans %}</a><br>
+{% endblock %}

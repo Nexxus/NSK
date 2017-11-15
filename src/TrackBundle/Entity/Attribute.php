@@ -5,14 +5,12 @@ namespace TrackBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Location
- * 
- * Locations bound to products by ID
+ * Attribute
  *
- * @ORM\Table(name="location")
- * @ORM\Entity(repositoryClass="TrackBundle\Repository\LocationRepository")
+ * @ORM\Table(name="attribute")
+ * @ORM\Entity(repositoryClass="TrackBundle\Repository\AttributeRepository")
  */
-class Location
+class Attribute
 {
     /**
      * @var int
@@ -27,6 +25,7 @@ class Location
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, unique=true)
+     * @
      */
     private $name;
 
@@ -46,7 +45,7 @@ class Location
      *
      * @param string $name
      *
-     * @return Location
+     * @return Attribute
      */
     public function setName($name)
     {
@@ -75,3 +74,4 @@ class Location
         return $this->name;
     }
 }
+

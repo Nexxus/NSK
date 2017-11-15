@@ -96,9 +96,21 @@ class ProductController extends Controller
     public function showAction(Product $product)
     {
         $deleteForm = $this->createDeleteForm($product);
+        
+        // get attributes
+        $em = $this->getDoctrine()->getManager();
+        
+        $query = $em->createQuery(
+                'SELECT a'
+                . ' FROM TrackBundle:ProductAttribute a'
+                . ' WHERE a.productid = :productid'
+                )->setParameter('productid', $product->getId());
+        
+        $attributes = $query->getResult();
 
         return $this->render('product/show.html.twig', array(
             'product' => $product,
+            'attributes' => $attributes,
             'delete_form' => $deleteForm->createView(),
         ));
     }
