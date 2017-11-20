@@ -21,7 +21,7 @@ class DefaultController extends Controller
     {
         return $this->render('base.html.twig');
     }
-
+    
     /**
      * @Route("/logintest1", name="login_old")
      */
