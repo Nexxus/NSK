@@ -5,7 +5,7 @@ namespace TrackBundle\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
-
+use TFox\MpdfPortBundle;
 
 class BarcodeController extends Controller
 {
@@ -17,6 +17,7 @@ class BarcodeController extends Controller
     public function printAction($sku)
     {
         $mpdfService = $this->get('tfox.mpdfport');
+        $mpdfService->setAddDefaultConstructorArgs(false);
         
         $html = '<html>
                     <head><META HTTP-EQUIV="Window-target" CONTENT="_blank">
@@ -45,11 +46,6 @@ class BarcodeController extends Controller
                     </body>
 		</html>';
         
-        /* return new Response(
-            $mpdfService->generatePdf($html),
-            Response::HTTP_OK,
-            array('Content-Type' => 'application/pdf')
-        );*/
         return $mpdfService->generatePdfResponse($html, array('', array(54,25) ,'9','',3,'3',1,'','0','0','P'));
     }
 }
