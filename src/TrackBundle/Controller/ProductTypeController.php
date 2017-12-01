@@ -35,22 +35,25 @@ class ProductTypeController extends Controller
      */
     public function createAction(Request $request)
     {
-        $em = $this->getDoctrine();
+        $em = $this->getDoctrine()->getManager();
         $producttype = new ProductType();
         
         $form = $this->createFormBuilder($producttype)
                     ->add('name', TextType::class)
                     ->add('pindex', IntegerType::class)
-                    ->add('comment', TextType::class)
+                    ->add('comment', TextType::class, array('required' => false))
                     ->add('save', SubmitType::class, array('label' => 'Create Type'))
                     ->getForm();
         
         $form->handleRequest($request);
         
         if ($form->isSubmitted()) {
-            $task = $form->getData();
+            $producttype = $form->getData();
             
-            return $this->redirectToRoute('producttype_index');
+            $em->persist($producttype);
+            $em->flush();
+            
+            return $this->redirectToRoute('producttype_index', ["order" => "Product Type has been saved."]);
         } 
         else 
         {
