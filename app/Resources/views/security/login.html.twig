@@ -1,0 +1,32 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+    <h2>
+        {% trans %}Fill in your credentials{% endtrans %}
+    </h2>
+    
+    {% if error %}
+        <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+    <div class="container col-sm-6">
+        <form action="{{ path('login') }}" method="post">
+            <div class="form-group">
+                <label for="username">User ID:</label>
+                <input type="text" id="username" name="_username" class="form-control" value='' />
+            </div>
+   <h2>Login Page</h2>
+   <form action="{{ path('login') }}" method="post">
+        <label for="username">User ID:</label>
+        <input type="text" id="username" name="_username" value='{{ last_username }}' />
+
+        <label for="password">Pin:</label>
+        <input type="password" id="password" name="_password" />
+
+        <button type="submit">Login</button>
+    </form>
+   
+   
+    {#{{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}#}
+{% endblock %}

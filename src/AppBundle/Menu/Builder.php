@@ -5,6 +5,7 @@ namespace AppBundle\Menu;
 use Knp\Menu\FactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class Builder implements ContainerAwareInterface
 {
@@ -12,21 +13,23 @@ class Builder implements ContainerAwareInterface
     
     public function createMainMenu(FactoryInterface $factory, array $options)
     {
+        $role = $this->container->get('security.authorization_checker');
+        
         $menu = $factory->createItem('root');
         
         $menu->setChildrenAttribute('class', 'nav navbar-nav');
         
-        /*$menu->addChild("<img height=24 src='images/logos/header-logoGlow.png' >",
-          array(
-            'uri' => '/',
-            'extras' => array(
-              'safe_label' => true
-            )
-          ));*/
-
         $menu->addChild('Home', array('route' => 'home'));
-        $menu->addChild('Track & Trace', array('route' => 'track_index'));
-        $menu->addChild('Admin', array('route' => 'admin_index'));
+        
+        // add user menu items
+        if($role->isGranted('ROLE_USER')) {
+            $menu->addChild('Track & Trace', array('route' => 'track_index'));
+        }
+
+        // add admin menu items
+        if($role->isGranted('ROLE_ADMIN')) {
+            $menu->addChild('Admin', array('route' => 'admin_index'));
+        }
         
         return $menu;
     }

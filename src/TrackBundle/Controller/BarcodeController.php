@@ -18,6 +18,11 @@ class BarcodeController extends Controller
     {
         $mpdfService = $this->get('tfox.mpdfport');
         
+        // needs to change page size, turn off default arguments
+        $mpdfService->setAddDefaultConstructorArgs(false);
+        
+        $mpdf = $mpdfService->getMpdf(['', [54,25] ,'9','',3,'3',1,'','0','0','P']);
+        
         $html = '<html>
                     <head><META HTTP-EQUIV="Window-target" CONTENT="_blank">
                     <style>
@@ -45,11 +50,10 @@ class BarcodeController extends Controller
                     </body>
 		</html>';
         
-        /* return new Response(
-            $mpdfService->generatePdf($html),
-            Response::HTTP_OK,
-            array('Content-Type' => 'application/pdf')
-        );*/
-        return $mpdfService->generatePdfResponse($html, array('', array(54,25) ,'9','',3,'3',1,'','0','0','P'));
+        $mpdf->setTitle("Test");
+        $mpdf->writeHTML($html);
+        
+        //return $mpdfService->generatePdfResponse($html);
+        return new Response($mpdf->Output());
     }
 }

@@ -16,19 +16,29 @@
         <nav class="navbar navbar-default navbar-gradient">
           <div class="container-fluid">
             <div class="container">
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
-              <a class="navbar-brand" href="#"><img height="28" src="{{ asset('images/logos/header-logoGlow.png') }}"></a>
-            </div>
-            <div class="navbar-collapse collapse" id="mainMenu">
-                {% block navlist %}
-                  {{ knp_menu_render('AppBundle:Builder:createMainMenu', {'currentClass': 'active', 'allow_safe_labels': true}) }}
-                {% endblock %}
-            </div>
+                <div class="navbar-header">
+                  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                  </button>
+                  <a class="navbar-brand" href="#"><img height="28" src="{{ asset('images/logos/header-logoGlow.png') }}"></a>
+                </div>
+                <div class="navbar-collapse collapse" id="mainMenu">
+                    {% block navlist %}
+                      {{ knp_menu_render('AppBundle:Builder:createMainMenu', {'currentClass': 'active', 'allow_safe_labels': true}) }}
+                    {% endblock %}
+               
+                {% if app.user %}
+                 <ul class="nav navbar-nav navbar-right">
+                     <li><a href="{{ logout_path() }}">Logout</a></li>
+                 </ul>
+                {% else %}
+                    <ul class="nav navbar-nav navbar-right">
+                     <li><a href="{{ path("fos_user_security_login") }}">Login</a></li>
+                    </ul>
+                {% endif %}
+                 </div>
             </div>
           </div>
         </nav>

@@ -1,18 +1,16 @@
 <?php
 
-namespace TrackBundle\Entity;
+namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Location
- * 
- * Locations bound to products by ID
+ * Role
  *
- * @ORM\Table(name="location")
- * @ORM\Entity(repositoryClass="TrackBundle\Repository\LocationRepository")
+ * @ORM\Table(name="role")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\RoleRepository")
  */
-class Location
+class Role
 {
     /**
      * @var int
@@ -46,7 +44,7 @@ class Location
      *
      * @param string $name
      *
-     * @return Location
+     * @return Role
      */
     public function setName($name)
     {
@@ -64,14 +62,5 @@ class Location
     {
         return $this->name;
     }
-    
-    /**
-     * If object is treated like a string: return name
-     * 
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->name;
-    }
 }
+
