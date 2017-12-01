@@ -51,19 +51,9 @@ class ProductTypeController extends Controller
         $form->handleRequest($request);
         
         if ($form->isSubmitted()) {
-<<<<<<< HEAD
             $producttype = $form->getData();
             
             $em->persist($producttype);
-=======
-            $task = $form->getData();
-            /*echo "<pre>";
-            print_r($task);
-            echo "</pre>";
-            exit;*/
-            $em = $em->getManager();
-            $em->persist($task);
->>>>>>> a4a668eb33ff8278f43845c50bf24023f3642af1
             $em->flush();
             
             return $this->redirectToRoute('producttype_index', ["order" => "Product Type has been saved."]);
