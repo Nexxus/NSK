@@ -224,5 +224,12 @@ class ProductController extends Controller
         ;
     }
     
+    /**
+     * Add attributes to product
+     */
+    private function applyAttributeTemplate(Product $product) {
+        $em = $this->getDoctrine()->getManager();
+    }
+    
     
 }
