@@ -3,6 +3,7 @@
 namespace TrackBundle\Controller;
 
 use TrackBundle\Entity\Product;
+use TrackBundle\Entity\ProductAttribute;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -69,7 +70,7 @@ class ProductController extends Controller
 
                 return $this->redirectToRoute('track_show', array('id' => $product->getId()));
             } 
-            else 
+             else 
             {
                 return $this->render('product/new.html.twig', array(
                     'product' => $product,
@@ -123,13 +124,36 @@ class ProductController extends Controller
      */
     public function editAction(Request $request, Product $product)
     {
+        $em = $this->getDoctrine()->getManager();
+
+        // create form for deleting
         $deleteForm = $this->createDeleteForm($product);
+        
+        // create form for editing
         $editForm = $this->createForm('TrackBundle\Form\ProductType', $product);
         $editForm->handleRequest($request);
+        
+        if($product->getType() != null) {
+            // check for attributes
+            $query = $em->createQuery('SELECT '
+                    . '     pa.*'
+                    . 'FROM'
+                    . '     TrackBundle:ProductAttribute pa '
+                    . 'WHERE'
+                    . '     pa.productid = :id')
+                    ->setParameter('id', $product->getId());
 
+            // no attributes, apply attributes from product type
+            $attr_c = $query->getResult();
+
+            if(count($attr_c)==0) {
+                $this->applyAttributeTemplate($product);
+            }
+        }
+        
+        
         if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-
+            
             // check for sku
             $skuquery = $em->createQuery(
                     'SELECT p.sku'
@@ -156,11 +180,26 @@ class ProductController extends Controller
                 return $this->redirectToRoute('track_edit', array('id' => $product->getId()));
             }
         }
-
+        
+        // get attributes (previously checked or added)
+        $query = $em->createQuery('SELECT'
+                . '     pa.id'
+                . '     a.name'
+                . '     pa.value'
+                . 'FROM'
+                . '     TrackBundle:ProductAttribute pa'
+                . 'LEFT JOIN TrackBundle:Attribute a'
+                . '     WITH pa.attrId = a.id'
+                . 'WHERE'
+                . '     pa.product_id = :id')
+                ->setParameter('id', $product->getId());
+        $product_attributes = $query->getResult();
+        
         return $this->render('product/edit.html.twig', array(
             'product' => $product,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'product_attributes' => $product_attributes
         ));
     }
     
@@ -229,6 +268,36 @@ class ProductController extends Controller
      */
     private function applyAttributeTemplate(Product $product) {
         $em = $this->getDoctrine()->getManager();
+        
+        // get id to insert into productattr rows
+        $type_id = $product->getType();
+        
+        // find matching attributes to add
+        $query = $em->createQuery(''
+                . 'SELECT'
+                . '     pta.id, '
+                . '     IDENTITY(pta.attrId) as attrid, '
+                . '     pta.typeId, '
+                . '     a.name'
+                . ' FROM TrackBundle:ProductTypeAttribute pta'
+                . ' LEFT JOIN TrackBundle:Attribute a '
+                . '     WITH pta.attrId = a.id'
+                . ' WHERE'
+                . '     pta.typeId = :type_id')
+                ->setParameter('type_id', $type_id);
+        $result = $query->getResult();
+        
+        // apply empty attributes to product
+        foreach($result as $attr) {
+            $prod_attr = new ProductAttribute();
+            $prod_attr->setProductid($product->getId());
+            $prod_attr->setAttrId($attr['attrid']);
+            
+            $em->persist($prod_attr);
+        }
+        
+        $em->flush();
+        
     }
     
     

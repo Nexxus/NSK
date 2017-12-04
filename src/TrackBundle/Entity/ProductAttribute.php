@@ -26,7 +26,7 @@ class ProductAttribute
     /**
      * @var int
      *
-     * @ORM\Column(name="productid", type="integer")
+     * @ORM\Column(name="product_id", type="integer")
      */
     private $productid;
 
