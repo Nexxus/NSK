@@ -79,7 +79,19 @@
                 </div>
             </div>
         </form>
-
+        {% if attributes is defined %}
+        <h4>Product Attributes</h4>
+        <table class="table table-bordered">
+            <tbody>
+                {% for attr in attributes %}
+                    <tr>
+                        <th>{{ attr.name }}</th>
+                        <td>{{ attr.value }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
         <div class="form-group"> 
             <div class="col-lg-offset-2 col-lg-10">
                 <a href="{{ path('track_index') }}">

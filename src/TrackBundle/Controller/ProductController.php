@@ -101,12 +101,18 @@ class ProductController extends Controller
         // get attributes
         $em = $this->getDoctrine()->getManager();
         
-        $query = $em->createQuery(
-                'SELECT a'
-                . ' FROM TrackBundle:ProductAttribute a'
-                . ' WHERE a.productid = :productid'
-                )->setParameter('productid', $product->getId());
-        
+        // get attributes (previously checked or added)
+        $query = $em->createQuery('SELECT'
+                . '     pa.id,'
+                . '     a.name,'
+                . '     pa.value'
+                . ' FROM'
+                . '     TrackBundle:ProductAttribute pa '
+                . ' LEFT JOIN TrackBundle:Attribute a '
+                . '     WITH pa.attrId = a.id '
+                . 'WHERE '
+                . '     pa.productid = :id')
+                ->setParameter('id', $product->getId());
         $attributes = $query->getResult();
 
         return $this->render('product/show.html.twig', array(
@@ -134,20 +140,15 @@ class ProductController extends Controller
         $editForm->handleRequest($request);
         
         if($product->getType() != null) {
+            $attr_repository = $this->getDoctrine()->getRepository(ProductAttribute::class);
+            
             // check for attributes
-            $query = $em->createQuery('SELECT '
-                    . '     pa.*'
-                    . 'FROM'
-                    . '     TrackBundle:ProductAttribute pa '
-                    . 'WHERE'
-                    . '     pa.productid = :id')
-                    ->setParameter('id', $product->getId());
+            $query = $attr_repository->findBy(
+                    ['productid' => $product->getId()]
+            );
 
-            // no attributes, apply attributes from product type
-            $attr_c = $query->getResult();
-
-            if(count($attr_c)==0) {
-                $this->applyAttributeTemplate($product);
+            if(count($query)==0) {   
+                $this->applyAttributeTemplate($product);   
             }
         }
         
@@ -183,23 +184,23 @@ class ProductController extends Controller
         
         // get attributes (previously checked or added)
         $query = $em->createQuery('SELECT'
-                . '     pa.id'
-                . '     a.name'
+                . '     pa.id,'
+                . '     a.name,'
                 . '     pa.value'
-                . 'FROM'
-                . '     TrackBundle:ProductAttribute pa'
-                . 'LEFT JOIN TrackBundle:Attribute a'
-                . '     WITH pa.attrId = a.id'
-                . 'WHERE'
-                . '     pa.product_id = :id')
+                . ' FROM'
+                . '     TrackBundle:ProductAttribute pa '
+                . ' LEFT JOIN TrackBundle:Attribute a '
+                . '     WITH pa.attrId = a.id '
+                . 'WHERE '
+                . '     pa.productid = :id')
                 ->setParameter('id', $product->getId());
-        $product_attributes = $query->getResult();
+        $attributes = $query->getResult();
         
         return $this->render('product/edit.html.twig', array(
             'product' => $product,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-            'product_attributes' => $product_attributes
+            'attributes' => $attributes
         ));
     }
     

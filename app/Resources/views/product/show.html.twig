@@ -50,15 +50,19 @@
             </tr>
         </tbody>
     </table>
-    <h4>Product Attributes</h4>
-    <table class="table table-bordered">
-        <tbody>
-            <tr>
-                <th></th>
-            </tr>
-            
-        </tbody>
-    </table>
+    {% if attributes is defined %}
+        <h4>Product Attributes</h4>
+        <table class="table table-bordered">
+            <tbody>
+                {% for attr in attributes %}
+                    <tr>
+                        <th>{{ attr.name }}</th>
+                        <td>{{ attr.value }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
             
         <a href="{{ path('track_edit', { 'id': product.id }) }}"><button>{% trans %}Edit{% endtrans %}</button></a><br>
         {{ form_start(delete_form) }}
