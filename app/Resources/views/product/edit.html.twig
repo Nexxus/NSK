@@ -30,7 +30,6 @@
                     {{ form_widget(edit_form.description) }}
                 </div>
             </div>
-            {% if form.type is defined %}
                 <div class="form-group">
                     <label class="control-label col-lg-2">
                         {% trans %} Type {% endtrans %}
@@ -39,7 +38,6 @@
                         {{ form_widget(edit_form.type) }}
                     </div>
                 </div>
-            {% endif %}
             <div class="form-group">
                 <label class="control-label col-lg-2">
                     {% trans %} Status {% endtrans %}

@@ -139,6 +139,7 @@ class ProductController extends Controller
         $editForm = $this->createForm('TrackBundle\Form\ProductType', $product);
         $editForm->handleRequest($request);
         
+        // if product has type, check if it needs attributes
         if($product->getType() != null) {
             $attr_repository = $this->getDoctrine()->getRepository(ProductAttribute::class);
             
@@ -171,9 +172,8 @@ class ProductController extends Controller
                 $em->flush($product);
             
                 // fill in product id if sku is left blank
-            
-                //
-
+                
+                
                 return $this->redirectToRoute('track_show', array('id' => $product->getId()));
             } 
             else 
