@@ -21,6 +21,10 @@
                 <td>{{ product.name }}</td>
             </tr>
             <tr>
+                <th>{% trans %} Quantity {% endtrans %}</th>
+                <td>{{ product.quantity}}</td>
+            </tr>
+            <tr>
                 <th>{% trans %} Location {% endtrans %}</th>
                 <td>{{ product.location }}</td>
             </tr>
@@ -48,6 +52,7 @@
                 <th>{% trans %} Owner {% endtrans %}</th>
                 <td>{{ product.owner }}</td>
             </tr>
+            
         </tbody>
     </table>
     {% if attributes is defined %}

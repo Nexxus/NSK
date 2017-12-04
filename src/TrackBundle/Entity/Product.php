@@ -86,8 +86,16 @@ class Product
      * @ORM\Column(name="owner", type="integer", nullable=true)
      */
     private $owner;
-
+    
     /**
+     * @var int
+     * 
+     * @ORM\Column(name="quantity", type="integer", nullable=false)
+     */
+    private $quantity;
+    
+
+        /**
      * @ORM\Column(type="datetime")
      */
     protected $createdAt;
@@ -337,16 +345,14 @@ class Product
         return $this->owner;
     }
     
-    public function getCreatedAt()
-    {
-        return $this->updatedAt->format('d-m-Y H:i');
+    public function setQuantity($quantity) {
+        $this->quantity = $quantity;
     }
     
-    public function getUpdatedAt()
-    {
-        return $this->updatedAt->format('d-m-Y H:i');
+    public function getQuantity() {
+        return $this->quantity;
     }
-
+    
     /**
      * Set createdAt
      *
@@ -360,7 +366,12 @@ class Product
 
         return $this;
     }
-
+    
+    public function getCreatedAt()
+    {
+        return $this->updatedAt->format('d-m-Y H:i');
+    }
+    
     /**
      * Set updatedAt
      *
@@ -373,5 +384,10 @@ class Product
         $this->updatedAt = $updatedAt;
 
         return $this;
+    }
+    
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt->format('d-m-Y H:i');
     }
 }

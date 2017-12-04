@@ -29,7 +29,8 @@ class ProductType extends AbstractType
                 ->add('status')
                 ->add('brand', TextType::class)
                 ->add('department')
-                ->add('owner');
+                ->add('owner')
+                ->add('quantity');
     }
     
     /**

@@ -83,6 +83,10 @@
                 </th>
                 
                 <th>
+                    {% trans %}Quantity{% endtrans %}
+                </th>
+                
+                <th>
                     {% trans %}Location{% endtrans %}
                 </th>
                 
@@ -125,6 +129,7 @@
                 <td>{{ product.updatedAt }}</td>
                 <td><b><a href="{{ path('track_show', { 'id': product.id }) }}">{{ product.sku }}</a></b></td>
                 <td>{{ product.name }}</td>
+                <td>{{ product.quantity }}</td>
                 <td>{{ product.location }}</td>
                 <td>{{ product.description }}</td>
                 <td>{{ product.type }}</td>
