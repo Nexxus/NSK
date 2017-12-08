@@ -77,11 +77,13 @@ class ProductTypeController extends Controller
         // get product
         $producttype = $em->getRepository('TrackBundle:ProductType')
                 ->find($id);
+        
         // get all attributes with correct order
         $query = $em->getRepository('TrackBundle:Attribute')
                 ->createQueryBuilder('a')
                 ->orderBy('a.id', 'ASC')
                 ->getQuery();
+        
         $attributes = $query->getResult();
         
         return $this->render('admin/type/show.html.twig', array(
@@ -92,10 +94,19 @@ class ProductTypeController extends Controller
     
     /**
      * @Route("/edit/{id}", name="producttype_edit")
+     * @Method({"GET", "POST"})
      */
-    public function editAction(ProductType $producttype)
+    public function editAction(ProductType $producttype, Request $request)
     {
-        $em = $this->getDoctrine();
+        $em = $this->getDoctrine()->getManager();
+        
+        // build basic form
+        $editForm = $this->createFormBuilder($producttype)
+                ->add('name', TextType::class)
+                ->add('save', SubmitType::class)
+                ->getForm();
+        
+        $editForm->handleRequest($request);
         
         // get all attributes
         $attributes = $em->getRepository('TrackBundle:Attribute')->findAll();
@@ -104,12 +115,13 @@ class ProductTypeController extends Controller
         $typeattributes = $em->getRepository('TrackBundle:ProductTypeAttribute')
                 ->findBy(array("typeId" => $producttype->getId()));
         
-        // build basic form
-        $editForm = $this->createFormBuilder($producttype)
-                ->add('name', TextType::class)
-                ->add('save', SubmitType::class);
+        if($editForm->isSubmitted() && $editForm->isValid()) {
+            $em->persist($producttype);
+            $em->flush();
+        }
         
-        // create attr name list
+        // create attr name list (not quite done)
+        /* 
         $attrList = [];
         foreach($attributes as $attr) {
             $attrList[$attr->getName()] = $attr->getId();
@@ -122,9 +134,7 @@ class ProductTypeController extends Controller
                 'mapped'    => false,
                 ]
             );
-        }
-        
-        $editForm = $editForm->getForm();
+        }*/
         
         return $this->render('admin/type/edit.html.twig', array(
             'form' => $editForm->createView(),
