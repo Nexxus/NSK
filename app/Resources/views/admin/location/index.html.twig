@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Locations list</h1>
+    <h1>Locations</h1>
 
-    <table>
+    <table class="table table-striped">
         <thead>
             <tr>
                 <th>Id</th>
@@ -17,14 +17,11 @@
                 <td><a href="{{ path('admin_location_show', { 'id': location.id }) }}">{{ location.id }}</a></td>
                 <td>{{ location.name }}</td>
                 <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('admin_location_show', { 'id': location.id }) }}">show</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('admin_location_edit', { 'id': location.id }) }}">edit</a>
-                        </li>
-                    </ul>
+                    <a href="{{ path('admin_location_edit', { 'id': location.id }) }}">
+                        <button type="button" class="btn btn-success">
+                            Edit
+                        </button>
+                    </a>
                 </td>
             </tr>
         {% endfor %}
