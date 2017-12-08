@@ -9,6 +9,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+//use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 
 /**
@@ -44,13 +46,37 @@ class ProductController extends Controller
      */
     public function newAction(Request $request)
     {
+        $em = $this->getDoctrine()->getManager();
+        
         $product = new Product();
-        $form = $this->createForm('TrackBundle\Form\ProductType', $product);
+        
+        // get last id
+        $repository_product = $this->getDoctrine()->getRepository(Product::class);
+        
+        $query = $repository_product->createQueryBuilder('p')
+                ->orderBy('p.id', 'DESC')
+                ->getQuery();
+                
+        $result = $query->getResult();
+        echo $result[0]->getId();
+        
+        $form = $this->createFormBuilder($product)
+                ->add('sku', TextType::class, ['attr' => ['value' => $product->getId() ] ])
+                // ->add('generate_sku', CheckBoxType::class, ['mapped' => false])
+                ->add('name')
+                ->add('quantity')
+                ->add('location')
+                ->add('type')
+                ->add('description')
+                ->add('status')
+                ->add('brand')
+                ->add('department')
+                ->add('owner')
+                ->getForm();
+        
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            
             // check for sku
             $skuquery = $em->createQuery(
                     'SELECT p.sku'
@@ -172,7 +198,6 @@ class ProductController extends Controller
                 $em->flush($product);
             
                 // fill in product id if sku is left blank
-                
                 
                 return $this->redirectToRoute('track_show', array('id' => $product->getId()));
             } 
