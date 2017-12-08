@@ -27,7 +27,7 @@ class LocationController extends Controller
 
         $locations = $em->getRepository('TrackBundle:Location')->findAll();
 
-        return $this->render('location/index.html.twig', array(
+        return $this->render('admin/location/index.html.twig', array(
             'locations' => $locations,
         ));
     }
@@ -52,7 +52,7 @@ class LocationController extends Controller
             return $this->redirectToRoute('admin_location_show', array('id' => $location->getId()));
         }
 
-        return $this->render('location/new.html.twig', array(
+        return $this->render('admin/location/new.html.twig', array(
             'location' => $location,
             'form' => $form->createView(),
         ));
@@ -68,7 +68,7 @@ class LocationController extends Controller
     {
         $deleteForm = $this->createDeleteForm($location);
 
-        return $this->render('location/show.html.twig', array(
+        return $this->render('admin/location/show.html.twig', array(
             'location' => $location,
             'delete_form' => $deleteForm->createView(),
         ));
@@ -92,7 +92,7 @@ class LocationController extends Controller
             return $this->redirectToRoute('admin_location_edit', array('id' => $location->getId()));
         }
 
-        return $this->render('location/edit.html.twig', array(
+        return $this->render('admin/location/edit.html.twig', array(
             'location' => $location,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
