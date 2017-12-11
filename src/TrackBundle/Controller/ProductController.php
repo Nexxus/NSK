@@ -219,11 +219,6 @@ class ProductController extends Controller
             ]);
         }
         
-        $editForm->add('attributes', CollectionType::class, array(
-            'entry_type' => TextType::class,
-            
-        ));
-        
         $editForm->add('save', SubmitType::class, ['label' => 'Save Changes']);
         
         $editForm = $editForm->getForm();
