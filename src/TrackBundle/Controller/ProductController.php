@@ -11,6 +11,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 
 /**
@@ -150,7 +153,81 @@ class ProductController extends Controller
         $deleteForm = $this->createDeleteForm($product);
         
         // create form for editing
-        $editForm = $this->createForm('TrackBundle\Form\ProductType', $product);
+        $editForm = $this->createFormBuilder($product)
+                ->add('sku', TextType::class)
+                ->add('name', TextType::class)
+                ->add('quantity', IntegerType::class, array(
+                    'required' => false
+                ))
+                ->add('location',  EntityType::class, array(
+                    'class' => 'TrackBundle:Location',
+                    'choice_label' => 'name'
+                ))
+                ->add('type',  EntityType::class, array(
+                    'class' => 'TrackBundle:ProductType',
+                    'choice_label' => 'name'
+                ))
+                ->add('description', TextType::class, array(
+                    'required' => false
+                ))
+                ->add('status')
+                ->add('brand', TextType::class, array(
+                    'required' => false
+                ))
+                ->add('department', TextType::class, array(
+                    'required' => false
+                ))
+                ->add('owner', TextType::class, array(
+                    'required' => false
+                ));
+        
+        // get attributes (previously checked or added)
+        $query = $em->createQuery('SELECT'
+                . '     pa.id,'
+                . '     a.attr_code,'
+                . '     a.name,'
+                . '     pa.value'
+                . ' FROM'
+                . '     TrackBundle:ProductAttribute pa '
+                . ' LEFT JOIN TrackBundle:Attribute a '
+                . '     WITH pa.attrId = a.id '
+                . 'WHERE '
+                . '     pa.productid = :id')
+                ->setParameter('id', $product->getId());
+        $attributes = $query->getResult();
+        
+        $attribute_form = $this->createFormBuilder("");
+        $attribute_count = 0;
+        
+        // add the attributes to the form
+        foreach($attributes as $attribute) {
+            $attribute_count++;
+            
+            $fieldid = "attribute_" . $attribute_count;
+            $fieldname = $attribute['attr_code'];
+            $fieldlabel = $attribute['name'];
+            $fieldvalue = $attribute['value'];
+            
+            $editForm->add($fieldid, TextType::class, [
+                'mapped'    => false,
+                'label'     => $fieldlabel,
+                'required'  => false,
+                'attr'      => [
+                    'id'        => $fieldid,
+                    'value'     => $fieldvalue,
+                ],
+            ]);
+        }
+        
+        $editForm->add('attributes', CollectionType::class, array(
+            'entry_type' => TextType::class,
+            
+        ));
+        
+        $editForm->add('save', SubmitType::class, ['label' => 'Save Changes']);
+        
+        $editForm = $editForm->getForm();
+                
         $editForm->handleRequest($request);
         
         // if product has type, check if it needs attributes
@@ -195,25 +272,12 @@ class ProductController extends Controller
             }
         }
         
-        // get attributes (previously checked or added)
-        $query = $em->createQuery('SELECT'
-                . '     pa.id,'
-                . '     a.name,'
-                . '     pa.value'
-                . ' FROM'
-                . '     TrackBundle:ProductAttribute pa '
-                . ' LEFT JOIN TrackBundle:Attribute a '
-                . '     WITH pa.attrId = a.id '
-                . 'WHERE '
-                . '     pa.productid = :id')
-                ->setParameter('id', $product->getId());
-        $attributes = $query->getResult();
-        
         return $this->render('product/edit.html.twig', array(
             'product' => $product,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-            'attributes' => $attributes
+            'attributes' => $attributes,
+            'attribute_count' => $attribute_count,
         ));
     }
     

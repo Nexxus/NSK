@@ -16,12 +16,8 @@ class ProductType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('sku', TextType::class, array(
-                    'required' => false
-                ))
-                ->add('name', TextType::class, array(
-                    'required' => false
-                ))
+        $builder->add('sku', TextType::class)
+                ->add('name', TextType::class)
                 ->add('quantity', IntegerType::class, array(
                     'required' => false
                 ))
@@ -37,7 +33,9 @@ class ProductType extends AbstractType
                     'required' => false
                 ))
                 ->add('status')
-                ->add('brand', TextType::class)
+                ->add('brand', TextType::class, array(
+                    'required' => false
+                ))
                 ->add('department', TextType::class, array(
                     'required' => false
                 ))

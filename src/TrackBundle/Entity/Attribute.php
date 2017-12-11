@@ -23,6 +23,13 @@ class Attribute
 
     /**
      * @var string
+     * 
+     * @ORM\Column(name="attr_code", type="string", length=11, unique=false)
+     */
+    private $attr_code;
+    
+    /**
+     * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, unique=true)
      * @
@@ -38,6 +45,28 @@ class Attribute
     public function getId()
     {
         return $this->id;
+    }
+    
+    /**
+     * Set code
+     * 
+     * @param string @code
+     * 
+     * @return Attribute
+     */
+    function setAttrCode($attr_code) {
+        $this->attr_code = $attr_code;
+        
+        return $this;
+    }
+    
+    /**
+     * Get code
+     * 
+     * @return int
+     */
+    function getAttrCode() {
+        return $this->attr_code;
     }
 
     /**
