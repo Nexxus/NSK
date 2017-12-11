@@ -90,9 +90,9 @@ class Product
     /**
      * @var int
      * 
-     * @ORM\Column(name="quantity", type="integer", nullable=false)
+     * @ORM\Column(name="quantity", type="integer", nullable=true)
      */
-    private $quantity;
+    private $quantity = 1;
     
 
         /**

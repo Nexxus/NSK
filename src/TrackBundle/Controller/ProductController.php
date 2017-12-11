@@ -10,7 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-//use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 
 /**
@@ -58,11 +58,13 @@ class ProductController extends Controller
                 ->getQuery();
                 
         $result = $query->getResult();
-        echo $result[0]->getId();
+        $generatedsku = "COPIA_" . ($result[0]->getId() + 1);
         
         $form = $this->createFormBuilder($product)
-                ->add('sku', TextType::class, ['attr' => ['value' => $product->getId() ] ])
-                // ->add('generate_sku', CheckBoxType::class, ['mapped' => false])
+                ->add('sku', TextType::class, ['attr' => [
+                        'value' => $generatedsku,
+                    ]
+                ])
                 ->add('name')
                 ->add('quantity')
                 ->add('location')
@@ -78,34 +80,20 @@ class ProductController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
             // check for sku
-            $skuquery = $em->createQuery(
-                    'SELECT p.sku'
-                    . ' FROM TrackBundle:Product p'
-                    . ' WHERE p.sku = :givensku')
-                    ->setParameter('givensku', $product->getSku());
-            $result = $skuquery->getResult();
             
-            if(count($result)==0)
+            if($this->checkExistingSku($product->getSku() ))
             {
                 $em->persist($product);
                 $em->flush($product);
-            
-                // fill in product id if sku is left blank
-            
-                //
 
                 return $this->redirectToRoute('track_show', array('id' => $product->getId()));
-            } 
-             else 
-            {
+            } else {
                 return $this->render('product/new.html.twig', array(
                     'product' => $product,
                     'form' => $form->createView(),
                     'error_msg' => 'DuplicateSku',
                 ));
             }
-            
-            
         }
 
         return $this->render('product/new.html.twig', array(
@@ -324,6 +312,22 @@ class ProductController extends Controller
         
         $em->flush();
         
+    }
+    
+    /*
+     * Returns true if a SKU in the database is taken
+     */
+    public function checkExistingSku($sku) {
+        $em = $this->getDoctrine()->getManager();
+        
+        $skuquery = $em->createQuery(
+                    'SELECT p.sku'
+                    . ' FROM TrackBundle:Product p'
+                    . ' WHERE p.sku = :givensku')
+                    ->setParameter('givensku', $sku);
+        $result = $skuquery->getResult();
+        
+        return (count($result) == 0);
     }
     
     

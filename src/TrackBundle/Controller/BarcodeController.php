@@ -50,7 +50,7 @@ class BarcodeController extends Controller
                     </body>
 		</html>';
         
-        $mpdf->setTitle("Test");
+        $mpdf->setTitle("ERCPv2 Barcode Generator");
         $mpdf->writeHTML($html);
         
         //return $mpdfService->generatePdfResponse($html);

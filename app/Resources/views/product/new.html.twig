@@ -15,11 +15,97 @@
         {% endif %}
         
     {% endif %}
-    {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <input type="submit" value="Create" />
-    {{ form_end(form) }}
-
+    <div class="container">
+    {{ form_start(form, {'attr': {'class': 'form-horizontal'} }) }}
+        {{ form_errors(form) }}
+            <div class="form-group">
+                <label class="control-label col-lg-2">
+                    {% trans %} SKU {% endtrans %}
+                </label>
+                <div class="col-lg-10">
+                    {{ form_widget(form.sku) }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-lg-2">
+                    {% trans %} Name {% endtrans %}
+                </label>
+                <div class="col-lg-10">
+                    {{ form_widget(form.name) }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-lg-2">
+                    {% trans %} Quantity {% endtrans %}
+                </label>
+                <div class="col-lg-10">
+                    {{ form_widget(form.quantity) }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-lg-2">
+                    {% trans %} Description {% endtrans %}
+                </label>
+                <div class="col-lg-10">
+                    {{ form_widget(form.description) }}
+                </div>
+            </div>
+                <div class="form-group">
+                    <label class="control-label col-lg-2">
+                        {% trans %} Type {% endtrans %}
+                    </label>
+                    <div class="col-lg-10">
+                        {{ form_widget(form.type) }}
+                    </div>
+                </div>
+            <div class="form-group">
+                <label class="control-label col-lg-2">
+                    {% trans %} Status {% endtrans %}
+                </label>
+                <div class="col-lg-10">
+                    {{ form_widget(form.status, {'choice_translation_domain': 'status'} ) }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-lg-2">
+                    {% trans %} Location {% endtrans %}
+                </label>
+                <div class="col-lg-10">
+                    {{ form_widget(form.location) }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-lg-2">
+                    {% trans %} Brand {% endtrans %}
+                </label>
+                <div class="col-lg-10">
+                    {{ form_widget(form.brand) }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-lg-2">
+                    {% trans %} Department {% endtrans %}
+                </label>
+                <div class="col-lg-10">
+                    {{ form_widget(form.department) }}
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-lg-2">
+                    {% trans %} Owner {% endtrans %}
+                </label>
+                <div class="col-lg-10">
+                    {{ form_widget(form.owner) }}
+                </div>
+            </div>
+            {{ form_row(form._token) }}
+            <div class="form-group"> 
+                <div class="col-lg-offset-2 col-lg-10">
+                    <input type="submit" value="Edit" />
+                </div>
+            </div>
+        {{ form_end(form) }}
+    </div>
     <ul>
         <li>
             <a href="{{ path('track_index') }}">Back to the list</a>
