@@ -199,11 +199,14 @@ class ProductController extends Controller
         $attribute_form = $this->createFormBuilder("");
         $attribute_count = 0;
         
+        $idArr = [];
+        
         // add the attributes to the form
         foreach($attributes as $attribute) {
             $attribute_count++;
+            $idArr[] = $attribute['id'];
             
-            $fieldid = "attribute_" . $attribute_count;
+            $fieldid = "attribute_" . $attribute['id'];
             $fieldname = $attribute['attr_code'];
             $fieldlabel = $attribute['name'];
             $fieldvalue = $attribute['value'];
@@ -252,12 +255,33 @@ class ProductController extends Controller
                     ->setParameter('id', $product->getId());
             $result = $skuquery->getResult();
             
+            $attributeArr = [];
+            
+            // put attributes in array
+            foreach($idArr as $id) {
+                  $attributeArr[$id] = [
+                      'id'    => $id,
+                      'value' => $editForm->get('attribute_' . $id)->getData()
+                  ];
+            }
+            
             if(count($result)==0)
             {
+                // save product
                 $em->persist($product);
                 $em->flush($product);
-            
-                // fill in product id if sku is left blank
+                
+                // save attributes
+                foreach($attributeArr as $attr){
+                    $query = $em->createQuery(
+                              'UPDATE '
+                            . '     TrackBundle:ProductAttribute pa'
+                            . ' SET   pa.value = :value'
+                            . ' WHERE pa.id  = :id')
+                            ->setParameter('value', $attr['value'])
+                            ->setParameter('id', $attr['id']);
+                    $result = $query->getResult();
+                } 
                 
                 return $this->redirectToRoute('track_show', array('id' => $product->getId()));
             } 
