@@ -90,9 +90,11 @@
                     {% trans %}Location{% endtrans %}
                 </th>
                 
+                {#
                 <th>
                     {% trans %}Description{% endtrans %}
                 </th>
+                #}
                 
                 <th>
                     {% trans %}Type{% endtrans %}
@@ -131,7 +133,7 @@
                 <td>{{ product.name }}</td>
                 <td>{{ product.quantity }}</td>
                 <td>{{ product.location }}</td>
-                <td>{{ product.description }}</td>
+                {# <td>{{ product.description}}</td> #}
                 <td>{{ product.type }}</td>
                 <td>{{ product.status }}</td>
                 <td>{{ product.brand }}</td>
