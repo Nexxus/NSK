@@ -38,12 +38,15 @@ class ProductController extends Controller
         $query = $em->getRepository('TrackBundle:Product')->createQueryBuilder('p')
                 ->where('p.status < 999 OR p.status IS NULL')
                 ->orderBy('p.'.$sort , $by)
+                ->setFirstResult(($page - 1) * 10)
+                ->setMaxResults(10)
                 ->getQuery();
         
         $products = $query->getResult();
 
         return $this->render('product/index.html.twig', array(
             'products' => $products,
+            'page' => $page
         ));
     }
 

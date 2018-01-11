@@ -11,9 +11,23 @@
 
 {% block body %}
     <h1>{% trans %}Product List{% endtrans %}</h1>
+    
     <h2>{{ app.request.get('order') }}</h2>
+    
     <h4><a href="{{ path('track_new') }}">{% trans %}Create a new product{% endtrans %}</a></h4>
+    
     <input type="text" name="barcode_search" id="barcode_search" placeholder="{% trans %}Scan Item Here{% endtrans %}">
+    
+    <br>Page 
+    {% if page > 1 %}
+        <a href="{{ path('track_index', {'page': page-1}) }}">
+        &lt;
+        </a>
+    {% endif %}
+        {{ page }}
+        <a href="{{ path('track_index', {'page': page+1}) }}">
+        &gt;
+        </a>
     <table class="table table-striped">
         <thead>
             <tr>
@@ -127,7 +141,7 @@
         {% for product in products %}
             {% set product_row = product_row+1 %}
             <tr>
-                <td>{{ product_row }}</td>
+                <td>{{ product.id }}</td>
                 <td>{{ product.updatedAt }}</td>
                 <td><b><a href="{{ path('track_show', { 'id': product.id }) }}">{{ product.sku }}</a></b></td>
                 <td>{{ product.name }}</td>
