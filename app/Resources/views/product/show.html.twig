@@ -2,6 +2,7 @@
 {% trans_default_domain "product" %}
 
 {% block body %}
+    <h1>Product Info</h1>
     {% if product.status == "Sold" %}
         <div class="alert alert-warning">
          {% trans %}
@@ -9,7 +10,6 @@
          {% endtrans %}
         </div>
     {% endif %}
-    <h1>Product</h1>
     <table class="table table-bordered">
         <tbody>
             <tr>

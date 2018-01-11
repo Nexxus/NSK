@@ -27,15 +27,20 @@ class ProductController extends Controller
     /**
      * Lists all product entities.
      *
-     * @Route("/index/{page}/{sortBy}", name="track_index", defaults={"page" = 1, "sortBy" = "updatedAt=DESC"})
+     * @Route("/index/{page}/{sort}/{by}", name="track_index", defaults={"page" = 1, "sort" = "updatedAt", "by" = "DESC"})
      * @Method("GET")
      */
-    public function indexAction($page, $sortBy)
+    public function indexAction($page, $sort, $by)
     {
         $em = $this->getDoctrine()->getManager();
         
-        $order = $em->getRepository('TrackBundle:Product')->serializeSort($sortBy);
-        $products = $em->getRepository('TrackBundle:Product')->findSpecific($order);
+        //$order = $em->getRepository('TrackBundle:Product')->serializeSort($sortBy);
+        $query = $em->getRepository('TrackBundle:Product')->createQueryBuilder('p')
+                ->where('p.status < 999 OR p.status IS NULL')
+                ->orderBy('p.'.$sort , $by)
+                ->getQuery();
+        
+        $products = $query->getResult();
 
         return $this->render('product/index.html.twig', array(
             'products' => $products,
