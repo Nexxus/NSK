@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Product
 {
+    
     /**
      * @var int
      *
@@ -94,7 +95,6 @@ class Product
      */
     private $quantity = 1;
     
-
         /**
      * @ORM\Column(type="datetime")
      */

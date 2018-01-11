@@ -2,6 +2,8 @@
 
 namespace TrackBundle\Controller;
 
+const PRODUCT_SELLABLE = true;
+
 use TrackBundle\Entity\Product;
 use TrackBundle\Entity\ProductAttribute;
 use Doctrine\ORM\EntityManagerInterface;
@@ -14,7 +16,6 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-
 
 /**
  * Product controller.
@@ -61,7 +62,7 @@ class ProductController extends Controller
                 ->getQuery();
                 
         $result = $query->getResult();
-        $generatedsku = "COPIA_" . ($result[0]->getId() + 1);
+        $generatedsku = "Copia_" . ($result[0]->getId() + 1);
         
         $form = $this->createFormBuilder($product)
                 ->add('sku', TextType::class, ['attr' => [
@@ -90,11 +91,13 @@ class ProductController extends Controller
                 $em->flush($product);
 
                 return $this->redirectToRoute('track_show', array('id' => $product->getId()));
-            } else {
+            } 
+             else 
+            {
                 return $this->render('product/new.html.twig', array(
-                    'product' => $product,
-                    'form' => $form->createView(),
-                    'error_msg' => 'DuplicateSku',
+                    'product'       => $product,
+                    'form'          => $form->createView(),
+                    'error_msg'     => 'DuplicateSku'
                 ));
             }
         }
@@ -136,6 +139,7 @@ class ProductController extends Controller
             'product' => $product,
             'attributes' => $attributes,
             'delete_form' => $deleteForm->createView(),
+            'sellable'      => PRODUCT_SELLABLE,
         ));
     }
 
