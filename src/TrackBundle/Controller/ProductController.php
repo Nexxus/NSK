@@ -67,7 +67,7 @@ class ProductController extends Controller
                 ->getQuery();
                 
         $result = $query->getResult();
-        $generatedsku = "Copia_" . ($result[0]->getId() + 1);
+        $generatedsku = "Copia" . ($result[0]->getId() + 1);
         
         $form = $this->createFormBuilder($product)
                 ->add('sku', TextType::class, ['attr' => [
