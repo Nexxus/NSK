@@ -17,4 +17,23 @@ class DefaultController extends Controller
     {
         return $this->render('admin/index.html.twig');
     }
+    
+    /**
+     * @Route("/sales", name="admin_sales")
+     */
+    public function viewSalesAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        
+        $query = $em->getRepository('TrackBundle:Product')->createQueryBuilder('p')
+                ->where('p.status = 999 OR p.status IS NULL')
+                ->orderBy('p.updatedAt', 'DESC')
+                ->getQuery();
+        
+        $products = $query->getResult();
+
+        return $this->render('product/index.html.twig', array(
+            'products' => $products,
+        ));
+    }
 }
