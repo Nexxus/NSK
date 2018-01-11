@@ -2,8 +2,14 @@
 {% trans_default_domain "product" %}
 
 {% block body %}
+    {% if product.status == "Sold" %}
+        <div class="alert alert-warning">
+         {% trans %}
+            This product has been sold. it will not appear on the Track & Trace page.
+         {% endtrans %}
+        </div>
+    {% endif %}
     <h1>Product</h1>
-
     <table class="table table-bordered">
         <tbody>
             <tr>
@@ -55,9 +61,6 @@
             
         </tbody>
     </table>
-    {% if sellable == true %}
-        
-    {% endif %}
     
     {% if attributes is defined %}
         <h4>Product Attributes</h4>

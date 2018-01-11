@@ -95,7 +95,7 @@ class Product
      */
     private $quantity = 1;
     
-        /**
+    /**
      * @ORM\Column(type="datetime")
      */
     protected $createdAt;
