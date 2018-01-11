@@ -22,9 +22,14 @@ class ProductStatusController extends Controller
      */
     public function indexAction() 
     {
-        $productstatus = $this->getDoctrine()
-                ->getRepository('TrackBundle:ProductStatus')
-                ->findAll();
+        $em = $this->getDoctrine()->getManager();
+        
+        $query = $em->createQuery(
+                'SELECT s'
+                . ' FROM TrackBundle:ProductStatus s'
+                . ' WHERE s.pindex < 999'
+                . ' ORDER BY s.pindex ASC');
+        $productstatus = $query->getResult();
         
         return $this->render('admin/status/index.html.twig', array(
             'productstatus' => $productstatus)); 
@@ -66,17 +71,18 @@ class ProductStatusController extends Controller
             $pindex = $_POST['form']['pindex'];
             
             // make space for new entry
-            if($pm=='before') {
-                $pindex = $pindex-1;
+            if($pm=='after') {
+                $pindex = $pindex+1;
             }
             
             $status->setPindex($pindex);
             
-            echo "<pre>";print_r($status);echo "</pre>";exit;
+            //echo "<pre>";print_r($status);echo "</pre>";exit;
             
-            $this->shiftIndex($pindex);
+            $this->shiftIndex($pindex, "add");
             
             // save object
+            $em = $this->getDoctrine()->getManager();
             $em->persist($task);
             $em->flush();
             
@@ -99,11 +105,30 @@ class ProductStatusController extends Controller
     }
     
     /**
+     * @Route("/delete/{id}/{pindex}", name="status_delete")
+     */
+    public function deleteAction($id, $pindex)
+    {
+        $em = $this->getDoctrine()->getManager();
+        
+        $query = $em->createQuery(
+                "DELETE FROM TrackBundle:ProductStatus s"
+                . " WHERE s.id = :statusid"
+        )->setParameter("statusid", $id)
+         ->getResult();
+        
+        $this->shiftIndex($pindex, "remove");
+        
+        return $this->redirectToRoute('status_index');
+    }
+    
+    /**
      * Make space in the index for a new entry
+     * Method add adds a space and remove places everything back
      * 
      * @return int
      */
-    public function shiftIndex($pindex)
+    public function shiftIndex($pindex, $method)
     {
         // !! unfinished function, not yet able to update multiple entries
         //https://stackoverflow.com/questions/4337751/doctrine-2-update-query-with-query-builder
@@ -112,11 +137,34 @@ class ProductStatusController extends Controller
         $query = $em->createQuery(
                 "SELECT s "
                 . " FROM TrackBundle:ProductStatus s"
-                . " WHERE s.pindex <= :space"
-        )->setParameter('space', $pindex);
+                . " WHERE s.pindex >= :space"
+                . " AND s.name != :name"
+        )->setParameter('space', $pindex)
+         ->setParameter('name', "Sold");
+        $statuses = $query->getResult();
         
-        $result = $query->getResult();
+        //echo "<pre>";print_r($statuses);exit;
         
-        return false;
+        if($method == "add") {
+            foreach($statuses as $status) {
+                $query = $em->createQuery(
+                        "UPDATE TrackBundle:ProductStatus s"
+                        . " SET s.pindex = s.pindex+1"
+                        . " WHERE s.id = :id"
+                )->setParameter('id', $status->getId())
+                ->getResult();
+            }
+        }
+        if($method == "remove") {
+            foreach($statuses as $status) {
+                $query = $em->createQuery(
+                        "UPDATE TrackBundle:ProductStatus s"
+                        . " SET s.pindex = s.pindex-1"
+                        . " WHERE s.id = :id"
+                )->setParameter('id', $status->getId())
+                ->getResult();
+            }
+        }
+        return 0;
     }
 }

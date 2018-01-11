@@ -26,7 +26,7 @@ class DefaultController extends Controller
         $em = $this->getDoctrine()->getManager();
         
         $query = $em->getRepository('TrackBundle:Product')->createQueryBuilder('p')
-                ->where('p.status = 999 OR p.status IS NULL')
+                ->where('p.status = 999')
                 ->orderBy('p.updatedAt', 'DESC')
                 ->getQuery();
         
