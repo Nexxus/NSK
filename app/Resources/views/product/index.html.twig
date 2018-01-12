@@ -33,7 +33,20 @@
             <tr>
                 <th>{# Checkbox column #}
                     <div id="checkbox-header" style="display:none;">
-                        Test
+                        <div class="dropdown">
+                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {% trans %}
+                                    Bulk
+                                {% endtrans %}
+                                <span class="caret"></span>
+                            </button>    
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <li><a class="dropdown-item" href='#' id='selectAllBoxes' onClick="selectAllBoxes()"><span><img src='{{ asset("images/move_bottom.png") }}'>&nbsp;Selecteer Alles</span></a></li>
+                                <li><a class="dropdown-item" href='#' id='selectNoBoxes' onClick="selectNoBoxes()"><span><img src='{{ asset("images/move_up.png") }}'>&nbsp;Deselecteer Alles</span></a></li>
+                                <li><a class="dropdown-item" href='#' id='printBarcodes' {# target='_blank' #}><img src='{{ asset('images/barcode.png') }}'>&nbsp;Print Barcodes</a></li>
+                                <li><a class="dropdown-item" href='#' id='groupBarcode' {# target='_blank' #}><img src='{{ asset('images/barcode.png') }}'>&nbsp;<u>Creeer Groep Barcode</u></a></li>
+                            </ul>
+                        </div>
                     </div>
                 </th>
                 <th>
@@ -125,7 +138,7 @@
         {% for product in products %}
             {% set product_row = product_row+1 %}
             <tr>
-                <td><input type='checkbox' name='test-{{ product.id }}' id='test-{{ product.id }}' onClick='applyItem({{ product.id }}, this.checked);'></td>
+                <td><input type='checkbox' class="select_status" name='select_status-{{ product.id }}' id='selectbox-{{ product.id }}' onChange='applyItem({{ product.id }}, this.checked);' value="{{ product.id }}"></td>
                 <td>{{ product.updatedAt }}</td>
                 <td><b><a href="{{ path('track_show', { 'id': product.id }) }}">{{ product.sku }}</a></b></td>
                 <td>{{ product.name }}</td>
@@ -153,22 +166,22 @@
 
 {% block javascripts %}
    <script>
+        
         $(document).ready(function() {
             $("#checkbox-header").hide();
-        })
+        });
         
         $("#barcode_search").keyup(function (e) {
-            if (e.keyCode === 13) {
-               var barcode = document.getElementById('barcode_search').value;
-               var product_url = "{{ path('track_searchSku', {'sku': "PLACEHOLDER" })}}";
-               window.location = product_url.replace("PLACEHOLDER", barcode);
-            }
+                if (e.keyCode === 13) {
+                   var barcode = document.getElementById('barcode_search').value;
+                   var product_url = "{{ path('track_searchSku', {'sku': "PLACEHOLDER" })}}";
+                   window.location = product_url.replace("PLACEHOLDER", barcode);
+                }
         });
-
+        
         // checkbox script
-        
         var itemArr = [];
-        
+
         function applyItem(id, value) {
             // add or remove item
             if(value) {
@@ -177,13 +190,31 @@
                 itemArr.splice(itemArr.indexOf(id), 1);
             }
             console.log("Selected items: " + itemArr);
-            
+
             if(itemArr.length > 0) {
-                $("#checkbox-header").slideUp();
+                $("#checkbox-header").fadeIn();
             } else {
-                $("#checkbox-header").slideDown();
+                $("#checkbox-header").fadeOut();
             }
         }
+        
+        function selectAllBoxes() {
+                var checkbox = document.getElementsByClassName("select_status");
+                for(i=0; i < checkbox.length; i++) {
+                    if(checkbox[i].checked != "checked") {
+                        $("#"+checkbox[i].id).attr('checked','checked');
+                        applyItem(checkbox[i].value, checkbox[i].checked)
+                        console.log(checkbox[i].id);
+                    }
+                }
+        }
+        function selectNoBoxes() {
+                //var checkbox = document.getElementsByClassName("select_status");
+                $(document).ready(function(){
+                        $('input.select_status').attr('checked',false);
+                });
+        }
+            
         
     </script> 
 {% endblock %}

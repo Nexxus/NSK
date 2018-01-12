@@ -24,7 +24,6 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
  */
 class ProductController extends Controller
 {   
-    // Test
     /**
      * Lists all product entities.
      *
@@ -35,7 +34,6 @@ class ProductController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         
-        //$order = $em->getRepository('TrackBundle:Product')->serializeSort($sortBy);
         $query = $em->getRepository('TrackBundle:Product')->createQueryBuilder('p')
                 ->where('p.status < 999 OR p.status IS NULL')
                 ->orderBy('p.'.$sort , $by)
