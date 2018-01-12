@@ -31,32 +31,12 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th></th>
-                {#<th>
-                    <table>
-                        <tr>
-                            <td>
-                                <a href="{{ path('track_index', {'page': page, 'sortBy': 'id=ASC'}) }}">
-                                    <small><span class="glyphicon glyphicon-menu-up"></span></small>
-                                </a>
-                            </td>
-                            <td rowspan="2">&nbsp;#</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <a href="{{ path('track_index', {'page': page, 'sortBy': 'id=DESC'}) }}">
-                                    <small><span class="glyphicon glyphicon-menu-down"></span></small>
-                                </a>
-                            </td>
-                            
-                        </tr>
-                    </table>
-                </th>#}
+                <th>{# Checkbox column #}</th>
                 <th>
                     <table>
                         <tr>
                             <td>
-                                <a href="{{ path('track_index', {'page': page, 'sortBy': 'updatedAt=ASC'}) }}">
+                                <a href="{{ path('track_index', {'page': page, 'sort': 'updatedAt', 'by': 'ASC'}) }}">
                                     <small><span class="glyphicon glyphicon-menu-up"></span></small>
                                 </a>
                             </td>
@@ -64,7 +44,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <a href="{{ path('track_index', {'page': page, 'sortBy': 'updatedAt=DESC'}) }}">
+                                <a href="{{ path('track_index', {'page': page, 'sort': 'updatedAt', 'by': 'DESC'}) }}">
                                     <small><span class="glyphicon glyphicon-menu-down"></span></small>
                                 </a>
                             </td>
@@ -76,7 +56,7 @@
                         <tr>
                             
                             <td>
-                                <a href="{{ path('track_index', {'page': page, 'sortBy': 'sku=ASC'}) }}">
+                                <a href="{{ path('track_index', {'page': page, 'sort': 'sku', 'by': 'ASC'}) }}">
                                     <small><span class="glyphicon glyphicon-menu-up"></span></small>
                                 </a>
                             </td>
@@ -84,7 +64,7 @@
                         </tr>
                         <tr>
                             <td>
-                                <a href="{{ path('track_index', {'page': page, 'sortBy': 'sku=DESC'}) }}">
+                                <a href="{{ path('track_index', {'page': page, 'sort': 'sku', 'by': 'DESC'}) }}">
                                     <small><span class="glyphicon glyphicon-menu-down"></span></small>
                                 </a>
                             </td>
@@ -141,7 +121,7 @@
         {% for product in products %}
             {% set product_row = product_row+1 %}
             <tr>
-                <td>{{ product.id }}</td>
+                <td><input type='checkbox' name='test-{{ product.id }}' id='test-{{ product.id }}' onClick='applyItem({{ product.id }}, this.checked);'></td>
                 <td>{{ product.updatedAt }}</td>
                 <td><b><a href="{{ path('track_show', { 'id': product.id }) }}">{{ product.sku }}</a></b></td>
                 <td>{{ product.name }}</td>
@@ -176,5 +156,18 @@
                window.location = product_url.replace("PLACEHOLDER", barcode);
             }
         });
+
+        // checkbox script
+        
+        var itemArr = [];
+        
+        function applyItem(id, value) {
+            if(value) {
+                itemArr.push(id);
+            } else {
+                itemArr.splice(itemArr.indexOf(id), 1);
+            }
+            console.log("Selected items: " + itemArr);
+        }
     </script> 
 {% endblock %}
