@@ -198,7 +198,7 @@
                         }
                     }
                 }
-                document.getElementById("printBarcodes").href = "{{ path('track_print_barcode_multi') }}"+"?id[]="+itemArr.join("&id[]=")+"&h=aQUej8csrVowmK2Zalk";
+                document.getElementById("printBarcodes").href = "{{ path('track_print_barcode_multi') }}"+"?id[]="+itemArr.join("&id[]=");
                 console.log("Selected items: " + itemArr);
         }
         
