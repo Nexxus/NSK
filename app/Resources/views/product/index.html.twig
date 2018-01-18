@@ -43,7 +43,7 @@
                             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 <li><a class="dropdown-item" href='#' id='selectAllBoxes' onClick="selectAllBoxes()"><span><img src='{{ asset("images/move_bottom.png") }}'>&nbsp;Selecteer Alles</span></a></li>
                                 <li><a class="dropdown-item" href='#' id='selectNoBoxes' onClick="selectNoBoxes()"><span><img src='{{ asset("images/move_up.png") }}'>&nbsp;Deselecteer Alles</span></a></li>
-                                <li><a class="dropdown-item" href='#' id='printBarcodes' {# target='_blank' #}><img src='{{ asset('images/barcode.png') }}'>&nbsp;Print Barcodes</a></li>
+                                <li><a class="dropdown-item" href='#' id='printBarcodes'  target='_blank'><img src='{{ asset('images/barcode.png') }}'>&nbsp;Print Barcodes</a></li>
                                 <li><a class="dropdown-item" href='#' id='groupBarcode' {# target='_blank' #}><img src='{{ asset('images/barcode.png') }}'>&nbsp;<u>Creeer Groep Barcode</u></a></li>
                             </ul>
                         </div>
@@ -198,6 +198,7 @@
                         }
                     }
                 }
+                document.getElementById("printBarcodes").href = "{{ path('track_print_barcode_multi') }}"+"?id[]="+itemArr.join("&id[]=")+"&h=aQUej8csrVowmK2Zalk";
                 console.log("Selected items: " + itemArr);
         }
         
