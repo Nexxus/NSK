@@ -17,10 +17,12 @@
             <td>{{ a.pindex }}</td>
             <td>{{ a.name }}</td>
             <td>
+                {#
                 <a href="{{ path("status_edit", {id: a.id}) }}">
                     <button type="button" class="btn btn-default">
                         {% trans %}Edit{% endtrans %}
                     </button></a>
+                #}
                 <a href="{{ path("status_delete", {id: a.id, pindex: a.pindex}) }}">
                     <button type="button" class="btn btn-danger" href="#">
                         {% trans %}Delete{% endtrans %}
