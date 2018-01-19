@@ -18,150 +18,154 @@
     
     <input type="text" name="barcode_search" id="barcode_search" placeholder="{% trans %}Scan Item Here{% endtrans %}">
     
-    <br>Page 
-    {% if page > 1 %}
-        <a href="{{ path('track_index', {'page': page-1}) }}">
-        &lt;
-        </a>
-    {% endif %}
-        {{ page }}
-        <a href="{{ path('track_index', {'page': page+1}) }}">
-        &gt;
-        </a>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>{# Checkbox column #}
-                    <div id="checkbox-header">
-                        <div class="dropdown">
-                            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {% trans %}
-                                    Select
-                                {% endtrans %}
-                                <span class="caret"></span>
-                            </button>    
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <li><a class="dropdown-item" href='#' id='selectAllBoxes' onClick="selectAllBoxes()"><span><img src='{{ asset("images/move_bottom.png") }}'>&nbsp;Selecteer Alles</span></a></li>
-                                <li><a class="dropdown-item" href='#' id='selectNoBoxes' onClick="selectNoBoxes()"><span><img src='{{ asset("images/move_up.png") }}'>&nbsp;Deselecteer Alles</span></a></li>
-                                <li><a class="dropdown-item" href='#' id='printBarcodes'  target='_blank'><img src='{{ asset('images/barcode.png') }}'>&nbsp;Print Barcodes</a></li>
-                                {#<li><a class="dropdown-item" href='#' id='groupBarcode' target='_blank'><img src='{{ asset('images/barcode.png') }}'>&nbsp;<u>Creeer Groep Barcode</u></a></li>#}
-                            </ul>
+    <div class="product_table">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>{# Checkbox column #}
+                        <div id="checkbox-header">
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    {% trans %}
+                                        Select
+                                    {% endtrans %}
+                                    <span class="caret"></span>
+                                </button>    
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <li><a class="dropdown-item" href='#' id='selectAllBoxes' onClick="selectAllBoxes()"><span><img src='{{ asset("images/move_bottom.png") }}'>&nbsp;Selecteer Alles</span></a></li>
+                                    <li><a class="dropdown-item" href='#' id='selectNoBoxes' onClick="selectNoBoxes()"><span><img src='{{ asset("images/move_up.png") }}'>&nbsp;Deselecteer Alles</span></a></li>
+                                    <li><a class="dropdown-item" href='#' id='printBarcodes'  target='_blank'><img src='{{ asset('images/barcode.png') }}'>&nbsp;Print Barcodes</a></li>
+                                    {#<li><a class="dropdown-item" href='#' id='groupBarcode' target='_blank'><img src='{{ asset('images/barcode.png') }}'>&nbsp;<u>Creeer Groep Barcode</u></a></li>#}
+                                </ul>
+                            </div>
                         </div>
-                    </div>
-                </th>
-                <th>
-                    <table>
-                        <tr>
-                            <td>
-                                <a href="{{ path('track_index', {'page': page, 'sort': 'updatedAt', 'by': 'ASC'}) }}">
-                                    <small><span class="glyphicon glyphicon-menu-up"></span></small>
-                                </a>
-                            </td>
-                            <td rowspan="2">&nbsp;{% trans %} Changed On {% endtrans %}</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <a href="{{ path('track_index', {'page': page, 'sort': 'updatedAt', 'by': 'DESC'}) }}">
-                                    <small><span class="glyphicon glyphicon-menu-down"></span></small>
-                                </a>
-                            </td>
-                        </tr>
-                    </table>
-                </th>
-                <th>
-                    <table>
-                        <tr>
-                            
-                            <td>
-                                <a href="{{ path('track_index', {'page': page, 'sort': 'sku', 'by': 'ASC'}) }}">
-                                    <small><span class="glyphicon glyphicon-menu-up"></span></small>
-                                </a>
-                            </td>
-                            <td rowspan="2">&nbsp;SKU</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <a href="{{ path('track_index', {'page': page, 'sort': 'sku', 'by': 'DESC'}) }}">
-                                    <small><span class="glyphicon glyphicon-menu-down"></span></small>
-                                </a>
-                            </td>
-                            
-                        </tr>
-                    </table>
-                </th>
-                <th>
-                    {% trans %}Name{% endtrans %}
-                </th>
-                
-                <th>
-                    {% trans %}Quantity{% endtrans %}
-                </th>
-                
-                <th>
-                    {% trans %}Location{% endtrans %}
-                </th>
-                
-                {#
-                <th>
-                    {% trans %}Description{% endtrans %}
-                </th>
-                #}
-                
-                <th>
-                    {% trans %}Type{% endtrans %}
-                </th>
-                
-                
-                <th>
-                    {% trans %}Status{% endtrans %}
-                </th>
-                
-                <th>
-                    {% trans %}Brand{% endtrans %}
-                </th>
-                
-                <th>
-                    {% trans %}Department{% endtrans %}
-                </th>
-                
-                <th>
-                    {% trans %}Owner{% endtrans %}
-                </th>
-                
-                <th>
-                    {% trans %}Actions{% endtrans %}
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-        {% set product_row = 0 %} 
-        {% for product in products %}
-            {% set product_row = product_row+1 %}
+                    </th>
+                    <th>
+                        <table>
+                            <tr>
+                                <td>
+                                    <a href="{{ path('track_index', {'page': page, 'sort': 'updatedAt', 'by': 'ASC'}) }}">
+                                        <small><span class="glyphicon glyphicon-menu-up"></span></small>
+                                    </a>
+                                </td>
+                                <td rowspan="2">&nbsp;{% trans %} Changed On {% endtrans %}</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="{{ path('track_index', {'page': page, 'sort': 'updatedAt', 'by': 'DESC'}) }}">
+                                        <small><span class="glyphicon glyphicon-menu-down"></span></small>
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                    </th>
+                    <th>
+                        <table>
+                            <tr>
+
+                                <td>
+                                    <a href="{{ path('track_index', {'page': page, 'sort': 'sku', 'by': 'ASC'}) }}">
+                                        <small><span class="glyphicon glyphicon-menu-up"></span></small>
+                                    </a>
+                                </td>
+                                <td rowspan="2">&nbsp;SKU</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="{{ path('track_index', {'page': page, 'sort': 'sku', 'by': 'DESC'}) }}">
+                                        <small><span class="glyphicon glyphicon-menu-down"></span></small>
+                                    </a>
+                                </td>
+
+                            </tr>
+                        </table>
+                    </th>
+                    <th>
+                        {% trans %}Name{% endtrans %}
+                    </th>
+
+                    <th>
+                        {% trans %}Quantity{% endtrans %}
+                    </th>
+
+                    <th>
+                        {% trans %}Location{% endtrans %}
+                    </th>
+
+                    {#
+                    <th>
+                        {% trans %}Description{% endtrans %}
+                    </th>
+                    #}
+
+                    <th>
+                        {% trans %}Type{% endtrans %}
+                    </th>
+
+
+                    <th>
+                        {% trans %}Status{% endtrans %}
+                    </th>
+
+                    <th>
+                        {% trans %}Brand{% endtrans %}
+                    </th>
+
+                    <th>
+                        {% trans %}Department{% endtrans %}
+                    </th>
+
+                    <th>
+                        {% trans %}Owner{% endtrans %}
+                    </th>
+
+                    <th>
+                        {% trans %}Actions{% endtrans %}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            {% set product_row = 0 %} 
+            {% for product in products %}
+                {% set product_row = product_row+1 %}
+                <tr>
+                    <td><input type='checkbox' class="select_status" name='select_status-{{ product.id }}' id='selectbox-{{ product.id }}' onChange='checkItems();' value="{{ product.id }}"></td>
+                    <td>{{ product.updatedAt }}</td>
+                    <td><b><a href="{{ path('track_show', { 'id': product.id }) }}">{{ product.sku }}</a></b></td>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>{{ product.location }}</td>
+                    {# <td>{{ product.description}}</td> #}
+                    <td>{{ product.type }}</td>
+                    <td>{{ product.status }}</td>
+                    <td>{{ product.brand }}</td>
+                    <td>{{ product.department }}</td>
+                    <td>{{ product.owner }}</td>
+                    <td>
+                        <div class="list-group">
+                            <a class="list-group-item" href="{{ path('track_edit', { 'id': product.id }) }}">
+                                {% trans %}Edit{% endtrans %}
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
             <tr>
-                <td><input type='checkbox' class="select_status" name='select_status-{{ product.id }}' id='selectbox-{{ product.id }}' onChange='checkItems();' value="{{ product.id }}"></td>
-                <td>{{ product.updatedAt }}</td>
-                <td><b><a href="{{ path('track_show', { 'id': product.id }) }}">{{ product.sku }}</a></b></td>
-                <td>{{ product.name }}</td>
-                <td>{{ product.quantity }}</td>
-                <td>{{ product.location }}</td>
-                {# <td>{{ product.description}}</td> #}
-                <td>{{ product.type }}</td>
-                <td>{{ product.status }}</td>
-                <td>{{ product.brand }}</td>
-                <td>{{ product.department }}</td>
-                <td>{{ product.owner }}</td>
-                <td>
-                    <div class="list-group">
-                        <a class="list-group-item" href="{{ path('track_edit', { 'id': product.id }) }}">
-                            {% trans %}Edit{% endtrans %}
-                        </a>
-                    </div>
-                </td>
+              <td style="background-color:white;">
+                <div class="pagination">
+                    Page 
+                    {% if page > 1 %}
+                        <a href="{{ path('track_index', {'page': page-1}) }}">&lt;</a>
+                    {% endif %}
+                    {{ page }}
+                    <a href="{{ path('track_index', {'page': page+1}) }}">&gt;</a>
+                 </div>
+              </td>
             </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-      
+        </table>
+        
+    </div>
 {% endblock %}
 
 {% block javascripts %}

@@ -27,21 +27,30 @@ class ProductController extends Controller
     /**
      * Lists all product entities.
      *
-     * @Route("/index/{page}/{sort}/{by}", name="track_index", defaults={"page" = 1, "sort" = "updatedAt", "by" = "DESC"})
+     * @Route("/index/{page}/{sort}/{by}/{only}/{spec}", name="track_index", defaults={"page" = 1, "sort" = "updatedAt", "by" = "DESC"})
      * @Method("GET")
      */
-    public function indexAction($page, $sort, $by)
+    public function indexAction($page = 1, $sort, $by, $only = null, $spec = null)
     {
         $em = $this->getDoctrine()->getManager();
         
-        $query = $em->getRepository('TrackBundle:Product')->createQueryBuilder('p')
+        // get locations
+        $locations = $em->getRepository('TrackBundle:Location')->findAll();
+        
+        // get type
+        $types = $em->getRepository('TrackBundle:ProductType')->findAll();
+        
+        // get brand
+        $brands = $em->getRepository('TrackBundle:Brand')->findAll();
+        
+        // get products
+        $productquery = $em->getRepository('TrackBundle:Product')->createQueryBuilder('p')
                 ->where('p.status < 999 OR p.status IS NULL')
                 ->orderBy('p.'.$sort , $by)
                 ->setFirstResult(($page - 1) * 10)
-                ->setMaxResults(10)
-                ->getQuery();
+                ->setMaxResults(10);
         
-        $products = $query->getResult();
+        $products = $productquery->getQuery()->getResult();
 
         return $this->render('product/index.html.twig', array(
             'products' => $products,
