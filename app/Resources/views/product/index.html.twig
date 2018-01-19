@@ -10,15 +10,49 @@
 
 
 {% block body %}
+    <div class="container col-sm-12">
     <h1>{% trans %}Product List{% endtrans %}</h1>
     
     <h2>{{ app.request.get('order') }}</h2>
     
     <h4><a href="{{ path('track_new') }}">{% trans %}Create a new product{% endtrans %}</a></h4>
     
-    <input type="text" name="barcode_search" id="barcode_search" placeholder="{% trans %}Scan Item Here{% endtrans %}">
     
-    <div class="product_table">
+        <button class="btn btn-success" name="product-search-form-btn" id="product-search-form-btn"><span class="glyphicon glyphicon-search"></span>&nbsp;{% trans %}Search{% endtrans %}</button><br>
+    </div>
+    <div class="container col-sm-6" name="product-search-form" id="product-search-form" style="display:none;">
+        <form>
+            <div class="form-row">
+                <label for="search-terms">{% trans %}Search terms:{% endtrans %}</label>
+                <input type="text" class="form-control" id="search-bar">
+            </div>
+            <div class="form-row">
+                <label for="search-spec">{% trans %}Item specifics{% endtrans %}</label>
+                
+                <select name="search-spec-location">
+                    <option name="null">Location</option>
+                </select>
+                
+                <select name="search-spec-producttype">
+                    <option name="null">Type</option>
+                </select>
+                
+                <select name="search-spec-brand">
+                    <option name="null">Brand</option>
+                </select>
+            </div>
+        </form>
+    </div>
+    
+    <div class="container col-sm-12">
+        <br>
+    </div>
+        
+    <div class="container col-sm-12">
+        <input type="text" name="barcode_search" id="barcode_search" placeholder="{% trans %}Scan Item Here{% endtrans %}">
+    </div>
+    
+    <div class="product_table col-sm-12">
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -176,6 +210,10 @@
                    var product_url = "{{ path('track_searchSku', {'sku': "PLACEHOLDER" })}}";
                    window.location = product_url.replace("PLACEHOLDER", barcode);
                 }
+        });
+        
+        $("#product-search-form-btn").click(function () {
+            $("#product-search-form").slideToggle();
         });
         
         // checkbox script
