@@ -28,11 +28,17 @@ class ProductController extends Controller
      * Lists all product entities.
      *
      * @Route("/index/{page}/{sort}/{by}/{only}/{spec}", name="track_index", defaults={"page" = 1, "sort" = "updatedAt", "by" = "DESC"})
-     * @Method("GET")
+     * @Method({"GET", "POST"})
      */
-    public function indexAction($page = 1, $sort, $by, $only = null, $spec = null)
+    public function indexAction(Request $request, $page = 1, $sort, $by, $only = null, $spec = null)
     {
         $em = $this->getDoctrine()->getManager();
+        
+        $search_query = $request->request->get('item-search');
+        
+        if(isset($search_query)) {
+            echo "<pre>"; print_r($search_query); echo "</pre>";
+        }
         
         // get locations
         $locations = $em->getRepository('TrackBundle:Location')->findAll();
@@ -55,7 +61,7 @@ class ProductController extends Controller
         return $this->render('product/index.html.twig', array(
             'products' => $products,
             'page' => $page,
-            'search-options' => [
+            'search_options' => [
                 'specifics' => [
                     'locations' => $locations,
                     'types' => $types,
