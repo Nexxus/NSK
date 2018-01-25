@@ -10,46 +10,58 @@
 
 
 {% block body %}
+    
     <div class="container col-sm-12">
-    <h1>{% trans %}Product List{% endtrans %}</h1>
-    
-    <h2>{{ app.request.get('order') }}</h2>
-    
-    <h4><a href="{{ path('track_new') }}">{% trans %}Create a new product{% endtrans %}</a></h4>
-    
-    
-        <button class="btn btn-success" name="product-search-form-btn" id="product-search-form-btn"><span class="glyphicon glyphicon-search"></span>&nbsp;{% trans %}Search{% endtrans %}</button><br>
+        <h1>{% trans %}Product List{% endtrans %}</h1>
+
+        <h2>{{ app.request.get('order') }}</h2>
+
+        <h4><a href="{{ path('track_new') }}">{% trans %}Create a new product{% endtrans %}</a></h4>
+        <button class="btn btn-success" name="product-search-form-btn" id="product-search-form-btn"><span class="glyphicon glyphicon-search"></span>&nbsp;{% trans %}Search{% endtrans %}</button>
     </div>
+    
     <div class="container col-sm-6" name="product-search-form" id="product-search-form" style="display:none;">
         <form>
+            
+            {# Scan Barcode #}
+            <div class="form-row">
+                <label for="barcode_search" id="barcode_search">{% trans %}Scan Barcode{% endtrans %}</label>
+                <input type="text" class="form-control" name="barcode_search" id="barcode_search" placeholder="{% trans %}Scan Item Here{% endtrans %}">
+            </div>
+            
+            <br>
+            
+            {# Search Terms #}
             <div class="form-row">
                 <label for="search-terms">{% trans %}Search terms:{% endtrans %}</label>
                 <input type="text" class="form-control" id="search-bar">
             </div>
+                
+            <br>
+
+            {# Item specifics #}
             <div class="form-row">
-                <label for="search-spec">{% trans %}Item specifics{% endtrans %}</label>
+                <label for="search-spec">{% trans %}Item specifics{% endtrans %}:</label>
                 
                 <select name="search-spec-location">
-                    <option name="null">Location</option>
-                </select>
+                    <option name="null">
+                        {% trans %}Location{% endtrans %}
+                    </option>
+                </select>&nbsp;
                 
                 <select name="search-spec-producttype">
-                    <option name="null">Type</option>
-                </select>
+                    <option name="null">
+                        {% trans %}Type{% endtrans %}
+                    </option>
+                </select>&nbsp;
                 
                 <select name="search-spec-brand">
-                    <option name="null">Brand</option>
+                    <option name="null">
+                        {% trans %}Brand{% endtrans %}
+                    </option>
                 </select>
             </div>
         </form>
-    </div>
-    
-    <div class="container col-sm-12">
-        <br>
-    </div>
-        
-    <div class="container col-sm-12">
-        <input type="text" name="barcode_search" id="barcode_search" placeholder="{% trans %}Scan Item Here{% endtrans %}">
     </div>
     
     <div class="product_table col-sm-12">
@@ -60,9 +72,9 @@
                         <div id="checkbox-header">
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    {% trans %}
+                                    {# trans %}
                                         Select
-                                    {% endtrans %}
+                                    {% endtrans #}
                                     <span class="caret"></span>
                                 </button>    
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">

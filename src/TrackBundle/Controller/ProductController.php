@@ -54,7 +54,14 @@ class ProductController extends Controller
 
         return $this->render('product/index.html.twig', array(
             'products' => $products,
-            'page' => $page
+            'page' => $page,
+            'search-options' => [
+                'specifics' => [
+                    'locations' => $locations,
+                    'types' => $types,
+                    'brands' => $brands
+                ],
+            ],
         ));
     }
 
