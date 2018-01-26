@@ -30,24 +30,19 @@ class ProductController extends Controller
      * @Route("/index/{page}/{sort}/{by}/{only}/{spec}", name="track_index", defaults={"page" = 1, "sort" = "updatedAt", "by" = "DESC"})
      * @Method({"GET", "POST"})
      */
-    public function indexAction(Request $request, $page = 1, $sort, $by, $only = null, $spec = null)
+    public function indexAction(Request $request, $sort, $by, $page = 1, $only = null, $spec = null)
     {
         $em = $this->getDoctrine()->getManager();
         
-        $search_query = $request->request->get('item-search');
+        $search_query = $request->request->get('item_search');
         
         if(isset($search_query)) {
             echo "<pre>"; print_r($search_query); echo "</pre>";
         }
         
-        // get locations
-        $locations = $em->getRepository('TrackBundle:Location')->findAll();
-        
-        // get type
-        $types = $em->getRepository('TrackBundle:ProductType')->findAll();
-        
-        // get brand
-        $brands = $em->getRepository('TrackBundle:Brand')->findAll();
+        $locations  = $em->getRepository('TrackBundle:Location')->findAll();
+        $types      = $em->getRepository('TrackBundle:ProductType')->findAll();
+        $brands     = $em->getRepository('TrackBundle:Brand')->findAll();
         
         // get products
         $productquery = $em->getRepository('TrackBundle:Product')->createQueryBuilder('p')
@@ -55,6 +50,20 @@ class ProductController extends Controller
                 ->orderBy('p.'.$sort , $by)
                 ->setFirstResult(($page - 1) * 10)
                 ->setMaxResults(10);
+        
+        if(isset($search_query['searchbar'])&&$search_query['searchbar']<>'') {
+            $productquery->where($productquery->expr()->orX(
+                    $productquery->expr()->like('p.id', ':q'),
+                    $productquery->expr()->like('p.sku', ':q'),
+                    $productquery->expr()->like('p.name', ':q'),
+                    $productquery->expr()->like('p.description', ':q')
+//                  $productquery->expr()->like('p.type', ':q'),
+//                  $productquery->expr()->like('p.location', ':q'),
+//                  $productquery->expr()->like('p.status', ':q'),
+//                  $productquery->expr()->like('p.brand', ':q')
+                ))
+                ->setParameter('q', $search_query['searchbar']);
+        }
         
         $products = $productquery->getQuery()->getResult();
 
