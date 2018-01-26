@@ -65,7 +65,7 @@
                     {% endfor %}
                 </select>&nbsp;
                 
-                <select name="item_search[spec][producttype]">
+                <select name="item_search[spec][type]">
                     <option value="" disabled selected>
                         {% trans %}Any Type{% endtrans %}
                     </option>
@@ -226,6 +226,9 @@
                 </tr>
             {% endfor %}
             </tbody>
+            {% if product_row == 0 %}
+                <tr><td colspan="999"><h4>{% trans %}No products found{% endtrans %}.</h4></td></tr>
+            {% endif %}
             <tr>
               <td style="background-color:white;">
                 <div class="pagination">

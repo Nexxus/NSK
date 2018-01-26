@@ -36,9 +36,9 @@ class ProductController extends Controller
         
         $search_query = $request->request->get('item_search');
         
-        if(isset($search_query)) {
-            echo "<pre>"; print_r($search_query); echo "</pre>";
-        }
+//        if(isset($search_query)) {
+//            echo "<pre>"; print_r($search_query); echo "</pre>";
+//        }
         
         $locations  = $em->getRepository('TrackBundle:Location')->findAll();
         $types      = $em->getRepository('TrackBundle:ProductType')->findAll();
@@ -51,19 +51,37 @@ class ProductController extends Controller
                 ->setFirstResult(($page - 1) * 10)
                 ->setMaxResults(10);
         
+        // search terms through id, sku, name, description
         if(isset($search_query['searchbar'])&&$search_query['searchbar']<>'') {
             $productquery->where($productquery->expr()->orX(
                     $productquery->expr()->like('p.id', ':q'),
                     $productquery->expr()->like('p.sku', ':q'),
                     $productquery->expr()->like('p.name', ':q'),
                     $productquery->expr()->like('p.description', ':q')
-//                  $productquery->expr()->like('p.type', ':q'),
-//                  $productquery->expr()->like('p.location', ':q'),
-//                  $productquery->expr()->like('p.status', ':q'),
-//                  $productquery->expr()->like('p.brand', ':q')
                 ))
                 ->setParameter('q', '%'.$search_query['searchbar'].'%');
         }
+        if(isset($search_query['spec'])) {
+            // location
+            if(isset($search_query['spec']['location'])) {
+                $productquery->where('p.location = :q')
+                        ->setParameter('q', $search_query['spec']['location']);
+            }
+            
+            // type
+            if(isset($search_query['spec']['type'])) {
+                $productquery->where('p.type = :q')
+                        ->setParameter('q', $search_query['spec']['type']);
+            }
+            
+            // brand
+            if(isset($search_query['spec']['brand'])) {
+                $productquery->where('p.brand = :q')
+                        ->setParameter('q', $search_query['spec']['brand']);
+            }
+            
+        }
+        
         
         $products = $productquery->getQuery()->getResult();
 
