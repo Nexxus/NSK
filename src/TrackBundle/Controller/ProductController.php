@@ -140,12 +140,15 @@ class ProductController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // check for sku
             
+            // check for sku
             if($this->checkExistingSku($product->getSku() ))
             {
                 $em->persist($product);
                 $em->flush($product);
+                
+                // add potential attributes
+                $this->checkAttributeTemplate($product);
 
                 return $this->redirectToRoute('track_show', array('id' => $product->getId()));
             } 
@@ -290,19 +293,7 @@ class ProductController extends Controller
         $editForm->handleRequest($request);
         
         // if product has type, check if it needs attributes
-        if($product->getType() != null) {
-            $attr_repository = $this->getDoctrine()->getRepository(ProductAttribute::class);
-            
-            // check for attributes
-            $query = $attr_repository->findBy(
-                    ['productid' => $product->getId()]
-            );
-
-            if(count($query)==0) {   
-                $this->applyAttributeTemplate($product);   
-            }
-        }
-        
+        $this->checkAttributeTemplate($product);
         
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             
@@ -419,6 +410,26 @@ class ProductController extends Controller
             ->setMethod('DELETE')
             ->getForm()
         ;
+    }
+    
+    /**
+     * Check if any attributes need to be added to a product
+     * 
+     * @param Product $product
+     */
+    private function checkAttributeTemplate(Product $product) {
+        if($product->getType() != null) {
+            $attr_repository = $this->getDoctrine()->getRepository(ProductAttribute::class);
+            
+            // check for attributes
+            $query = $attr_repository->findBy(
+                    ['productid' => $product->getId()]
+            );
+
+            if(count($query)==0) {   
+                $this->applyAttributeTemplate($product);   
+            }
+        }
     }
     
     /**
