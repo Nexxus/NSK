@@ -62,7 +62,7 @@ class ProductController extends Controller
 //                  $productquery->expr()->like('p.status', ':q'),
 //                  $productquery->expr()->like('p.brand', ':q')
                 ))
-                ->setParameter('q', $search_query['searchbar']);
+                ->setParameter('q', '%'.$search_query['searchbar'].'%');
         }
         
         $products = $productquery->getQuery()->getResult();
