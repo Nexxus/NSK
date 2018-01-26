@@ -46,13 +46,12 @@ class ProductController extends Controller
         
         // get products
         $productquery = $em->getRepository('TrackBundle:Product')->createQueryBuilder('p')
-                ->where('p.status < 999 OR p.status IS NULL')
                 ->orderBy('p.'.$sort , $by)
                 ->setFirstResult(($page - 1) * 10)
                 ->setMaxResults(10);
         
         // search terms through id, sku, name, description
-        if(isset($search_query['searchbar'])&&$search_query['searchbar']<>'') {
+        if(isset($search_query['searchbar']) && $search_query['searchbar']<>'') {
             $productquery->where($productquery->expr()->orX(
                     $productquery->expr()->like('p.id', ':q'),
                     $productquery->expr()->like('p.sku', ':q'),
@@ -61,7 +60,9 @@ class ProductController extends Controller
                 ))
                 ->setParameter('q', '%'.$search_query['searchbar'].'%');
         }
-        if(isset($search_query['spec'])) {
+        
+        if(isset($search_query['spec'])) 
+        {
             // location
             if(isset($search_query['spec']['location'])) {
                 $productquery->where('p.location = :q')
@@ -73,13 +74,13 @@ class ProductController extends Controller
                 $productquery->where('p.type = :q')
                         ->setParameter('q', $search_query['spec']['type']);
             }
-            
-            // brand
-            if(isset($search_query['spec']['brand'])) {
-                $productquery->where('p.brand = :q')
-                        ->setParameter('q', $search_query['spec']['brand']);
-            }
-            
+        }
+        
+        // if coming from admin panel, only show sold
+        if($only=='sold') {
+            $productquery->where('p.status = 999');
+        } else {
+            $productquery->where('p.status < 999 OR p.status IS NULL');
         }
         
         

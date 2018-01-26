@@ -23,17 +23,6 @@ class DefaultController extends Controller
      */
     public function viewSalesAction()
     {
-        $em = $this->getDoctrine()->getManager();
-        
-        $query = $em->getRepository('TrackBundle:Product')->createQueryBuilder('p')
-                ->where('p.status = 999')
-                ->orderBy('p.updatedAt', 'DESC')
-                ->getQuery();
-        
-        $products = $query->getResult();
-
-        return $this->render('product/index.html.twig', array(
-            'products' => $products,
-        ));
+        return $this->redirectToRoute('track_index', ['only' => 'sold']);
     }
 }

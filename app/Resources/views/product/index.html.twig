@@ -75,17 +75,6 @@
                         </option>
                     {% endfor %}
                 </select>&nbsp;
-                
-                <select name="item_search[spec][brand]">
-                    <option value="" disabled selected>
-                        {% trans %}Any Brand{% endtrans %}
-                    </option>
-                    {% for brand in search_options.specifics.brands %}
-                        <option value="{{ brand.id }}">
-                            {{ brand.name }}
-                        </option>
-                    {% endfor %}
-                </select>
             </div>
                 <br>
             <input type="submit" name="submit_search">
