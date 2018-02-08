@@ -52,7 +52,7 @@ class ProductController extends Controller
         
         // search terms through id, sku, name, description
         if(isset($search_query['searchbar']) && $search_query['searchbar']<>'') {
-            $productquery->where($productquery->expr()->orX(
+            $productquery->andWhere($productquery->expr()->orX(
                     $productquery->expr()->like('p.id', ':q'),
                     $productquery->expr()->like('p.sku', ':q'),
                     $productquery->expr()->like('p.name', ':q'),
@@ -65,22 +65,22 @@ class ProductController extends Controller
         {
             // location
             if(isset($search_query['spec']['location'])) {
-                $productquery->where('p.location = :q')
+                $productquery->andWhere('p.location = :q')
                         ->setParameter('q', $search_query['spec']['location']);
             }
             
             // type
             if(isset($search_query['spec']['type'])) {
-                $productquery->where('p.type = :q')
+                $productquery->andWhere('p.type = :q')
                         ->setParameter('q', $search_query['spec']['type']);
             }
         }
         
         // if coming from admin panel, only show sold
         if($only=='sold') {
-            $productquery->where('p.status = 999');
+            $productquery->andWhere('p.status = 999');
         } else {
-            $productquery->where('p.status < 999 OR p.status IS NULL');
+            $productquery->andWhere('p.status < 999 OR p.status IS NULL');
         }
         
         
