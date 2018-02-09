@@ -104,6 +104,8 @@ class ProductController extends Controller
             ],
             'search_query' => [
                 'terms' => $search_query['searchbar'],
+                'locations' => $search_query['spec']['location'],
+                'types' => $search_query['spec']['type'],
             ]
         ));
     }
