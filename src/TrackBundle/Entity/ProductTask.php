@@ -22,9 +22,9 @@ class ProductTask
     private $id;
 
     /**
-     * @var int
      *
-     * @ORM\Column(name="product_id", type="integer")
+     * @ORM\ManyToOne(targetEntity="Product") 
+     * @ORM\JoinColumn(name="productId", referencedColumnName="id")
      */
     private $productId;
 

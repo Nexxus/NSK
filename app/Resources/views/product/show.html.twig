@@ -17,8 +17,13 @@
                 <td>
                     {{ product.sku }}
                     &nbsp;
-                    <a href="{{ path('track_print_barcode', {'sku': product.sku }) }}" target="_BLANK">
-                        <img src="{{ asset('images/barcode.png') }}">
+                    <a href="{{ path('track_print_barcode', {'sku': product.sku }) }}" target="_BLANK" style="text-decoration:none">
+                        <span class="glyphicon glyphicon-barcode" style="color:black"></span>
+                    </a>
+                        &nbsp;
+                    <a href="{{ path('track_print_barcode', {'sku': product.sku }) }}" target="_BLANK"
+                       data-toggle="tooltip" data-placement="top" title="Checklist">
+                        <span class="glyphicon glyphicon-list-alt" style="color:black"></span>
                     </a>
                 </td>
             </tr>
