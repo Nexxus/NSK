@@ -34,11 +34,14 @@ class ProductController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         
+        // true if search query was made
+        $searched = false;
+        
         $search_query = $request->request->get('item_search');
         
-//        if(isset($search_query)) {
-//            echo "<pre>"; print_r($search_query); echo "</pre>";
-//        }
+        if(isset($search_query)) {
+            echo "<pre>"; print_r($search_query); echo "</pre>";
+        }
         
         $locations  = $em->getRepository('TrackBundle:Location')->findAll();
         $types      = $em->getRepository('TrackBundle:ProductType')->findAll();
@@ -52,6 +55,7 @@ class ProductController extends Controller
         
         // search terms through id, sku, name, description
         if(isset($search_query['searchbar']) && $search_query['searchbar']<>'') {
+            $searched = true;
             $productquery->andWhere($productquery->expr()->orX(
                     $productquery->expr()->like('p.id', ':q'),
                     $productquery->expr()->like('p.sku', ':q'),
@@ -63,6 +67,7 @@ class ProductController extends Controller
         
         if(isset($search_query['spec'])) 
         {
+            $searched = true;
             // location
             if(isset($search_query['spec']['location'])) {
                 $productquery->andWhere('p.location = :q')
@@ -89,6 +94,7 @@ class ProductController extends Controller
         return $this->render('product/index.html.twig', array(
             'products' => $products,
             'page' => $page,
+            'searched' => $searched,
             'search_options' => [
                 'specifics' => [
                     'locations' => $locations,

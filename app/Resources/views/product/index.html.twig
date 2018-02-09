@@ -28,6 +28,7 @@
         <button class="btn btn-success" name="product-search-form-btn" id="product-search-form-btn"><span class="glyphicon glyphicon-search"></span>&nbsp;{% trans %}Search{% endtrans %}</button>
     </div>
     
+    {# Search Box #}
     <div class="container col-sm-6" name="product-search-form" id="product-search-form" style="display:none;">
         <br>
         {# Scan Barcode #}
@@ -81,12 +82,23 @@
         </form>
         <br>
     </div>
-    
+    {# End Search Box #}
+        
     <div class="product_table col-sm-12">
+        {% if searched %}
+            <a href="{{ path("track_index") }}"><h4>
+                {% trans %} 
+                    Clear search query 
+                {% endtrans %}
+            </h4></a>
+        {% endif %}
+        
         <table class="table table-striped">
             <thead>
+                
                 <tr>
-                    <th>{# Checkbox column #}
+                    <th>
+                        {# Checkbox column #}
                         <div id="checkbox-header">
                             <div class="dropdown">
                                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
