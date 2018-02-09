@@ -102,6 +102,9 @@ class ProductController extends Controller
                     'brands' => $brands
                 ],
             ],
+            'search_query' => [
+                'terms' => $search_query['searchbar'],
+            ]
         ));
     }
 

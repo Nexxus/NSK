@@ -43,7 +43,7 @@
             {# Search Terms #}
             <div class="form-row">
                 <label for="search-terms">{% trans %}Search terms:{% endtrans %}</label>
-                <input type="text" class="form-control" name="item_search[searchbar]" id="search-bar">
+                <input type="text" class="form-control" name="item_search[searchbar]" id="search-bar" value="{{ search_query.terms }}">
             </div>
                 
             <br>
@@ -67,7 +67,7 @@
                 </select>&nbsp;
                 
                 <select name="item_search[spec][type]">
-                    <option value="" disabled selected>
+                    <option value="" selected>
                         {% trans %}Any Type{% endtrans %}
                     </option>
                     {% for type in search_options.specifics.types %}
