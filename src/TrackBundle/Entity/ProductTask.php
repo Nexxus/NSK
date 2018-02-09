@@ -24,7 +24,7 @@ class ProductTask
     /**
      *
      * @ORM\ManyToOne(targetEntity="Product") 
-     * @ORM\JoinColumn(name="productId", referencedColumnName="id")
+     * @ORM\JoinColumn(name="product_id", referencedColumnName="id")
      */
     private $productId;
 
