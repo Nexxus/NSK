@@ -39,9 +39,10 @@ class ProductController extends Controller
         
         $search_query = $request->request->get('item_search');
         
-        if(isset($search_query)) {
-            echo "<pre>"; print_r($search_query); echo "</pre>";
-        }
+        // show search post
+//        if(isset($search_query)) {
+//            echo "<pre>"; print_r($search_query); echo "</pre>";
+//        }
         
         $locations  = $em->getRepository('TrackBundle:Location')->findAll();
         $types      = $em->getRepository('TrackBundle:ProductType')->findAll();
