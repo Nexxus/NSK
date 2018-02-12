@@ -70,13 +70,13 @@ class ProductController extends Controller
         {
             $searched = true;
             // location
-            if(isset($search_query['spec']['location'])) {
+            if(isset($search_query['spec']['location']) && $search_query['spec']['location']!=null) {
                 $productquery->andWhere('p.location = :q')
                         ->setParameter('q', $search_query['spec']['location']);
             }
             
             // type
-            if(isset($search_query['spec']['type'])) {
+            if(isset($search_query['spec']['type']) && $search_query['spec']['type']!=null) {
                 $productquery->andWhere('p.type = :q')
                         ->setParameter('q', $search_query['spec']['type']);
             }
