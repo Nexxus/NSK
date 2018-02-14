@@ -1,0 +1,87 @@
+
+{% trans_default_domain 'FOSUserBundle' %}
+
+{% block fos_user_content %}
+{% if error %}
+    <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+{% endif %}
+
+<form action="{{ path("fos_user_security_check") }}" method="post" class="form-signin">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+
+    <h2 class="form-signin-heading">Please sign in</h2>
+    <label for="username" class="sr-only"></label>
+    <input type="text" id="username" name="_username" value="{{ last_username }}" class="form-control" placeholder="Username" required/>
+    <label for="password" class="sr-only"></label>
+    <input type="password" id="password" name="_password" class="form-control" placeholder="Password" required/>
+    <div class="checkbox">
+        <label>
+        <input type="checkbox" value="remember_me">{{ 'security.login.remember_me'|trans }}</label>
+        </label>
+    </div>
+    
+    <input type="submit" class="btn btn-lg btn-primary btn-block" id="_submit" name="_submit" value="{{ 'security.login.submit'|trans }}" />
+</form>
+    
+
+{% endblock fos_user_content %}
+
+{% block stylesheets %}
+    <style>   
+        body {
+        padding-top: 40px;
+        padding-bottom: 40px;
+        }
+
+        .form-signin {
+          max-width: 330px;
+          padding: 15px;
+          margin: 0 auto;
+        }
+        .form-signin .form-signin-heading,
+        .form-signin .checkbox {
+          margin-bottom: 10px;
+        }
+        .form-signin .checkbox {
+          font-weight: normal;
+        }
+        .form-signin .form-control {
+          position: relative;
+          height: auto;
+          -webkit-box-sizing: border-box;
+             -moz-box-sizing: border-box;
+                  box-sizing: border-box;
+          padding: 10px;
+          font-size: 16px;
+        }
+        .form-signin .form-control:focus {
+          z-index: 2;
+        }
+        .form-signin input[type="text"] {
+          margin-bottom: -1px;
+          border-bottom-right-radius: 0;
+          border-bottom-left-radius: 0;
+        }
+        .form-signin input[type="password"] {
+          margin-bottom: 10px;
+          border-top-left-radius: 0;
+          border-top-right-radius: 0;
+        }
+        
+        .form-control {
+            display: block;
+            width: 100%;
+            line-height: 1.42857143;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+            -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+            transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+        }
+        
+        h2{
+            font-size: 30px;
+            font-weight: 500;
+        }
+    </style>
+{% endblock stylesheets %}
