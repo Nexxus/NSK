@@ -14,11 +14,6 @@
     <input type="text" id="username" name="_username" value="{{ last_username }}" class="form-control" placeholder="Username" required/>
     <label for="password" class="sr-only"></label>
     <input type="password" id="password" name="_password" class="form-control" placeholder="Password" required/>
-    <div class="checkbox">
-        <label>
-        <input type="checkbox" value="remember_me">{{ 'security.login.remember_me'|trans }}</label>
-        </label>
-    </div>
     
     <input type="submit" class="btn btn-lg btn-primary btn-block" id="_submit" name="_submit" value="{{ 'security.login.submit'|trans }}" />
 </form>
