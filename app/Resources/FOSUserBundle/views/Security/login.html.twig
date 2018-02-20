@@ -1,81 +1,34 @@
+{% extends 'base.html.twig' %}
 
 {% trans_default_domain 'FOSUserBundle' %}
 
-{% block fos_user_content %}
-{% if error %}
-    <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-{% endif %}
+{% block body %}
+  
+	{% if error %}
+		<div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+	{% endif %}
 
-<form action="{{ path("fos_user_security_check") }}" method="post" class="form-signin">
-    <input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
+	<div class="col-lg-6">
+		<h2>{% trans %}Login Page{% endtrans %}</h2>
+        <form action="{{ path("fos_user_security_check") }}" method="post" class="form-signin">
+			<input type="hidden" name="_csrf_token" value="{{ csrf_token }}" />
 
-    <h2 class="form-signin-heading">Please sign in</h2>
-    <label for="username" class="sr-only"></label>
-    <input type="text" id="username" name="_username" value="{{ last_username }}" class="form-control" placeholder="Username" required/>
-    <label for="password" class="sr-only"></label>
-    <input type="password" id="password" name="_password" class="form-control" placeholder="Password" required/>
-    
-    <input type="submit" class="btn btn-lg btn-primary btn-block" id="_submit" name="_submit" value="{{ 'security.login.submit'|trans }}" />
-</form>
+			<div class="form-group">
+				<label for="username" class="sr-only"></label>
+				<input type="text" id="username" name="_username" value="{{ last_username }}" class="form-control" placeholder="0000" required/>
+			</div>
 
-{% endblock fos_user_content %}
+			<div class="form-group">
+				<label for="password" class="sr-only"></label>
+				<input type="password" id="password" name="_password" class="form-control" placeholder="Password" required/>
+			</div>
+			
+			<button type="submit" class="btn btn-primary" id="_submit" name="_submit" value="{{ 'security.login.submit'|trans }}" />
 
-{% block stylesheets %}
-    <style>   
-        body {
-        padding-top: 40px;
-        padding-bottom: 40px;
-        }
-
-        .form-signin {
-          max-width: 330px;
-          padding: 15px;
-          margin: 0 auto;
-        }
-        .form-signin .form-signin-heading,
-        .form-signin .checkbox {
-          margin-bottom: 10px;
-        }
-        .form-signin .checkbox {
-          font-weight: normal;
-        }
-        .form-signin .form-control {
-          position: relative;
-          height: auto;
-          -webkit-box-sizing: border-box;
-             -moz-box-sizing: border-box;
-                  box-sizing: border-box;
-          padding: 10px;
-          font-size: 16px;
-        }
-        .form-signin .form-control:focus {
-          z-index: 2;
-        }
-        .form-signin input[type="text"] {
-          margin-bottom: -1px;
-          border-bottom-right-radius: 0;
-          border-bottom-left-radius: 0;
-        }
-        .form-signin input[type="password"] {
-          margin-bottom: 10px;
-          border-top-left-radius: 0;
-          border-top-right-radius: 0;
-        }
-        
-        .form-control {
-            display: block;
-            width: 100%;
-            line-height: 1.42857143;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
-            -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
-            transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
-        }
-        
-        h2{
-            font-size: 30px;
-            font-weight: 500;
-        }
-    </style>
-{% endblock stylesheets %}
+			{% trans %}Log in{% endtrans %}
+			</button>
+		</form>
+	</div>
+   
+   
+{% endblock body %} 
