@@ -46,16 +46,15 @@ class ExportController extends Controller
                 . "\t" . "Owner";
         
         foreach($products as $product) {
-            $serialize .= "\n"
-                    . "\t" . $product->getSku()
-                    . "\t" . $product->getName()
-                    . "\t" . $product->getQuantity()
-                    . "\t" . $product->getLocation()
-                    . "\t" . $product->getType()
-                    . "\t" . $product->getStatus()
-                    . "\t" . $product->getBrand()
-                    . "\t" . $product->getDepartment() 
-                    . "\t" . $product->getOwner();
+            $serialize .= "\n" . $product->getSku()
+                        . "\t" . $product->getName()
+                        . "\t" . $product->getQuantity()
+                        . "\t" . $product->getLocation()
+                        . "\t" . $product->getType()
+                        . "\t" . $product->getStatus()
+                        . "\t" . $product->getBrand()
+                        . "\t" . $product->getDepartment() 
+                        . "\t" . $product->getOwner();
         }
         
         $response = new Response(
