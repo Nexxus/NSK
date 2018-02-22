@@ -108,9 +108,10 @@
                                     <span class="caret"></span>
                                 </button>    
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <li><a class="dropdown-item" href='#' id='selectAllBoxes' onClick="selectAllBoxes()"><span><img src='{{ asset("images/move_bottom.png") }}'>&nbsp;Selecteer Alles</span></a></li>
-                                    <li><a class="dropdown-item" href='#' id='selectNoBoxes' onClick="selectNoBoxes()"><span><img src='{{ asset("images/move_up.png") }}'>&nbsp;Deselecteer Alles</span></a></li>
-                                    <li><a class="dropdown-item" href='#' id='printBarcodes'  target='_blank'><img src='{{ asset('images/barcode.png') }}'>&nbsp;Print Barcodes</a></li>
+                                    <li><a class="dropdown-item" href='#' id='selectAllBoxes' onClick="selectAllBoxes()"><span class="glyphicon glyphicon-ok-sign" style="color:green"></span>&nbsp;Selecteer Alles</a></li>
+                                    <li><a class="dropdown-item" href='#' id='selectNoBoxes' onClick="selectNoBoxes()"><span class="glyphicon glyphicon-remove-sign" style="color:red"></span>&nbsp;Deselecteer Alles</a></li>
+                                    <li><a class="dropdown-item" href='#' id='exportCSV'  target='_blank'><span class="glyphicon glyphicon-th-list" style="color:black"></span>&nbsp;Print CSV</a></li>
+                                    <li><a class="dropdown-item" href='#' id='printBarcodes'  target='_blank'><span class="glyphicon glyphicon-barcode" style="color:black"></span>&nbsp;Print Barcodes</a></li>
                                     {#<li><a class="dropdown-item" href='#' id='groupBarcode' target='_blank'><img src='{{ asset('images/barcode.png') }}'>&nbsp;<u>Creeer Groep Barcode</u></a></li>#}
                                 </ul>
                             </div>
@@ -286,6 +287,7 @@
                     }
                 }
                 document.getElementById("printBarcodes").href = "{{ path('track_print_barcode_multi') }}"+"?id[]="+itemArr.join("&id[]=");
+                document.getElementById("exportCSV").href = "{{ path('track_export_csv') }}"+"?id[]="+itemArr.join("&id[]=");
                 console.log("Selected items: " + itemArr);
         }
         

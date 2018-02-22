@@ -14,10 +14,12 @@ class ExportController extends Controller
 {
     
     /**
-     * @Route("/track/exportquery")
+     * Exports a CSV file based on list of items, exports all columns
+     * 
+     * @Route("/track/export/csv", name="track_export_csv")
      * @Method("GET")
      */
-    public function exportQueryAction() {
+    public function exportCSVAction() {
         $em = $this->getDoctrine()->getManager();
         
         $response = new Response(
