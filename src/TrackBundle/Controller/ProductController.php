@@ -133,9 +133,14 @@ class ProductController extends Controller
         $query = $repository_product->createQueryBuilder('p')
                 ->orderBy('p.id', 'DESC')
                 ->getQuery();
-                
-        $result = $query->getResult();
-        $generatedsku = "Copia" . ($result[0]->getId() + 1);
+        
+        $result = $query->getResult(); 
+        if(count($result)>0){ 
+            $generatedsku = "Copia" . ($result[0]->getId() + 1); 
+        }
+        else{ 
+            $generatedsku = "Copia";
+        } 
         
         $form = $this->createFormBuilder($product)
                 ->add('sku', TextType::class, ['attr' => [
