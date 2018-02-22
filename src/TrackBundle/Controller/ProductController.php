@@ -139,7 +139,7 @@ class ProductController extends Controller
             $generatedsku = "Copia" . ($result[0]->getId() + 1); 
         }
         else{ 
-            $generatedsku = "Copia";
+            $generatedsku = "Copia0";
         } 
         
         $form = $this->createFormBuilder($product)
