@@ -35,25 +35,27 @@ class ExportController extends Controller
         $products = $query->getQuery()->getResult();
         
         // serialize into text
-        $serialize = "SKU\t"
-                . "Name" . "\t"
-                . "Quantity" . "\t"
-                . "Location" . "\t"
-                . "Type" . "\t"
-                . "Status" . "\t"
-                . "Brand" . "\t"
-                . "Department" . "\t";
+        $serialize = "SKU"
+                . "\t" . "Name"
+                . "\t" . "Quantity"
+                . "\t" . "Location"
+                . "\t" . "Type"
+                . "\t" . "Status"
+                . "\t" . "Brand"
+                . "\t" . "Department"
+                . "\t" . "Owner";
         
         foreach($products as $product) {
             $serialize .= "\n"
-                    . $product->getSku() . "\t"
-                    . $product->getName() . "\t"
-                    . $product->getQuantity() . "\t"
-                    . $product->getLocation() . "\t"
-                    . $product->getType() . "\t"
-                    . $product->getStatus() . "\t"
-                    . $product->getBrand() . "\t"
-                    . $product->getDepartment();
+                    . "\t" . $product->getSku()
+                    . "\t" . $product->getName()
+                    . "\t" . $product->getQuantity()
+                    . "\t" . $product->getLocation()
+                    . "\t" . $product->getType()
+                    . "\t" . $product->getStatus()
+                    . "\t" . $product->getBrand()
+                    . "\t" . $product->getDepartment() 
+                    . "\t" . $product->getOwner();
         }
         
         $response = new Response(
