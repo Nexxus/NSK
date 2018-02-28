@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "abfeb55a65d3a417b0a1b73bf3ad0b27",
-    "content-hash": "85502b545afa980387802f53bb853bb6",
+    "hash": "59264276e0804d7d2c46d525e68bbca8",
+    "content-hash": "b7678509b9b35bef9981799f1dfc3fbb",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -838,16 +838,16 @@
         },
         {
             "name": "friendsofsymfony/user-bundle",
-            "version": "v2.1.1",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSUserBundle.git",
-                "reference": "32c2eed036dd85620cc5229fa482a7ae9455ded9"
+                "reference": "decb22bf9ef2b355f4936ce69de959b3f0a9e5b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/32c2eed036dd85620cc5229fa482a7ae9455ded9",
-                "reference": "32c2eed036dd85620cc5229fa482a7ae9455ded9",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/decb22bf9ef2b355f4936ce69de959b3f0a9e5b7",
+                "reference": "decb22bf9ef2b355f4936ce69de959b3f0a9e5b7",
                 "shasum": ""
             },
             "require": {
@@ -910,7 +910,7 @@
             "keywords": [
                 "User management"
             ],
-            "time": "2018-02-20 09:19:29"
+            "time": "2018-02-21 15:06:40"
         },
         {
             "name": "incenteev/composer-parameter-handler",
@@ -2527,7 +2527,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "friendsofsymfony/user-bundle": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

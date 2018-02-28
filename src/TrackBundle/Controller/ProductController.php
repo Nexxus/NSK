@@ -40,9 +40,9 @@ class ProductController extends Controller
         $search_query = $request->request->get('item_search');
         
         // show search post
-//        if(isset($search_query)) {
-//            echo "<pre>"; print_r($search_query); echo "</pre>";
-//        }
+        if(isset($search_query)) {
+            echo "<pre>"; print_r($search_query); echo "</pre>";
+        }
         
         $locations  = $em->getRepository('TrackBundle:Location')->findAll();
         $types      = $em->getRepository('TrackBundle:ProductType')->findAll();
@@ -506,5 +506,41 @@ class ProductController extends Controller
         return (count($result) == 0);
     }
     
+    /**
+     * Find specific products on search
+     */
+    public function searchSpecific(Controller $productquery, $search_query) {
+        if(isset($search_query['searchbar']) && $search_query['searchbar']<>'') {
+            $searched = true;
+            $productquery->andWhere($productquery->expr()->orX(
+                    $productquery->expr()->like('p.id', ':q'),
+                    $productquery->expr()->like('p.sku', ':q'),
+                    $productquery->expr()->like('p.name', ':q'),
+                    $productquery->expr()->like('p.description', ':q')
+                ))
+                ->setParameter('q', '%'.$search_query['searchbar'].'%');
+        }
+        
+        if(isset($search_query['spec'])) {
+            $searched = true;
+            // location
+            if(isset($search_query['spec']['location']) && $search_query['spec']['location']!=null) {
+                $productquery->andWhere('p.location = :q')
+                        ->setParameter('q', $search_query['spec']['location']);
+            } else {
+                $search_query['spec']['location'] = null;
+            }
+            
+            // type
+            if(isset($search_query['spec']['type']) && $search_query['spec']['type']!=null) {
+                $productquery->andWhere('p.type = :q')
+                        ->setParameter('q', $search_query['spec']['type']);
+            } else {
+                $search_query['spec']['type'] = null;
+            }
+        }
+        
+        return $productquery;
+    }
     
 }
