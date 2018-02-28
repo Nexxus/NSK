@@ -44,10 +44,6 @@ class ProductController extends Controller
             echo "<pre>"; print_r($search_query); echo "</pre>";
         }
         
-        $locations  = $em->getRepository('TrackBundle:Location')->findAll();
-        $types      = $em->getRepository('TrackBundle:ProductType')->findAll();
-        $brands     = $em->getRepository('TrackBundle:Brand')->findAll();
-        
         // get products
         $productquery = $em->getRepository('TrackBundle:Product')->createQueryBuilder('p')
                 ->orderBy('p.'.$sort , $by)
@@ -55,35 +51,8 @@ class ProductController extends Controller
                 ->setMaxResults(10);
         
         // search terms through id, sku, name, description
-        if(isset($search_query['searchbar']) && $search_query['searchbar']<>'') {
-            $searched = true;
-            $productquery->andWhere($productquery->expr()->orX(
-                    $productquery->expr()->like('p.id', ':q'),
-                    $productquery->expr()->like('p.sku', ':q'),
-                    $productquery->expr()->like('p.name', ':q'),
-                    $productquery->expr()->like('p.description', ':q')
-                ))
-                ->setParameter('q', '%'.$search_query['searchbar'].'%');
-        }
-        
-        if(isset($search_query['spec'])) 
-        {
-            $searched = true;
-            // location
-            if(isset($search_query['spec']['location']) && $search_query['spec']['location']!=null) {
-                $productquery->andWhere('p.location = :q')
-                        ->setParameter('q', $search_query['spec']['location']);
-            } else {
-                $search_query['spec']['location'] = null;
-            }
-            
-            // type
-            if(isset($search_query['spec']['type']) && $search_query['spec']['type']!=null) {
-                $productquery->andWhere('p.type = :q')
-                        ->setParameter('q', $search_query['spec']['type']);
-            } else {
-                $search_query['spec']['type'] = null;
-            }
+        if(isset($search_query['searchbar']) || isset($search_query['spec'])) {
+            $productquery = $this->searchSpecific($productquery, $search_query);
         }
         
         // if coming from admin panel, only show sold
@@ -96,6 +65,11 @@ class ProductController extends Controller
         
         $products = $productquery->getQuery()->getResult();
 
+        // obtain data for the dropdowns
+        $locations  = $em->getRepository('TrackBundle:Location')->findAll();
+        $types      = $em->getRepository('TrackBundle:ProductType')->findAll();
+        $brands     = $em->getRepository('TrackBundle:Brand')->findAll();
+        
         return $this->render('product/index.html.twig', array(
             'products' => $products,
             'page' => $page,
@@ -509,7 +483,7 @@ class ProductController extends Controller
     /**
      * Find specific products on search
      */
-    public function searchSpecific(Controller $productquery, $search_query) {
+    public function searchSpecific($productquery, $search_query) {
         if(isset($search_query['searchbar']) && $search_query['searchbar']<>'') {
             $searched = true;
             $productquery->andWhere($productquery->expr()->orX(
