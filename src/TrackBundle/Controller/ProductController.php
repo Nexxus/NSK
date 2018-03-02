@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -34,22 +35,16 @@ class ProductController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         
-        // true if search query was made
-        $searched = false;
-        
         $search_query = $request->request->get('item_search');
         
-        // show search post
-        if(isset($search_query)) {
-            echo "<pre>"; print_r($search_query); echo "</pre>";
-        }
+        $searched = false;
         
         // get products
         $productquery = $em->getRepository('TrackBundle:Product')->createQueryBuilder('p')
                 ->orderBy('p.'.$sort , $by)
                 ->setFirstResult(($page - 1) * 10)
                 ->setMaxResults(10);
-        
+
         // search terms through id, sku, name, description
         if(isset($search_query['searchbar']) || isset($search_query['spec'])) {
             $productquery = $this->searchSpecific($productquery, $search_query);
@@ -61,7 +56,6 @@ class ProductController extends Controller
         } else {
             $productquery->andWhere('p.status < 999 OR p.status IS NULL');
         }
-        
         
         $products = $productquery->getQuery()->getResult();
 
@@ -484,6 +478,9 @@ class ProductController extends Controller
      * Find specific products on search
      */
     public function searchSpecific($productquery, $search_query) {
+        
+        echo "<pre>"; print_r($search_query); echo "</pre>";
+        
         if(isset($search_query['searchbar']) && $search_query['searchbar']<>'') {
             $searched = true;
             $productquery->andWhere($productquery->expr()->orX(
@@ -497,7 +494,8 @@ class ProductController extends Controller
         
         if(isset($search_query['spec'])) {
             $searched = true;
-            // location
+            
+            // check for location
             if(isset($search_query['spec']['location']) && $search_query['spec']['location']!=null) {
                 $productquery->andWhere('p.location = :q')
                         ->setParameter('q', $search_query['spec']['location']);
@@ -505,7 +503,7 @@ class ProductController extends Controller
                 $search_query['spec']['location'] = null;
             }
             
-            // type
+            // check for type
             if(isset($search_query['spec']['type']) && $search_query['spec']['type']!=null) {
                 $productquery->andWhere('p.type = :q')
                         ->setParameter('q', $search_query['spec']['type']);
@@ -517,4 +515,30 @@ class ProductController extends Controller
         return $productquery;
     }
     
+    /**
+     * Stores search query in a seperate session
+     * 
+     * @param SessionInterface $session
+     */
+    public function storeSearchQuery(SessionInterface $session) {
+        
+    }
+    
+    /**
+     * Loads stored query into array
+     * 
+     * @param SessionInterface $session
+     */
+    public function loadSearchQuery(SessionInterface $session) {
+        
+    }
+    
+    /**
+     * Clear search query
+     * 
+     * @param SessionInterface $session
+     */
+    public function clearSearchQuery(SessionInterface $session) {
+        
+    }
 }
