@@ -35,13 +35,14 @@ class ProductController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         
+        // retrieve search query
         $search_query = $request->request->get('item_search');
         
+        // session for managing search queries
         $search_session = new Session();
-        $search_session->set('test1', 'Test Value 1');
+        $search_session = $this->storeSearchQuery($search_query, $search_session);
         
-        echo $search_session->get('test1');
-        
+        // will be unnecessary soon (due to session handling)
         $searched = false;
         
         // get products
@@ -50,10 +51,8 @@ class ProductController extends Controller
                 ->setFirstResult(($page - 1) * 10)
                 ->setMaxResults(10);
 
-        // search terms through id, sku, name, description
-        if(isset($search_query['searchbar']) || isset($search_query['spec'])) {
-            $productquery = $this->searchSpecific($productquery, $search_query);
-        }
+        $stored_query = $this->loadSearchQuery($search_session);
+        $productquery = $this->searchSpecific($productquery, $stored_query);
         
         // if coming from admin panel, only show sold
         if($only=='sold') {
@@ -521,21 +520,48 @@ class ProductController extends Controller
     }
     
     /**
-     * Stores search query in a seperate session
+     * Store search query into session
      * 
-     * @param SessionInterface $session
+     * @param type $q
+     * @param Session $s
+     * @return Session
      */
-    public function storeSearchQuery(SessionInterface $session) {
+    public function storeSearchQuery($q, Session $s) {
+        if(isset($q['searchbar']) && $q['searchbar']<>'') {
+            $s->set('searchbar', $q['searchbar']);
+        }
+        if(isset($q['spec']['location']) && $q['spec']['location']!=null) {
+            $s->set('spec_location', $q['spec']['location']);
+        }
         
+        if(isset($q['spec']['type']) && $q['spec']['type']!=null) {
+            $s->set('spec_type', $q['spec']['type']);
+        }
+        
+        return $s;
     }
     
     /**
-     * Loads stored query into array
+     * Loads stored query into array for further use
      * 
-     * @param SessionInterface $session
+     * @param type $s
+     * @return type
      */
-    public function loadSearchQuery(SessionInterface $session) {
+    public function loadSearchQuery(Session $s) {
+        //echo "<pre>"; print_r($s); echo "</pre>";
+        $arr = [];
         
+        if($s->has('searchbar')) {
+            $arr['searchbar']         = $s->get('searchbar');
+        }
+        if($s->has('spec_location')) {
+            $arr['spec']['location']  = $s->get('spec_location');
+        }
+        if($s->has('spec_type')) {
+            $arr['spec']['type']      = $s->get('spec_type');
+        }
+        
+        return $arr;
     }
     
     /**
@@ -543,7 +569,7 @@ class ProductController extends Controller
      * 
      * @param SessionInterface $session
      */
-    public function clearSearchQuery(SessionInterface $session) {
+    public function clearSearchQuery($s) {
         
     }
 }
