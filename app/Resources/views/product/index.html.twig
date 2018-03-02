@@ -86,7 +86,7 @@
         
     <div class="product_table col-sm-12">
         {% if searched %}
-            <a href="{{ path("track_index") }}"><h4>
+            <a href="{{ path("track_index", {'clear': true}) }}"><h4>
                 {% trans %} 
                     Clear search query 
                 {% endtrans %}

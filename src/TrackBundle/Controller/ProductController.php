@@ -42,8 +42,11 @@ class ProductController extends Controller
         $search_session = new Session();
         $search_session = $this->storeSearchQuery($search_query, $search_session);
         
-        // will be unnecessary soon (due to session handling)
-        $searched = false;
+        // clear search if requested
+        $clear = $request->query->get('clear');
+        if($clear==1) {
+            $this->clearSearchQuery($search_session);
+        }
         
         // get products
         $productquery = $em->getRepository('TrackBundle:Product')->createQueryBuilder('p')
@@ -71,7 +74,7 @@ class ProductController extends Controller
         return $this->render('product/index.html.twig', array(
             'products' => $products,
             'page' => $page,
-            'searched' => $searched,
+            'searched' => $this->checkSearchQuery($search_session),
             'search_options' => [
                 'specifics' => [
                     'locations' => $locations,
@@ -482,11 +485,9 @@ class ProductController extends Controller
      * Find specific products on search
      */
     public function searchSpecific($productquery, $search_query) {
-        
-        echo "<pre>"; print_r($search_query); echo "</pre>";
+//        echo "<pre>"; print_r($search_query); echo "</pre>";
         
         if(isset($search_query['searchbar']) && $search_query['searchbar']<>'') {
-            $searched = true;
             $productquery->andWhere($productquery->expr()->orX(
                     $productquery->expr()->like('p.id', ':q'),
                     $productquery->expr()->like('p.sku', ':q'),
@@ -497,8 +498,6 @@ class ProductController extends Controller
         }
         
         if(isset($search_query['spec'])) {
-            $searched = true;
-            
             // check for location
             if(isset($search_query['spec']['location']) && $search_query['spec']['location']!=null) {
                 $productquery->andWhere('p.location = :q')
@@ -565,11 +564,37 @@ class ProductController extends Controller
     }
     
     /**
+     * Check if search query is active
+     * 
+     * @param Session $s
+     * @return boolean
+     */
+    public function checkSearchQuery(Session $s) {
+        $bool = false;
+        
+        if($s->has('searchbar')) {
+            $bool = true;
+        }
+        if($s->has('spec_location')) {
+            $bool = true;
+        }
+        if($s->has('spec_type')) {
+            $bool = true;
+        }
+        
+        return $bool;
+    }
+    
+    /**
      * Clear search query
      * 
-     * @param SessionInterface $session
+     * @param Session $s
      */
-    public function clearSearchQuery($s) {
+    public function clearSearchQuery(Session $s) {
+        $s->remove('searchbar');
+        $s->remove('spec_location');
+        $s->remove('spec_type');
         
+        return $this->redirectToRoute('track_index');
     }
 }
