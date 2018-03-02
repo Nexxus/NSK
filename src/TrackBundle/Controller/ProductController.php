@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -19,15 +19,15 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 /**
- * Product controller.
- *
+ * Product controller. 
+ * 
  * @Route("track")
  */
 class ProductController extends Controller
 {   
     /**
      * Lists all product entities.
-     *
+     * 
      * @Route("/index/{page}/{sort}/{by}/{only}/{spec}", name="track_index", defaults={"page" = 1, "sort" = "updatedAt", "by" = "DESC"})
      * @Method({"GET", "POST"})
      */
@@ -36,6 +36,11 @@ class ProductController extends Controller
         $em = $this->getDoctrine()->getManager();
         
         $search_query = $request->request->get('item_search');
+        
+        $search_session = new Session();
+        $search_session->set('test1', 'Test Value 1');
+        
+        echo $search_session->get('test1');
         
         $searched = false;
         
