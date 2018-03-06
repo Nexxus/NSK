@@ -60,6 +60,19 @@ class BarcodeController extends Controller
     /**
      * Prints a barcode PDF page
      * 
+     * Constructor args:
+     * mode - default ''
+     * format - A4, for example, default ''	 
+     * font size - default 0
+     * default font family	
+     * margin_left	 
+     * margin right	 
+     * margin top	
+     * margin bottom	
+     * margin header	
+     * margin footer
+     * L - landscape, P - portrait
+     * 
      * @Route("print/barcode39multi", name="track_print_barcode_multi")
      */
     public function printMultiAction(Request $request) {
@@ -70,7 +83,8 @@ class BarcodeController extends Controller
         // needs to change page size, turn off default arguments
         $mpdfService->setAddDefaultConstructorArgs(false);
         
-        $mpdf = $mpdfService->getMpdf(['', [54,25] ,'9','',3,'3',1,'','0','0','P']);
+        
+        $mpdf = $mpdfService->getMpdf(['', [54,25] ,'0','',0,0,0,0,0,0,'P']);
         
         $mpdf->setTitle("ERCPv2 Barcode Generator");
 
