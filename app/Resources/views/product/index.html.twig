@@ -23,10 +23,6 @@
         <h1>{% trans %}Product List{% endtrans %}</h1>
 
         <h2>{{ app.request.get('order') }}</h2>
-
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#BarcodeSelectModal">
-            Launch demo modal
-        </button>
         
         <h4><a href="{{ path('track_new') }}">{% trans %}Create a new product{% endtrans %}</a></h4>
         <button class="btn btn-success" name="product-search-form-btn" id="product-search-form-btn"><span class="glyphicon glyphicon-search"></span>&nbsp;{% trans %}Search{% endtrans %}</button>
@@ -115,7 +111,8 @@
                                     <li><a class="dropdown-item" href='#' id='selectAllBoxes' onClick="selectAllBoxes();"><span class="glyphicon glyphicon-ok-sign" style="color:green"></span>&nbsp;Selecteer Alles</a></li>
                                     <li><a class="dropdown-item" href='#' id='selectNoBoxes' onClick="selectNoBoxes();"><span class="glyphicon glyphicon-remove-sign" style="color:red"></span>&nbsp;Deselecteer Alles</a></li>
                                     <li><a class="dropdown-item" href='#' id='exportCSV'  target='_blank'><span class="glyphicon glyphicon-th-list" style="color:black"></span>&nbsp;Print CSV</a></li>
-                                    <li><a class="dropdown-item" href='#' id='printBarcodes'  target='_blank'><span class="glyphicon glyphicon-barcode" style="color:black"></span>&nbsp;Print Barcodes</a></li>
+                                    <li><a class="dropdown-item" data-toggle="modal" data-target="#BarcodeSelectModal"><span class="glyphicon glyphicon-barcode" style="color:black"></span>&nbsp;Print Barcodes</a></li>
+                                    {#<li><a class="dropdown-item" href='#' id='printBarcodes'  target='_blank'><span class="glyphicon glyphicon-barcode" style="color:black"></span>&nbsp;Print Barcodes</a></li>#}
                                     {#<li><a class="dropdown-item" href='#' id='groupBarcode' target='_blank'><img src='{{ asset('images/barcode.png') }}'>&nbsp;<u>Creeer Groep Barcode</u></a></li>#}
                                 </ul>
                             </div>
@@ -256,11 +253,23 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="BarcodeSelectTitle">
-                        {% trans %}Select Your Barcode{% endtrans %}
+                        {% trans %}Select Your Barcode Type{% endtrans %}
                     </h5>
                 </div>
                 <div class="modal-body">
-
+                    <div class="col-sm-6">
+                        <a class="dropdown-item" href='#' id='printBarcode11352'  target='_blank'>
+                            <h4 style="color:black">Dymo 11352</h4>
+                            <img src="{{ asset("images/BarcodeRoll11352.png") }}" class="img-thumbnail rounded float-left">
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        {#<a class="dropdown-item" href='#' id='printBarcode11356'  target='_blank'>#}
+                        <a class="dropdown-item" href='#' id='printBarcode11356'>
+                            <h4 style="color:black">Dymo 11356</h4>
+                            <img src="{{ asset("images/BarcodeRoll11356.png") }}" class="img-thumbnail rounded float-left">
+                        </a>
+                    </div>
                 </div>
                 <div class="modal-footer">
                 </div>
@@ -309,7 +318,7 @@
                         }
                     }
                 }
-                document.getElementById("printBarcodes").href = "{{ path('track_print_barcode_multi') }}"+"?id[]="+itemArr.join("&id[]=");
+                document.getElementById("printBarcode11352").href = "{{ path('track_print_barcode_multi') }}"+"?id[]="+itemArr.join("&id[]=");
                 document.getElementById("exportCSV").href = "{{ path('track_export_csv') }}"+"?id[]="+itemArr.join("&id[]=");
                 console.log("Selected items: " + itemArr);
         }
