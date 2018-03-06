@@ -108,8 +108,8 @@
                                     <span class="caret"></span>
                                 </button>    
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <li><a class="dropdown-item" href='#' id='selectAllBoxes' onClick="selectAllBoxes()"><span class="glyphicon glyphicon-ok-sign" style="color:green"></span>&nbsp;Selecteer Alles</a></li>
-                                    <li><a class="dropdown-item" href='#' id='selectNoBoxes' onClick="selectNoBoxes()"><span class="glyphicon glyphicon-remove-sign" style="color:red"></span>&nbsp;Deselecteer Alles</a></li>
+                                    <li><a class="dropdown-item" href='#' id='selectAllBoxes' onClick="selectAllBoxes();"><span class="glyphicon glyphicon-ok-sign" style="color:green"></span>&nbsp;Selecteer Alles</a></li>
+                                    <li><a class="dropdown-item" href='#' id='selectNoBoxes' onClick="selectNoBoxes();"><span class="glyphicon glyphicon-remove-sign" style="color:red"></span>&nbsp;Deselecteer Alles</a></li>
                                     <li><a class="dropdown-item" href='#' id='exportCSV'  target='_blank'><span class="glyphicon glyphicon-th-list" style="color:black"></span>&nbsp;Print CSV</a></li>
                                     <li><a class="dropdown-item" href='#' id='printBarcodes'  target='_blank'><span class="glyphicon glyphicon-barcode" style="color:black"></span>&nbsp;Print Barcodes</a></li>
                                     {#<li><a class="dropdown-item" href='#' id='groupBarcode' target='_blank'><img src='{{ asset('images/barcode.png') }}'>&nbsp;<u>Creeer Groep Barcode</u></a></li>#}
@@ -244,8 +244,27 @@
               </td>
             </tr>
         </table>
-        
     </div>
+    
+    {# Barcode Selecting Modal #}
+    <div class="modal fade" id="BarcodeSelectModal" tabindex="-1" role="dialog" aria-labelledby="BarcodeS">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="BarcodeSelectTitle">
+                        {% trans %}Select Your Barcode{% endtrans %}
+                    </h5>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>          
+                 
+    
 {% endblock %}
 
 {% block javascripts %}
