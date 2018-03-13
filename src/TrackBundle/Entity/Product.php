@@ -68,6 +68,13 @@ class Product
     private $status=1;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="price", type="int", length=255, nullable=true)
+     */
+    private $price;
+    
+    /**
      * @var string
      *
      * @ORM\Column(name="brand", type="string", length=255, nullable=true)
@@ -273,6 +280,31 @@ class Product
         return $this->status;
     }
 
+    
+    /**
+     * Set price
+     *
+     * @param int $price
+     *
+     * @return Product
+     */
+    public function setPrice($price)
+    {
+        $this->price = $price;
+
+        return $this;
+    }
+
+    /**
+     * Get price
+     *
+     * @return int
+     */
+    public function getPrice()
+    {
+        return $this->price;
+    }
+    
     /**
      * Set brand
      *
