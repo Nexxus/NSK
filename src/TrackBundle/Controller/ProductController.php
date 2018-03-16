@@ -597,4 +597,14 @@ class ProductController extends Controller
         
         return $this->redirectToRoute('track_index');
     }
+    
+    /**
+     * 
+     * @return String $s
+     */
+    public function returnTestString() {
+        $s = "Test String";
+        
+        return $s;
+    }
 }
