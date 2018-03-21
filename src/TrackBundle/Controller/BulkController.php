@@ -37,11 +37,14 @@ class BulkController extends ProductController
             echo "<pre>";
             print_r($product->attributes);
             echo "</pre>";
-        }
+        } 
         
+        // on submit,
         // check if all products have attributes
         
+        
         // show form for attributes
+        
         
         return $this->render('TrackBundle:Bulk:edit.html.twig', array(
         ));
