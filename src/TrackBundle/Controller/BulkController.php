@@ -24,25 +24,20 @@ class BulkController extends ProductController
     {
         $ids = $request->query->get('id');
         
-        $em = $this->getDoctrine()->getManager();
-        
-        // get items by GET ids
-        $products = $em->getRepository("TrackBundle:Product")->createQueryBuilder('q');
-        
-        $whereIn  = "(";
-        
-        foreach($ids as $id) {
-            $whereIn .= $id . ",";
-        }
-        
-        $whereIn = rtrim($whereIn, ",") . ")";
-        
-        $products = $products->where("q.id IN ".$whereIn);
-        
-        $products = $products->getQuery()->getResult();
+        $products = $this->getProductsByIds($ids);
         
         // if all items are the same type, give attribute options
-        echo $this->ifProductTypeEqual($products) ? 'true' : 'false';
+        if($this->ifProductTypeEqual($products)) {
+            foreach($products as $product) {
+                $product->attributes = $this->getProductAttributes($product);
+            }
+        }
+        
+        foreach($products as $product) {
+            echo "<pre>";
+            print_r($product->attributes);
+            echo "</pre>";
+        }
         
         // check if all products have attributes
         

@@ -493,6 +493,33 @@ class ProductController extends Controller
     }
     
     /**
+     * Returns products with given ids
+     * 
+     * @param array $ids
+     * @return products
+     */
+    public function getProductsByIds($ids) {
+        $em = $this->getDoctrine()->getManager();
+        
+        // get items by GET ids
+        $products = $em->getRepository("TrackBundle:Product")->createQueryBuilder('q');
+        
+        $whereIn  = "(";
+        
+        foreach($ids as $id) {
+            $whereIn .= $id . ",";
+        }
+        
+        $whereIn = rtrim($whereIn, ",") . ")";
+        
+        $products = $products->where("q.id IN ".$whereIn);
+        
+        $products = $products->getQuery()->getResult();
+        
+        return $products;
+    }
+    
+    /**
      * Find specific products on search
      */
     public function searchSpecific($productquery, $search_query) {
@@ -607,15 +634,5 @@ class ProductController extends Controller
         $s->remove('spec_type');
         
         return $this->redirectToRoute('track_index');
-    }
-    
-    /**
-     * 
-     * @return String $s
-     */
-    public function returnTestString() {
-        $s = "Test String";
-        
-        return $s;
     }
 }
