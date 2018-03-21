@@ -176,22 +176,8 @@ class ProductController extends Controller
     {
         $deleteForm = $this->createDeleteForm($product);
         
-        // get attributes
-        $em = $this->getDoctrine()->getManager();
-        
         // get attributes (previously checked or added)
-        $query = $em->createQuery('SELECT'
-                . '     pa.id,'
-                . '     a.name,'
-                . '     pa.value'
-                . ' FROM'
-                . '     TrackBundle:ProductAttribute pa '
-                . ' LEFT JOIN TrackBundle:Attribute a '
-                . '     WITH pa.attrId = a.id '
-                . 'WHERE '
-                . '     pa.productid = :id')
-                ->setParameter('id', $product->getId());
-        $attributes = $query->getResult();
+        $attributes = $this->getProductAttributes($product);
 
         return $this->render('product/show.html.twig', array(
             'product' => $product,
@@ -471,6 +457,25 @@ class ProductController extends Controller
         
     }
     
+    public function getProductAttributes(Product $product) {
+        $em = $this->getDoctrine()->getManager();
+        
+        $query = $em->createQuery('SELECT'
+                . '     pa.id,'
+                . '     a.name,'
+                . '     pa.value'
+                . ' FROM'
+                . '     TrackBundle:ProductAttribute pa '
+                . ' LEFT JOIN TrackBundle:Attribute a '
+                . '     WITH pa.attrId = a.id '
+                . 'WHERE '
+                . '     pa.productid = :id')
+                ->setParameter('id', $product->getId());
+        $attributes = $query->getResult();
+        
+        return $attributes;
+    }
+    
     /*
      * Returns true if a SKU in the database is taken
      */
@@ -602,5 +607,15 @@ class ProductController extends Controller
         $s->remove('spec_type');
         
         return $this->redirectToRoute('track_index');
+    }
+    
+    /**
+     * 
+     * @return String $s
+     */
+    public function returnTestString() {
+        $s = "Test String";
+        
+        return $s;
     }
 }
