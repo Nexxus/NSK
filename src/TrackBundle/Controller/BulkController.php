@@ -10,6 +10,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
+ * Controller for editing multiple products in one form
+ * 
  * @Route("/track/bulk")
  */
 class BulkController extends ProductController
@@ -28,9 +30,11 @@ class BulkController extends ProductController
         $products = $em->getRepository("TrackBundle:Product")->createQueryBuilder('q');
         
         $whereIn  = "(";
+        
         foreach($ids as $id) {
             $whereIn .= $id . ",";
-        } 
+        }
+        
         $whereIn = rtrim($whereIn, ",") . ")";
         
         $products = $products->where("q.id IN ".$whereIn);
@@ -38,9 +42,7 @@ class BulkController extends ProductController
         $products = $products->getQuery()->getResult();
         
         // if all items are the same type, give attribute options
-        foreach($products as $product) {
-            //...
-        }
+        echo $this->ifProductTypeEqual($products) ? 'true' : 'false';
         
         // check if all products have attributes
         
@@ -50,4 +52,28 @@ class BulkController extends ProductController
         ));
     }
 
+    /**
+     * Loops through array of products 
+     * returns true if products are the same type
+     * 
+     * @param type $products
+     * @return boolean
+     */
+    public function ifProductTypeEqual($products) {
+        $equal = true; 
+        $lasttype = ""; 
+        
+        $i=0; 
+        foreach($products as $product) {
+            if($i>0 && ($lasttype != $product->getType())) {
+                $equal = false;
+            }
+            
+            $lasttype = $product->getType();
+            $i++;
+        }
+        
+        return $equal;
+    }
+    
 }
