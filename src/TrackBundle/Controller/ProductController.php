@@ -201,36 +201,7 @@ class ProductController extends Controller
         $deleteForm = $this->createDeleteForm($product);
         
         // create form for editing
-        $editForm = $this->createFormBuilder($product)
-                ->add('sku', TextType::class)
-                ->add('name', TextType::class)
-                ->add('quantity', IntegerType::class, array(
-                    'required' => false
-                ))
-                ->add('price', IntegerType::class, array(
-                    'required' => false
-                ))
-                ->add('location',  EntityType::class, array(
-                    'class' => 'TrackBundle:Location',
-                    'choice_label' => 'name'
-                ))
-                ->add('type',  EntityType::class, array(
-                    'class' => 'TrackBundle:ProductType',
-                    'choice_label' => 'name'
-                ))
-                ->add('description', TextType::class, array(
-                    'required' => false
-                ))
-                ->add('status')
-                ->add('brand', TextType::class, array(
-                    'required' => false
-                ))
-                ->add('department', TextType::class, array(
-                    'required' => false
-                ))
-                ->add('owner', TextType::class, array(
-                    'required' => false
-                ));
+        $editForm = $this->addProductDataToForm($product);
         
         // get attributes (previously checked or added)
         $query = $em->createQuery('SELECT'
@@ -517,6 +488,83 @@ class ProductController extends Controller
         $products = $products->getQuery()->getResult();
         
         return $products;
+    }
+    
+    public function addProductDataToForm($product) {
+        $editForm = $this->createFormBuilder($product)
+                ->add('sku', TextType::class)
+                ->add('name', TextType::class)
+                ->add('quantity', IntegerType::class, array(
+                    'required' => false
+                ))
+                ->add('price', IntegerType::class, array(
+                    'required' => false
+                ))
+                ->add('location',  EntityType::class, array(
+                    'class' => 'TrackBundle:Location',
+                    'choice_label' => 'name'
+                ))
+                ->add('type',  EntityType::class, array(
+                    'class' => 'TrackBundle:ProductType',
+                    'choice_label' => 'name'
+                ))
+                ->add('description', TextType::class, array(
+                    'required' => false
+                ))
+                ->add('status')
+                ->add('brand', TextType::class, array(
+                    'required' => false
+                ))
+                ->add('department', TextType::class, array(
+                    'required' => false
+                ))
+                ->add('owner', TextType::class, array(
+                    'required' => false
+                ));
+        
+        return $editForm;
+    }
+    
+    public function addAttributesToProductForm(Form $editForm) {
+        
+        $em = $this->getDoctrine()->getManager();
+            
+        // get attributes (previously checked or added)
+        $query = $em->createQuery('SELECT'
+                . '     pa.id,'
+                . '     a.attr_code,'
+                . '     a.name,'
+                . '     pa.value'
+                . ' FROM'
+                . '     TrackBundle:ProductAttribute pa '
+                . ' LEFT JOIN TrackBundle:Attribute a '
+                . '     WITH pa.attrId = a.id '
+                . 'WHERE '
+                . '     pa.productid = :id')
+                ->setParameter('id', $product->getId());
+        $attributes = $query->getResult();
+        
+        $idArr = [];
+        
+        // add the attributes to the form
+        foreach($attributes as $attribute) {
+            $idArr[] = $attribute['id'];
+            
+            $fieldid = "attribute_" . $attribute['id'];
+            $fieldname = $attribute['attr_code'];
+            $fieldlabel = $attribute['name'];
+            $fieldvalue = $attribute['value'];
+            
+            $editForm->add($fieldid, TextType::class, [
+                'mapped'    => false,
+                'label'     => $fieldlabel,
+                'required'  => false,
+                'attr'      => [
+                    'id'        => $fieldid,
+                    'value'     => $fieldvalue,
+                ],
+            ]);
+        }
     }
     
     /**
