@@ -24,7 +24,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
  * @Route("track")
  */
 class ProductController extends Controller
-{   
+{
     /**
      * Lists all product entities.
      * 
@@ -124,6 +124,7 @@ class ProductController extends Controller
                 ])
                 ->add('name')
                 ->add('quantity')
+                ->add('price')
                 ->add('location')
                 ->add('type')
                 ->add('description')
@@ -153,7 +154,8 @@ class ProductController extends Controller
                 return $this->render('product/new.html.twig', array(
                     'product'       => $product,
                     'form'          => $form->createView(),
-                    'error_msg'     => 'DuplicateSku'
+                    'error_msg'     => 'DuplicateSku',
+                    'sellable'      => PRODUCT_SELLABLE,
                 ));
             }
         }
@@ -217,6 +219,9 @@ class ProductController extends Controller
                 ->add('sku', TextType::class)
                 ->add('name', TextType::class)
                 ->add('quantity', IntegerType::class, array(
+                    'required' => false
+                ))
+                ->add('price', IntegerType::class, array(
                     'required' => false
                 ))
                 ->add('location',  EntityType::class, array(
@@ -343,6 +348,7 @@ class ProductController extends Controller
             'product' => $product,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'sellable' => PRODUCT_SELLABLE,
             'attributes' => $attributes,
             'attribute_count' => $attribute_count,
         ));

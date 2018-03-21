@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Product
 {
-    
     /**
      * @var int
      *
@@ -70,9 +69,9 @@ class Product
     /**
      * @var int
      *
-     * @ORM\Column(name="price", type="int", length=255, nullable=true)
+     * @ORM\Column(name="price", type="integer", length=255, nullable=true)
      */
-    private $price;
+    private $price = 0;
     
     /**
      * @var string
@@ -284,7 +283,7 @@ class Product
     /**
      * Set price
      *
-     * @param int $price
+     * @param integer $price
      *
      * @return Product
      */
@@ -298,7 +297,7 @@ class Product
     /**
      * Get price
      *
-     * @return int
+     * @return integer
      */
     public function getPrice()
     {

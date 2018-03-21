@@ -34,6 +34,12 @@
                 <th>{% trans %} Quantity {% endtrans %}</th>
                 <td>{{ product.quantity}}</td>
             </tr>
+            {% if sellable %}
+             <tr>
+                 <th>{% trans %} Price {% endtrans %}</th>
+                 <td>{{ product.price}}</td>
+             </tr>
+            {% endif %}
             <tr>
                 <th>{% trans %} Location {% endtrans %}</th>
                 <td>{{ product.location }}</td>
