@@ -356,6 +356,28 @@ class ProductController extends Controller
     }
     
     /**
+     * Get a product by a SKU
+     * 
+     * @param type $sku
+     * @return product
+     * @return boolean
+     */
+    public function getBySku($sku) {
+        $em = $this->getDoctrine()->getManager();
+        
+        $product = $em->getRepository('TrackBundle:Product')
+                ->findOneBySku($sku);
+        
+        if($product) {
+            return $product;
+        } 
+        else
+        {
+            return false;
+        }
+    }
+    
+    /**
      * Creates a form to delete a product entity.
      *
      * @param Product $product The product entity
@@ -448,7 +470,7 @@ class ProductController extends Controller
     }
     
     /*
-     * Returns true if a SKU in the database is taken
+     * Returns true if a SKU in the database is not taken
      */
     public function checkExistingSku($sku) {
         $em = $this->getDoctrine()->getManager();
@@ -488,41 +510,6 @@ class ProductController extends Controller
         $products = $products->getQuery()->getResult();
         
         return $products;
-    }
-    
-    public function addProductDataToForm($product) {
-        $editForm = $this->createFormBuilder($product)
-                ->add('sku', TextType::class)
-                ->add('name', TextType::class)
-                ->add('quantity', IntegerType::class, array(
-                    'required' => false
-                ))
-                ->add('price', IntegerType::class, array(
-                    'required' => false
-                ))
-                ->add('location',  EntityType::class, array(
-                    'class' => 'TrackBundle:Location',
-                    'choice_label' => 'name'
-                ))
-                ->add('type',  EntityType::class, array(
-                    'class' => 'TrackBundle:ProductType',
-                    'choice_label' => 'name'
-                ))
-                ->add('description', TextType::class, array(
-                    'required' => false
-                ))
-                ->add('status')
-                ->add('brand', TextType::class, array(
-                    'required' => false
-                ))
-                ->add('department', TextType::class, array(
-                    'required' => false
-                ))
-                ->add('owner', TextType::class, array(
-                    'required' => false
-                ));
-        
-        return $editForm;
     }
     
     public function addAttributesToProductForm(Form $editForm) {
@@ -570,9 +557,7 @@ class ProductController extends Controller
     /**
      * Find specific products on search
      */
-    public function searchSpecific($productquery, $search_query) {
-//        echo "<pre>"; print_r($search_query); echo "</pre>";
-        
+    public function searchSpecific($productquery, $search_query) {       
         if(isset($search_query['searchbar']) && $search_query['searchbar']<>'') {
             $productquery->andWhere($productquery->expr()->orX(
                     $productquery->expr()->like('p.id', ':q'),

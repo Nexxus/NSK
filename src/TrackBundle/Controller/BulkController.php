@@ -7,6 +7,11 @@ use TrackBundle\Entity\Product;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -18,7 +23,7 @@ class BulkController extends ProductController
 {
     /**
      * @Route("/edit", name="track_bulk_edit")
-     * @Method({"GET"})
+     * @Method({"GET", "POST"})
      */
     public function bulkEditAction(Request $request)
     {
@@ -29,15 +34,51 @@ class BulkController extends ProductController
         // if all items are the same type, give attribute options
         if($this->ifProductTypeEqual($products)) {
             foreach($products as $product) {
+                // set product for base values
+                if(!isset($baseproduct)) {
+                    $baseproduct = $product;
+                }
+                // add attributes
                 $product->attributes = $this->getProductAttributes($product);
             }
         }
         
-        foreach($products as $product) {
-            echo "<pre>";
-            print_r($product->attributes);
-            echo "</pre>";
-        } 
+        $bulkForm = $this->createFormBuilder($baseproduct)
+                ->add('sku', TextType::class)
+                ->add('name', TextType::class)
+                ->add('quantity', IntegerType::class, array(
+                    'required' => false
+                ))
+                ->add('price', IntegerType::class, array(
+                    'required' => false
+                ))
+                ->add('location',  EntityType::class, array(
+                    'class' => 'TrackBundle:Location',
+                    'choice_label' => 'name'
+                ))
+                ->add('type',  EntityType::class, array(
+                    'class' => 'TrackBundle:ProductType',
+                    'choice_label' => 'name'
+                ))
+                ->add('description', TextType::class, array(
+                    'required' => false
+                ))
+                ->add('status')
+                ->add('brand', TextType::class, array(
+                    'required' => false
+                ))
+                ->add('department', TextType::class, array(
+                    'required' => false
+                ))
+                ->add('owner', TextType::class, array(
+                    'required' => false
+                ));
+        
+        $bulkForm->add('save', SubmitType::class, ['label' => 'Save Changes']);
+        
+        $bulkForm = $bulkForm->getForm();
+        
+        $bulkForm = $bulkForm->handleRequest($request);
         
         // on submit,
         // check if all products have attributes
@@ -47,6 +88,8 @@ class BulkController extends ProductController
         
         
         return $this->render('TrackBundle:Bulk:edit.html.twig', array(
+            'edit_form' => $bulkForm->createView(),
+            'sellable'      => PRODUCT_SELLABLE,
         ));
     }
 
