@@ -1,5 +1,6 @@
 <?php
 
+
 namespace TrackBundle\Controller;
 
 use TrackBundle\Entity\Product;
@@ -8,6 +9,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
  * Controller for editing multiple products in one form
@@ -34,19 +39,26 @@ class BulkController extends ProductController
         }
         
         foreach($products as $product) {
-            echo "<pre>";
-            print_r($product->attributes);
-            echo "</pre>";
+              $lastproduct = $product;
+//            echo "<pre>";
+//            print_r($product->attributes);
+//            echo "</pre>";
         } 
         
         // on submit,
         // check if all products have attributes
-        $editForm = $this->createFormBuilder($products);
+        $editForm = $this->addProductDataToForm($lastproduct);
         
+        $editForm->add('save', SubmitType::class, ['label' => 'Save Changes']);
+      
+        $editForm = $editForm->getForm();
+       
         // create form for attributes
         
         
         return $this->render('TrackBundle:Bulk:edit.html.twig', array(
+            'edit_form' => $editForm->createView(),
+            'sellable' => PRODUCT_SELLABLE,
         ));
     }
 
