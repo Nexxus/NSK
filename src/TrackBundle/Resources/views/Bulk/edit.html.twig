@@ -11,7 +11,7 @@
         {{ form_start(edit_form) }}
         {{ form_errors(edit_form) }}
         <div class="form-group">
-            <label class="control-label">Z
+            <label class="control-label">
                 {% trans %} SKU {% endtrans %}
             </label>
                 {{ form_widget(edit_form.sku, {'attr': {'readonly': 'readonly'} }) }}
@@ -20,62 +20,72 @@
             <label class="control-label">
                 {% trans %} Name {% endtrans %}
             </label>
+            <input type="checkbox" name="check-name">
                 {{ form_widget(edit_form.name) }}
         </div>
         <div class="form-group">
             <label class="control-label">
                 {% trans %} Quantity {% endtrans %}
             </label>
+            <input type="checkbox" name="check-quantity">
                 {{ form_widget(edit_form.quantity) }}
         </div>
         {% if sellable %}
-         <div class="form-group">
-             <label class="control-label">
-                 {% trans %} Price {% endtrans %}
-             </label>
-                 {{ form_widget(edit_form.price) }}
-         </div>
+        <div class="form-group">
+            <label class="control-label">
+                {% trans %} Price {% endtrans %}
+            </label>
+            <input type="checkbox" name="check-price">
+                {{ form_widget(edit_form.price) }}
+        </div>
         {% endif %}
         <div class="form-group">
             <label class="control-label">
                 {% trans %} Description {% endtrans %}
             </label>
+            <input type="checkbox" name="check-description">
                 {{ form_widget(edit_form.description) }}
         </div>
         <div class="form-group">
             <label class="control-label">
                 {% trans %} Type {% endtrans %}
             </label>
+            <input type="checkbox" name="check-type">
                 {{ form_widget(edit_form.type) }}
         </div>
         <div class="form-group">
             <label class="control-label">
                 {% trans %} Status {% endtrans %}
             </label>
+                <input type="checkbox" name="check-status">
                 {{ form_widget(edit_form.status, {'choice_translation_domain': 'status'} ) }}
         </div>
         <div class="form-group">
             <label class="control-label">
                 {% trans %} Location {% endtrans %}
             </label>
+            <input type="checkbox" name="check-location">
                 {{ form_widget(edit_form.location) }}
         </div>
         <div class="form-group">
             <label class="control-label">
                 {% trans %} Brand {% endtrans %}
             </label>
+            <input type="checkbox" name="check-brand">
                 {{ form_widget(edit_form.brand) }}
         </div>
         <div class="form-group">
             <label class="control-label">
                 {% trans %} Department {% endtrans %}
             </label>
+            <input type="checkbox" name="check-department">
                 {{ form_widget(edit_form.department) }}
         </div>
         <div class="form-group">
             <label class="control-label">
                 {% trans %} Owner {% endtrans %}
             </label>
+            <input type="checkbox" name="check-brand">
                 {{ form_widget(edit_form.owner) }}
         </div>
  
