@@ -23,10 +23,14 @@ class BulkController extends ProductController
 {
     /**
      * @Route("/edit", name="track_bulk_edit")
-     * @Method({"GET"})
+     * @Method({"GET", "POST"})
      */
     public function bulkEditAction(Request $request)
     {
+        $msg = "";
+        
+        $em = $this->getDoctrine()->getManager();
+        
         $ids = $request->query->get('id');
         
         $products = $this->getProductsByIds($ids);
@@ -40,9 +44,9 @@ class BulkController extends ProductController
         
         foreach($products as $product) {
               $lastproduct = $product;
-//            echo "<pre>";
-//            print_r($product->attributes);
-//            echo "</pre>";
+//          echo "<pre>";
+//          print_r($product->attributes);
+//          echo "</pre>";
         } 
         
         // on submit,
@@ -53,12 +57,48 @@ class BulkController extends ProductController
       
         $editForm = $editForm->getForm();
        
+        $editForm->handleRequest($request);
+        
+        if($editForm->isSubmitted()) {
+            $product = $editForm->getData();
+            $msg = "Bulk edit has been processed.";
+            
+            $idstr = "";
+            foreach($ids as $id) {
+                $idstr .= $id . ","; 
+            } 
+            $idstr = rtrim($idstr, ",");
+            print_r($idstr);
+            
+            $query = $em->createQuery("UPDATE "
+                    . " TrackBundle:Product p"
+                    . " SET"
+                    . "  p.name = :name,"
+                    . "  p.quantity = :quantity, "
+                    . "  p.price = :price,"
+                    . "  p.description = :description,"
+                    . "  p.type = :type,"
+                    . "  p.status = :status"
+                    . " WHERE"
+                    . "  p.id IN ({$idstr})")
+                    ->setParameter("name", $product->getName())
+                    ->setParameter("quantity", $product->getQuantity())
+                    ->setParameter("price", $product->getPrice())
+                    ->setParameter("description", $product->getDescription())
+                    ->setParameter("type", $product->getType())
+                    ->setParameter("status", $product->getStatus());
+            
+            $query = $query->getResult();
+            
+            return $this->redirectToRoute('track_index');
+        }
+        
         // create form for attributes
         
         
         return $this->render('TrackBundle:Bulk:edit.html.twig', array(
             'edit_form' => $editForm->createView(),
-            'sellable' => PRODUCT_SELLABLE,
+            'sellable'  => PRODUCT_SELLABLE,
         ));
     }
 

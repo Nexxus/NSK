@@ -9,95 +9,74 @@
 {% block body %}
     <h1>Edit multiple items</h1>
         {{ form_start(edit_form) }}
+        {{ form_errors(edit_form) }}
         <div class="form-group">
-            <label class="control-label col-lg-2">
+            <label class="control-label">Z
                 {% trans %} SKU {% endtrans %}
             </label>
-            <div class="col-lg-10">
                 {{ form_widget(edit_form.sku, {'attr': {'readonly': 'readonly'} }) }}
-            </div>
         </div>
         <div class="form-group">
-            <label class="control-label col-lg-2">
+            <label class="control-label">
                 {% trans %} Name {% endtrans %}
             </label>
-            <div class="col-lg-10">
                 {{ form_widget(edit_form.name) }}
-            </div>
         </div>
         <div class="form-group">
-            <label class="control-label col-lg-2">
+            <label class="control-label">
                 {% trans %} Quantity {% endtrans %}
             </label>
-            <div class="col-lg-10">
                 {{ form_widget(edit_form.quantity) }}
-            </div>
         </div>
         {% if sellable %}
          <div class="form-group">
-             <label class="control-label col-lg-2">
+             <label class="control-label">
                  {% trans %} Price {% endtrans %}
              </label>
-             <div class="col-lg-10">
                  {{ form_widget(edit_form.price) }}
-             </div>
          </div>
         {% endif %}
         <div class="form-group">
-            <label class="control-label col-lg-2">
+            <label class="control-label">
                 {% trans %} Description {% endtrans %}
             </label>
-            <div class="col-lg-10">
                 {{ form_widget(edit_form.description) }}
-            </div>
         </div>
-            <div class="form-group">
-                <label class="control-label col-lg-2">
-                    {% trans %} Type {% endtrans %}
-                </label>
-                <div class="col-lg-10">
-                    {{ form_widget(edit_form.type) }}
-                </div>
-            </div>
         <div class="form-group">
-            <label class="control-label col-lg-2">
+            <label class="control-label">
+                {% trans %} Type {% endtrans %}
+            </label>
+                {{ form_widget(edit_form.type) }}
+        </div>
+        <div class="form-group">
+            <label class="control-label">
                 {% trans %} Status {% endtrans %}
             </label>
-            <div class="col-lg-10">
                 {{ form_widget(edit_form.status, {'choice_translation_domain': 'status'} ) }}
-            </div>
         </div>
         <div class="form-group">
-            <label class="control-label col-lg-2">
+            <label class="control-label">
                 {% trans %} Location {% endtrans %}
             </label>
-            <div class="col-lg-10">
                 {{ form_widget(edit_form.location) }}
-            </div>
         </div>
         <div class="form-group">
-            <label class="control-label col-lg-2">
+            <label class="control-label">
                 {% trans %} Brand {% endtrans %}
             </label>
-            <div class="col-lg-10">
                 {{ form_widget(edit_form.brand) }}
-            </div>
         </div>
         <div class="form-group">
-            <label class="control-label col-lg-2">
+            <label class="control-label">
                 {% trans %} Department {% endtrans %}
             </label>
-            <div class="col-lg-10">
                 {{ form_widget(edit_form.department) }}
-            </div>
         </div>
         <div class="form-group">
-            <label class="control-label col-lg-2">
+            <label class="control-label">
                 {% trans %} Owner {% endtrans %}
             </label>
-            <div class="col-lg-10">
                 {{ form_widget(edit_form.owner) }}
-            </div>
         </div>
  
 
