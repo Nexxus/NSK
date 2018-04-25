@@ -1,5 +1,6 @@
 <?php
 
+
 namespace TrackBundle\Controller;
 
 use TrackBundle\Entity\Product;
@@ -13,6 +14,10 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
  * Controller for editing multiple products in one form
@@ -27,6 +32,10 @@ class BulkController extends ProductController
      */
     public function bulkEditAction(Request $request)
     {
+        $msg = "";
+        
+        $em = $this->getDoctrine()->getManager();
+        
         $ids = $request->query->get('id');
         
         $products = $this->getProductsByIds($ids);
@@ -42,7 +51,7 @@ class BulkController extends ProductController
                 $product->attributes = $this->getProductAttributes($product);
             }
         }
-        
+
         $bulkForm = $this->createFormBuilder($baseproduct)
                 ->add('sku', TextType::class)
                 ->add('name', TextType::class)
@@ -82,14 +91,52 @@ class BulkController extends ProductController
         
         // on submit,
         // check if all products have attributes
+        $editForm = $this->addProductDataToForm($lastproduct);
         
+        $editForm->add('save', SubmitType::class, ['label' => 'Save Changes']);
+      
+        $editForm = $editForm->getForm();
+       
+        $editForm->handleRequest($request);
         
-        // show form for attributes
+        if($editForm->isSubmitted()) {
+            $product = $editForm->getData();
+            $msg = "Bulk edit has been processed.";
+            
+            $idstr = "";
+            foreach($ids as $id) {
+                $idstr .= $id . ","; 
+            } 
+            $idstr = rtrim($idstr, ",");
+            print_r($idstr);
+            
+            $query = $em->createQuery("UPDATE "
+                    . " TrackBundle:Product p"
+                    . " SET"
+                    . "  p.name = :name,"
+                    . "  p.quantity = :quantity, "
+                    . "  p.price = :price,"
+                    . "  p.description = :description,"
+                    . "  p.type = :type,"
+                    . "  p.status = :status"
+                    . " WHERE"
+                    . "  p.id IN ({$idstr})")
+                    ->setParameter("name", $product->getName())
+                    ->setParameter("quantity", $product->getQuantity())
+                    ->setParameter("price", $product->getPrice())
+                    ->setParameter("description", $product->getDescription())
+                    ->setParameter("type", $product->getType())
+                    ->setParameter("status", $product->getStatus());
+            
+            $query = $query->getResult();
+            
+            return $this->redirectToRoute('track_index');
+        }
         
-        
+        // create form for attributes
         return $this->render('TrackBundle:Bulk:edit.html.twig', array(
-            'edit_form' => $bulkForm->createView(),
-            'sellable'      => PRODUCT_SELLABLE,
+            'edit_form' => $editForm->createView(),
+            'sellable'  => PRODUCT_SELLABLE,
         ));
     }
 

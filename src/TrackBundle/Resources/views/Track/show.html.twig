@@ -17,7 +17,7 @@
                 <td>
                     {{ product.sku }}
                     &nbsp;
-                    <a href="{{ path('track_print_barcode', {'sku': product.sku }) }}" target="_BLANK" style="text-decoration:none" title="Barcode">
+                    <a href="{{ path('track_print_barcode_multi', {'id': [product.id] }) }}" target="_BLANK" style="text-decoration:none" title="Barcode">
                         <span class="glyphicon glyphicon-barcode" style="color:black"></span>
                     </a>
                         &nbsp;

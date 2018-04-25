@@ -71,7 +71,7 @@ class ProductController extends Controller
         $types      = $em->getRepository('TrackBundle:ProductType')->findAll();
         $brands     = $em->getRepository('TrackBundle:Brand')->findAll();
         
-        return $this->render('product/index.html.twig', array(
+        return $this->render('TrackBundle:Track:index.html.twig', array(
             'products' => $products,
             'page' => $page,
             'searched' => $this->checkSearchQuery($search_session),
@@ -151,7 +151,7 @@ class ProductController extends Controller
             } 
              else 
             {
-                return $this->render('product/new.html.twig', array(
+                return $this->render('TrackBundle:Track:new.html.twig', array(
                     'product'       => $product,
                     'form'          => $form->createView(),
                     'error_msg'     => 'DuplicateSku',
@@ -160,7 +160,7 @@ class ProductController extends Controller
             }
         }
 
-        return $this->render('product/new.html.twig', array(
+        return $this->render('TrackBundle:Track:new.html.twig', array(
             'product' => $product,
             'form' => $form->createView(),
         ));
@@ -179,7 +179,7 @@ class ProductController extends Controller
         // get attributes (previously checked or added)
         $attributes = $this->getProductAttributes($product);
 
-        return $this->render('product/show.html.twig', array(
+        return $this->render('TrackBundle:Track:show.html.twig', array(
             'product' => $product,
             'attributes' => $attributes,
             'delete_form' => $deleteForm->createView(),
@@ -301,7 +301,7 @@ class ProductController extends Controller
             }
         }
         
-        return $this->render('product/edit.html.twig', array(
+        return $this->render('TrackBundle:Track:edit.html.twig', array(
             'product' => $product,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
