@@ -35,6 +35,8 @@ class ProductController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         
+        $user = $this->get('security.token_storage')->getToken()->getUser();
+        
         // retrieve search query
         $search_query = $request->request->get('item_search');
         
@@ -62,6 +64,11 @@ class ProductController extends Controller
             $productquery->andWhere('p.status = 999');
         } else {
             $productquery->andWhere('p.status < 999 OR p.status IS NULL');
+        }
+        
+        if($user->getLocation() !== null) {
+            echo "Land locked!";
+            $productquery->andWhere("p.location = ".$user->getLocation());
         }
         
         $products = $productquery->getQuery()->getResult();

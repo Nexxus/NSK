@@ -37,11 +37,12 @@ class User extends BaseUser
     protected $lastname;
     
     /**
-     * @var string
-     * 
-     * @ORM\Column(name="location", type="string", length=255, nullable=true)
+     * @var int
+     *
+     * @ORM\ManyToOne(targetEntity="TrackBundle\Entity\Location")
+     * @ORM\JoinColumn(name="location", referencedColumnName="id")
      */
-    protected $location;
+    private $location;
 
     /**
      * @var int
@@ -189,9 +190,9 @@ class User extends BaseUser
     /**
      * Set location
      *
-     * @param string $location
+     * @param integer $location
      *
-     * @return User
+     * @return Product
      */
     public function setLocation($location)
     {
@@ -203,7 +204,7 @@ class User extends BaseUser
     /**
      * Get location
      *
-     * @return string
+     * @return int
      */
     public function getLocation()
     {

@@ -19,6 +19,14 @@ class DefaultController extends Controller
     }
     
     /**
+     * @Route("/users", name="admin_users")
+     */
+    public function userAction()
+    {
+        return $this->render('admin/index.html.twig');
+    }
+    
+    /**
      * @Route("/sales", name="admin_sales")
      */
     public function viewSalesAction()
