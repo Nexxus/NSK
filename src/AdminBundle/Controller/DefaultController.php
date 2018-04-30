@@ -19,11 +19,17 @@ class DefaultController extends Controller
     }
     
     /**
-     * @Route("/users", name="admin_users")
+     * @Route("/users/{page}", name="admin_users")
      */
-    public function userAction()
+    public function userAction($page)
     {
-        return $this->render('admin/index.html.twig');
+        $em = $this->getDoctrine()->getManager();
+        
+        $userQuery = $em->getRepository("AppBundle:User")->findAll();
+        
+        
+        return $this->render('admin/user/index.html.twig',
+                ['users' => $userQuery]);
     }
     
     /**

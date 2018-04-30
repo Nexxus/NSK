@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>{% trans %}User List{% endtrans %}</h1>
+    
+    <table class="table table-striped">
+        <tr>
+            <th>#</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Roles</th>
+            <th>&nbsp;</th>
+        </tr>
+        {% for u in users %}
+            <tr>
+                <td>{{ u.id }}</td>
+                <td>{{ u.username }}</td>
+                <td>{{ u.email }}</td>
+                <td>
+                    {% for role in u.roles %}
+                        {{ role }},
+                    {% endfor %}
+                </td>
+                <td>
+                    <button name="edit" value="{{ u.id }}">
+                        Edit
+                    </button>
+            </tr>
+        {% endfor %}
+        
+    </table>
+{% endblock %}

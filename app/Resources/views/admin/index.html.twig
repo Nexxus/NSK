@@ -4,7 +4,7 @@
     <h1>{% trans %}Admin Page{% endtrans %}</h1>
     
     <h4><a href="{{ path('admin_sales') }}">{% trans %}View Sales{% endtrans %}</a></h4>
-    <h4><a href="{{ path('admin_users') }}">{% trans %}Manage Users{% endtrans %}</a></h4>
+    <h4><a href="{{ path('admin_users', {'page': 1}) }}">{% trans %}Manage Users{% endtrans %}</a></h4>
     {#<h4><a href="#">{% trans %}<s>Manage Relations</s> (WIP){% endtrans %}</a></h4>#}
     
     <h3><u>{% trans %}Product Constants{% endtrans %}</u></h3>
