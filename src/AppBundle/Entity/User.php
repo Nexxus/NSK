@@ -35,6 +35,13 @@ class User extends BaseUser
      * @ORM\Column(name="lastname", type="string", length=255, nullable=true)
      */
     protected $lastname;
+    
+    /**
+     * @var string
+     * 
+     * @ORM\Column(name="location", type="string", length=255, nullable=true)
+     */
+    protected $location;
 
     /**
      * @var int
@@ -177,6 +184,30 @@ class User extends BaseUser
     public function getLastname()
     {
         return $this->lastname;
+    }
+    
+    /**
+     * Set location
+     *
+     * @param string $location
+     *
+     * @return User
+     */
+    public function setLocation($location)
+    {
+        $this->location = $location;
+
+        return $this;
+    }
+
+    /**
+     * Get location
+     *
+     * @return string
+     */
+    public function getLocation()
+    {
+        return $this->location;
     }
     
     /**
