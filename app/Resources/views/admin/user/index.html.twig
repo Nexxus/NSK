@@ -22,9 +22,11 @@
                     {% endfor %}
                 </td>
                 <td>
-                    <button name="edit" value="{{ u.id }}">
-                        Edit
+                <form name="promote-{{ u.id }}">
+                    <button name="promote" value="{{ u.id }}">
+                        Promote
                     </button>
+                </form>
             </tr>
         {% endfor %}
         
