@@ -5,10 +5,21 @@ namespace AppBundle\Entity;
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
 
+
 /**
  * User
  * @ORM\Entity
  * @ORM\Table(name="fos_user")
+ * @ORM\AttributeOverrides({
+ *     @ORM\AttributeOverride(name="emailCanonical",
+ *         column=@ORM\Column(
+ *             name="emailCanonical",
+ *             type="string",
+ *             length=255,
+ *             unique=false
+ *         )
+ *     )
+ * })
  */
 
 class User extends BaseUser 
@@ -43,13 +54,8 @@ class User extends BaseUser
      * @ORM\JoinColumn(name="location", referencedColumnName="id")
      */
     private $location;
-
-    /**
-     * @var int
-     * 
-     * @ORM\Column(name="role", type="integer", length=255, nullable=true)
-     */
-    protected $role;
+    
+    
     
     public function __construct()
     {
@@ -209,30 +215,6 @@ class User extends BaseUser
     public function getLocation()
     {
         return $this->location;
-    }
-    
-    /**
-     * Set role
-     *
-     * @param int $lastname
-     *
-     * @return User
-     */
-    public function setRole($role)
-    {
-        $this->role = $role;
-
-        return $this;
-    }
-
-    /**
-     * Get role
-     *
-     * @return int
-     */
-    public function getRole()
-    {
-        return $this->role;
     }
 }
 
