@@ -208,7 +208,36 @@ class ProductController extends Controller
         $deleteForm = $this->createDeleteForm($product);
         
         // create form for editing
-        $editForm = $this->addProductDataToForm($product);
+        $editForm = $this->createFormBuilder($product)
+                ->add('sku', TextType::class)
+                ->add('name', TextType::class)
+                ->add('quantity', IntegerType::class, array(
+                    'required' => false
+                ))
+                ->add('price', IntegerType::class, array(
+                    'required' => false
+                ))
+                ->add('location',  EntityType::class, array(
+                    'class' => 'TrackBundle:Location',
+                    'choice_label' => 'name'
+                ))
+                ->add('type',  EntityType::class, array(
+                    'class' => 'TrackBundle:ProductType',
+                    'choice_label' => 'name'
+                ))
+                ->add('description', TextType::class, array(
+                    'required' => false
+                ))
+                ->add('status')
+                ->add('brand', TextType::class, array(
+                    'required' => false
+                ))
+                ->add('department', TextType::class, array(
+                    'required' => false
+                ))
+                ->add('owner', TextType::class, array(
+                    'required' => false
+                ));
         
         // get attributes (previously checked or added)
         $query = $em->createQuery('SELECT'
