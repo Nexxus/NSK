@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Product
 {
-    
     /**
      * @var int
      *
@@ -67,6 +66,13 @@ class Product
      */
     private $status=1;
 
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="price", type="integer", length=255, nullable=true)
+     */
+    private $price = 0;
+    
     /**
      * @var string
      *
@@ -273,6 +279,31 @@ class Product
         return $this->status;
     }
 
+    
+    /**
+     * Set price
+     *
+     * @param integer $price
+     *
+     * @return Product
+     */
+    public function setPrice($price)
+    {
+        $this->price = $price;
+
+        return $this;
+    }
+
+    /**
+     * Get price
+     *
+     * @return integer
+     */
+    public function getPrice()
+    {
+        return $this->price;
+    }
+    
     /**
      * Set brand
      *

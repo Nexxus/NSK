@@ -23,7 +23,7 @@
         <h1>{% trans %}Product List{% endtrans %}</h1>
 
         <h2>{{ app.request.get('order') }}</h2>
-
+        
         <h4><a href="{{ path('track_new') }}">{% trans %}Create a new product{% endtrans %}</a></h4>
         <button class="btn btn-success" name="product-search-form-btn" id="product-search-form-btn"><span class="glyphicon glyphicon-search"></span>&nbsp;{% trans %}Search{% endtrans %}</button>
     </div>
@@ -86,7 +86,7 @@
         
     <div class="product_table col-sm-12">
         {% if searched %}
-            <a href="{{ path("track_index") }}"><h4>
+            <a href="{{ path("track_index", {'clear': true}) }}"><h4>
                 {% trans %} 
                     Clear search query 
                 {% endtrans %}
@@ -106,11 +106,14 @@
                                         Select
                                     {% endtrans #}
                                     <span class="caret"></span>
-                                </button>    
+                                </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <li><a class="dropdown-item" href='#' id='selectAllBoxes' onClick="selectAllBoxes()"><span><img src='{{ asset("images/move_bottom.png") }}'>&nbsp;Selecteer Alles</span></a></li>
-                                    <li><a class="dropdown-item" href='#' id='selectNoBoxes' onClick="selectNoBoxes()"><span><img src='{{ asset("images/move_up.png") }}'>&nbsp;Deselecteer Alles</span></a></li>
-                                    <li><a class="dropdown-item" href='#' id='printBarcodes'  target='_blank'><img src='{{ asset('images/barcode.png') }}'>&nbsp;Print Barcodes</a></li>
+                                    <li><a class="dropdown-item" href='#' id='selectAllBoxes' onClick="selectAllBoxes();"><span class="glyphicon glyphicon-ok-sign" style="color:green"></span>&nbsp;{% trans %}Select All{% endtrans %}</a></li>
+                                    <li><a class="dropdown-item" href='#' id='selectNoBoxes' onClick="selectNoBoxes();"><span class="glyphicon glyphicon-remove-sign" style="color:red"></span>&nbsp;{% trans %}Deselect All{% endtrans %}</a></li>
+                                    <li><a class="dropdown-item" href='#' id='bulkUpdate'><span class="glyphicon glyphicon-level-up" style="color:black"></span>&nbsp;{% trans %}Edit Selected Products{% endtrans %}</a></li>
+                                    <li><a class="dropdown-item" href='#' id='exportCSV'  target='_blank'><span class="glyphicon glyphicon-th-list" style="color:black"></span>&nbsp;Print CSV</a></li>
+                                    <li><a class="dropdown-item" data-toggle="modal" data-target="#BarcodeSelectModal"><span class="glyphicon glyphicon-barcode" style="color:black"></span>&nbsp;Print Barcodes</a></li>
+                                    {#<li><a class="dropdown-item" href='#' id='printBarcodes'  target='_blank'><span class="glyphicon glyphicon-barcode" style="color:black"></span>&nbsp;Print Barcodes</a></li>#}
                                     {#<li><a class="dropdown-item" href='#' id='groupBarcode' target='_blank'><img src='{{ asset('images/barcode.png') }}'>&nbsp;<u>Creeer Groep Barcode</u></a></li>#}
                                 </ul>
                             </div>
@@ -243,8 +246,39 @@
               </td>
             </tr>
         </table>
-        
     </div>
+    
+    {# Barcode Selecting Modal #}
+    <div class="modal fade" id="BarcodeSelectModal" tabindex="-1" role="dialog" aria-labelledby="BarcodeS">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="BarcodeSelectTitle">
+                        {% trans %}Select Your Barcode Type{% endtrans %}
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <div class="col-sm-6">
+                        <a class="dropdown-item" href='#' id='printBarcode11352'  target='_blank'>
+                            <h4 style="color:black">Dymo 11352</h4>
+                            <img src="{{ asset("images/BarcodeRoll11352.png") }}" class="img-thumbnail rounded float-left">
+                        </a>
+                    </div>
+                    <div class="col-sm-6">
+                        {#<a class="dropdown-item" href='#' id='printBarcode11356'  target='_blank'>#}
+                        <a class="dropdown-item" href='#' id='printBarcode11356'>
+                            <h4 style="color:black">Dymo 11356</h4>
+                            <img src="{{ asset("images/BarcodeRoll11356.png") }}" class="img-thumbnail rounded float-left">
+                        </a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>          
+                 
+    
 {% endblock %}
 
 {% block javascripts %}
@@ -285,7 +319,9 @@
                         }
                     }
                 }
-                document.getElementById("printBarcodes").href = "{{ path('track_print_barcode_multi') }}"+"?id[]="+itemArr.join("&id[]=");
+                document.getElementById("printBarcode11352").href = "{{ path('track_print_barcode_multi') }}"+"?id[]="+itemArr.join("&id[]=");
+                document.getElementById("bulkUpdate").href = "{{ path('track_bulk_edit') }}"+"?id[]="+itemArr.join("&id[]=");
+                document.getElementById("exportCSV").href = "{{ path('track_export_csv') }}"+"?id[]="+itemArr.join("&id[]=");
                 console.log("Selected items: " + itemArr);
         }
         

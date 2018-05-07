@@ -17,7 +17,7 @@
                 <td>
                     {{ product.sku }}
                     &nbsp;
-                    <a href="{{ path('track_print_barcode', {'sku': product.sku }) }}" target="_BLANK" style="text-decoration:none" title="Barcode">
+                    <a href="{{ path('track_print_barcode_multi', {'id': [product.id] }) }}" target="_BLANK" style="text-decoration:none" title="Barcode">
                         <span class="glyphicon glyphicon-barcode" style="color:black"></span>
                     </a>
                         &nbsp;
@@ -34,6 +34,12 @@
                 <th>{% trans %} Quantity {% endtrans %}</th>
                 <td>{{ product.quantity}}</td>
             </tr>
+            {% if sellable %}
+             <tr>
+                 <th>{% trans %} Price {% endtrans %}</th>
+                 <td>{{ product.price}}</td>
+             </tr>
+            {% endif %}
             <tr>
                 <th>{% trans %} Location {% endtrans %}</th>
                 <td>{{ product.location }}</td>

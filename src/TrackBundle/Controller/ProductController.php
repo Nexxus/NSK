@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -18,15 +19,15 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 /**
- * Product controller.
- *
+ * Product controller. 
+ * 
  * @Route("track")
  */
 class ProductController extends Controller
-{   
+{
     /**
      * Lists all product entities.
-     *
+     * 
      * @Route("/index/{page}/{sort}/{by}/{only}/{spec}", name="track_index", defaults={"page" = 1, "sort" = "updatedAt", "by" = "DESC"})
      * @Method({"GET", "POST"})
      */
@@ -34,57 +35,29 @@ class ProductController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         
-        // true if search query was made
-        $searched = false;
+        $user = $this->get('security.token_storage')->getToken()->getUser();
         
+        // retrieve search query
         $search_query = $request->request->get('item_search');
         
-        // show search post
-//        if(isset($search_query)) {
-//            echo "<pre>"; print_r($search_query); echo "</pre>";
-//        }
+        // session for managing search queries
+        $search_session = new Session();
+        $search_session = $this->storeSearchQuery($search_query, $search_session);
         
-        $locations  = $em->getRepository('TrackBundle:Location')->findAll();
-        $types      = $em->getRepository('TrackBundle:ProductType')->findAll();
-        $brands     = $em->getRepository('TrackBundle:Brand')->findAll();
+        // clear search if requested
+        $clear = $request->query->get('clear');
+        if($clear==1) {
+            $this->clearSearchQuery($search_session);
+        }
         
         // get products
         $productquery = $em->getRepository('TrackBundle:Product')->createQueryBuilder('p')
                 ->orderBy('p.'.$sort , $by)
                 ->setFirstResult(($page - 1) * 10)
                 ->setMaxResults(10);
-        
-        // search terms through id, sku, name, description
-        if(isset($search_query['searchbar']) && $search_query['searchbar']<>'') {
-            $searched = true;
-            $productquery->andWhere($productquery->expr()->orX(
-                    $productquery->expr()->like('p.id', ':q'),
-                    $productquery->expr()->like('p.sku', ':q'),
-                    $productquery->expr()->like('p.name', ':q'),
-                    $productquery->expr()->like('p.description', ':q')
-                ))
-                ->setParameter('q', '%'.$search_query['searchbar'].'%');
-        }
-        
-        if(isset($search_query['spec'])) 
-        {
-            $searched = true;
-            // location
-            if(isset($search_query['spec']['location']) && $search_query['spec']['location']!=null) {
-                $productquery->andWhere('p.location = :q')
-                        ->setParameter('q', $search_query['spec']['location']);
-            } else {
-                $search_query['spec']['location'] = null;
-            }
-            
-            // type
-            if(isset($search_query['spec']['type']) && $search_query['spec']['type']!=null) {
-                $productquery->andWhere('p.type = :q')
-                        ->setParameter('q', $search_query['spec']['type']);
-            } else {
-                $search_query['spec']['type'] = null;
-            }
-        }
+
+        $stored_query = $this->loadSearchQuery($search_session);
+        $productquery = $this->searchSpecific($productquery, $stored_query);
         
         // if coming from admin panel, only show sold
         if($only=='sold') {
@@ -93,13 +66,22 @@ class ProductController extends Controller
             $productquery->andWhere('p.status < 999 OR p.status IS NULL');
         }
         
+        if($user->getLocation() !== null) {
+            echo "Land locked!";
+            $productquery->andWhere("p.location = ".$user->getLocation());
+        }
         
         $products = $productquery->getQuery()->getResult();
 
-        return $this->render('product/index.html.twig', array(
+        // obtain data for the dropdowns
+        $locations  = $em->getRepository('TrackBundle:Location')->findAll();
+        $types      = $em->getRepository('TrackBundle:ProductType')->findAll();
+        $brands     = $em->getRepository('TrackBundle:Brand')->findAll();
+        
+        return $this->render('TrackBundle:Track:index.html.twig', array(
             'products' => $products,
             'page' => $page,
-            'searched' => $searched,
+            'searched' => $this->checkSearchQuery($search_session),
             'search_options' => [
                 'specifics' => [
                     'locations' => $locations,
@@ -149,6 +131,7 @@ class ProductController extends Controller
                 ])
                 ->add('name')
                 ->add('quantity')
+                ->add('price')
                 ->add('location')
                 ->add('type')
                 ->add('description')
@@ -175,15 +158,16 @@ class ProductController extends Controller
             } 
              else 
             {
-                return $this->render('product/new.html.twig', array(
+                return $this->render('TrackBundle:Track:new.html.twig', array(
                     'product'       => $product,
                     'form'          => $form->createView(),
-                    'error_msg'     => 'DuplicateSku'
+                    'error_msg'     => 'DuplicateSku',
+                    'sellable'      => PRODUCT_SELLABLE,
                 ));
             }
         }
 
-        return $this->render('product/new.html.twig', array(
+        return $this->render('TrackBundle:Track:new.html.twig', array(
             'product' => $product,
             'form' => $form->createView(),
         ));
@@ -199,24 +183,10 @@ class ProductController extends Controller
     {
         $deleteForm = $this->createDeleteForm($product);
         
-        // get attributes
-        $em = $this->getDoctrine()->getManager();
-        
         // get attributes (previously checked or added)
-        $query = $em->createQuery('SELECT'
-                . '     pa.id,'
-                . '     a.name,'
-                . '     pa.value'
-                . ' FROM'
-                . '     TrackBundle:ProductAttribute pa '
-                . ' LEFT JOIN TrackBundle:Attribute a '
-                . '     WITH pa.attrId = a.id '
-                . 'WHERE '
-                . '     pa.productid = :id')
-                ->setParameter('id', $product->getId());
-        $attributes = $query->getResult();
+        $attributes = $this->getProductAttributes($product);
 
-        return $this->render('product/show.html.twig', array(
+        return $this->render('TrackBundle:Track:show.html.twig', array(
             'product' => $product,
             'attributes' => $attributes,
             'delete_form' => $deleteForm->createView(),
@@ -238,33 +208,7 @@ class ProductController extends Controller
         $deleteForm = $this->createDeleteForm($product);
         
         // create form for editing
-        $editForm = $this->createFormBuilder($product)
-                ->add('sku', TextType::class)
-                ->add('name', TextType::class)
-                ->add('quantity', IntegerType::class, array(
-                    'required' => false
-                ))
-                ->add('location',  EntityType::class, array(
-                    'class' => 'TrackBundle:Location',
-                    'choice_label' => 'name'
-                ))
-                ->add('type',  EntityType::class, array(
-                    'class' => 'TrackBundle:ProductType',
-                    'choice_label' => 'name'
-                ))
-                ->add('description', TextType::class, array(
-                    'required' => false
-                ))
-                ->add('status')
-                ->add('brand', TextType::class, array(
-                    'required' => false
-                ))
-                ->add('department', TextType::class, array(
-                    'required' => false
-                ))
-                ->add('owner', TextType::class, array(
-                    'required' => false
-                ));
+        $editForm = $this->addProductDataToForm($product);
         
         // get attributes (previously checked or added)
         $query = $em->createQuery('SELECT'
@@ -364,10 +308,11 @@ class ProductController extends Controller
             }
         }
         
-        return $this->render('product/edit.html.twig', array(
+        return $this->render('TrackBundle:Track:edit.html.twig', array(
             'product' => $product,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'sellable' => PRODUCT_SELLABLE,
             'attributes' => $attributes,
             'attribute_count' => $attribute_count,
         ));
@@ -415,6 +360,28 @@ class ProductController extends Controller
                     array('err' => 'nif'));
         }
         
+    }
+    
+    /**
+     * Get a product by a SKU
+     * 
+     * @param type $sku
+     * @return product
+     * @return boolean
+     */
+    public function getBySku($sku) {
+        $em = $this->getDoctrine()->getManager();
+        
+        $product = $em->getRepository('TrackBundle:Product')
+                ->findOneBySku($sku);
+        
+        if($product) {
+            return $product;
+        } 
+        else
+        {
+            return false;
+        }
     }
     
     /**
@@ -490,8 +457,27 @@ class ProductController extends Controller
         
     }
     
+    public function getProductAttributes(Product $product) {
+        $em = $this->getDoctrine()->getManager();
+        
+        $query = $em->createQuery('SELECT'
+                . '     pa.id,'
+                . '     a.name,'
+                . '     pa.value'
+                . ' FROM'
+                . '     TrackBundle:ProductAttribute pa '
+                . ' LEFT JOIN TrackBundle:Attribute a '
+                . '     WITH pa.attrId = a.id '
+                . 'WHERE '
+                . '     pa.productid = :id')
+                ->setParameter('id', $product->getId());
+        $attributes = $query->getResult();
+        
+        return $attributes;
+    }
+    
     /*
-     * Returns true if a SKU in the database is taken
+     * Returns true if a SKU in the database is not taken
      */
     public function checkExistingSku($sku) {
         $em = $this->getDoctrine()->getManager();
@@ -506,5 +492,187 @@ class ProductController extends Controller
         return (count($result) == 0);
     }
     
+    /**
+     * Returns products with given ids
+     * 
+     * @param array $ids
+     * @return products
+     */
+    public function getProductsByIds($ids) {
+        $em = $this->getDoctrine()->getManager();
+        
+        // get items by GET ids
+        $products = $em->getRepository("TrackBundle:Product")->createQueryBuilder('q');
+        
+        $whereIn  = "(";
+        
+        foreach($ids as $id) {
+            $whereIn .= $id . ",";
+        }
+        
+        $whereIn = rtrim($whereIn, ",") . ")";
+        
+        $products = $products->where("q.id IN ".$whereIn);
+        
+        $products = $products->getQuery()->getResult();
+        
+        return $products;
+    }
     
+    public function addAttributesToProductForm(Form $editForm) {
+        
+        $em = $this->getDoctrine()->getManager();
+            
+        // get attributes (previously checked or added)
+        $query = $em->createQuery('SELECT'
+                . '     pa.id,'
+                . '     a.attr_code,'
+                . '     a.name,'
+                . '     pa.value'
+                . ' FROM'
+                . '     TrackBundle:ProductAttribute pa '
+                . ' LEFT JOIN TrackBundle:Attribute a '
+                . '     WITH pa.attrId = a.id '
+                . 'WHERE '
+                . '     pa.productid = :id')
+                ->setParameter('id', $product->getId());
+        $attributes = $query->getResult();
+        
+        $idArr = [];
+        
+        // add the attributes to the form
+        foreach($attributes as $attribute) {
+            $idArr[] = $attribute['id'];
+            
+            $fieldid = "attribute_" . $attribute['id'];
+            $fieldname = $attribute['attr_code'];
+            $fieldlabel = $attribute['name'];
+            $fieldvalue = $attribute['value'];
+            
+            $editForm->add($fieldid, TextType::class, [
+                'mapped'    => false,
+                'label'     => $fieldlabel,
+                'required'  => false,
+                'attr'      => [
+                    'id'        => $fieldid,
+                    'value'     => $fieldvalue,
+                ],
+            ]);
+        }
+    }
+    
+    /**
+     * Find specific products on search
+     */
+    public function searchSpecific($productquery, $search_query) {       
+        if(isset($search_query['searchbar']) && $search_query['searchbar']<>'') {
+            $productquery->andWhere($productquery->expr()->orX(
+                    $productquery->expr()->like('p.id', ':q'),
+                    $productquery->expr()->like('p.sku', ':q'),
+                    $productquery->expr()->like('p.name', ':q'),
+                    $productquery->expr()->like('p.description', ':q')
+                ))
+                ->setParameter('q', '%'.$search_query['searchbar'].'%');
+        }
+        
+        if(isset($search_query['spec'])) {
+            // check for location
+            if(isset($search_query['spec']['location']) && $search_query['spec']['location']!=null) {
+                $productquery->andWhere('p.location = :q')
+                        ->setParameter('q', $search_query['spec']['location']);
+            } else {
+                $search_query['spec']['location'] = null;
+            }
+            
+            // check for type
+            if(isset($search_query['spec']['type']) && $search_query['spec']['type']!=null) {
+                $productquery->andWhere('p.type = :q')
+                        ->setParameter('q', $search_query['spec']['type']);
+            } else {
+                $search_query['spec']['type'] = null;
+            }
+        }
+        
+        return $productquery;
+    }
+    
+    /**
+     * Store search query into session
+     * 
+     * @param type $q
+     * @param Session $s
+     * @return Session
+     */
+    public function storeSearchQuery($q, Session $s) {
+        if(isset($q['searchbar']) && $q['searchbar']<>'') {
+            $s->set('searchbar', $q['searchbar']);
+        }
+        if(isset($q['spec']['location']) && $q['spec']['location']!=null) {
+            $s->set('spec_location', $q['spec']['location']);
+        }
+        
+        if(isset($q['spec']['type']) && $q['spec']['type']!=null) {
+            $s->set('spec_type', $q['spec']['type']);
+        }
+        
+        return $s;
+    }
+    
+    /**
+     * Loads stored query into array for further use
+     * 
+     * @param type $s
+     * @return type
+     */
+    public function loadSearchQuery(Session $s) {
+        //echo "<pre>"; print_r($s); echo "</pre>";
+        $arr = [];
+        
+        if($s->has('searchbar')) {
+            $arr['searchbar']         = $s->get('searchbar');
+        }
+        if($s->has('spec_location')) {
+            $arr['spec']['location']  = $s->get('spec_location');
+        }
+        if($s->has('spec_type')) {
+            $arr['spec']['type']      = $s->get('spec_type');
+        }
+        
+        return $arr;
+    }
+    
+    /**
+     * Check if search query is active
+     * 
+     * @param Session $s
+     * @return boolean
+     */
+    public function checkSearchQuery(Session $s) {
+        $bool = false;
+        
+        if($s->has('searchbar')) {
+            $bool = true;
+        }
+        if($s->has('spec_location')) {
+            $bool = true;
+        }
+        if($s->has('spec_type')) {
+            $bool = true;
+        }
+        
+        return $bool;
+    }
+    
+    /**
+     * Clear search query
+     * 
+     * @param Session $s
+     */
+    public function clearSearchQuery(Session $s) {
+        $s->remove('searchbar');
+        $s->remove('spec_location');
+        $s->remove('spec_type');
+        
+        return $this->redirectToRoute('track_index');
+    }
 }
