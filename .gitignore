@@ -32,3 +32,6 @@ fcgi-bin/
 logs/
 
 *.swp
+
+*.cert
+*.key
