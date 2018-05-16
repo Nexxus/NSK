@@ -49,38 +49,47 @@ class ProductStatusController extends Controller
         
         $statusall = $em->findAll();
         
-        $form = $this->createFormBuilder($status)
-                ->add('name', TextType::class)
-                ->add('placement', ChoiceType::class, array(
-                    'choices' => array(
-                        'Before' => 'before',
-                        'After' => 'after'
-                    ),
-                    'mapped' => false
-                ))
-                ->add('save', SubmitType::class, array('label' => 'Create Status'))
-                ->getForm();
+        $form = $this->createFormBuilder($status);
+        $form->add('name', TextType::class);
+        
+        // option to place before or after
+        if(count($statusall) > 0 ) {
+            $form->add('placement', ChoiceType::class, array(
+                        'choices' => array(
+                            'Before' => 'before',
+                            'After' => 'after'
+                        ),
+                        'mapped' => false
+                    ));
+        }
+        $form->add('save', SubmitType::class, array('label' => 'Create Status'));
+        $form = $form->getForm();
         
         $form->handleRequest($request);
         
         if($form->isSubmitted()) {
             $task = $form->getData();
             
+            
             // get before or after field, does not actually exist in object
-            $pm = $form->get('placement')->getData();
-            $pindex = $_POST['form']['pindex'];
+            if(count($statusall) > 0) {
+                $pm = $form->get('placement')->getData();
             
-            // make space for new entry
-            if($pm=='after') {
-                $pindex = $pindex+1;
+                $pindex = $_POST['form']['pindex'];
+
+                // make space for new entry
+                if($pm=='after') {
+                    $pindex = $pindex+1;
+                }
+            
+                $status->setPindex($pindex);
+
+                //echo "<pre>";print_r($status);echo "</pre>";exit;
+
+                $this->shiftIndex($pindex, "add");
+            } else {
+                $status->setPindex(1);
             }
-            
-            $status->setPindex($pindex);
-            
-            //echo "<pre>";print_r($status);echo "</pre>";exit;
-            
-            $this->shiftIndex($pindex, "add");
-            
             // save object
             $em = $this->getDoctrine()->getManager();
             $em->persist($task);
@@ -110,10 +119,11 @@ class ProductStatusController extends Controller
     public function deleteAction($id, $pindex)
     {
         $em = $this->getDoctrine()->getManager();
-        
+
         $query = $em->createQuery(
                 "DELETE FROM TrackBundle:ProductStatus s"
                 . " WHERE s.id = :statusid"
+                . "SET FOREIGN_KEY_CHECKS = 0;"
         )->setParameter("statusid", $id)
          ->getResult();
         

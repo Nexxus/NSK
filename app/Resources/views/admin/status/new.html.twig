@@ -9,6 +9,7 @@
         <td>Status Name</td>
         <td>{{ form_widget(form.name) }}</td>
     </tr>
+    {% if form.placement is defined %}
     <tr>
         <td>Index Placement</td>
         <td>
@@ -20,10 +21,12 @@
             {% endfor %}
             </select>
         </td>
-        <td>
-            {{ form_widget(form.placement) }}
-        </td>
+        
+         <td>
+             {{ form_widget(form.placement) }}
+         </td>
     </tr>
+    {% endif %}
     <tr>
         <td>&nbsp;</td>     
         <td>{{ form_widget(form.save) }}</td>
