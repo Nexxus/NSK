@@ -48,7 +48,7 @@
                     {% trans %} Price {% endtrans %}
                 </label>
                 <div class="col-lg-10">
-                    {{ form_widget(form.price) }}
+                    &euro;&nbsp;{{ form_widget(form.price) }}
                 </div>
             </div>
             {% endif %}
@@ -111,7 +111,9 @@
             {{ form_row(form._token) }}
             <div class="form-group"> 
                 <div class="col-lg-offset-2 col-lg-10">
-                    <input type="submit" value="Save" />
+                    <input type="submit" value="Save" /> 
+                    x
+                    {{ form_widget(form.saveAmount) }}
                 </div>
             </div>
         {{ form_end(form) }}
@@ -122,3 +124,8 @@
         </li>
     </ul>
 {% endblock %}
+
+{% block javascripts %}
+    
+    
+{% endblock %}    

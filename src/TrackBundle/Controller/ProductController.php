@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
@@ -139,11 +140,20 @@ class ProductController extends Controller
                 ->add('brand')
                 ->add('department')
                 ->add('owner')
+                ->add('saveAmount', IntegerType::class, [
+                    'mapped' => false,
+                    'attr' => [
+                        'maxlength' => 3,
+                        'value' => 1,
+                    ]
+                ])
                 ->getForm();
         
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            
+            $saveAmount = $form->get('saveAmount')->getData();
             
             // check for sku
             if($this->checkExistingSku($product->getSku() ))
