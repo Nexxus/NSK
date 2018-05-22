@@ -156,24 +156,44 @@ class ProductController extends Controller
             $saveAmount = $form->get('saveAmount')->getData();
             
             // check for sku
-            if($this->checkExistingSku($product->getSku() ))
-            {
-                $em->persist($product);
-                $em->flush($product);
-                
-                // add potential attributes
-                $this->checkAttributeTemplate($product);
+            
+            if($saveAmount == 1 || $saveAmount == null) {
+                if($this->checkExistingSku($product->getSku() ))
+                {
+                    $em->persist($product);
+                    $em->flush($product);
 
-                return $this->redirectToRoute('track_show', array('id' => $product->getId()));
-            } 
-             else 
-            {
-                return $this->render('TrackBundle:Track:new.html.twig', array(
-                    'product'       => $product,
-                    'form'          => $form->createView(),
-                    'error_msg'     => 'DuplicateSku',
-                    'sellable'      => PRODUCT_SELLABLE,
-                ));
+                    // add potential attributes
+                    $this->checkAttributeTemplate($product);
+                    
+                    
+                    return $this->redirectToRoute('track_show', array('id' => $product->getId()));
+                } 
+                 else 
+                {
+                    return $this->render('TrackBundle:Track:new.html.twig', array(
+                        'product'       => $product,
+                        'form'          => $form->createView(),
+                        'error_msg'     => 'DuplicateSku',
+                        'sellable'      => PRODUCT_SELLABLE,
+                    ));
+                }
+            } elseif($saveAmount > 1) {
+                for($i=0;$i<$saveAmount;$i++) {
+                    $copy = $product;
+                    
+                    $copy->setSku($copy->getSku() . $i);
+                    
+                    if($this->checkExistingSku($copy->getSku() )) {
+                        $em->persist($copy);
+                        $em->flush($copy);
+
+                        // add potential attributes
+                        $this->checkAttributeTemplate($copy);
+                    }
+                    
+                }
+                return $this->redirectToRoute('track_index');
             }
         }
 
