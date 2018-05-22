@@ -42,6 +42,16 @@
                     {{ form_widget(form.quantity) }}
                 </div>
             </div>
+            {% if form.price is not null %}
+            <div class="form-group">
+                <label class="control-label col-lg-2">
+                    {% trans %} Price {% endtrans %}
+                </label>
+                <div class="col-lg-10">
+                    {{ form_widget(form.price) }}
+                </div>
+            </div>
+            {% endif %}
             <div class="form-group">
                 <label class="control-label col-lg-2">
                     {% trans %} Description {% endtrans %}
