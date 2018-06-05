@@ -1,3 +1,23 @@
 .navbar-gradient {
   background: #006e2e;
 }
+.navbar-inverse .badge {
+  background-color: #fff;
+  color: #009900;
+}
+.text-success,
+.text-success:hover {
+  color: #009900;
+}
+.has-success .form-control-feedback {
+  color: #009900;
+}
+.has-success .form-control:focus {
+  border: 2px solid #009900;
+}
+.has-success .input-group-addon {
+  border-color: #009900;
+}
+a.list-group-item-success.active {
+  background-color: #009900;
+}
