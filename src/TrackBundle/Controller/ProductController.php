@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
@@ -139,31 +140,60 @@ class ProductController extends Controller
                 ->add('brand')
                 ->add('department')
                 ->add('owner')
+                ->add('saveAmount', IntegerType::class, [
+                    'mapped' => false,
+                    'attr' => [
+                        'maxlength' => 3,
+                        'value' => 1,
+                    ]
+                ])
                 ->getForm();
         
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             
+            $saveAmount = $form->get('saveAmount')->getData();
+            
             // check for sku
-            if($this->checkExistingSku($product->getSku() ))
-            {
-                $em->persist($product);
-                $em->flush($product);
-                
-                // add potential attributes
-                $this->checkAttributeTemplate($product);
+            
+            if($saveAmount == 1 || $saveAmount == null) {
+                if($this->checkExistingSku($product->getSku() ))
+                {
+                    $em->persist($product);
+                    $em->flush($product);
 
-                return $this->redirectToRoute('track_show', array('id' => $product->getId()));
-            } 
-             else 
-            {
-                return $this->render('TrackBundle:Track:new.html.twig', array(
-                    'product'       => $product,
-                    'form'          => $form->createView(),
-                    'error_msg'     => 'DuplicateSku',
-                    'sellable'      => PRODUCT_SELLABLE,
-                ));
+                    // add potential attributes
+                    $this->checkAttributeTemplate($product);
+                    
+                    
+                    return $this->redirectToRoute('track_show', array('id' => $product->getId()));
+                } 
+                 else 
+                {
+                    return $this->render('TrackBundle:Track:new.html.twig', array(
+                        'product'       => $product,
+                        'form'          => $form->createView(),
+                        'error_msg'     => 'DuplicateSku',
+                        'sellable'      => PRODUCT_SELLABLE,
+                    ));
+                }
+            } elseif($saveAmount > 1) {
+                for($i=0;$i<$saveAmount;$i++) {
+                    $copy = $product;
+                    
+                    $copy->setSku($copy->getSku() . $i);
+                    
+                    if($this->checkExistingSku($copy->getSku() )) {
+                        $em->persist($copy);
+                        $em->flush($copy);
+
+                        // add potential attributes
+                        $this->checkAttributeTemplate($copy);
+                    }
+                    
+                }
+                return $this->redirectToRoute('track_index');
             }
         }
 
