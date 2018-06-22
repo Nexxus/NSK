@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -39,37 +40,7 @@ class DefaultController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         
-        // get role change
-        if(isset($_POST['editrole'])) {
-            $form = $_POST;
-            echo "<pre>";
-            print_r($form);
-            echo "</pre>";  
-            
-            $user = $em->getRepository("AppBundle:User")->find($form['user']);
-            
-            $roles = $user->getRoles();
-            
-            echo "<pre>";
-            print_r($roles);
-            echo "</pre>";  
-            
-            switch($_POST['editrole']) {
-                case 'promoteToAdmin':
-                    $user->addRole('ROLE_ADMIN');
-                    break;
-                case 'demoteToUser':
-                    $user->removeRole('ROLE_ADMIN');
-                    break;
-            }
-            
-            $em->persist($user);
-            $em->flush();
-        }
-        
         $userQuery = $em->getRepository("AppBundle:User")->findAll();
-        
-        
         
         return $this->render('admin/user/index.html.twig',
                 ['users' => $userQuery]);
@@ -87,12 +58,21 @@ class DefaultController extends Controller
                 ->add('firstname', TextType::class, ['required' => false])
                 ->add('lastname', TextType::class, ['required' => false])
                 ->add('email', EmailType::class, ['required' => false])
+                ->add('role', ChoiceType::class, ['mapped' => false,
+                    'choices' => [
+                        'Admin' => 'ROLE_ADMIN',
+                        'Copiatek' => 'ROLE_COPIA',
+                        'User' => 'ROLE_USER'
+                    ]])
                 ->add('save', SubmitType::class, ['label' => 'Save'])
                 ->getForm();
         
         $form->handleRequest($request);
         
         if($form->isSubmitted()) {
+            $role = $form->get('role')->getData();
+            $user->setRoles([$role]);
+            
             $em->persist($user);
             $em->flush($user);
             
@@ -104,6 +84,8 @@ class DefaultController extends Controller
     }
     
     /**
+     * Currently not used because of lack of password encrypting support
+     * 
      * @Route("/user/new", name="admin_user_new")
      * @Method({"GET", "POST"})
      */

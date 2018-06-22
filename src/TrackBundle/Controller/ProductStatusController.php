@@ -25,10 +25,18 @@ class ProductStatusController extends Controller
         $em = $this->getDoctrine()->getManager();
         
         $query = $em->createQuery(
-                'SELECT s'
+                  ' SELECT '
+                . '     s.id,'
+                . '     s.pindex,'
+                . '     s.name,'
+                . '     p.id as exist'
                 . ' FROM TrackBundle:ProductStatus s'
-                . ' WHERE s.pindex < 999'
-                . ' ORDER BY s.pindex ASC');
+                . ' LEFT JOIN TrackBundle:Product p'
+                . '     WITH p.status = s.id'
+                . ' WHERE '
+                . '     s.pindex < 999'
+                . ' ORDER BY '
+                . '     s.pindex ASC');
         $productstatus = $query->getResult();
         
         return $this->render('admin/status/index.html.twig', array(

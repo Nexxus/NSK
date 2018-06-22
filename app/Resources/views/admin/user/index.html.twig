@@ -26,24 +26,10 @@
                     <button class="btn" name="editUser" >
                         Edit
                     </button></a>
-                    &nbsp;
-                    <form onsubmit="return confirm('{% trans %}Are you sure you want to change this user\'s rights?{% endtrans %}');"name="change-role" method="POST">
-                        <input type="hidden" name="user" value="{{ u.id }}">
-                        
-                        {# Promoting #}
-                        {% if u.roles[0] == 'ROLE_USER' %}
-                            <button class="btn btn-success" name="editrole" value="promoteToAdmin">
-                                Promote
-                            </button>
-                            <br>
-                        {% endif %}
-                        {# Demoting #}
-                        {% if u.roles[0] == 'ROLE_ADMIN' %}
-                            <button class="btn btn-danger" name="editrole" value="demoteToUser">
-                                Demote
-                            </button>
-                        {% endif %}
-                    </form>
+                    <a href="{{ path('admin_user_delete', {'id': u.id}) }}">
+                    <button class="btn" name="deleteUser" >
+                        Edit
+                    </button></a>
                 </td>
             </tr>
         {% endfor %}

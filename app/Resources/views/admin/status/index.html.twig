@@ -20,10 +20,17 @@
                         {% trans %}Edit{% endtrans %}
                     </button></a>
                 #}
+                {% if a.exist is null %}
                 <a href="{{ path("status_delete", {id: a.id, pindex: a.pindex}) }}">
                     <button type="button" class="btn btn-danger" href="#">
                         {% trans %}Delete{% endtrans %}
-                    </button></a>
+                    </button>
+                </a>
+                {% else %}
+                    <button type="button" class="btn">
+                    {% trans %}Status is in use{% endtrans %}
+                    </button>
+                {% endif %}
             </td>
         </tr>
     {% endfor %}

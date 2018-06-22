@@ -42,6 +42,16 @@
                     {{ form_widget(form.quantity) }}
                 </div>
             </div>
+            {% if form.price is not null %}
+            <div class="form-group">
+                <label class="control-label col-lg-2">
+                    {% trans %} Price {% endtrans %}
+                </label>
+                <div class="col-lg-10">
+                    &euro;&nbsp;{{ form_widget(form.price) }}
+                </div>
+            </div>
+            {% endif %}
             <div class="form-group">
                 <label class="control-label col-lg-2">
                     {% trans %} Description {% endtrans %}
@@ -101,7 +111,9 @@
             {{ form_row(form._token) }}
             <div class="form-group"> 
                 <div class="col-lg-offset-2 col-lg-10">
-                    <input type="submit" value="Save" />
+                    <input type="submit" value="Save" /> 
+                    x
+                    {{ form_widget(form.saveAmount) }}
                 </div>
             </div>
         {{ form_end(form) }}
@@ -112,3 +124,8 @@
         </li>
     </ul>
 {% endblock %}
+
+{% block javascripts %}
+    
+    
+{% endblock %}    
