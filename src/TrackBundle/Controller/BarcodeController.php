@@ -150,7 +150,7 @@ class BarcodeController extends Controller
         $mpdfService->setAddDefaultConstructorArgs(false);
         
         
-        $mpdf = $mpdfService->getMpdf(['', [54,25] ,'0','',0,0,0,0,0,0,'P']);
+        $mpdf = $mpdfService->getMpdf();
         
         $mpdf->setTitle("ERCPv2 Barcode Generator");
 
@@ -163,11 +163,7 @@ class BarcodeController extends Controller
             'id' => $ids
         ]);
         
-        // print barcodes
-	foreach($items as $row) {
-            $sku = $row->getSku();
-            $mpdf->AddPage();
-            $html = '<html>
+        $html = '<html>
                         <head><META HTTP-EQUIV="Window-target" CONTENT="_blank">
                         <style>
                             body {font-family: sans-serif; font-size: 9pt;}
@@ -176,27 +172,39 @@ class BarcodeController extends Controller
                             .barcodecell { text-align: center; vertical-align: top; padding: 0; }
                         </style>
                         </head>
-                        <body>
-                            <table class="items" cellpadding="0" border="0";>
-                                <tr>
-                                    <td style="text-align:center;"><b>Copiatek</b></td>
-                                </tr>
-                                <tr>
-                                    <td class="barcodecell">
-                                        <barcode code="'.$sku.'" type="C39" class="barcode" size=1 height=1.1/>
-                                        &nbsp;
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align:center;"><b>*&nbsp;'.$sku.'&nbsp;*</b></td>
-                                </tr>
-                            </table>
-                        </body>
-                    </html>';
+                        <body>';
+        // print barcodes
+        //echo count($items);
 
-            $mpdf->writeHTML($html);
-            
+        $mpdf->AddPage();
+        
+        // open table
+        $html .= "<h1 style='text-align:center;'>Nexxus Barcode Print</h1>";
+        $html .= "<table><tr>";
+        $pc = 0; // pagecounter
+        $row = 1; $column = 0;
+        
+        for($i=0;$i<count($ids);$i++) {
+            // new row every 6
+            if($column>6) {
+                $html .= "</tr><tr>";
+                $row++;
+                $column=1;
+            } else {
+                $column++;
+            }
+            $html .= '<td style="text-align:center;">'
+                    . '<b>Copiatek</b><br>'
+                    . '<barcode code="'.$ids[$i].'" type="C39" class="barcode" size=1 height=1.1/>'
+                    . '<br>* '.$ids[$i].' *'
+                    . '</td>';
         }
+        
+        $html .= '</table></body></html>';
+        
+        //echo "<plaintext>"; print_r($html); exit;
+        
+        $mpdf->writeHTML($html);
         
         return new Response($mpdf->Output());
         
