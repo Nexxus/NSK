@@ -39,7 +39,7 @@ class ProductStatusController extends Controller
                 . '     s.pindex ASC');
         $productstatus = $query->getResult();
         
-        return $this->render('admin/status/index.html.twig', array(
+        return $this->render('AdminBundle:Status:index.html.twig', array(
             'productstatus' => $productstatus)); 
     }
     
@@ -106,7 +106,7 @@ class ProductStatusController extends Controller
             return $this->redirectToRoute('status_index');
         }
         
-        return $this->render('admin/status/new.html.twig', array(
+        return $this->render('AdminBundle:Status:new.html.twig', array(
             'form' => $form->createView(),
             'statusall' => $statusall,
         ));

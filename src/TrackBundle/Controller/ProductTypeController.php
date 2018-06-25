@@ -29,7 +29,7 @@ class ProductTypeController extends Controller
         $products = $em->getRepository('TrackBundle:ProductType')
                         ->findAll();
         
-        return $this->render('admin/type/index.html.twig', 
+        return $this->render('AdminBundle:Type:index.html.twig', 
                 array('products' => $products));
     }
     
@@ -60,7 +60,7 @@ class ProductTypeController extends Controller
         } 
         else 
         {
-            return $this->render('admin/type/new.html.twig', array(
+            return $this->render('AdminBundle:Type:new.html.twig', array(
                 'form' => $form->createView(),
             ));
         }
@@ -86,7 +86,7 @@ class ProductTypeController extends Controller
         
         $attributes = $query->getResult();
         
-        return $this->render('admin/type/show.html.twig', array(
+        return $this->render('AdminBundle:Type:show.html.twig', array(
             'producttype' => $producttype,
             'attributes' => $attributes,
         ));
@@ -136,7 +136,7 @@ class ProductTypeController extends Controller
             );
         }*/
         
-        return $this->render('admin/type/edit.html.twig', array(
+        return $this->render('AdminBundle:Type:edit.html.twig', array(
             'form' => $editForm->createView(),
             'producttype' => $producttype,
         ));
