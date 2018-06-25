@@ -1,6 +1,6 @@
 <?php
 
-namespace TrackBundle\Controller;
+namespace AdminBundle\Controller;
 
 use TrackBundle\Entity\ProductStatus;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;	
