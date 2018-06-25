@@ -29,7 +29,7 @@ class DefaultController extends Controller
      */
     public function indexAction()
     {
-        return $this->render('admin/index.html.twig');
+        return $this->render('AdminBundle::index.html.twig');
     }
     
     /**
@@ -42,7 +42,7 @@ class DefaultController extends Controller
         
         $userQuery = $em->getRepository("AppBundle:User")->findAll();
         
-        return $this->render('admin/user/index.html.twig',
+        return $this->render('AdminBundle:User:index.html.twig',
                 ['users' => $userQuery]);
     }
     
@@ -79,7 +79,7 @@ class DefaultController extends Controller
             return $this->redirectToRoute('admin_user_index');
         }
         
-        return $this->render('admin/user/edit.html.twig',
+        return $this->render('AdminBundle:User:edit.html.twig',
                 ['form' => $form->createView()]);
     }
     
@@ -125,7 +125,7 @@ class DefaultController extends Controller
             return $this->redirectToRoute('admin_user_index');
         }
         
-        return $this->render('admin/user/new.html.twig',
+        return $this->render('AdminBundle:User:new.html.twig',
                 ['form' => $form->createView()]);
     }
     
