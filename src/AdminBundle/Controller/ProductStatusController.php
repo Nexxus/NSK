@@ -161,8 +161,6 @@ class ProductStatusController extends Controller
          ->setParameter('name', "Sold");
         $statuses = $query->getResult();
         
-        //echo "<pre>";print_r($statuses);exit;
-        
         if($method == "add") {
             foreach($statuses as $status) {
                 $query = $em->createQuery(

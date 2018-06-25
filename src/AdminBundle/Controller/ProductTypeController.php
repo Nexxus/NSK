@@ -44,7 +44,7 @@ class ProductTypeController extends Controller
                 . "FROM TrackBundle:ProductType pt")
                 ->getResult();
         
-        $index = $query[0][1];
+        $index = $query[0][1]+1;
         
         $producttype = new ProductType();
         $producttype->setPindex($index);
@@ -158,11 +158,19 @@ class ProductTypeController extends Controller
      * @Route("/delete/{id}", name="producttype_delete")
      * @Method("GET")
      */
-    public function deleteAction(ProductType $producttype) 
+    public function deleteAction($id) 
     {
         $em = $this->getDoctrine()->getManager();
         
         // check if any products have the type
+        $producttype = $em->getRepository('TrackBundle:ProductType')
+                ->find($id);
+        
+        // delete the type
+        $em->remove($producttype);
+        $em->flush();
+        
+        return $this->redirectToRoute('producttype_index');
     }
     
     /**
