@@ -39,7 +39,15 @@ class ProductTypeController extends Controller
     public function createAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
+        $query = $em->createQuery(
+                "SELECT COUNT(pt.id) "
+                . "FROM TrackBundle:ProductType pt")
+                ->getResult();
+        
+        $index = $query[0][1];
+        
         $producttype = new ProductType();
+        $producttype->setPindex($index);
         
         $form = $this->createFormBuilder($producttype)
                     ->add('name', TextType::class)
@@ -118,6 +126,8 @@ class ProductTypeController extends Controller
         if($editForm->isSubmitted() && $editForm->isValid()) {
             $em->persist($producttype);
             $em->flush();
+            
+            return $this->redirectToRoute('producttype_index');
         }
         
         // create attr name list (not quite done)
@@ -140,6 +150,19 @@ class ProductTypeController extends Controller
             'form' => $editForm->createView(),
             'producttype' => $producttype,
         ));
+    }
+    
+    /**
+     * Delete producttype, make sure no products are assigned to it
+     * 
+     * @Route("/delete/{id}", name="producttype_delete")
+     * @Method("GET")
+     */
+    public function deleteAction(ProductType $producttype) 
+    {
+        $em = $this->getDoctrine()->getManager();
+        
+        // check if any products have the type
     }
     
     /**

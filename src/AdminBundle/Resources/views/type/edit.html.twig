@@ -2,6 +2,8 @@
 {% block body %}
     <h1>Product Type #{{ producttype.id }}</h1>
 
+    <h2>{{ app.request.get('order') }}</h2>
+    
     {{ form_start(form) }}
     <table class="table table-bordered">
         <tbody>
