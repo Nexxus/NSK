@@ -1,5 +1,25 @@
 <?php
 
+/*
+ * Nexxus Stock Keeping (online voorraad beheer software)
+ * Copyright (C) 2018 Copiatek Scan & Computer Solution BV
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see licenses.
+ * 
+ * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+*/
+
 namespace TrackBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -177,14 +197,14 @@ class BarcodeController extends Controller
         //echo count($items);
 
         $mpdf->AddPage();
-        
+
         // open table
         $html .= "<h1 style='text-align:center;'>Nexxus Barcode Print</h1>";
         $html .= "<table><tr>";
         $pc = 0; // pagecounter
         $row = 1; $column = 0;
         
-        for($i=0;$i<count($ids);$i++) {
+        for($i=0;$i<count($items);$i++) {
             // new row every 6
             if($column>6) {
                 $html .= "</tr><tr>";
@@ -195,8 +215,8 @@ class BarcodeController extends Controller
             }
             $html .= '<td style="text-align:center;">'
                     . '<b>Copiatek</b><br>'
-                    . '<barcode code="'.$ids[$i].'" type="C39" class="barcode" size=1 height=1.1/>'
-                    . '<br>* '.$ids[$i].' *'
+                    . '<barcode code="'.$items[$i]->getSku().'" type="C39" class="barcode" size=1 height=1.1/>'
+                    . '<br>* '.$items[$i]->getSku().' *'
                     . '</td>';
         }
         
