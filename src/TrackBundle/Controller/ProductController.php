@@ -177,7 +177,8 @@ class ProductController extends Controller
             
             // check for sku
             
-            if($saveAmount == 1 || $saveAmount == null) {
+            /* Disabled for now, doesn't work properly */
+            //if($saveAmount == 1 || $saveAmount == null) {
                 if($this->checkExistingSku($product->getSku() ))
                 {
                     $em->persist($product);
@@ -198,7 +199,7 @@ class ProductController extends Controller
                         'sellable'      => PRODUCT_SELLABLE,
                     ));
                 }
-            } elseif($saveAmount > 1) {
+            /*} elseif($saveAmount > 1) {
                 for($i=0;$i<$saveAmount;$i++) {
                     $copy = $product;
                     
@@ -214,7 +215,7 @@ class ProductController extends Controller
                     
                 }
                 return $this->redirectToRoute('track_index');
-            }
+              }*/
         }
 
         return $this->render('TrackBundle:Track:new.html.twig', array(
