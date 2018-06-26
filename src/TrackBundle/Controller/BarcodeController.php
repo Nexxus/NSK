@@ -56,6 +56,10 @@ class BarcodeController extends Controller
                     <body>
                         <table class="items" cellpadding="0" border="0";>
                             <tr>
+                                <br>&nbsp;
+                                <br>
+                            </tr>
+                            <tr>
                                 <td style="text-align:center;"><b>Copiatek</b></td>
                             </tr>
                             <tr>
@@ -133,6 +137,10 @@ class BarcodeController extends Controller
                         <body>
                             <table class="items" cellpadding="0" border="0";>
                                 <tr>
+                                    <br><td>&nbsp;</td>
+                                </td>
+                                </tr>
+                                <tr>
                                     <td style="text-align:center;"><b>Copiatek</b></td>
                                 </tr>
                                 <tr>
@@ -209,7 +217,7 @@ class BarcodeController extends Controller
 
             if(strlen($sku)<=10) {
                 // new row every 6
-                if($column>3) {
+                if($column>2) {
                     $html .= "</tr><tr>";
                     $row++;
                     $column=1;
