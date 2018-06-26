@@ -44,7 +44,7 @@ class Product
     /**
      * @var string
      *
-     * @ORM\Column(name="sku", type="string", length=255, unique=true)
+     * @ORM\Column(name="sku", type="string", length=16, unique=true)
      */
     private $sku;
 
