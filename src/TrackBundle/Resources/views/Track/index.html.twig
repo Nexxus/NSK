@@ -326,7 +326,7 @@
                     }
                 }
                 document.getElementById("printBarcode11352").href = "{{ path('track_print_barcode_multi') }}"+"?id[]="+itemArr.join("&id[]=");
-                document.getElementById("printBarcodeA4").href = "{{ path('track_print_barcode_a4') }}"+"?id[]="+itemArr.join("&id[]=");
+                //document.getElementById("printBarcodeA4").href = "{{ path('track_print_barcode_a4') }}"+"?id[]="+itemArr.join("&id[]=");
                 document.getElementById("bulkUpdate").href = "{{ path('track_bulk_edit') }}"+"?id[]="+itemArr.join("&id[]=");
                 document.getElementById("exportCSV").href = "{{ path('track_export_csv') }}"+"?id[]="+itemArr.join("&id[]=");
                 console.log("Selected items: " + itemArr);
