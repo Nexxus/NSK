@@ -1,6 +1,26 @@
 <?php
 
-namespace TrackBundle\Controller;
+/*
+ * Nexxus Stock Keeping (online voorraad beheer software)
+ * Copyright (C) 2018 Copiatek Scan & Computer Solution BV
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see licenses.
+ * 
+ * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ */
+
+namespace AdminBundle\Controller;
 
 use TrackBundle\Entity\ProductStatus;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;	
@@ -39,7 +59,7 @@ class ProductStatusController extends Controller
                 . '     s.pindex ASC');
         $productstatus = $query->getResult();
         
-        return $this->render('admin/status/index.html.twig', array(
+        return $this->render('AdminBundle:Status:index.html.twig', array(
             'productstatus' => $productstatus)); 
     }
     
@@ -106,7 +126,7 @@ class ProductStatusController extends Controller
             return $this->redirectToRoute('status_index');
         }
         
-        return $this->render('admin/status/new.html.twig', array(
+        return $this->render('AdminBundle:Status:new.html.twig', array(
             'form' => $form->createView(),
             'statusall' => $statusall,
         ));
@@ -160,8 +180,6 @@ class ProductStatusController extends Controller
         )->setParameter('space', $pindex)
          ->setParameter('name', "Sold");
         $statuses = $query->getResult();
-        
-        //echo "<pre>";print_r($statuses);exit;
         
         if($method == "add") {
             foreach($statuses as $status) {
