@@ -60,7 +60,7 @@ class BarcodeController extends Controller
                             </tr>
                             <tr>
                                 <td class="barcodecell">
-                                    <barcode code="'.$sku.'" type="C39" class="barcode" size=1 height=1.1/>
+                                    <barcode code="'.$sku.'" type="C39" class="barcode" size=1 height=0.6/>
                                     &nbsp;
                                 </td>
                             </tr>
@@ -106,7 +106,7 @@ class BarcodeController extends Controller
         
         $mpdf = $mpdfService->getMpdf(['', [54,25] ,'0','',0,0,0,0,0,0,'P']);
         
-        $mpdf->setTitle("ERCPv2 Barcode Generator");
+        $mpdf->setTitle("Nexxus Barcode Generator");
 
         // retrieve ids
         $ids = $_GET['id'];
@@ -137,7 +137,7 @@ class BarcodeController extends Controller
                                 </tr>
                                 <tr>
                                     <td class="barcodecell">
-                                        <barcode code="'.$sku.'" type="C39" class="barcode" size=1 height=1.1/>
+                                        <barcode code="'.$sku.'" type="C39" class="barcode" size=1 height=0.6/>
                                         &nbsp;
                                     </td>
                                 </tr>
@@ -172,7 +172,7 @@ class BarcodeController extends Controller
         
         $mpdf = $mpdfService->getMpdf();
         
-        $mpdf->setTitle("ERCPv2 Barcode Generator");
+        $mpdf->setTitle("Nexxus Barcode Generator");
 
         // retrieve ids
         $ids = $_GET['id'];
@@ -205,19 +205,23 @@ class BarcodeController extends Controller
         $row = 1; $column = 0;
         
         for($i=0;$i<count($items);$i++) {
-            // new row every 6
-            if($column>6) {
-                $html .= "</tr><tr>";
-                $row++;
-                $column=1;
-            } else {
-                $column++;
-            }
-            $html .= '<td style="text-align:center;">'
-                    . '<b>Copiatek</b><br>'
-                    . '<barcode code="'.$items[$i]->getSku().'" type="C39" class="barcode" size=1 height=1.1/>'
-                    . '<br>* '.$items[$i]->getSku().' *'
+            $sku = $items[$i]->getSku();
+
+            if(strlen($sku)<=10) {
+                // new row every 6
+                if($column>3) {
+                    $html .= "</tr><tr>";
+                    $row++;
+                    $column=1;
+                } else {
+                    $column++;
+                }
+                $html .= '<td style="text-align:center;">'
+                        . '<b>Copiatek</b><br>'
+                        . '<barcode code="'.$sku.'" type="C39" class="barcode" size=1 height=0.6/>'
+                    . '<br>* '.$sku.' *'
                     . '</td>';
+            }
         }
         
         $html .= '</table></body></html>';
