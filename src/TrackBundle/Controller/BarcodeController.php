@@ -197,14 +197,14 @@ class BarcodeController extends Controller
         //echo count($items);
 
         $mpdf->AddPage();
-        
+
         // open table
         $html .= "<h1 style='text-align:center;'>Nexxus Barcode Print</h1>";
         $html .= "<table><tr>";
         $pc = 0; // pagecounter
         $row = 1; $column = 0;
         
-        for($i=0;$i<count($ids);$i++) {
+        for($i=0;$i<count($items);$i++) {
             // new row every 6
             if($column>6) {
                 $html .= "</tr><tr>";
@@ -215,8 +215,8 @@ class BarcodeController extends Controller
             }
             $html .= '<td style="text-align:center;">'
                     . '<b>Copiatek</b><br>'
-                    . '<barcode code="'.$ids[$i].'" type="C39" class="barcode" size=1 height=1.1/>'
-                    . '<br>* '.$ids[$i].' *'
+                    . '<barcode code="'.$items[$i]->getSku().'" type="C39" class="barcode" size=1 height=1.1/>'
+                    . '<br>* '.$items[$i]->getSku().' *'
                     . '</td>';
         }
         
