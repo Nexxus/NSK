@@ -20,7 +20,11 @@
             <td>{{ i.pindex }}</td>
             <td>
                 <a href="{{ path('producttype_edit', {'id': i.id} ) }}"><button class="btn btn-success" name="Edit">Edit</button></a>
+                {% if products < 1 %}
                 <a href="{{ path('producttype_delete', {'id': i.id} ) }}"><button class="btn btn-danger" name="Delete">Delete</button></a>
+            {% else %}
+                <button class="btn" name="CannotDelete">{% trans %}Type in use{% endtrans %}</button>
+            {% endif %}
             </td>
         </tr>
     {% endfor %}
