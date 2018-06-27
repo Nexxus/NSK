@@ -48,7 +48,7 @@ class ProductTypeController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $products = $em->createQuery( 
-                    "SELECT pt.id, pt.name, pt.pindex, COUNT(p.id) AS products FROM TrackBundle:ProductType pt
+                    "SELECT pt.id, pt.name, pt.pindex, COUNT(p.id) AS productcount FROM TrackBundle:ProductType pt
                         LEFT JOIN TrackBundle:Product p WITH p.type=pt.id
                         GROUP BY pt.id")
                 ->getResult();
