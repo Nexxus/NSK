@@ -1,6 +1,26 @@
 <?php
 
-namespace TrackBundle\Controller;
+/*
+ * Nexxus Stock Keeping (online voorraad beheer software)
+ * Copyright (C) 2018 Copiatek Scan & Computer Solution BV
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see licenses.
+ * 
+ * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ */
+
+namespace AdminBundle\Controller;
 
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -29,7 +49,7 @@ class ProductTypeController extends Controller
         $products = $em->getRepository('TrackBundle:ProductType')
                         ->findAll();
         
-        return $this->render('admin/type/index.html.twig', 
+        return $this->render('AdminBundle:Type:index.html.twig', 
                 array('products' => $products));
     }
     
@@ -39,7 +59,15 @@ class ProductTypeController extends Controller
     public function createAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
+        $query = $em->createQuery(
+                "SELECT COUNT(pt.id) "
+                . "FROM TrackBundle:ProductType pt")
+                ->getResult();
+        
+        $index = $query[0][1]+1;
+        
         $producttype = new ProductType();
+        $producttype->setPindex($index);
         
         $form = $this->createFormBuilder($producttype)
                     ->add('name', TextType::class)
@@ -60,7 +88,7 @@ class ProductTypeController extends Controller
         } 
         else 
         {
-            return $this->render('admin/type/new.html.twig', array(
+            return $this->render('AdminBundle:Type:new.html.twig', array(
                 'form' => $form->createView(),
             ));
         }
@@ -86,7 +114,7 @@ class ProductTypeController extends Controller
         
         $attributes = $query->getResult();
         
-        return $this->render('admin/type/show.html.twig', array(
+        return $this->render('AdminBundle:Type:show.html.twig', array(
             'producttype' => $producttype,
             'attributes' => $attributes,
         ));
@@ -118,6 +146,8 @@ class ProductTypeController extends Controller
         if($editForm->isSubmitted() && $editForm->isValid()) {
             $em->persist($producttype);
             $em->flush();
+            
+            return $this->redirectToRoute('producttype_index');
         }
         
         // create attr name list (not quite done)
@@ -136,10 +166,31 @@ class ProductTypeController extends Controller
             );
         }*/
         
-        return $this->render('admin/type/edit.html.twig', array(
+        return $this->render('AdminBundle:Type:edit.html.twig', array(
             'form' => $editForm->createView(),
             'producttype' => $producttype,
         ));
+    }
+    
+    /**
+     * Delete producttype, make sure no products are assigned to it
+     * 
+     * @Route("/delete/{id}", name="producttype_delete")
+     * @Method("GET")
+     */
+    public function deleteAction($id) 
+    {
+        $em = $this->getDoctrine()->getManager();
+        
+        // check if any products have the type
+        $producttype = $em->getRepository('TrackBundle:ProductType')
+                ->find($id);
+        
+        // delete the type
+        $em->remove($producttype);
+        $em->flush();
+        
+        return $this->redirectToRoute('producttype_index');
     }
     
     /**

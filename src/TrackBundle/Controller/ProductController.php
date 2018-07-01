@@ -1,5 +1,25 @@
 <?php
 
+/*
+ * Nexxus Stock Keeping (online voorraad beheer software)
+ * Copyright (C) 2018 Copiatek Scan & Computer Solution BV
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see licenses.
+ * 
+ * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ */
+
 namespace TrackBundle\Controller;
 
 const PRODUCT_SELLABLE = true;
@@ -157,7 +177,8 @@ class ProductController extends Controller
             
             // check for sku
             
-            if($saveAmount == 1 || $saveAmount == null) {
+            /* Disabled for now, doesn't work properly */
+            //if($saveAmount == 1 || $saveAmount == null) {
                 if($this->checkExistingSku($product->getSku() ))
                 {
                     $em->persist($product);
@@ -178,7 +199,7 @@ class ProductController extends Controller
                         'sellable'      => PRODUCT_SELLABLE,
                     ));
                 }
-            } elseif($saveAmount > 1) {
+            /*} elseif($saveAmount > 1) {
                 for($i=0;$i<$saveAmount;$i++) {
                     $copy = $product;
                     
@@ -194,7 +215,7 @@ class ProductController extends Controller
                     
                 }
                 return $this->redirectToRoute('track_index');
-            }
+              }*/
         }
 
         return $this->render('TrackBundle:Track:new.html.twig', array(

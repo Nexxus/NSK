@@ -1,5 +1,25 @@
 <?php
 
+/*
+ * Nexxus Stock Keeping (online voorraad beheer software)
+ * Copyright (C) 2018 Copiatek Scan & Computer Solution BV
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see licenses.
+ * 
+ * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ */
+
 namespace AdminBundle\Controller;
 
 use AppBundle\Entity\User;
@@ -29,7 +49,7 @@ class DefaultController extends Controller
      */
     public function indexAction()
     {
-        return $this->render('admin/index.html.twig');
+        return $this->render('AdminBundle::index.html.twig');
     }
     
     /**
@@ -42,7 +62,7 @@ class DefaultController extends Controller
         
         $userQuery = $em->getRepository("AppBundle:User")->findAll();
         
-        return $this->render('admin/user/index.html.twig',
+        return $this->render('AdminBundle:User:index.html.twig',
                 ['users' => $userQuery]);
     }
     
@@ -79,7 +99,7 @@ class DefaultController extends Controller
             return $this->redirectToRoute('admin_user_index');
         }
         
-        return $this->render('admin/user/edit.html.twig',
+        return $this->render('AdminBundle:User:edit.html.twig',
                 ['form' => $form->createView()]);
     }
     
@@ -125,7 +145,7 @@ class DefaultController extends Controller
             return $this->redirectToRoute('admin_user_index');
         }
         
-        return $this->render('admin/user/new.html.twig',
+        return $this->render('AdminBundle:User:new.html.twig',
                 ['form' => $form->createView()]);
     }
     

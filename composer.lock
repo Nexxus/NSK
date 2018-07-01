@@ -943,12 +943,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSUserBundle.git",
-                "reference": "dc4a927491a7082402a890976b5452d3ad474f9c"
+                "reference": "8e723f2c7a36191b0fd7db60d8f8d0aacc20d807"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/dc4a927491a7082402a890976b5452d3ad474f9c",
-                "reference": "dc4a927491a7082402a890976b5452d3ad474f9c",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/8e723f2c7a36191b0fd7db60d8f8d0aacc20d807",
+                "reference": "8e723f2c7a36191b0fd7db60d8f8d0aacc20d807",
                 "shasum": ""
             },
             "require": {
@@ -1011,7 +1011,7 @@
             "keywords": [
                 "User management"
             ],
-            "time": "2018-03-25T11:43:48+00:00"
+            "time": "2018-06-08T13:55:34+00:00"
         },
         {
             "name": "incenteev/composer-parameter-handler",
@@ -1368,16 +1368,16 @@
         },
         {
             "name": "paragonie/random_compat",
-            "version": "v2.0.12",
+            "version": "v2.0.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/random_compat.git",
-                "reference": "258c89a6b97de7dfaf5b8c7607d0478e236b04fb"
+                "reference": "10bcb46e8f3d365170f6de9d05245aa066b81f09"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/258c89a6b97de7dfaf5b8c7607d0478e236b04fb",
-                "reference": "258c89a6b97de7dfaf5b8c7607d0478e236b04fb",
+                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/10bcb46e8f3d365170f6de9d05245aa066b81f09",
+                "reference": "10bcb46e8f3d365170f6de9d05245aa066b81f09",
                 "shasum": ""
             },
             "require": {
@@ -1409,10 +1409,11 @@
             "description": "PHP 5.x polyfill for random_bytes() and random_int() from PHP 7",
             "keywords": [
                 "csprng",
+                "polyfill",
                 "pseudorandom",
                 "random"
             ],
-            "time": "2018-04-04T21:24:14+00:00"
+            "time": "2018-06-08T15:26:40+00:00"
         },
         {
             "name": "psr/cache",
@@ -1509,16 +1510,16 @@
         },
         {
             "name": "sensio/distribution-bundle",
-            "version": "v5.0.21",
+            "version": "v5.0.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioDistributionBundle.git",
-                "reference": "eb6266b3b472e4002538610b28a0a04bcf94891a"
+                "reference": "209b11f8cee5bf71986dd703e45e27d3ed7a6d15"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioDistributionBundle/zipball/eb6266b3b472e4002538610b28a0a04bcf94891a",
-                "reference": "eb6266b3b472e4002538610b28a0a04bcf94891a",
+                "url": "https://api.github.com/repos/sensiolabs/SensioDistributionBundle/zipball/209b11f8cee5bf71986dd703e45e27d3ed7a6d15",
+                "reference": "209b11f8cee5bf71986dd703e45e27d3ed7a6d15",
                 "shasum": ""
             },
             "require": {
@@ -1557,7 +1558,7 @@
                 "configuration",
                 "distribution"
             ],
-            "time": "2017-08-25T16:55:44+00:00"
+            "time": "2018-06-07T06:22:12+00:00"
         },
         {
             "name": "sensio/framework-extra-bundle",
@@ -2654,16 +2655,16 @@
         },
         {
             "name": "symfony/phpunit-bridge",
-            "version": "v3.4.9",
+            "version": "v3.4.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/phpunit-bridge.git",
-                "reference": "7470518370113785f67a7fd8e6e1667661e88805"
+                "reference": "8a21eb6bedad38bf1f15d529c65eb9e17d0242fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/7470518370113785f67a7fd8e6e1667661e88805",
-                "reference": "7470518370113785f67a7fd8e6e1667661e88805",
+                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/8a21eb6bedad38bf1f15d529c65eb9e17d0242fd",
+                "reference": "8a21eb6bedad38bf1f15d529c65eb9e17d0242fd",
                 "shasum": ""
             },
             "require": {
@@ -2716,7 +2717,7 @@
             ],
             "description": "Symfony PHPUnit Bridge",
             "homepage": "https://symfony.com",
-            "time": "2018-04-30T15:36:51+00:00"
+            "time": "2018-06-10T07:25:02+00:00"
         }
     ],
     "aliases": [],

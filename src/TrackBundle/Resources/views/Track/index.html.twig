@@ -271,6 +271,12 @@
                             <img src="{{ asset("images/BarcodeRoll11356.png") }}" class="img-thumbnail rounded float-left">
                         </a>
                     </div>
+                    <div class="col-sm-6">
+                        <a class="dropdown-item" href='#' id='printBarcodeA4' target='_blank'>
+                            <h4 style="color:black">A4-papier</h4>
+                            <img src="{{ asset("images/a4.jpg") }}" class="img-thumbnail rounded float-left">
+                        </a>
+                    </div>
                 </div>
                 <div class="modal-footer">
                 </div>
@@ -320,6 +326,7 @@
                     }
                 }
                 document.getElementById("printBarcode11352").href = "{{ path('track_print_barcode_multi') }}"+"?id[]="+itemArr.join("&id[]=");
+                //document.getElementById("printBarcodeA4").href = "{{ path('track_print_barcode_a4') }}"+"?id[]="+itemArr.join("&id[]=");
                 document.getElementById("bulkUpdate").href = "{{ path('track_bulk_edit') }}"+"?id[]="+itemArr.join("&id[]=");
                 document.getElementById("exportCSV").href = "{{ path('track_export_csv') }}"+"?id[]="+itemArr.join("&id[]=");
                 console.log("Selected items: " + itemArr);
