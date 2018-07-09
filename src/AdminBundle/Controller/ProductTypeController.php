@@ -41,14 +41,18 @@ use TrackBundle\Entity\ProductTypeAttribute;
 class ProductTypeController extends Controller
 {
     /**
-     * @Route("/", name="producttype_index") 
+     * @Route("/", name="producttype_index")
+     * @Method("GET") 
      */
     public function indexAction() 
     {
-        $em = $this->getDoctrine();
-        $products = $em->getRepository('TrackBundle:ProductType')
-                        ->findAll();
-        
+        $em = $this->getDoctrine()->getManager();
+        $products = $em->createQuery( 
+                    "SELECT pt.id, pt.name, pt.pindex, COUNT(p.id) AS productcount FROM TrackBundle:ProductType pt
+                        LEFT JOIN TrackBundle:Product p WITH p.type=pt.id
+                        GROUP BY pt.id")
+                ->getResult();
+
         return $this->render('AdminBundle:Type:index.html.twig', 
                 array('products' => $products));
     }
@@ -133,7 +137,7 @@ class ProductTypeController extends Controller
                 ->add('name', TextType::class)
                 ->add('save', SubmitType::class)
                 ->getForm();
-        
+         
         $editForm->handleRequest($request);
         
         // get all attributes

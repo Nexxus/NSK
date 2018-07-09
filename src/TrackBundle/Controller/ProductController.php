@@ -71,12 +71,15 @@ class ProductController extends Controller
             $this->clearSearchQuery($search_session);
         }
         
+        
+        
         // get products
         $productquery = $em->getRepository('TrackBundle:Product')->createQueryBuilder('p')
                 ->orderBy('p.'.$sort , $by)
                 ->setFirstResult(($page - 1) * 10)
                 ->setMaxResults(10);
 
+        // load search query from slide menu
         $stored_query = $this->loadSearchQuery($search_session);
         $productquery = $this->searchSpecific($productquery, $stored_query);
         
@@ -87,9 +90,16 @@ class ProductController extends Controller
             $productquery->andWhere('p.status < 999 OR p.status IS NULL');
         }
         
-        if($user->getLocation() !== null) {
-            echo "Land locked!";
-            $productquery->andWhere("p.location = ".$user->getLocation());
+        // Only admins and Copiatek people can see all products
+        if($user->getLocation() !== null 
+                && !in_array('ROLE_ADMIN', $user->getRoles())
+                && !in_array('ROLE_COPIA', $user->getRoles()) 
+        ) {
+            // convert location to ID using the manager
+            $locid = $em->getUnitOfWork()->getEntityIdentifier($user->getLocation());
+            $userloc = $locid['id'];
+            
+            $productquery->andWhere("p.location = ". $userloc);
         }
         
         $products = $productquery->getQuery()->getResult();
@@ -139,10 +149,10 @@ class ProductController extends Controller
         
         $result = $query->getResult(); 
         if(count($result)>0){ 
-            $generatedsku = "Copia" . ($result[0]->getId() + 1); 
+            $generatedsku = "C" . ($result[0]->getId() + 1); 
         }
         else{ 
-            $generatedsku = "Copia0";
+            $generatedsku = "C0";
         } 
         
         $form = $this->createFormBuilder($product)
@@ -257,6 +267,16 @@ class ProductController extends Controller
 
         // create form for deleting
         $deleteForm = $this->createDeleteForm($product);
+        
+        // if user isn't allowed to be here, redirect
+        $user = $this->get('security.token_storage')->getToken()->getUser();
+        if(!$this->checkUserLocRights($user, $product->getLocation())) {
+            return $this->redirectToRoute("track_index");
+        }
+        
+        echo $product->getLocation();
+        echo $user->getLocation();
+        
         
         // create form for editing
         $editForm = $this->createFormBuilder($product)
@@ -409,6 +429,12 @@ class ProductController extends Controller
         $form = $this->createDeleteForm($product);
         $form->handleRequest($request);
 
+         // if user isn't allowed to be here, redirect
+        $user = $this->get('security.token_storage')->getToken()->getUser();
+        if(!$this->checkUserLocRights($user, $product->getLocation())) {
+            return $this->redirectToRoute("track_index");
+        }
+        
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->remove($product);
@@ -754,5 +780,19 @@ class ProductController extends Controller
         $s->remove('spec_type');
         
         return $this->redirectToRoute('track_index');
+    }
+    
+    /** 
+     * Check if user has rights, returns true if admin or copiatek user
+     */
+    public function checkUserLocRights($user, $loc) {
+        if($user->getLocation() == $loc 
+                || in_array('ROLE_ADMIN', $user->getRoles())
+                || in_array('ROLE_COPIA', $user->getRoles())) 
+        {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
