@@ -32,6 +32,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -146,28 +147,30 @@ class ProductController extends Controller
         } 
         
         $form = $this->createFormBuilder($product)
-                ->add('sku', TextType::class, ['attr' => [
-                        'value' => $generatedsku,
-                    ]
-                ])
-                ->add('name')
-                ->add('quantity')
-                ->add('price')
-                ->add('location')
-                ->add('type')
-                ->add('description')
-                ->add('status')
-                ->add('brand')
-                ->add('department')
-                ->add('owner')
-                ->add('saveAmount', IntegerType::class, [
-                    'mapped' => false,
-                    'attr' => [
-                        'maxlength' => 3,
-                        'value' => 1,
-                    ]
-                ])
-                ->getForm();
+            ->add('checkbox', ChoiceType::class, array(
+                'choices' => array(
+                'scan existing barcode' => true,
+                'generate new barcode' => false
+            ),'mapped' => false))
+            ->add('sku')
+            ->add('name')
+            ->add('quantity')
+            ->add('price')
+            ->add('location')
+            ->add('type')
+            ->add('description')
+            ->add('status')
+            ->add('brand')
+            ->add('department')
+            ->add('owner')
+            ->add('saveAmount', IntegerType::class, [
+                'mapped' => false,
+                'attr' => [
+                    'maxlength' => 3,
+                    'value' => 1,
+                ]
+            ])
+            ->getForm();
         
         $form->handleRequest($request);
 
@@ -175,47 +178,47 @@ class ProductController extends Controller
             
             $saveAmount = $form->get('saveAmount')->getData();
             
-            // check for sku
-            
+            // if the dropdown has 'generate new' this wil make the temp var into a generated
+            if ($form->get('checkbox')->getData() == false) {
+                $product->setSku($generatedsku);
+            }
             /* Disabled for now, doesn't work properly */
             //if($saveAmount == 1 || $saveAmount == null) {
-                if($this->checkExistingSku($product->getSku() ))
-                {
-                    $em->persist($product);
-                    $em->flush($product);
+            if($this->checkExistingSku($product->getSku() )) {
+                $em->persist($product);
+                $em->flush($product);
+
+                // add potential attributes
+                $this->checkAttributeTemplate($product);
+
+
+                return $this->redirectToRoute('track_show', array('id' => $product->getId()));
+            }
+            else {
+                return $this->render('TrackBundle:Track:new.html.twig', array(
+                    'product'       => $product,
+                    'form'          => $form->createView(),
+                    'error_msg'     => 'DuplicateSku',
+                    'sellable'      => PRODUCT_SELLABLE,
+                ));
+            }
+        /*} elseif($saveAmount > 1) {
+            for($i=0;$i<$saveAmount;$i++) {
+                $copy = $product;
+
+                $copy->setSku($copy->getSku() . $i);
+
+                if($this->checkExistingSku($copy->getSku() )) {
+                    $em->persist($copy);
+                    $em->flush($copy);
 
                     // add potential attributes
-                    $this->checkAttributeTemplate($product);
-                    
-                    
-                    return $this->redirectToRoute('track_show', array('id' => $product->getId()));
-                } 
-                 else 
-                {
-                    return $this->render('TrackBundle:Track:new.html.twig', array(
-                        'product'       => $product,
-                        'form'          => $form->createView(),
-                        'error_msg'     => 'DuplicateSku',
-                        'sellable'      => PRODUCT_SELLABLE,
-                    ));
+                    $this->checkAttributeTemplate($copy);
                 }
-            /*} elseif($saveAmount > 1) {
-                for($i=0;$i<$saveAmount;$i++) {
-                    $copy = $product;
-                    
-                    $copy->setSku($copy->getSku() . $i);
-                    
-                    if($this->checkExistingSku($copy->getSku() )) {
-                        $em->persist($copy);
-                        $em->flush($copy);
 
-                        // add potential attributes
-                        $this->checkAttributeTemplate($copy);
-                    }
-                    
-                }
-                return $this->redirectToRoute('track_index');
-              }*/
+            }
+            return $this->redirectToRoute('track_index');
+          }*/
         }
 
         return $this->render('TrackBundle:Track:new.html.twig', array(
