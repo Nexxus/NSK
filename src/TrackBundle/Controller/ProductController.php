@@ -205,7 +205,7 @@ class ProductController extends Controller
                 return $this->render('TrackBundle:Track:new.html.twig', array(
                     'product'       => $product,
                     'form'          => $form->createView(),
-                    'error_msg'     => 'wronginput',
+                    'error_msg'     => 'WrongInput',
                     'sellable'      => PRODUCT_SELLABLE,
                 ));
             }
