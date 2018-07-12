@@ -35,3 +35,5 @@ logs/
 
 *.cert
 *.key
+*.xml
+*.iml
