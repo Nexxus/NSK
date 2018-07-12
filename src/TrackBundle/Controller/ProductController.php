@@ -34,6 +34,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -137,84 +138,87 @@ class ProductController extends Controller
     public function newAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        
+
         $product = new Product();
-        
-        // get last id
         $repository_product = $this->getDoctrine()->getRepository(Product::class);
-        
+
         $query = $repository_product->createQueryBuilder('p')
                 ->orderBy('p.id', 'DESC')
                 ->getQuery();
-        
-        $result = $query->getResult(); 
-        if(count($result)>0){ 
-            $generatedsku = "C" . ($result[0]->getId() + 1); 
+
+        $result = $query->getResult();
+        if(count($result)>0) {
+            $generatedsku = ($result[0]->getId() + 1);
         }
-        else{ 
-            $generatedsku = "C0";
-        } 
-        
+        else  {
+            $generatedsku = "0";
+        }
+
         $form = $this->createFormBuilder($product)
-                ->add('sku', TextType::class, ['attr' => [
-                        'value' => $generatedsku,
-                    ]
-                ])
-                ->add('name')
-                ->add('quantity')
-                ->add('price')
-                ->add('location')
-                ->add('type')
-                ->add('description')
-                ->add('status')
-                ->add('brand')
-                ->add('department')
-                ->add('owner')
-                ->add('saveAmount', IntegerType::class, [
-                    'mapped' => false,
-                    'attr' => [
-                        'maxlength' => 3,
-                        'value' => 1,
-                    ]
-                ])
-                ->getForm();
-        
+            ->add('checkbox', ChoiceType::class, array(
+                'choices' => array(
+                'scan existing barcode' => true,
+                'generate new barcode' => false
+            ),'mapped' => false))
+            ->add('sku')
+            ->add('name')
+            ->add('quantity')
+            ->add('price')
+            ->add('location')
+            ->add('type')
+            ->add('description')
+            ->add('status')
+            ->add('brand')
+            ->add('department')
+            ->add('owner')
+            ->add('saveAmount', IntegerType::class, [
+                'mapped' => false,
+                'attr' => [
+                    'maxlength' => 3,
+                    'value' => 1,
+                ]
+            ])
+            ->getForm();
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            
-            $saveAmount = $form->get('saveAmount')->getData();
-            
-            // check for sku
-            
-            /* Disabled for now, doesn't work properly */
-            //if($saveAmount == 1 || $saveAmount == null) {
-                if($this->checkExistingSku($product->getSku() ))
-                {
-                    $em->persist($product);
-                    $em->flush($product);
-
-                    // add potential attributes
-                    $this->checkAttributeTemplate($product);
-                    
-                    
-                    return $this->redirectToRoute('track_show', array('id' => $product->getId()));
-                } 
-                 else 
-                {
-                    return $this->render('TrackBundle:Track:new.html.twig', array(
-                        'product'       => $product,
-                        'form'          => $form->createView(),
-                        'error_msg'     => 'DuplicateSku',
-                        'sellable'      => PRODUCT_SELLABLE,
-                    ));
+            // if the dropdown has 'generate new' this wil make the temp var into a pre-generated SKU
+            // adds a prefix to the SKU bound to the type (if applicable)
+            if ($form->get('checkbox')->getData() == false) {
+                if ($form->get('type')->getData()) {
+                    $generatedsku = substr($form->get('type')->getData(), 0, 1) . $generatedsku;
                 }
+                $product->setSku($generatedsku);
+            }
+
+            if($this->checkExistingSku($product->getSku() )) {
+                $em->persist($product);
+                $em->flush($product);
+
+                // add potential attributes
+                $this->checkAttributeTemplate($product);
+
+
+                return $this->redirectToRoute('track_show', array('id' => $product->getId()));
+            }
+            else {
+                return $this->render('TrackBundle:Track:new.html.twig', array(
+                    'product'       => $product,
+                    'form'          => $form->createView(),
+                    'error_msg'     => 'DuplicateSku',
+                    'sellable'      => PRODUCT_SELLABLE,
+                ));
+            }
+            /* Disabled for now, doesn't work properly */
+            // $saveAmount = $form->get('saveAmount')->getData();
+            //if($saveAmount == 1 || $saveAmount == null) {
             /*} elseif($saveAmount > 1) {
                 for($i=0;$i<$saveAmount;$i++) {
                     $copy = $product;
-                    
+
                     $copy->setSku($copy->getSku() . $i);
-                    
+
                     if($this->checkExistingSku($copy->getSku() )) {
                         $em->persist($copy);
                         $em->flush($copy);
@@ -222,7 +226,6 @@ class ProductController extends Controller
                         // add potential attributes
                         $this->checkAttributeTemplate($copy);
                     }
-                    
                 }
                 return $this->redirectToRoute('track_index');
               }*/

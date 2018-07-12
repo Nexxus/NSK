@@ -35,3 +35,10 @@ logs/
 
 *.cert
 *.key
+
+# Jorrit's Visual Studio files
+*.sln
+*.suo
+*.phpproj
+*.phpproj.user
+/.vs/
