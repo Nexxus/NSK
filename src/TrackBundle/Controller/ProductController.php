@@ -135,31 +135,25 @@ class ProductController extends Controller
      * @Route("/new", name="track_new")
      * @Method({"GET", "POST"})
      */
-    public function newAction(Request $request)
-    {
+    public function newAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
-
         $product = new Product();
         $repository_product = $this->getDoctrine()->getRepository(Product::class);
-
         $query = $repository_product->createQueryBuilder('p')
-                ->orderBy('p.id', 'DESC')
-                ->getQuery();
-
+            ->orderBy('p.id', 'DESC')
+            ->getQuery();
         $result = $query->getResult();
         if(count($result)>0) {
             $generatedsku = ($result[0]->getId() + 1);
-        }
-        else  {
+        } else  {
             $generatedsku = "0";
         }
-
         $form = $this->createFormBuilder($product)
             ->add('checkbox', ChoiceType::class, array(
                 'choices' => array(
-                'scan existing barcode' => true,
-                'generate new barcode' => false
-            ),'mapped' => false))
+                    'scan existing barcode' => true,
+                    'generate new barcode' => false
+                ),'mapped' => false))
             ->add('sku')
             ->add('name')
             ->add('quantity')
@@ -181,54 +175,41 @@ class ProductController extends Controller
             ->getForm();
 
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
-            // if the dropdown has 'generate new' this wil make the temp var into a pre-generated SKU
-            // adds a prefix to the SKU bound to the type (if applicable)
             if ($form->get('checkbox')->getData() == false) {
                 if ($form->get('type')->getData()) {
                     $generatedsku = substr($form->get('type')->getData(), 0, 1) . $generatedsku;
                 }
                 $product->setSku($generatedsku);
             }
-
-            if($this->checkExistingSku($product->getSku() )) {
-                $em->persist($product);
-                $em->flush($product);
-
-                // add potential attributes
-                $this->checkAttributeTemplate($product);
-
-
-                return $this->redirectToRoute('track_show', array('id' => $product->getId()));
-            }
-            else {
-                return $this->render('TrackBundle:Track:new.html.twig', array(
-                    'product'       => $product,
-                    'form'          => $form->createView(),
-                    'error_msg'     => 'DuplicateSku',
-                    'sellable'      => PRODUCT_SELLABLE,
-                ));
-            }
-            /* Disabled for now, doesn't work properly */
-            // $saveAmount = $form->get('saveAmount')->getData();
-            //if($saveAmount == 1 || $saveAmount == null) {
-            /*} elseif($saveAmount > 1) {
-                for($i=0;$i<$saveAmount;$i++) {
-                    $copy = $product;
-
+            $saveAmount = $form->get('saveAmount')->getData();
+            if ($saveAmount > 0) {
+                for($i=0;$i<$saveAmount;) {
+                    $copy = clone $product;
                     $copy->setSku($copy->getSku() . $i);
-
-                    if($this->checkExistingSku($copy->getSku() )) {
+                    if($this->checkExistingSku($copy->getSku() ) === true) {
                         $em->persist($copy);
                         $em->flush($copy);
-
-                        // add potential attributes
                         $this->checkAttributeTemplate($copy);
+                        $i++;
+                    } else {
+                        return $this->render('TrackBundle:Track:new.html.twig', array(
+                            'product'       => $product,
+                            'form'          => $form->createView(),
+                            'error_msg'     => 'DuplicateSku',
+                            'sellable'      => PRODUCT_SELLABLE,
+                        ));
                     }
                 }
                 return $this->redirectToRoute('track_index');
-              }*/
+            } else {
+                return $this->render('TrackBundle:Track:new.html.twig', array(
+                    'product'       => $product,
+                    'form'          => $form->createView(),
+                    'error_msg'     => 'WrongInput',
+                    'sellable'      => PRODUCT_SELLABLE,
+                ));
+            }
         }
 
         return $this->render('TrackBundle:Track:new.html.twig', array(
