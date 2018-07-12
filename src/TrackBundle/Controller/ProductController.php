@@ -186,7 +186,7 @@ class ProductController extends Controller
                 for($i=0;$i<$saveAmount;) {
                     $copy = clone $product;
                     $copy->setSku($copy->getSku() . $i);
-                    if($this->checkExistingSku($copy->getSku() == true)) {
+                    if($this->checkExistingSku($copy->getSku() ) === true) {
                         $em->persist($copy);
                         $em->flush($copy);
                         $this->checkAttributeTemplate($copy);
