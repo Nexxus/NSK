@@ -18,9 +18,17 @@
     <div class="container">
     {{ form_start(form, {'attr': {'class': 'form-horizontal'} }) }}
         {{ form_errors(form) }}
-            <div class="form-group">
+            <div id="toggler" class="form-group">
                 <label class="control-label col-lg-2">
-                    {% trans %} SKU {% endtrans %}
+                     existing barcode?
+                </label>
+                <div class="col-lg-10">
+                    {{ form_widget(form.checkbox) }}
+                </div>
+            </div>
+            <div id="toggle" class="form-group">
+                <label class="control-label col-lg-2">
+                     scan existing barcode
                 </label>
                 <div class="col-lg-10">
                     {{ form_widget(form.sku) }}
@@ -126,6 +134,27 @@
 {% endblock %}
 
 {% block javascripts %}
-    
-    
-{% endblock %}    
+    <script>
+        $(document).ready(function(){
+            $("#form_checkbox").click(function(){
+                // if 'generate new' is selected this wil input a temp. value
+                if ($( "#form_checkbox" ).val() == 0) {
+                    $( "#toggle" ).hide();
+                    $( "#form_sku" ).val( '1' );
+                //    emty the field and make it avalable for scanning
+                } else {
+                    $( "#form_sku" ).val( undefined );
+                    $( "#toggle" ).show();
+                }
+            });
+        });
+        // disables enter key on the scanner field
+        $(document).ready(function() {
+            $("#form_sku").bind("keypress", function(e) {
+                if (e.keyCode == 13) {
+                    return false;
+                }
+            });
+        });
+    </script>
+{% endblock %}
