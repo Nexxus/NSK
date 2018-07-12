@@ -128,24 +128,22 @@ class ProductController extends Controller
     public function newAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        
+
         $product = new Product();
-        
-        // get last id
         $repository_product = $this->getDoctrine()->getRepository(Product::class);
-        
+
         $query = $repository_product->createQueryBuilder('p')
                 ->orderBy('p.id', 'DESC')
                 ->getQuery();
-        
-        $result = $query->getResult(); 
-        if(count($result)>0){ 
-            $generatedsku = "Copia" . ($result[0]->getId() + 1); 
+
+        $result = $query->getResult();
+        if(count($result)>0) {
+            $generatedsku = "Copia" . ($result[0]->getId() + 1);
         }
-        else{ 
+        else  {
             $generatedsku = "Copia0";
-        } 
-        
+        }
+
         $form = $this->createFormBuilder($product)
             ->add('checkbox', ChoiceType::class, array(
                 'choices' => array(
@@ -171,19 +169,19 @@ class ProductController extends Controller
                 ]
             ])
             ->getForm();
-        
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            
-            $saveAmount = $form->get('saveAmount')->getData();
-            
-            // if the dropdown has 'generate new' this wil make the temp var into a generated
+            // if the dropdown has 'generate new' this wil make the temp var into a pre-generated SKU
+            // adds a prefix to the SKU bound to the type (if applicable)
             if ($form->get('checkbox')->getData() == false) {
+                if ($form->get('type')->getData()) {
+                    $generatedsku = substr($form->get('type')->getData(), 0, 1) . $generatedsku;
+                }
                 $product->setSku($generatedsku);
             }
-            /* Disabled for now, doesn't work properly */
-            //if($saveAmount == 1 || $saveAmount == null) {
+
             if($this->checkExistingSku($product->getSku() )) {
                 $em->persist($product);
                 $em->flush($product);
@@ -202,23 +200,26 @@ class ProductController extends Controller
                     'sellable'      => PRODUCT_SELLABLE,
                 ));
             }
-        /*} elseif($saveAmount > 1) {
-            for($i=0;$i<$saveAmount;$i++) {
-                $copy = $product;
+            /* Disabled for now, doesn't work properly */
+            // $saveAmount = $form->get('saveAmount')->getData();
+            //if($saveAmount == 1 || $saveAmount == null) {
+            /*} elseif($saveAmount > 1) {
+                for($i=0;$i<$saveAmount;$i++) {
+                    $copy = $product;
 
-                $copy->setSku($copy->getSku() . $i);
+                    $copy->setSku($copy->getSku() . $i);
 
-                if($this->checkExistingSku($copy->getSku() )) {
-                    $em->persist($copy);
-                    $em->flush($copy);
+                    if($this->checkExistingSku($copy->getSku() )) {
+                        $em->persist($copy);
+                        $em->flush($copy);
 
-                    // add potential attributes
-                    $this->checkAttributeTemplate($copy);
+                        // add potential attributes
+                        $this->checkAttributeTemplate($copy);
+                    }
+
                 }
-
-            }
-            return $this->redirectToRoute('track_index');
-          }*/
+                return $this->redirectToRoute('track_index');
+              }*/
         }
 
         return $this->render('TrackBundle:Track:new.html.twig', array(
