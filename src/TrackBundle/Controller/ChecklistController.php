@@ -32,7 +32,7 @@ use TrackBundle\Entity\ProductTask;
 /**
  * @Route("track/task")
  */
-class ProductTaskController extends Controller
+class ChecklistController extends Controller
 {
     
     /**
@@ -49,7 +49,7 @@ class ProductTaskController extends Controller
         
         $tasks = $tasks->getResult();
         
-        return $this->render("product/checklist/list.html.twig", [
+        return $this->render("TrackBundle:Track:Checklist/list.html.twig", [
             'product' => $product,
             'tasks' => $tasks,
         ]);
