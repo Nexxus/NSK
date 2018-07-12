@@ -147,10 +147,10 @@ class ProductController extends Controller
 
         $result = $query->getResult();
         if(count($result)>0) {
-            $generatedsku = "Copia" . ($result[0]->getId() + 1);
+            $generatedsku = ($result[0]->getId() + 1);
         }
         else  {
-            $generatedsku = "Copia0";
+            $generatedsku = "0";
         }
 
         $form = $this->createFormBuilder($product)
