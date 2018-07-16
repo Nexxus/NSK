@@ -20,31 +20,8 @@
  * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
  */
 
-namespace AdminBundle\Controller;
+namespace AdminBundle\Repository;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-
-/**
-* @Route("/admin")
-*/
-class DefaultController extends Controller
+class UserRepository extends \Doctrine\ORM\EntityRepository
 {
-    /**
-     * @Route("/", name="admin_index")
-     
-     */
-    public function indexAction()
-    {
-        return $this->render('AdminBundle::index.html.twig');
-    }
-        
-    /**
-     * @Route("/sales", name="admin_sales")
-     */
-    public function viewSalesAction()
-    {
-        return $this->redirectToRoute('track_index', ['only' => 'sold']);
-    }
 }
