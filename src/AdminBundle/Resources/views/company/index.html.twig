@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Companies list</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Kvknr</th>
+                <th>Representative</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for company in companies %}
+            <tr>
+                <td><a href="{{ path('admin_company_show', { 'id': company.id }) }}">{{ company.id }}</a></td>
+                <td>{{ company.name }}</td>
+                <td>{{ company.kvkNr }}</td>
+                <td>{{ company.representative }}</td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('admin_company_show', { 'id': company.id }) }}">show</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('admin_company_edit', { 'id': company.id }) }}">edit</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('admin_company_new') }}">Create a new company</a>
+        </li>
+    </ul>
+{% endblock %}

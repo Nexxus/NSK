@@ -109,8 +109,8 @@ class Product
 
     /**
      * @var int
-     *
-     * @ORM\Column(name="owner", type="integer", nullable=true)
+     * @ORM\ManyToOne(targetEntity="AdminBundle\Entity\Customer")
+     * @ORM\JoinColumn(name="owner", referencedColumnName="id", nullable=true)
      */
     private $owner;
     
