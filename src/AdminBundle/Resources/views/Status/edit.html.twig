@@ -11,19 +11,7 @@
     </tr>
     <tr>
         <td>Index Placement</td>
-        <td>
-            <select id="form_pindex" name="form[pindex]">
-            {% for key in statusall %}
-                <option value="{{ key.pindex }}">
-                    {{ key.name|trans }}
-                </option>
-            {% endfor %}
-            </select>
-        </td>
-        <td>
-            {{ form_widget(form.placement) }}
-        </td>
-    </tr>
+        <td>{{ form_widget(form.pindex) }}</td>
     <tr>
         <td>&nbsp;</td>     
         <td>{{ form_widget(form.save) }}</td>
