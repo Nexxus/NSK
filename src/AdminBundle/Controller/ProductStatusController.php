@@ -30,6 +30,7 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -49,14 +50,14 @@ class ProductStatusController extends Controller
                 . '     s.id,'
                 . '     s.pindex,'
                 . '     s.name,'
-                . '     p.id as exist'
+                . '     count(p.id) as product_count '
                 . ' FROM TrackBundle:ProductStatus s'
                 . ' LEFT JOIN TrackBundle:Product p'
                 . '     WITH p.status = s.id'
                 . ' WHERE '
                 . '     s.pindex < 999'
-                . ' ORDER BY '
-                . '     s.pindex ASC');
+                . ' GROUP BY '
+                . '     s.id');
         $productstatus = $query->getResult();
         
         return $this->render('AdminBundle:Status:index.html.twig', array(
@@ -112,7 +113,7 @@ class ProductStatusController extends Controller
             
                 $status->setPindex($pindex);
 
-                //echo "<pre>";print_r($status);echo "</pre>";exit;
+                //echo "<pre>";print$em->_r($status);echo "</pre>";exit;
 
                 $this->shiftIndex($pindex, "add");
             } else {
@@ -135,10 +136,37 @@ class ProductStatusController extends Controller
     
     /**
      * @Route("/edit/{id}", name="status_edit")
+     * @Method({"GET", "POST"})
      */
-    public function editAction($id)
+    public function editAction(Request $request, $id)
     {
+        $em = $this->getDoctrine()->getManager();
+
+        $status = $em->getRepository('TrackBundle:ProductStatus')
+                    ->find($id);
         
+        $form = $this->createFormBuilder($status)
+                ->add('pindex')
+                ->add('name')
+                ->add('save', SubmitType::class, 
+                    array('label' => 'Edit Status')
+                );
+
+        $form = $form->getForm();
+
+        $form->handleRequest($request);
+
+        if($form->isSubmitted()) {
+            $em->persist($status);
+            $em->flush();
+
+            return $this->redirectToRoute('status_index');
+        }
+
+
+        return $this->render('AdminBundle:Status:edit.html.twig', array(
+                'form' => $form->createView(),
+            )); 
     }
     
     /**
