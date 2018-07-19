@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1>Company edit</h1>
+{{ form_start(edit_form) }}
+<table>
+    <tr>
+        <td>{% trans %}Name{% endtrans %}:</td>
+        <td>{{ form_widget(edit_form.name) }}</td>
+    </tr>
+    <tr>
+        <td>{% trans %}Address{% endtrans %}:</td>
+        <td>{{ form_widget(edit_form.addressId) }}</td>
+    </tr>
+    <tr>
+        <td>{% trans %}KvK nummer{% endtrans %}:</td>
+        <td>{{ form_widget(edit_form.kvkNr) }}</td>
+    </tr>
+    <tr>
+        <td>{% trans %}Representative{% endtrans %}:</td>
+        <td>{{ form_widget(edit_form.representative) }}</td>
+    </tr>
+    <tr>
+        <td>
+            <input class="btn btn-success" type="submit" value="Edit" />
+        </td>
+{{ form_end(edit_form) }}
+        <td>
+            {{ form_start(delete_form) }}
+            <input class="btn btn-danger" type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <a href="{{ path('admin_company_index') }}">Back to the list</a>
+        </td>
+    </tr>
+</table>
+{% endblock %}
