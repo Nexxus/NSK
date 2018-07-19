@@ -3,7 +3,7 @@
 {% block body %}
     <h1>Addresses list</h1>
 
-    <table>
+    <table class="table table-striped">
         <thead>
             <tr>
                 <th>Id</th>
@@ -20,7 +20,7 @@
         <tbody>
         {% for address in addresses %}
             <tr>
-                <td><a href="{{ path('admin_address_show', { 'id': address.id }) }}">{{ address.id }}</a></td>
+                <td>{{ address.id }}</td>
                 <td>{{ address.type }}</td>
                 <td>{{ address.street1 }}</td>
                 <td>{{ address.street2 }}</td>
@@ -29,14 +29,8 @@
                 <td>{{ address.state }}</td>
                 <td>{{ address.zip }}</td>
                 <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('admin_address_show', { 'id': address.id }) }}">show</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('admin_address_edit', { 'id': address.id }) }}">edit</a>
-                        </li>
-                    </ul>
+                    <a href="{{ path('admin_address_edit', {'id': address.id} ) }}"><button class="btn btn-success" name="Edit">Edit</button></a>
+                    <a href="{{ path('admin_address_show', {'id': address.id} ) }}"><button class="btn btn-success" name="Show">Show</button></a>
                 </td>
             </tr>
         {% endfor %}

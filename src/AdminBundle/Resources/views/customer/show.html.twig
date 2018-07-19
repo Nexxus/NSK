@@ -1,48 +1,38 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Customer</h1>
-
-    <table>
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ customer.id }}</td>
-            </tr>
-            <tr>
-                <th>Firstname</th>
-                <td>{{ customer.firstname }}</td>
-            </tr>
-            <tr>
-                <th>Sirname</th>
-                <td>{{ customer.sirname }}</td>
-            </tr>
-            <tr>
-                <th>Phone</th>
-                <td>{{ customer.phone }}</td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td>{{ customer.email }}</td>
-            </tr>
-            <tr>
-                <th>Partner</th>
-                <td>{% if customer.partner %}Yes{% else %}No{% endif %}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <ul>
-        <li>
-            <a href="{{ path('admin_customer_index') }}">Back to the list</a>
-        </li>
-        <li>
-            <a href="{{ path('admin_customer_edit', { 'id': customer.id }) }}">Edit</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+<h1>Customer</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Firstname</th>
+            <th>Sirname</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Partner</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ customer.id }}</td>
+            <td>{{ customer.firstname }}</td>
+            <td>{{ customer.sirname }}</td>
+            <td>{{ customer.phone }}</td>
+            <td>{{ customer.email }}</td>
+            <td>{% if customer.partner %}Yes{% else %}No{% endif %}</td>
+            <td>
+                <a href="{{ path('admin_customer_edit', { 'id': customer.id }) }}"><button class="btn btn-success" name="Edit">Edit</button></a>
+                {{ form_start(delete_form) }}
+                <input class="btn btn-danger" type="submit" value="Delete">
+                {{ form_end(delete_form) }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href="{{ path('admin_customer_index') }}">Back to the list</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
 {% endblock %}

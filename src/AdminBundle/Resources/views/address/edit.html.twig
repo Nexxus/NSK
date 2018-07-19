@@ -2,20 +2,51 @@
 
 {% block body %}
     <h1>Address edit</h1>
-
-    {{ form_start(edit_form) }}
-        {{ form_widget(edit_form) }}
-        <input type="submit" value="Edit" />
-    {{ form_end(edit_form) }}
-
-    <ul>
-        <li>
-            <a href="{{ path('admin_address_index') }}">Back to the list</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+    <table class="table table-striped">
+        {{ form_start(edit_form) }}
+        <tr>
+            <td>{% trans %}Type{% endtrans %}:</td>
+            <td>{{ form_widget(edit_form.type) }}</td>
+        </tr>
+        <tr>
+            <td>{% trans %}Street1{% endtrans %}:</td>
+            <td>{{ form_widget(edit_form.street1) }}</td>
+        </tr>
+        <tr>
+            <td>{% trans %}Street2{% endtrans %}:</td>
+            <td>{{ form_widget(edit_form.street2) }}</td>
+        </tr>
+        <tr>
+            <td>{% trans %}City{% endtrans %}:</td>
+            <td>{{ form_widget(edit_form.city) }}</td>
+        </tr>
+        <tr>
+            <td>{% trans %}Country{% endtrans %}:</td>
+            <td>{{ form_widget(edit_form.country) }}</td>
+        </tr>
+        <tr>
+            <td>{% trans %}State{% endtrans %}:</td>
+            <td>{{ form_widget(edit_form.state) }}</td>
+        </tr>
+        <tr>
+            <td>{% trans %}Zip{% endtrans %}:</td>
+            <td>{{ form_widget(edit_form.zip) }}</td>
+        </tr>
+        <tr>
+            <td>
+                <input class="btn btn-success" type="submit" value="Edit" />
+            </td>
+        {{ form_end(edit_form) }}
+            <td>
+                {{ form_start(delete_form) }}
+                <input class="btn btn-danger" type="submit" value="Delete">
+                {{ form_end(delete_form) }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a href="{{ path('admin_address_index') }}">Back to the list</a>
+            </td>
+        </tr>
+    </table>
 {% endblock %}

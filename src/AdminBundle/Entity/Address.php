@@ -24,13 +24,6 @@ class Address
     /**
      * @var int
      *
-     * @ORM\Column(name="parentId", type="integer")
-     */
-    private $parentId;
-
-    /**
-     * @var int
-     *
      * @ORM\Column(name="type", type="integer")
      */
     private $type;
