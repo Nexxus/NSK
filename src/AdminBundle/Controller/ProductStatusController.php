@@ -179,7 +179,6 @@ class ProductStatusController extends Controller
         $query = $em->createQuery(
                 "DELETE FROM TrackBundle:ProductStatus s"
                 . " WHERE s.id = :statusid"
-                . "SET FOREIGN_KEY_CHECKS = 0;"
         )->setParameter("statusid", $id)
          ->getResult();
         

@@ -12,16 +12,27 @@
             </tr>
         </thead>
         <tbody>
-        {% for location in locations %}
+        {% for a in locations %}
             <tr>
-                <td><a href="{{ path('admin_location_show', { 'id': location.id }) }}">{{ location.id }}</a></td>
-                <td>{{ location.name }}</td>
+                <td><a href="{{ path('admin_location_show', { 'id': a.id }) }}">{{ a.id }}</a></td>
+                <td>{{ a.name }}</td>
                 <td>
-                    <a href="{{ path('admin_location_edit', { 'id': location.id }) }}">
+                    <a href="{{ path('admin_location_edit', { 'id': a.id }) }}">
                         <button type="button" class="btn btn-success">
                             Edit
                         </button>
                     </a>
+                    {% if a.product_count == 0 %}
+                    <a href="{{ path('admin_location_delete', { 'id': a.id }) }}">
+                        <button type="button" class="btn btn-danger" href="#">
+                            {% trans %}Delete{% endtrans %}
+                        </button>
+                    </a>
+                    {% else %}
+                        <button type="button" class="btn">
+                        {% trans %}Location is in use{% endtrans %}
+                        </button>
+                    {% endif %}
                 </td>
             </tr>
         {% endfor %}
