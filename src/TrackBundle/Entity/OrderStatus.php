@@ -25,14 +25,12 @@ namespace TrackBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * ProductAttribute
- * 
- * Attributes unique to specific products are stored here
+ * OrderStatus
  *
- * @ORM\Table(name="product_attribute")
- * @ORM\Entity(repositoryClass="TrackBundle\Repository\ProductAttributeRepository")
+ * @ORM\Table(name="order_status")
+ * @ORM\Entity(repositoryClass="TrackBundle\Repository\OrderStatusRepository")
  */
-class ProductAttribute
+class OrderStatus
 {
     /**
      * @var int
@@ -46,29 +44,23 @@ class ProductAttribute
     /**
      * @var int
      *
-     * @ORM\Column(name="product_id", type="integer")
+     * @ORM\Column(name="pindex", type="integer", nullable=true)
      */
-    private $productid;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="attr_id", type="integer")
-     */
-    private $attrId = 1;
+    private $pindex;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="value", type="string", length=255, nullable=true)
+     * @ORM\Column(name="name", type="string", length=255)
      */
-    private $value;
+    private $name;
+
 
 
     /**
      * Get id
      *
-     * @return int
+     * @return integer
      */
     public function getId()
     {
@@ -76,75 +68,50 @@ class ProductAttribute
     }
 
     /**
-     * Set productid
+     * Set pindex
      *
-     * @param integer $productid
+     * @param integer $pindex
      *
-     * @return ProductAttribute
+     * @return OrderStatus
      */
-    public function setProductid($productid)
+    public function setPindex($pindex)
     {
-        $this->productid = $productid;
+        $this->pindex = $pindex;
 
         return $this;
     }
 
     /**
-     * Get productid
+     * Get pindex
      *
-     * @return int
+     * @return integer
      */
-    public function getProductid()
+    public function getPindex()
     {
-        return $this->productid;
+        return $this->pindex;
     }
 
     /**
-     * Set attrId
+     * Set name
      *
-     * @param integer $attrId
+     * @param string $name
      *
-     * @return ProductAttribute
+     * @return OrderStatus
      */
-    public function setAttrId($attrId)
+    public function setName($name)
     {
-        $this->attrId = $attrId;
+        $this->name = $name;
 
         return $this;
     }
 
     /**
-     * Get attrId
-     *
-     * @return int
-     */
-    public function getAttrId()
-    {
-        return $this->attrId;
-    }
-
-    /**
-     * Set value
-     *
-     * @param string $value
-     *
-     * @return ProductAttribute
-     */
-    public function setValue($value)
-    {
-        $this->value = $value;
-
-        return $this;
-    }
-
-    /**
-     * Get value
+     * Get name
      *
      * @return string
      */
-    public function getValue()
+    public function getName()
     {
-        return $this->value;
+        return $this->name;
     }
 }
-
