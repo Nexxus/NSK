@@ -3,39 +3,50 @@
 /*
  * Nexxus Stock Keeping (online voorraad beheer software)
  * Copyright (C) 2018 Copiatek Scan & Computer Solution BV
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
- * 
+ *
  * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
  */
 
 namespace TrackBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Product
  *
  * @ORM\Table(name="product")
  * @ORM\Entity(repositoryClass="TrackBundle\Repository\ProductRepository")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"p" = "Product", "s" = "Service"})
  */
 class Product
 {
+    public function __construct() {
+        $this->attributeRelations = new ArrayCollection();
+        $this->orderRelations = new ArrayCollection();
+        $this->services = new ArrayCollection();
+        $this->images = new ArrayCollection();
+    }
+
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
@@ -44,111 +55,86 @@ class Product
     /**
      * @var string
      *
-     * @ORM\Column(name="sku", type="string", length=16, unique=true)
+     * @ORM\Column(type="string", length=16, unique=true)
      */
     private $sku;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      */
     private $name;
 
     /**
-     * @var int
-     * 
+     * @var ProductType
+     *
      * @ORM\ManyToOne(targetEntity="ProductType")
-     * @ORM\JoinColumn(name="type", referencedColumnName="id")
+     * @ORM\JoinColumn(name="type_id", referencedColumnName="id")
      */
     private $type;
-    
-    /**
-     * @var int
-     *
-     * @ORM\ManyToOne(targetEntity="Location")
-     * @ORM\JoinColumn(name="location", referencedColumnName="id")
-     */
-    private $location;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="description", type="text", nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      */
     private $description;
 
     /**
-     * @var int
+     * @var int Price for sale, in eurocents
      *
-     * @ORM\ManyToOne(targetEntity="ProductStatus")
-     * @ORM\JoinColumn(name="status", referencedColumnName="id")
+     * @ORM\Column(type="integer", nullable=true)
      */
-    private $status=1;
+    private $price;
 
     /**
-     * @var int
+     * @var bool
      *
-     * @ORM\Column(name="price", type="integer", length=255, nullable=true)
+     * @ORM\Column(type="boolean", nullable=false, options={"default" : false})
      */
-    private $price = 0;
-    
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="brand", type="string", length=255, nullable=true)
-     */
-    private $brand;
+    private $isAttribute = false;
 
     /**
-     * @var string
+     * @var Location
      *
-     * @ORM\Column(name="department", type="string", length=255, nullable=true)
+     * @ORM\ManyToOne(targetEntity="Location", fetch="EAGER")
+     * @ORM\JoinColumn(name="location_id", referencedColumnName="id", nullable=false)
      */
-    private $department;
+    private $location;
 
     /**
-     * @var int
+     * @var ArrayCollection|ProductAttributeRelation[]
      *
-     * @ORM\Column(name="owner", type="integer", nullable=true)
+     * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="product", fetch="LAZY", cascade={"all"})
      */
-    private $owner;
-    
+    private $attributeRelations;
+
     /**
-     * @var int
-     * 
-     * @ORM\Column(name="quantity", type="integer", nullable=true)
+     * @var ArrayCollection|ProductOrderRelation[]
+     *
+     * @ORM\OneToMany(targetEntity="ProductOrderRelation", mappedBy="product", fetch="LAZY", cascade={"all"})
      */
-    private $quantity = 1;
-    
+    private $orderRelations;
+
     /**
-     * @ORM\Column(type="datetime")
+     * @var ArrayCollection|ProductImage[]
+     *
+     * @ORM\OneToMany(targetEntity="ProductImage", mappedBy="product", fetch="LAZY", cascade={"all"})
      */
-    protected $createdAt;
-    
+    private $images;
+
     /**
-     * @ORM\Column(type="datetime")
+     * @var ArrayCollection|Service[] Services that are applied to this Product
+     *
+     * @ORM\OneToMany(targetEntity="Service", mappedBy="product", fetch="LAZY")
      */
-    protected $updatedAt;
-    
-    public function __construct()
-    {
-        $this->createdAt = new \DateTime();
-        $this->updatedAt = new \DateTime();
-    }
-    
-    /**
-     * @ORM\PreUpdate()
-     */
-    public function preUpdate()
-    {
-        $this->updatedAt= new \DateTime();
-    }
-    
+    private $services;
+
     /**
      * Get id
      *
-     * @return int
+     * @return integer
      */
     public function getId()
     {
@@ -204,54 +190,6 @@ class Product
     }
 
     /**
-     * Set type
-     *
-     * @param \TrackBundle\Entity\ProductType $type
-     *
-     * @return Product
-     */
-    public function setType(\TrackBundle\Entity\ProductType $type = null)
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * Get type
-     *
-     * @return \TrackBundle\Entity\ProductType
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-    
-    /**
-     * Set location
-     *
-     * @param integer $location
-     *
-     * @return Product
-     */
-    public function setLocation($location)
-    {
-        $this->location = $location;
-
-        return $this;
-    }
-
-    /**
-     * Get location
-     *
-     * @return int
-     */
-    public function getLocation()
-    {
-        return $this->location;
-    }
-
-    /**
      * Set description
      *
      * @param string $description
@@ -276,31 +214,6 @@ class Product
     }
 
     /**
-     * Set status
-     *
-     * @param integer $status
-     *
-     * @return Product
-     */
-    public function setStatus($status)
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-
-    /**
-     * Get status
-     *
-     * @return int
-     */
-    public function getStatus()
-    {
-        return $this->status;
-    }
-
-    
-    /**
      * Set price
      *
      * @param integer $price
@@ -323,122 +236,212 @@ class Product
     {
         return $this->price;
     }
-    
+
     /**
-     * Set brand
+     * Set isAttribute
      *
-     * @param string $brand
+     * @param bool $isAttribute
      *
      * @return Product
      */
-    public function setBrand($brand)
+    public function setIsAttribute($isAttribute)
     {
-        $this->brand = $brand;
+        $this->isAttribute = $isAttribute;
 
         return $this;
     }
 
     /**
-     * Get brand
+     * Get isAttribute
      *
-     * @return string
+     * @return bool
      */
-    public function getBrand()
+    public function getIsAttribute()
     {
-        return $this->brand;
+        return $this->isAttribute;
     }
 
     /**
-     * Set department
+     * Set type
      *
-     * @param string $department
+     * @param ProductType $type
      *
      * @return Product
      */
-    public function setDepartment($department)
+    public function setType(ProductType $type = null)
     {
-        $this->department = $department;
+        $this->type = $type;
 
         return $this;
     }
 
     /**
-     * Get department
+     * Get type
      *
-     * @return string
+     * @return ProductType
      */
-    public function getDepartment()
+    public function getType()
     {
-        return $this->department;
+        return $this->type;
     }
 
     /**
-     * Set owner
+     * Set location
      *
-     * @param integer $owner
+     * @param Location $location
      *
      * @return Product
      */
-    public function setOwner($owner)
+    public function setLocation(Location $location)
     {
-        $this->owner = $owner;
+        $this->location = $location;
 
         return $this;
     }
 
     /**
-     * Get owner
+     * Get location
      *
-     * @return int
+     * @return Location
      */
-    public function getOwner()
+    public function getLocation()
     {
-        return $this->owner;
+        return $this->location;
     }
-    
-    public function setQuantity($quantity) {
-        $this->quantity = $quantity;
-    }
-    
-    public function getQuantity() {
-        return $this->quantity;
-    }
-    
+
     /**
-     * Set createdAt
+     * Add attributeRelation
      *
-     * @param \DateTime $createdAt
+     * @param ProductAttributeRelation $attributeRelation
      *
      * @return Product
      */
-    public function setCreatedAt($createdAt)
+    public function addAttributeRelation(ProductAttributeRelation $attributeRelation)
     {
-        $this->createdAt = $createdAt;
+        $this->attributeRelations[] = $attributeRelation;
 
         return $this;
     }
-    
-    public function getCreatedAt()
-    {
-        return $this->updatedAt->format('d-m-Y H:i');
-    }
-    
+
     /**
-     * Set updatedAt
+     * Remove attributeRelation
      *
-     * @param \DateTime $updatedAt
+     * @param ProductAttributeRelation $attributeRelation
+     */
+    public function removeAttributeRelation(ProductAttributeRelation $attributeRelation)
+    {
+        $this->attributeRelations->removeElement($attributeRelation);
+    }
+
+    /**
+     * Get attributeRelations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getAttributeRelations()
+    {
+        return $this->attributeRelations;
+    }
+
+    /**
+     * Add orderRelation
+     *
+     * @param ProductOrderRelation $orderRelation
      *
      * @return Product
      */
-    public function setUpdatedAt($updatedAt)
+    public function addOrderRelation(ProductOrderRelation $orderRelation)
     {
-        $this->updatedAt = $updatedAt;
+        $this->orderRelations[] = $orderRelation;
 
         return $this;
     }
-    
-    public function getUpdatedAt()
+
+    /**
+     * Remove orderRelation
+     *
+     * @param ProductOrderRelation $orderRelation
+     */
+    public function removeOrderRelation(ProductOrderRelation $orderRelation)
     {
-        return $this->updatedAt->format('d-m-Y H:i');
+        $this->orderRelations->removeElement($orderRelation);
+    }
+
+    /**
+     * Get orderRelations
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getOrderRelations()
+    {
+        return $this->orderRelations;
+    }
+
+    /**
+     * Add image
+     *
+     * @param ProductImage $image
+     *
+     * @return Product
+     */
+    public function addImage(ProductImage $image)
+    {
+        $this->images[] = $image;
+
+        return $this;
+    }
+
+    /**
+     * Remove image
+     *
+     * @param ProductImage $image
+     */
+    public function removeImage(ProductImage $image)
+    {
+        $this->images->removeElement($image);
+    }
+
+    /**
+     * Get images
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getImages()
+    {
+        return $this->images;
+    }
+
+    /**
+     * Add service
+     *
+     * @param Service $service
+     *
+     * @return Product
+     */
+    public function addService(Service $service)
+    {
+        $this->services[] = $service;
+
+        return $this;
+    }
+
+    /**
+     * Remove service
+     *
+     * @param Service $service
+     */
+    public function removeService(Service $service)
+    {
+        $this->services->removeElement($service);
+    }
+
+    /**
+     * Get services
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getServices()
+    {
+        return $this->services;
     }
 }
