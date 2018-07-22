@@ -50,7 +50,7 @@ class ProductController extends Controller
     /**
      * Lists all product entities.
      * 
-     * @Route("/index/{page}/{sort}/{by}/{only}/{spec}", name="track_index", defaults={"page" = 1, "sort" = "updatedAt", "by" = "DESC"})
+     * @Route("/index/{page}/{sort}/{by}/{only}/{spec}", name="track_index", defaults={"page" = 1, "sort" = "id", "by" = "DESC"})
      * @Method({"GET", "POST"})
      */
     public function indexAction(Request $request, $sort, $by, $page = 1, $only = null, $spec = null)
@@ -84,13 +84,6 @@ class ProductController extends Controller
         $stored_query = $this->loadSearchQuery($search_session);
         $productquery = $this->searchSpecific($productquery, $stored_query);
         
-        // if coming from admin panel, only show sold
-        if($only=='sold') {
-            $productquery->andWhere('p.status = 999');
-        } else {
-            $productquery->andWhere('p.status < 999 OR p.status IS NULL');
-        }
-        
         // Only admins and Copiatek people can see all products
         if($user->getLocation() !== null 
                 && !in_array('ROLE_ADMIN', $user->getRoles())
@@ -108,7 +101,6 @@ class ProductController extends Controller
         // obtain data for the dropdowns
         $locations  = $em->getRepository('TrackBundle:Location')->findAll();
         $types      = $em->getRepository('TrackBundle:ProductType')->findAll();
-        $brands     = $em->getRepository('TrackBundle:Brand')->findAll();
         
         return $this->render('TrackBundle:Track:index.html.twig', array(
             'products' => $products,
@@ -117,8 +109,7 @@ class ProductController extends Controller
             'search_options' => [
                 'specifics' => [
                     'locations' => $locations,
-                    'types' => $types,
-                    'brands' => $brands
+                    'types' => $types
                 ],
             ],
             'search_query' => [
