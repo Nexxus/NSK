@@ -60,6 +60,13 @@ class Product
     private $sku;
 
     /**
+     * @var int
+     * 
+     * @ORM\Column(type="integer")
+     */
+    private $quantity;
+    
+    /**
      * @var string
      *
      * @ORM\Column(type="string", length=255)
@@ -163,6 +170,30 @@ class Product
     public function getSku()
     {
         return $this->sku;
+    }
+    
+    /**
+     * Set sku
+     *
+     * @param string $sku
+     *
+     * @return Product
+     */
+    public function setQuantity($quantity)
+    {
+        $this->quantity = $quantity;
+
+        return $this;
+    }
+
+    /**
+     * Get sku
+     *
+     * @return string
+     */
+    public function getQuantity()
+    {
+        return $this->quantity;
     }
 
     /**

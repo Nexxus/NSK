@@ -48,20 +48,12 @@
                     {{ form_widget(edit_form.description) }}
                 </div>
             </div>
-                <div class="form-group">
-                    <label class="control-label col-lg-2">
-                        {% trans %} Type {% endtrans %}
-                    </label>
-                    <div class="col-lg-10">
-                        {{ form_widget(edit_form.type) }}
-                    </div>
-                </div>
             <div class="form-group">
                 <label class="control-label col-lg-2">
-                    {% trans %} Status {% endtrans %}
+                    {% trans %} Type {% endtrans %}
                 </label>
                 <div class="col-lg-10">
-                    {{ form_widget(edit_form.status, {'choice_translation_domain': 'status'} ) }}
+                    {{ form_widget(edit_form.type) }}
                 </div>
             </div>
             <div class="form-group">
@@ -70,30 +62,6 @@
                 </label>
                 <div class="col-lg-10">
                     {{ form_widget(edit_form.location) }}
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label col-lg-2">
-                    {% trans %} Brand {% endtrans %}
-                </label>
-                <div class="col-lg-10">
-                    {{ form_widget(edit_form.brand) }}
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label col-lg-2">
-                    {% trans %} Department {% endtrans %}
-                </label>
-                <div class="col-lg-10">
-                    {{ form_widget(edit_form.department) }}
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label col-lg-2">
-                    {% trans %} Owner {% endtrans %}
-                </label>
-                <div class="col-lg-10">
-                    {{ form_widget(edit_form.owner) }}
                 </div>
             </div>
                 

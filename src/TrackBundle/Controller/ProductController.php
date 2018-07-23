@@ -43,7 +43,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 /**
  * Product controller. 
  * 
- * @Route("track")
+ * @Route("/track/products")
  */
 class ProductController extends Controller
 {
@@ -124,7 +124,6 @@ class ProductController extends Controller
      * Creates a new product entity.
      *
      * @Route("/new", name="track_new")
-     * @Method({"GET", "POST"})
      */
     public function newAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
@@ -134,17 +133,15 @@ class ProductController extends Controller
             ->orderBy('p.id', 'DESC')
             ->getQuery();
         $result = $query->getResult();
+        
         if(count($result)>0) {
             $generatedsku = ($result[0]->getId() + 1);
         } else  {
             $generatedsku = "0";
         }
+        
         $form = $this->createFormBuilder($product)
-            ->add('checkbox', ChoiceType::class, array(
-                'choices' => array(
-                    'scan existing barcode' => true,
-                    'generate new barcode' => false
-                ),'mapped' => false))
+            
             ->add('sku')
             ->add('name')
             ->add('quantity')
@@ -152,10 +149,13 @@ class ProductController extends Controller
             ->add('location')
             ->add('type')
             ->add('description')
-            ->add('status')
-            ->add('brand')
-            ->add('department')
-            ->add('owner')
+            ->add('barcodeOption', ChoiceType::class, [
+                'choices' => [
+                    'Scan Existing Barcode' => true,
+                    'Generate New Barcode' => false
+                    ],
+                'mapped' => false
+                ])
             ->add('saveAmount', IntegerType::class, [
                 'mapped' => false,
                 'attr' => [
@@ -178,6 +178,7 @@ class ProductController extends Controller
                 for($i=0;$i<$saveAmount;) {
                     $copy = clone $product;
                     $copy->setSku($copy->getSku() . $i);
+                    
                     if($this->checkExistingSku($copy->getSku() ) === true) {
                         $em->persist($copy);
                         $em->flush($copy);
