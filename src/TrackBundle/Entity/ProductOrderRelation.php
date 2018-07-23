@@ -33,13 +33,6 @@ use Doctrine\ORM\Mapping as ORM;
 class ProductOrderRelation
 {
     /**
-     * @var int
-     *
-     * @ORM\Column(name="quantity", type="integer", nullable=false, options={"default" : 1})
-     */
-    private $quantity = 1;
-
-    /**
      * @var Product
      *
      * @ORM\Id
@@ -56,30 +49,6 @@ class ProductOrderRelation
      * @ORM\JoinColumn(name="order_id", referencedColumnName="id", nullable=false)
      */
     private $order;
-
-    /**
-     * Set quantity
-     *
-     * @param integer $quantity
-     *
-     * @return ProductOrderRelation
-     */
-    public function setQuantity($quantity)
-    {
-        $this->quantity = $quantity;
-
-        return $this;
-    }
-
-    /**
-     * Get quantity
-     *
-     * @return integer
-     */
-    public function getQuantity()
-    {
-        return $this->quantity;
-    }
 
     /**
      * Set product
