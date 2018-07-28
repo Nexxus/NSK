@@ -3,27 +3,27 @@
 /*
  * Nexxus Stock Keeping (online voorraad beheer software)
  * Copyright (C) 2018 Copiatek Scan & Computer Solution BV
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
- * 
+ *
  * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
  */
 
 namespace AdminBundle\Controller;
 
-use TrackBundle\Entity\ProductStatus;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;	
+use TrackBundle\Entity\OrderStatus;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -36,51 +36,51 @@ use Doctrine\ORM\EntityManagerInterface;
 /**
  * @Route("/admin/status")
  */
-class ProductStatusController extends Controller
+class OrderStatusController extends Controller
 {
     /**
      * @Route("/", name="status_index")
      */
-    public function indexAction() 
+    public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        
+
         $query = $em->createQuery(
                   ' SELECT '
                 . '     s.id,'
                 . '     s.pindex,'
                 . '     s.name,'
-                . '     count(p.id) as product_count '
-                . ' FROM TrackBundle:ProductStatus s'
-                . ' LEFT JOIN TrackBundle:Product p'
-                . '     WITH p.status = s.id'
+                . '     count(o.id) as order_count '
+                . ' FROM TrackBundle:OrderStatus s'
+                . ' LEFT JOIN TrackBundle:AOrder o'
+                . '     WITH o.status = s.id'
                 . ' WHERE '
                 . '     s.pindex < 999'
                 . ' GROUP BY '
                 . '     s.id');
-        $productstatus = $query->getResult();
-        
+        $orderstatus = $query->getResult();
+
         return $this->render('AdminBundle:Status:index.html.twig', array(
-            'productstatus' => $productstatus)); 
+            'orderstatus' => $orderstatus));
     }
-    
+
     /**
      * @Route("/create", name="status_create")
      */
     public function createAction(Request $request)
     {
-        
-        $status = new ProductStatus();
-        $status->setName("Product Status Name");
+
+        $status = new OrderStatus();
+        $status->setName("Order Status Name");
         $status->setPindex(1);
-        
-        $em = $this->getDoctrine()->getRepository('TrackBundle:ProductStatus');
-        
+
+        $em = $this->getDoctrine()->getRepository('TrackBundle:OrderStatus');
+
         $statusall = $em->findAll();
-        
+
         $form = $this->createFormBuilder($status);
         $form->add('name', TextType::class);
-        
+
         // option to place before or after
         if(count($statusall) > 0 ) {
             $form->add('placement', ChoiceType::class, array(
@@ -93,24 +93,24 @@ class ProductStatusController extends Controller
         }
         $form->add('save', SubmitType::class, array('label' => 'Create Status'));
         $form = $form->getForm();
-        
+
         $form->handleRequest($request);
-        
+
         if($form->isSubmitted()) {
             $task = $form->getData();
-            
-            
+
+
             // get before or after field, does not actually exist in object
             if(count($statusall) > 0) {
                 $pm = $form->get('placement')->getData();
-            
+
                 $pindex = $_POST['form']['pindex'];
 
                 // make space for new entry
                 if($pm=='after') {
                     $pindex = $pindex+1;
                 }
-            
+
                 $status->setPindex($pindex);
 
                 //echo "<pre>";print$em->_r($status);echo "</pre>";exit;
@@ -123,17 +123,17 @@ class ProductStatusController extends Controller
             $em = $this->getDoctrine()->getManager();
             $em->persist($task);
             $em->flush();
-            
+
             return $this->redirectToRoute('status_index');
         }
-        
+
         return $this->render('AdminBundle:Status:new.html.twig', array(
             'form' => $form->createView(),
             'statusall' => $statusall,
         ));
     }
-    
-    
+
+
     /**
      * @Route("/edit/{id}", name="status_edit")
      * @Method({"GET", "POST"})
@@ -142,13 +142,13 @@ class ProductStatusController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $status = $em->getRepository('TrackBundle:ProductStatus')
+        $status = $em->getRepository('TrackBundle:OrderStatus')
                     ->find($id);
-        
+
         $form = $this->createFormBuilder($status)
                 ->add('pindex')
                 ->add('name')
-                ->add('save', SubmitType::class, 
+                ->add('save', SubmitType::class,
                     array('label' => 'Edit Status')
                 );
 
@@ -166,9 +166,9 @@ class ProductStatusController extends Controller
 
         return $this->render('AdminBundle:Status:edit.html.twig', array(
                 'form' => $form->createView(),
-            )); 
+            ));
     }
-    
+
     /**
      * @Route("/delete/{id}/{pindex}", name="status_delete")
      */
@@ -177,42 +177,42 @@ class ProductStatusController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         $query = $em->createQuery(
-                "DELETE FROM TrackBundle:ProductStatus s"
+                "DELETE FROM TrackBundle:OrderStatus s"
                 . " WHERE s.id = :statusid"
                 . "SET FOREIGN_KEY_CHECKS = 0;"
         )->setParameter("statusid", $id)
          ->getResult();
-        
+
         $this->shiftIndex($pindex, "remove");
-        
+
         return $this->redirectToRoute('status_index');
     }
-    
+
     /**
      * Make space in the index for a new entry
      * Method add adds a space and remove places everything back
-     * 
+     *
      * @return int
      */
-    public function shiftIndex($pindex, $method)
+    private function shiftIndex($pindex, $method)
     {
         // !! unfinished function, not yet able to update multiple entries
         //https://stackoverflow.com/questions/4337751/doctrine-2-update-query-with-query-builder
         $em = $this->getDoctrine()->getManager();
-        
+
         $query = $em->createQuery(
                 "SELECT s "
-                . " FROM TrackBundle:ProductStatus s"
+                . " FROM TrackBundle:OrderStatus s"
                 . " WHERE s.pindex >= :space"
                 . " AND s.name != :name"
         )->setParameter('space', $pindex)
          ->setParameter('name', "Sold");
         $statuses = $query->getResult();
-        
+
         if($method == "add") {
             foreach($statuses as $status) {
                 $query = $em->createQuery(
-                        "UPDATE TrackBundle:ProductStatus s"
+                        "UPDATE TrackBundle:OrderStatus s"
                         . " SET s.pindex = s.pindex+1"
                         . " WHERE s.id = :id"
                 )->setParameter('id', $status->getId())
@@ -222,7 +222,7 @@ class ProductStatusController extends Controller
         if($method == "remove") {
             foreach($statuses as $status) {
                 $query = $em->createQuery(
-                        "UPDATE TrackBundle:ProductStatus s"
+                        "UPDATE TrackBundle:OrderStatus s"
                         . " SET s.pindex = s.pindex-1"
                         . " WHERE s.id = :id"
                 )->setParameter('id', $status->getId())

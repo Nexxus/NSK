@@ -9,7 +9,7 @@
             <th>{% trans %}Name{% endtrans %}</th>
             <th>&nbsp;</th>
         </tr>
-    {% for a in productstatus %}
+    {% for a in orderstatus %}
         <tr>
             <td>{{ a.pindex }}</td>
             <td>{{ a.name }}</td>
@@ -19,7 +19,7 @@
                         {% trans %}Edit{% endtrans %}
                     </button>
                 </a>
-                {% if a.product_count == 0 %}
+                {% if a.order_count == 0 %}
                 <a href="{{ path("status_delete", {id: a.id, pindex: a.pindex}) }}">
                     <button type="button" class="btn btn-danger" href="#">
                         {% trans %}Delete{% endtrans %}
