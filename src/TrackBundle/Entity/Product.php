@@ -103,6 +103,13 @@ class Product
     private $isAttribute = false;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="quantity", type="integer", nullable=false, options={"default" : 1})
+     */
+    private $quantity = 1;
+
+    /**
      * @var Location
      *
      * @ORM\ManyToOne(targetEntity="Location", fetch="EAGER")
@@ -146,6 +153,30 @@ class Product
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set quantity
+     *
+     * @param integer $quantity
+     *
+     * @return ProductOrderRelation
+     */
+    public function setQuantity($quantity)
+    {
+        $this->quantity = $quantity;
+
+        return $this;
+    }
+
+    /**
+     * Get quantity
+     *
+     * @return integer
+     */
+    public function getQuantity()
+    {
+        return $this->quantity;
     }
 
     /**

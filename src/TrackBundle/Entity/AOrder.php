@@ -28,7 +28,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * AOrder
  *
- * @ORM\Table(name="order")
+ * @ORM\Table(name="aorder")
  * @ORM\Entity(repositoryClass="TrackBundle\Repository\OrderRepository")
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
@@ -52,7 +52,7 @@ abstract class AOrder
     /**
      * @var string
      *
-     * @ORM\Column(name="sku", type="string", length=16, unique=true)
+     * @ORM\Column(type="string", length=16, unique=true)
      */
     private $orderNr;
 
