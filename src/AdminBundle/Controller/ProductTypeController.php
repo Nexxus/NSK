@@ -194,40 +194,4 @@ class ProductTypeController extends Controller
         
         return $this->redirectToRoute('producttype_index');
     }
-        
-    /**
-     * For creating new attributes for Product Types 
-     * (affects templates, not existing products)
-     * 
-     * @Route("/edit/{id}/addattr", name="producttype_edit_attradd") 
-     * @Method("GET")
-     */
-    public function addAttribute($id)
-    {
-        $em = $this->getDoctrine()->getManager();
-        
-        $pt_attribute = new ProductTypeAttribute();
-        $pt_attribute->setTypeId($id);
-        $pt_attribute->setAttrId(1);
-        
-        $em->persist($pt_attribute);
-        $em->flush();
-        
-        return $this->redirectToRoute('producttype_edit', 
-            array('id' => $id)
-        );
-    }
-    
-    /**
-     * Get all attributes that belong to this producttype
-     */
-    public function getAttribute(Product $product)
-    {
-        $em = $this->getDoctrine()->getManager();
-        
-        $typeattributes = $em->getRepository('TrackBundle:ProductTypeAttribute')
-                ->findBy(array("typeId" => $this->getId()));
-        
-        $this->attributes = $typeattributes;
-    }
 }
