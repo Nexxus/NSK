@@ -167,7 +167,7 @@ class ProductController extends Controller
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->get('checkbox')->getData() == false) {
+            if ($form->get('barcodeOption')->getData() == false) {
                 if ($form->get('type')->getData()) {
                     $generatedsku = substr($form->get('type')->getData(), 0, 1) . $generatedsku;
                 }
