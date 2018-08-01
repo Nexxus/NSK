@@ -143,9 +143,7 @@ class ProductTypeController extends Controller
         // get all attributes
         $attributes = $em->getRepository('TrackBundle:Attribute')->findAll();
         
-        // get type's attributes
-        $typeattributes = $em->getRepository('TrackBundle:ProductTypeAttribute')
-                ->findBy(array("typeId" => $producttype->getId()));
+        //
         
         if($editForm->isSubmitted() && $editForm->isValid()) {
             $em->persist($producttype);
@@ -196,7 +194,7 @@ class ProductTypeController extends Controller
         
         return $this->redirectToRoute('producttype_index');
     }
-    
+        
     /**
      * For creating new attributes for Product Types 
      * (affects templates, not existing products)
