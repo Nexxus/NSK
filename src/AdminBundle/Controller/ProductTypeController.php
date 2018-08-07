@@ -137,13 +137,15 @@ class ProductTypeController extends Controller
                 ->add('name', TextType::class)
                 ->add('save', SubmitType::class)
                 ->getForm();
-         
         $editForm->handleRequest($request);
+        
+        // get current attributes (!) unfinished query
+        $typeattrs = $em->createQuery(""
+                . "SELECT p"
+                . " FROM TrackBundle:ProductAttributeRelation");
         
         // get all attributes
         $attributes = $em->getRepository('TrackBundle:Attribute')->findAll();
-        
-        //
         
         if($editForm->isSubmitted() && $editForm->isValid()) {
             $em->persist($producttype);
