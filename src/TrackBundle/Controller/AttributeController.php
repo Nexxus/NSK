@@ -5,7 +5,9 @@ namespace TrackBundle\Controller;
 use TrackBundle\Entity\Attribute;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 /**
  * Attribute controller.
@@ -40,10 +42,22 @@ class AttributeController extends Controller
     public function newAction(Request $request)
     {
         $attribute = new Attribute();
-        $form = $this->createForm('TrackBundle\Form\AttributeType', $attribute);
-        $form->handleRequest($request);
+        $editForm = $this->createFormBuilder($attribute)
+                ->add('name')
+                ->add('price')
+                ->add('type', ChoiceType::class, [
+                    'choices' => [
+                        'Text' => $attribute::TYPE_TEXT,
+                        'Selectbox' => $attribute::TYPE_SELECT,
+                        'File' => $attribute::TYPE_FILE,
+                        'Product' => $attribute::TYPE_PRODUCT
+                    ]
+                ])
+                ->getForm();
+        
+        $editForm->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($editForm->isSubmitted() && $editForm->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($attribute);
             $em->flush();
@@ -53,7 +67,7 @@ class AttributeController extends Controller
 
         return $this->render('TrackBundle:Attribute:new.html.twig', array(
             'attribute' => $attribute,
-            'form' => $form->createView(),
+            'form' => $editForm->createView(),
         ));
     }
 

@@ -3,11 +3,10 @@
 {% block body %}
     <h1>Attributes list</h1>
 
-    <table>
+    <table class="table table-bordered">
         <thead>
             <tr>
                 <th>Id</th>
-                <th>Attr_code</th>
                 <th>Name</th>
                 <th>Price</th>
                 <th>Type</th>
@@ -15,10 +14,11 @@
             </tr>
         </thead>
         <tbody>
+        {% set count = 0 %}
         {% for attribute in attributes %}
+            {% set count = count+1 %}
             <tr>
                 <td><a href="{{ path('admin_attribute_show', { 'id': attribute.id }) }}">{{ attribute.id }}</a></td>
-                <td>{{ attribute.attrcode }}</td>
                 <td>{{ attribute.name }}</td>
                 <td>{{ attribute.price }}</td>
                 <td>{{ attribute.type }}</td>
@@ -34,8 +34,12 @@
                 </td>
             </tr>
         {% endfor %}
+        
         </tbody>
     </table>
+    {% if count == 0 %}
+        <h4>{% trans %}No records found{% endtrans %}</h4>
+    {% endif %}
 
     <ul>
         <li>
