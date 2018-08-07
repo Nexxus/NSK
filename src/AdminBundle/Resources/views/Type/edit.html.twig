@@ -14,12 +14,37 @@
         </tbody>
     </table>
             
-            <h4>Attributes <a href="index.php" class="btn btn-info">&plus; Add</a></h4>
+    <h4>Attributes <a id="attr_add" class="btn btn-info" data-toggle="modal" data-target="#attrmodal">&plus; Add</a></h4>
     <table class="table table-bordered">
         <tr>
             
         </tr>
     </table>
+
+    <!-- Modal -->
+    <div class="modal fade" id="attrmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        {% trans %}
+                            Add an attribute
+                        {% endtrans %}
+                    </h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
     {{ form_end(form) }}
     {# <a href="{{ path('producttype_edit_attradd', {'id': producttype.id }) }}">
@@ -27,4 +52,13 @@
     </a> #}
             
     <a href="{{ path('producttype_index') }}">{% trans %}Back to the list{% endtrans %}</a><br>
+    
+    
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        
+        
+    </script>
 {% endblock %}
