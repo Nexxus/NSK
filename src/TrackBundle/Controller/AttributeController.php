@@ -44,6 +44,7 @@ class AttributeController extends Controller
         $attribute = new Attribute();
         $editForm = $this->createFormBuilder($attribute)
                 ->add('name')
+                ->add('attr_code')
                 ->add('price')
                 ->add('type', ChoiceType::class, [
                     'choices' => [

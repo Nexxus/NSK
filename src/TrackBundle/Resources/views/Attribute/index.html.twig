@@ -3,11 +3,14 @@
 {% block body %}
     <h1>Attributes list</h1>
 
+    <h4><a href="{{ path('admin_attribute_new') }}">Create a new attribute</a></h4>
+    
     <table class="table table-bordered">
         <thead>
             <tr>
                 <th>Id</th>
                 <th>Name</th>
+                <th>Attribute Code</th>
                 <th>Price</th>
                 <th>Type</th>
                 <th>Actions</th>
@@ -20,17 +23,13 @@
             <tr>
                 <td><a href="{{ path('admin_attribute_show', { 'id': attribute.id }) }}">{{ attribute.id }}</a></td>
                 <td>{{ attribute.name }}</td>
+                <td>{{ attribute.attrcode }}</td>
                 <td>{{ attribute.price }}</td>
+                
                 <td>{{ attribute.type }}</td>
                 <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('admin_attribute_show', { 'id': attribute.id }) }}">show</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('admin_attribute_edit', { 'id': attribute.id }) }}">edit</a>
-                        </li>
-                    </ul>
+                    <a class="btn btn-default" href="{{ path('admin_attribute_show', { 'id': attribute.id }) }}">Show</a>
+                    {#<a class="btn btn-success" href="{{ path('admin_attribute_edit', { 'id': attribute.id }) }}">Edit</a>#}
                 </td>
             </tr>
         {% endfor %}
@@ -40,10 +39,4 @@
     {% if count == 0 %}
         <h4>{% trans %}No records found{% endtrans %}</h4>
     {% endif %}
-
-    <ul>
-        <li>
-            <a href="{{ path('admin_attribute_new') }}">Create a new attribute</a>
-        </li>
-    </ul>
 {% endblock %}
