@@ -26,7 +26,7 @@ class AttributeController extends Controller
 
         $attributes = $em->getRepository('TrackBundle:Attribute')->findAll();
 
-        return $this->render('attribute/index.html.twig', array(
+        return $this->render('TrackBundle:Attribute:index.html.twig', array(
             'attributes' => $attributes,
         ));
     }
@@ -51,7 +51,7 @@ class AttributeController extends Controller
             return $this->redirectToRoute('admin_attribute_show', array('id' => $attribute->getId()));
         }
 
-        return $this->render('attribute/new.html.twig', array(
+        return $this->render('TrackBundle:Attribute:new.html.twig', array(
             'attribute' => $attribute,
             'form' => $form->createView(),
         ));
@@ -67,7 +67,7 @@ class AttributeController extends Controller
     {
         $deleteForm = $this->createDeleteForm($attribute);
 
-        return $this->render('attribute/show.html.twig', array(
+        return $this->render('TrackBundle:Attribute:show.html.twig', array(
             'attribute' => $attribute,
             'delete_form' => $deleteForm->createView(),
         ));
@@ -91,7 +91,7 @@ class AttributeController extends Controller
             return $this->redirectToRoute('admin_attribute_edit', array('id' => $attribute->getId()));
         }
 
-        return $this->render('attribute/edit.html.twig', array(
+        return $this->render('TrackBundle:Attribute:edit.html.twig', array(
             'attribute' => $attribute,
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
