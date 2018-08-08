@@ -139,11 +139,6 @@ class ProductTypeController extends Controller
                 ->getForm();
         $editForm->handleRequest($request);
         
-        // get current attributes (!) unfinished query
-        $typeattrs = $em->createQuery(""
-                . "SELECT p"
-                . " FROM TrackBundle:ProductAttributeRelation");
-        
         // get all attributes
         $attributes = $em->getRepository('TrackBundle:Attribute')->findAll();
         
