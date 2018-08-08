@@ -16,9 +16,12 @@
             
     <h4>Attributes <a id="attr_add" class="btn btn-info" data-toggle="modal" data-target="#attrmodal">&plus; Add</a></h4>
     <table class="table table-bordered">
+    {% for attr in attrlist %}
         <tr>
-            
+            <td>{{ attr.id }}</td>
+            <td>{{ attr.name }}</td>
         </tr>
+    {% endfor %}
     </table>
 
     <!-- Modal -->

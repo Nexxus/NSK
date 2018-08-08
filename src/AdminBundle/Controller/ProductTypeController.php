@@ -184,10 +184,18 @@ class ProductTypeController extends Controller
             );
         }*/
         
+        // put attributes in string array
+        $attributeCollection = $producttype->getAttributes();
+        $attrList = [];
+        for($i=0;$i<$attributeCollection->count();$i++) {
+           $attrList[] = $attributeCollection->get($i);
+        }
+        
         return $this->render('AdminBundle:Type:edit.html.twig', array(
             'form' => $editForm->createView(),
             'producttype' => $producttype,
             'attrform' => $attrForm->createView(),
+            'attrlist' => $attrList,
         ));
     }
     
