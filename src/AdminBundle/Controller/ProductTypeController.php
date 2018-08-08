@@ -259,6 +259,8 @@ class ProductTypeController extends Controller
         $em->persist($producttype);
         $em->flush();
         
-        return $this->redirectToRoute('producttype_index');
+        return $this->redirectToRoute('producttype_edit', [
+            'id' => $type->getId()
+        ]);
     }
 }
