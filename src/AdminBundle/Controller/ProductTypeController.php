@@ -196,4 +196,19 @@ class ProductTypeController extends Controller
         
         return $this->redirectToRoute('producttype_index');
     }
+    
+    public function addAttributeToOneType($typeid, $attrid) 
+    {
+        $em = $this->getDoctrine()->getManager();
+        
+        $producttype = $em->getRepository('TrackBundle:ProductType')
+                ->find($typeid);
+        
+        $attribute = $em->getRepository('TrackBundle:Attribute')
+                ->find($attrid);
+        
+        $producttype->addAttribute($attrid);
+        $em->persist($producttype);
+        $em->flush();
+    }
 }
