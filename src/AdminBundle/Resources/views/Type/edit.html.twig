@@ -20,6 +20,11 @@
         <tr>
             <td>{{ attr.id }}</td>
             <td>{{ attr.name }}</td>
+            <td>
+                <a class="btn btn-warning" href="{{ path('producttype_removeAttribute', {'type': producttype.id, 'attr': attr.id}) }}">
+                    Remove
+                </a>
+            </td>
         </tr>
     {% endfor %}
     </table>

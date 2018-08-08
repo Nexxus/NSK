@@ -32,8 +32,10 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Doctrine\ORM\EntityManagerInterface;
+
 use TrackBundle\Entity\ProductType;
 use TrackBundle\Entity\ProductTypeAttribute;
+use TrackBundle\Entity\Attribute;
 
 /**
  * @Route("admin/type")
@@ -219,7 +221,12 @@ class ProductTypeController extends Controller
         
         return $this->redirectToRoute('producttype_index');
     }
-    
+    /**
+     * Bind attribute to a product type.
+     * 
+     * @param type $typeid
+     * @param type $attrid
+     */
     public function addAttributeToOneType($typeid, $attrid) 
     {
         $em = $this->getDoctrine()->getManager();
@@ -233,5 +240,25 @@ class ProductTypeController extends Controller
         $producttype->addAttribute($attribute);
         $em->persist($producttype);
         $em->flush();
+    }
+    
+    /**
+     * Delete producttype, make sure no products are assigned to it
+     * 
+     * @Route("/removeAttribute/{type}/{attr}", name="producttype_removeAttribute")
+     * @Method("GET")
+     */
+    public function removeAttributeOfType(ProductType $type, Attribute $attr) 
+    {
+        $em = $this->getDoctrine()->getManager();
+        
+        $producttype = $em->getRepository('TrackBundle:ProductType')
+                ->find($type);
+        
+        $producttype->removeAttribute($attr);
+        $em->persist($producttype);
+        $em->flush();
+        
+        return $this->redirectToRoute('producttype_index');
     }
 }
