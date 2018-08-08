@@ -144,19 +144,28 @@ class ProductTypeController extends Controller
         
                 
         $attrForm = $this->createFormBuilder()
-                ->add('attributes', ChoiceType::class, [
+                ->add('attribute', ChoiceType::class, [
                     'choices' => [
                         "Model" => '1'
                     ]
                 ])
                 ->add('save', SubmitType::class)
                 ->getForm();
+        $attrForm->handleRequest($request);
         
+        // product edited
         if($editForm->isSubmitted() && $editForm->isValid()) {
             $em->persist($producttype);
             $em->flush();
             
             return $this->redirectToRoute('producttype_index');
+        }
+        
+        // attribute added
+        if($attrForm->isSubmitted()) {
+            $attr = $attrForm->getData();
+
+            $this->addAttributeToOneType($producttype->getId(), $attr['attribute']);
         }
         
         // create attr name list (not quite done)
@@ -213,7 +222,7 @@ class ProductTypeController extends Controller
         $attribute = $em->getRepository('TrackBundle:Attribute')
                 ->find($attrid);
         
-        $producttype->addAttribute($attrid);
+        $producttype->addAttribute($attribute);
         $em->persist($producttype);
         $em->flush();
     }

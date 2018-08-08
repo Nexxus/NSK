@@ -39,7 +39,7 @@
                         <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
-                <form>
+                {{ form_start(attrform) }}
                     <div class="modal-body">
                         <p>
                             {% trans %}
@@ -48,16 +48,15 @@
                                 when editing a product.
                             {% endtrans %}
                         </p>
-                        {{ form_start(attrform) }}
-                        {{ form_widget(attrform.attributes) }}
                         
+                        {{ form_widget(attrform.attribute) }}
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         {{ form_widget(attrform.save) }}
-                        {{ form_end(attrform) }}
+                        
                     </div>
-                </form>
+                {{ form_end(attrform) }}
             </div>
         </div>
     </div>
