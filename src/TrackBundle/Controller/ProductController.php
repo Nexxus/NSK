@@ -164,7 +164,9 @@ class ProductController extends Controller
             ->add('status')
             ->add('brand')
             ->add('department')
-            ->add('owner')
+            ->add('owner', TextType::class, array(
+                'required' => false
+            ))
             ->add('saveAmount', IntegerType::class, [
                 'mapped' => false,
                 'attr' => [

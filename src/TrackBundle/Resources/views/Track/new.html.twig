@@ -18,114 +18,142 @@
     <div class="container">
     {{ form_start(form, {'attr': {'class': 'form-horizontal'} }) }}
         {{ form_errors(form) }}
+        <div class="form-group">
+            <label class="control-label col-lg-2">
+                {% trans %} Generate SKU {% endtrans %}
+            </label>
+            <div class="col-lg-10">
+                {{ form_widget(form.checkbox) }}
+            </div>
+        </div>
+        <div id="toggle" class="form-group">
+            <label class="control-label col-lg-2">
+                {% trans %} SKU {% endtrans %}
+            </label>
+            <div class="col-lg-10">
+                {{ form_widget(form.sku) }}
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-lg-2">
+                {% trans %} Name {% endtrans %}
+            </label>
+            <div class="col-lg-10">
+                {{ form_widget(form.name) }}
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-lg-2">
+                {% trans %} Quantity {% endtrans %}
+            </label>
+            <div class="col-lg-10">
+                {{ form_widget(form.quantity) }}
+            </div>
+        </div>
+        {% if form.price is not null %}
+        <div class="form-group">
+            <label class="control-label col-lg-2">
+                {% trans %} Price &euro;&nbsp;{% endtrans %}
+            </label>
+            <div class="col-lg-10">
+                {{ form_widget(form.price) }}
+            </div>
+        </div>
+        {% endif %}
+        <div class="form-group">
+            <label class="control-label col-lg-2">
+                {% trans %} Description {% endtrans %}
+            </label>
+            <div class="col-lg-10">
+                {{ form_widget(form.description) }}
+            </div>
+        </div>
             <div class="form-group">
                 <label class="control-label col-lg-2">
-                    {% trans %} SKU {% endtrans %}
+                    {% trans %} Type {% endtrans %}
                 </label>
                 <div class="col-lg-10">
-                    {{ form_widget(form.sku) }}
+                    {{ form_widget(form.type) }}
                 </div>
             </div>
-            <div class="form-group">
-                <label class="control-label col-lg-2">
-                    {% trans %} Name {% endtrans %}
-                </label>
-                <div class="col-lg-10">
-                    {{ form_widget(form.name) }}
-                </div>
+        <div class="form-group">
+            <label class="control-label col-lg-2">
+                {% trans %} Status {% endtrans %}
+            </label>
+            <div class="col-lg-10">
+                {{ form_widget(form.status, {'choice_translation_domain': 'status'} ) }}
             </div>
-            <div class="form-group">
-                <label class="control-label col-lg-2">
-                    {% trans %} Quantity {% endtrans %}
-                </label>
-                <div class="col-lg-10">
-                    {{ form_widget(form.quantity) }}
-                </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-lg-2">
+                {% trans %} Location {% endtrans %}
+            </label>
+            <div class="col-lg-10">
+                {{ form_widget(form.location) }}
             </div>
-            {% if form.price is not null %}
-            <div class="form-group">
-                <label class="control-label col-lg-2">
-                    {% trans %} Price {% endtrans %}
-                </label>
-                <div class="col-lg-10">
-                    &euro;&nbsp;{{ form_widget(form.price) }}
-                </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-lg-2">
+                {% trans %} Brand {% endtrans %}
+            </label>
+            <div class="col-lg-10">
+                {{ form_widget(form.brand) }}
             </div>
-            {% endif %}
-            <div class="form-group">
-                <label class="control-label col-lg-2">
-                    {% trans %} Description {% endtrans %}
-                </label>
-                <div class="col-lg-10">
-                    {{ form_widget(form.description) }}
-                </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-lg-2">
+                {% trans %} Department {% endtrans %}
+            </label>
+            <div class="col-lg-10">
+                {{ form_widget(form.department) }}
             </div>
-                <div class="form-group">
-                    <label class="control-label col-lg-2">
-                        {% trans %} Type {% endtrans %}
-                    </label>
-                    <div class="col-lg-10">
-                        {{ form_widget(form.type) }}
-                    </div>
-                </div>
-            <div class="form-group">
-                <label class="control-label col-lg-2">
-                    {% trans %} Status {% endtrans %}
-                </label>
-                <div class="col-lg-10">
-                    {{ form_widget(form.status, {'choice_translation_domain': 'status'} ) }}
-                </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-lg-2">
+                {% trans %} Owner {% endtrans %}
+            </label>
+            <div class="col-lg-10">
+                {{ form_widget(form.owner) }}
             </div>
-            <div class="form-group">
-                <label class="control-label col-lg-2">
-                    {% trans %} Location {% endtrans %}
-                </label>
-                <div class="col-lg-10">
-                    {{ form_widget(form.location) }}
-                </div>
+        </div>
+        {{ form_row(form._token) }}
+        <div class="form-group">
+            <label class="control-label col-lg-2">
+                {% trans %} Save x {% endtrans %}
+            </label>
+            <div class="control-label col-lg-10">
+                {{ form_widget(form.saveAmount) }}
             </div>
-            <div class="form-group">
-                <label class="control-label col-lg-2">
-                    {% trans %} Brand {% endtrans %}
-                </label>
-                <div class="col-lg-10">
-                    {{ form_widget(form.brand) }}
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label col-lg-2">
-                    {% trans %} Department {% endtrans %}
-                </label>
-                <div class="col-lg-10">
-                    {{ form_widget(form.department) }}
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="control-label col-lg-2">
-                    {% trans %} Owner {% endtrans %}
-                </label>
-                <div class="col-lg-10">
-                    {{ form_widget(form.owner) }}
-                </div>
-            </div>
-            {{ form_row(form._token) }}
-            <div class="form-group"> 
-                <div class="col-lg-offset-2 col-lg-10">
-                    <input type="submit" value="Save" /> 
-                    x
-                    {{ form_widget(form.saveAmount) }}
-                </div>
-            </div>
+        </div>
+        <div class="form-group">
+            <input  class="btn btn-success" type="submit" value="Save" />
+            <a href="{{ path('track_index') }}"><button class="btn btn-danger" name="Back">Back to the list</button></a>
+        </div>
         {{ form_end(form) }}
-    </div>
-    <ul>
-        <li>
-            <a href="{{ path('track_index') }}">Back to the list</a>
-        </li>
-    </ul>
 {% endblock %}
 
-{% block javascripts %}
-    
+{% block javascripts %}<script>
+    $(document).ready(function(){
+        $("#form_checkbox").click(function(){
+            // if 'generate new' is selected this wil input a temp. value
+            if ($( "#form_checkbox" ).val() == 0) {
+                $( "#toggle" ).hide();
+                $( "#form_sku" ).val( '1' );
+                //    emty the field and make it avalable for scanning
+            } else {
+                $( "#form_sku" ).val( undefined );
+                $( "#toggle" ).show();
+            }
+        });
+    });
+    // disables enter key on the scanner field
+    $(document).ready(function() {
+        $("#form_sku").bind("keypress", function(e) {
+            if (e.keyCode == 13) {
+                return false;
+            }
+        });
+    });
+</script>
     
 {% endblock %}    
