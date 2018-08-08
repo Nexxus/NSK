@@ -48,14 +48,14 @@
                                 when editing a product.
                             {% endtrans %}
                         </p>
-                        <select class="form-control">
-                            <option name="blank">-- Attribute --</option>
-                        </select>
+                        {{ form_start(attrform) }}
+                        {{ form_widget(attrform.attributes) }}
                         
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save</button>
+                        {{ form_widget(attrform.save) }}
+                        {{ form_end(attrform) }}
                     </div>
                 </form>
             </div>

@@ -142,6 +142,16 @@ class ProductTypeController extends Controller
         // get all attributes
         $attributes = $em->getRepository('TrackBundle:Attribute')->findAll();
         
+                
+        $attrForm = $this->createFormBuilder()
+                ->add('attributes', ChoiceType::class, [
+                    'choices' => [
+                        "Model" => '1'
+                    ]
+                ])
+                ->add('save', SubmitType::class)
+                ->getForm();
+        
         if($editForm->isSubmitted() && $editForm->isValid()) {
             $em->persist($producttype);
             $em->flush();
@@ -168,6 +178,7 @@ class ProductTypeController extends Controller
         return $this->render('AdminBundle:Type:edit.html.twig', array(
             'form' => $editForm->createView(),
             'producttype' => $producttype,
+            'attrform' => $attrForm->createView(),
         ));
     }
     
