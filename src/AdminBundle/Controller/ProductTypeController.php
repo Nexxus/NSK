@@ -144,12 +144,18 @@ class ProductTypeController extends Controller
         // get all attributes
         $attributes = $em->getRepository('TrackBundle:Attribute')->findAll();
         
-                
+        $choices = [];
+        foreach($attributes as $attr) {
+            $choices[$attr->getName()] = $attr->getId();
+        }
+        
+        print_r("<pre>");
+        print_r($choices);
+        print_r("</pre>");
+        
         $attrForm = $this->createFormBuilder()
                 ->add('attribute', ChoiceType::class, [
-                    'choices' => [
-                        "Model" => '1'
-                    ]
+                    'choices' => $choices
                 ])
                 ->add('save', SubmitType::class)
                 ->getForm();
@@ -186,7 +192,7 @@ class ProductTypeController extends Controller
             );
         }*/
         
-        // put attributes in string array
+        // put attributes in array
         $attributeCollection = $producttype->getAttributes();
         $attrList = [];
         for($i=0;$i<$attributeCollection->count();$i++) {
