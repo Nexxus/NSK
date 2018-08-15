@@ -3,17 +3,17 @@
 
 {% block body %}
     <h1>Create a New Product</h1>
-    
+
     {% if error_msg is defined %}
-        
+
         {% if error_msg == 'DuplicateSku' %}
             <div class="alert alert-danger">
                 <strong>Error:</strong>
-                
+
                 {% trans %} SKU code already exists.{% endtrans %}
             </div>
         {% endif %}
-        
+
     {% endif %}
     <div class="container">
     {{ form_start(form, {'attr': {'class': 'form-horizontal'} }) }}
@@ -68,14 +68,14 @@
                 {{ form_widget(form.description) }}
             </div>
         </div>
-            <div class="form-group">
-                <label class="control-label col-lg-2">
-                    {% trans %} Type {% endtrans %}
-                </label>
-                <div class="col-lg-10">
-                    {{ form_widget(form.type) }}
-                </div>
+        <div class="form-group">
+            <label class="control-label col-lg-2">
+                {% trans %} Type {% endtrans %}
+            </label>
+            <div class="col-lg-10">
+                {{ form_widget(form.type) }}
             </div>
+        </div>
         <div class="form-group">
             <label class="control-label col-lg-2">
                 {% trans %} Status {% endtrans %}
@@ -130,20 +130,22 @@
             <a href="{{ path('track_index') }}"><button class="btn btn-danger" name="Back">Back to the list</button></a>
         </div>
         {{ form_end(form) }}
+    </div>
 {% endblock %}
 
 {% block javascripts %}<script>
     $(document).ready(function(){
-        $("#form_checkbox").click(function(){
-            // if 'generate new' is selected this wil input a temp. value
-            if ($( "#form_checkbox" ).val() == 0) {
-                $( "#toggle" ).hide();
-                $( "#form_sku" ).val( '1' );
-                //    emty the field and make it avalable for scanning
-            } else {
-                $( "#form_sku" ).val( undefined );
-                $( "#toggle" ).show();
-            }
+        $("#form_checkbox").change(function(){
+          // if checkbox is selected this wil create a temporary value
+          if (this.checked) {
+            // need to find a way to know tis is selected
+            $( "#toggle" ).hide();
+            $( "#form_sku" ).val( '1' );
+          // empty the field and make it avalable for scanning
+          } else {
+            $( "#form_sku" ).val( undefined );
+            $( "#toggle" ).show();
+          }
         });
     });
     // disables enter key on the scanner field
@@ -155,5 +157,5 @@
         });
     });
 </script>
-    
-{% endblock %}    
+
+{% endblock %}
