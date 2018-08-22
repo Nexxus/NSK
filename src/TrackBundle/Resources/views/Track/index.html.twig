@@ -181,23 +181,6 @@
                         {% trans %}Type{% endtrans %}
                     </th>
 
-
-                    <th>
-                        {% trans %}Status{% endtrans %}
-                    </th>
-
-                    <th>
-                        {% trans %}Brand{% endtrans %}
-                    </th>
-
-                    <th>
-                        {% trans %}Department{% endtrans %}
-                    </th>
-
-                    <th>
-                        {% trans %}Owner{% endtrans %}
-                    </th>
-
                     <th>
                         {% trans %}Actions{% endtrans %}
                     </th>
@@ -216,10 +199,6 @@
                     <td>{{ product.location }}</td>
                     {# <td>{{ product.description}}</td> #}
                     <td>{{ product.type }}</td>
-                    <td>{{ product.status }}</td>
-                    <td>{{ product.brand }}</td>
-                    <td>{{ product.department }}</td>
-                    <td>{{ product.owner }}</td>
                     <td>
                         <div class="list-group">
                             <a class="list-group-item" href="{{ path('track_edit', { 'id': product.id }) }}">
