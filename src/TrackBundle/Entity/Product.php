@@ -41,6 +41,16 @@ class Product
         $this->orderRelations = new ArrayCollection();
         $this->services = new ArrayCollection();
         $this->images = new ArrayCollection();
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
+    }
+    
+    /**
+     * @ORM\PreUpdate()
+     */
+    public function preUpdate()
+    {
+        $this->updatedAt= new \DateTime();
     }
 
     /**
@@ -110,6 +120,18 @@ class Product
      */
     private $location;
 
+    /**
+     * @var createdAt
+     * 
+     * @ORM\Column(type="datetime")
+     */
+    protected $createdAt;
+    
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    protected $updatedAt;
+    
     /**
      * @var ArrayCollection|ProductAttributeRelation[]
      *
@@ -474,5 +496,15 @@ class Product
     public function getServices()
     {
         return $this->services;
+    }
+    
+    public function getCreatedAt()
+    {
+        return $this->updatedAt->format('d-m-Y H:i');
+    }
+    
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt->format('d-m-Y H:i');
     }
 }
