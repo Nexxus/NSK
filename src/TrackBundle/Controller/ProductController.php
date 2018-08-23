@@ -72,8 +72,6 @@ class ProductController extends Controller
             $this->clearSearchQuery($search_session);
         }
         
-        
-        
         // get products
         $productquery = $em->getRepository('TrackBundle:Product')->createQueryBuilder('p')
                 ->orderBy('p.'.$sort , $by)
@@ -167,7 +165,7 @@ class ProductController extends Controller
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->get('barcodeOption')->getData() == false) {
+            if ($form->get('barcodeOption')->getData() === false) {
                 if ($form->get('type')->getData()) {
                     $generatedsku = substr($form->get('type')->getData(), 0, 1) . $generatedsku;
                 }
