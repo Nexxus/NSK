@@ -272,16 +272,6 @@ class ProductController extends Controller
                 ))
                 ->add('description', TextType::class, array(
                     'required' => false
-                ))
-                ->add('status')
-                ->add('brand', TextType::class, array(
-                    'required' => false
-                ))
-                ->add('department', TextType::class, array(
-                    'required' => false
-                ))
-                ->add('owner', TextType::class, array(
-                    'required' => false
                 ));
         
         // get attributes (previously checked or added)
