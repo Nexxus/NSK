@@ -59,6 +59,9 @@ class ProductController extends Controller
         
         $user = $this->get('security.token_storage')->getToken()->getUser();
         
+        // retrieve message
+        $msg = $request->query->get('msg');
+
         // retrieve search query
         $search_query = $request->request->get('item_search');
         
@@ -102,6 +105,7 @@ class ProductController extends Controller
         
         return $this->render('TrackBundle:Track:index.html.twig', array(
             'products' => $products,
+            'msg' => $msg,
             'page' => $page,
             'searched' => $this->checkSearchQuery($search_session),
             'search_options' => [
@@ -131,6 +135,31 @@ class ProductController extends Controller
             ->orderBy('p.id', 'DESC')
             ->getQuery();
         $result = $query->getResult();
+
+        $locCheck = $em->createQuery(
+                'SELECT l'
+                . ' FROM TrackBundle:Location l')
+                ->getResult();
+        if(!$locCheck) {
+            return $this->redirectToRoute(
+                'track_index', array(
+                    'msg' => 'No locations made yet',
+                )
+            );
+        }
+
+        $typeCheck = $em->createQuery(
+                'SELECT pt'
+                . ' FROM TrackBundle:ProductType pt')
+                ->getResult();
+        if(!$typeCheck) {
+            return $this->redirectToRoute(
+                'track_index', array(
+                    'msg' => 'No types made yet',
+                )
+            );
+        }
+        // Check if necessary constants are filled
         
         if(count($result)>0) {
             $generatedsku = ($result[0]->getId() + 1);

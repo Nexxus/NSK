@@ -23,7 +23,11 @@
         <h1>{% trans %}Product List{% endtrans %}</h1>
 
         <h2>{{ app.request.get('order') }}</h2>
-        
+
+        {% if msg is defined %}
+            <h4>{{ msg }}</h4>
+        {% endif %}
+
         <h4><a href="{{ path('track_new') }}">{% trans %}Create a new product{% endtrans %}</a></h4>
         <button class="btn btn-success" name="product-search-form-btn" id="product-search-form-btn"><span class="glyphicon glyphicon-search"></span>&nbsp;{% trans %}Search{% endtrans %}</button>
     </div>
