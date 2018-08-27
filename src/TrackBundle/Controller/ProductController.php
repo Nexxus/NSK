@@ -202,14 +202,15 @@ class ProductController extends Controller
             }
             $saveAmount = $form->get('saveAmount')->getData();
             if ($saveAmount > 0) {
-                for($i=0;$i<$saveAmount;) {
+                for($i=0;$i<$saveAmount;$i++) {
                     $copy = clone $product;
-                    $copy->setSku($copy->getSku() . $i);
-                    
+                    if($saveAmount > 1) {
+                        $copy->setSku($copy->getSku() . $i);
+                    }
                     if($this->checkExistingSku($copy->getSku() ) === true) {
                         $em->persist($copy);
                         $em->flush($copy);
-                        $this->checkAttributeTemplate($copy);
+                        //$this->checkAttributeTemplate($copy);
                         $i++;
                     } else {
                         return $this->render('TrackBundle:Track:new.html.twig', array(
