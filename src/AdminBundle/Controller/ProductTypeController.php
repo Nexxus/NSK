@@ -149,10 +149,6 @@ class ProductTypeController extends Controller
             $choices[$attr->getName()] = $attr->getId();
         }
         
-        print_r("<pre>");
-        print_r($choices);
-        print_r("</pre>");
-        
         $attrForm = $this->createFormBuilder()
                 ->add('attribute', ChoiceType::class, [
                     'choices' => $choices
