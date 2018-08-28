@@ -337,7 +337,7 @@ class ProductController extends Controller
         $editForm->handleRequest($request);
         
         // if product has type, check if it needs attributes
-        $this->checkAttributeTemplate($product);
+        $this->applyAttributeTemplate($product);
         
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             
@@ -541,48 +541,6 @@ class ProductController extends Controller
         $products = $products->getQuery()->getResult();
         
         return $products;
-    }
-    
-    public function addAttributesToProductForm(Form $editForm) {
-        
-        $em = $this->getDoctrine()->getManager();
-            
-        // get attributes (previously checked or added)
-        $query = $em->createQuery('SELECT'
-                . '     pa.id,'
-                . '     a.attr_code,'
-                . '     a.name,'
-                . '     pa.value'
-                . ' FROM'
-                . '     TrackBundle:ProductAttribute pa '
-                . ' LEFT JOIN TrackBundle:Attribute a '
-                . '     WITH pa.attrId = a.id '
-                . 'WHERE '
-                . '     pa.productid = :id')
-                ->setParameter('id', $product->getId());
-        $attributes = $query->getResult();
-        
-        $idArr = [];
-        
-        // add the attributes to the form
-        foreach($attributes as $attribute) {
-            $idArr[] = $attribute['id'];
-            
-            $fieldid = "attribute_" . $attribute['id'];
-            $fieldname = $attribute['attr_code'];
-            $fieldlabel = $attribute['name'];
-            $fieldvalue = $attribute['value'];
-            
-            $editForm->add($fieldid, TextType::class, [
-                'mapped'    => false,
-                'label'     => $fieldlabel,
-                'required'  => false,
-                'attr'      => [
-                    'id'        => $fieldid,
-                    'value'     => $fieldvalue,
-                ],
-            ]);
-        }
     }
     
     /**
