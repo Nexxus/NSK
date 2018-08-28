@@ -3,13 +3,11 @@
 
 {% block body %}
     <h1>Product Info</h1>
-    {% if product.status == "Sold" %}
         <div class="alert alert-warning">
          {% trans %}
             This product has been sold. It will not appear on the Track & Trace page.
          {% endtrans %}
         </div>
-    {% endif %}
     <table class="table table-bordered">
         <tbody>
             <tr>
@@ -52,23 +50,6 @@
                 <th>{% trans %} Type {% endtrans %}</th>
                 <td>{{ product.type }}</td>
             </tr>
-            <tr>
-                <th>{% trans %} Status {% endtrans %}</th>
-                <td>{{ product.status }}</td>
-            </tr>
-            <tr>
-                <th>{% trans %} Brand {% endtrans %}</th>
-                <td>{{ product.brand }}</td>
-            </tr>
-            <tr>
-                <th>{% trans %} Department {% endtrans %}</th>
-                <td>{{ product.department }}</td>
-            </tr>
-            <tr>
-                <th>{% trans %} Owner {% endtrans %}</th>
-                <td>{{ product.owner }}</td>
-            </tr>
-            
         </tbody>
     </table>
     

@@ -249,11 +249,11 @@ class ProductController extends Controller
         $deleteForm = $this->createDeleteForm($product);
         
         // get attributes (previously checked or added)
-        $attributes = $this->getProductAttributes($product);
+        //$attributes = $this->getProductAttributes($product);
 
         return $this->render('TrackBundle:Track:show.html.twig', array(
             'product' => $product,
-            'attributes' => $attributes,
+            'attributes' => $product->getAttributeRelations(),
             'delete_form' => $deleteForm->createView(),
             'sellable'      => PRODUCT_SELLABLE,
         ));
