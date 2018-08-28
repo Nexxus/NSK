@@ -210,7 +210,6 @@ class ProductController extends Controller
                     if($this->checkExistingSku($copy->getSku() ) === true) {
                         $em->persist($copy);
                         $em->flush($copy);
-                        //$this->checkAttributeTemplate($copy);
                         $i++;
                     } else {
                         return $this->render('TrackBundle:Track:new.html.twig', array(
@@ -269,11 +268,6 @@ class ProductController extends Controller
         $deleteForm = $this->createDeleteForm($product);
         
         // if user isn't allowed to be here, redirect
-        $user = $this->get('security.token_storage')->getToken()->getUser();
-        if(!$this->checkUserLocRights($user, $product->getLocation())) {
-            return $this->redirectToRoute("track_index");
-        }
-        
         echo $product->getLocation();
         echo $user->getLocation();
         
@@ -360,7 +354,7 @@ class ProductController extends Controller
                     . ' AND p.id <> :id')
                     ->setParameter('givensku', $product->getSku())
                     ->setParameter('id', $product->getId());
-            $result = $skuquery->getResult();
+            $skuResult = $skuquery->getResult();
             
             $attributeArr = [];
             
@@ -372,7 +366,7 @@ class ProductController extends Controller
                   ];
             }
             
-            if(count($result)==0)
+            if(count($skuResult)==0)
             {
                 // save product
                 $em->persist($product);
@@ -501,75 +495,14 @@ class ProductController extends Controller
      * 
      * @param Product $product
      */
-    private function checkAttributeTemplate(Product $product) {
-        if($product->getType() != null) {
-            $attr_repository = $this->getDoctrine()->getRepository(ProductAttribute::class);
-            
-            // check for attributes
-            $query = $attr_repository->findBy(
-                    ['productid' => $product->getId()]
-            );
-
-            if(count($query)==0) {   
-                $this->applyAttributeTemplate($product);   
-            }
-        }
-    }
-    
-    /**
-     * Add attributes to product
-     */
     private function applyAttributeTemplate(Product $product) {
-        $em = $this->getDoctrine()->getManager();
-        
-        // get id to insert into productattr rows
-        $type_id = $product->getType();
-        
-        // find matching attributes to add
-        $query = $em->createQuery(''
-                . 'SELECT'
-                . '     pta.id, '
-                . '     IDENTITY(pta.attrId) as attrid, '
-                . '     pta.typeId, '
-                . '     a.name'
-                . ' FROM TrackBundle:ProductTypeAttribute pta'
-                . ' LEFT JOIN TrackBundle:Attribute a '
-                . '     WITH pta.attrId = a.id'
-                . ' WHERE'
-                . '     pta.typeId = :type_id')
-                ->setParameter('type_id', $type_id);
-        $result = $query->getResult();
-        
-        // apply empty attributes to product
-        foreach($result as $attr) {
-            $prod_attr = new ProductAttribute();
-            $prod_attr->setProductid($product->getId());
-            $prod_attr->setAttrId($attr['attrid']);
+        if($product->getType() != null) {
+            // check if product already has attributes
             
-            $em->persist($prod_attr);
+            // add missing attributes
+            
+            // save product 
         }
-        
-        $em->flush();
-        
-    }
-    
-    public function getProductAttributes(Product $product) {
-        $em = $this->getDoctrine()->getManager();
-        
-        $query = $em->createQuery('SELECT'
-                . '     pa.id,'
-                . '     a.name,'
-                . '     pa.value'
-                . ' FROM'
-                . '     TrackBundle:ProductAttribute pa '
-                . ' LEFT JOIN TrackBundle:Attribute a '
-                . '     WITH pa.attrId = a.id '
-                . 'WHERE '
-                . '     pa.productid = :id')
-                ->setParameter('id', $product->getId());
-        $attributes = $query->getResult();
-        
-        return $attributes;
     }
     
     /*
