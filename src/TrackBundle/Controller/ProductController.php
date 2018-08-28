@@ -290,34 +290,23 @@ class ProductController extends Controller
                 ));
         
         // get attributes (previously checked or added)
-        $query = $em->createQuery('SELECT'
-                . '     pa.id,'
-                . '     a.attr_code,'
-                . '     a.name,'
-                . '     pa.value'
-                . ' FROM'
-                . '     TrackBundle:ProductAttribute pa '
-                . ' LEFT JOIN TrackBundle:Attribute a '
-                . '     WITH pa.attrId = a.id '
-                . 'WHERE '
-                . '     pa.productid = :id')
-                ->setParameter('id', $product->getId());
-        $attributes = $query->getResult();
+        $attributes = $product->getAttributeRelations();
         
-        $attribute_form = $this->createFormBuilder("");
+        // for adding to an array later
         $attribute_count = 0;
-        
         $idArr = [];
         
         // add the attributes to the form
         foreach($attributes as $attribute) {
             $attribute_count++;
-            $idArr[] = $attribute['id'];
+            $idArr[] = [$attribute->getProduct(), $attribute->getAttribute()];
             
-            $fieldid = "attribute_" . $attribute['id'];
-            $fieldname = $attribute['attr_code'];
-            $fieldlabel = $attribute['name'];
-            $fieldvalue = $attribute['value'];
+            $fieldid = "attribute_" . $attribute_count;
+            $fieldname = $attribute->getAttribute()
+                            ->getAttrCode();
+            $fieldlabel = $attribute->getAttribute()
+                            ->getName();
+            $fieldvalue = $attribute->getValue();
             
             $editForm->add($fieldid, TextType::class, [
                 'mapped'    => false,
