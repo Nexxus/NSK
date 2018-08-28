@@ -250,7 +250,6 @@ class ProductController extends Controller
 
         return $this->render('TrackBundle:Track:show.html.twig', array(
             'product' => $product,
-            'attributes' => $product->getAttributeRelations()->count(),
             'delete_form' => $deleteForm->createView(),
             'sellable'      => PRODUCT_SELLABLE,
         ));

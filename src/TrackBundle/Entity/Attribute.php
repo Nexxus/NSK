@@ -310,4 +310,9 @@ class Attribute
     {
         return $this->options;
     }
+
+    public function __toString()
+    {
+        return $this->getName();
+    }
 }

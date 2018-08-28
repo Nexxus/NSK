@@ -53,14 +53,16 @@
         </tbody>
     </table>
     
+    {% set attributes = product.getAttributeRelations %}
     <h4>Product Attributes</h4>
-        {{ attributes }}
         <table class="table table-bordered">
             <tbody>
+                {% for attribute in attributes %}
                 <tr>
-                    <th></th>
-                    <td></td>
+                    <th>{{ attribute.attribute }}</th>
+                    <td>{{ attribute.value }}</td>
                 </tr>
+                {% endfor %}
             </tbody>
         </table>
             
