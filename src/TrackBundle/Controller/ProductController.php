@@ -247,13 +247,10 @@ class ProductController extends Controller
     public function showAction(Product $product)
     {
         $deleteForm = $this->createDeleteForm($product);
-        
-        print_r($product->getAttributeRelations()->count());
-        exit;
 
         return $this->render('TrackBundle:Track:show.html.twig', array(
             'product' => $product,
-            'attributes' => $product->getAttributeRelations(),
+            'attributes' => $product->getAttributeRelations()->count(),
             'delete_form' => $deleteForm->createView(),
             'sellable'      => PRODUCT_SELLABLE,
         ));
