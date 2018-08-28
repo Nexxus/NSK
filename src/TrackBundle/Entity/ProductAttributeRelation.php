@@ -60,7 +60,7 @@ class ProductAttributeRelation
      * @var Product This is the product containing the attribute
      *
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="Product", inversedBy="attributeRelation", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="Product", inversedBy="attributeRelations", fetch="EAGER")
      * @ORM\JoinColumn(name="product_id", referencedColumnName="id", nullable=false)
      */
     private $product;
@@ -69,7 +69,7 @@ class ProductAttributeRelation
      * @var Attribute
      *
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="Attribute", inversedBy="productRelation", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="Attribute", inversedBy="productRelations", fetch="EAGER")
      * @ORM\JoinColumn(name="attribute_id", referencedColumnName="id", nullable=false)
      */
     private $attribute;
