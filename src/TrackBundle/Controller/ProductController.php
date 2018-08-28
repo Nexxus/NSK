@@ -267,11 +267,6 @@ class ProductController extends Controller
         // create form for deleting
         $deleteForm = $this->createDeleteForm($product);
         
-        // if user isn't allowed to be here, redirect
-        echo $product->getLocation();
-        echo $user->getLocation();
-        
-        
         // create form for editing
         $editForm = $this->createFormBuilder($product)
                 ->add('sku', TextType::class)
