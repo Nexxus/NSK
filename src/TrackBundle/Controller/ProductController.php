@@ -291,6 +291,7 @@ class ProductController extends Controller
                 ])
                 ->add('attributeRelations', CollectionType::class, [
                     'entry_type' => TextType::class, 
+                    'mapped' => false,
                 ]);
         
         $editForm->add('save', SubmitType::class, ['label' => 'Save Changes']);
@@ -302,52 +303,16 @@ class ProductController extends Controller
         // if product has type, check if it needs attributes
         $this->applyAttributeTemplate($product);
         
-        if ($editForm->isSubmitted() && $editForm->isValid()) {
+        if ($editForm->isSubmitted() && $editForm->isValid()) 
+        {
+            // save product
+            $em->persist($product);
+            $em->flush($product);
             
-            // check for sku
-            $skuquery = $em->createQuery(
-                    'SELECT p.sku'
-                    . ' FROM TrackBundle:Product p'
-                    . ' WHERE p.sku = :givensku'
-                    . ' AND p.id <> :id')
-                    ->setParameter('givensku', $product->getSku())
-                    ->setParameter('id', $product->getId());
-            $skuResult = $skuquery->getResult();
-            
-            $attributeArr = [];
-            
-            // put attributes in array
-            foreach($idArr as $id) {
-                  $attributeArr[$id] = [
-                      'id'    => $id,
-                      'value' => $editForm->get('attribute_' . $id)->getData()
-                  ];
-            }
-            
-            if(count($skuResult)==0)
-            {
-                // save product
-                $em->persist($product);
-                $em->flush($product);
-                
-                // save attributes
-                foreach($attributeArr as $attr){
-                    $query = $em->createQuery(
-                              'UPDATE '
-                            . '     TrackBundle:ProductAttribute pa'
-                            . ' SET   pa.value = :value'
-                            . ' WHERE pa.id  = :id')
-                            ->setParameter('value', $attr['value'])
-                            ->setParameter('id', $attr['id']);
-                    $result = $query->getResult();
-                } 
-                
-                return $this->redirectToRoute('track_show', array('id' => $product->getId()));
-            } 
-            else 
-            {
-                return $this->redirectToRoute('track_edit', array('id' => $product->getId()));
-            }
+            return $this->redirectToRoute('track_edit', 
+                array('id' => $product->getId())
+            );
+
         }
         
         return $this->render('TrackBundle:Track:edit.html.twig', array(

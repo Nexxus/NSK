@@ -69,7 +69,7 @@
         {% for attr in edit_form.attributeRelations %}
             <div class="form-group">
                 <label class="control-label col-lg-2">
-                    {{ attr.value }}
+                    {{ form_label(attr) }} 
                 </label>
                 <div class="col-lg-10">
                     {{ form_widget(attr) }} 
