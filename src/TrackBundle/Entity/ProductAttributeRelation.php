@@ -193,4 +193,8 @@ class ProductAttributeRelation
     {
         return $this->attribute;
     }
+
+    public function __toString(){
+        return $this->getValue();
+    }
 }

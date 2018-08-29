@@ -37,6 +37,7 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
@@ -271,53 +272,26 @@ class ProductController extends Controller
         $editForm = $this->createFormBuilder($product)
                 ->add('sku', TextType::class)
                 ->add('name', TextType::class)
-                ->add('quantity', IntegerType::class, array(
+                ->add('quantity', IntegerType::class, [
                     'required' => false
-                ))
-                ->add('price', IntegerType::class, array(
+                ])
+                ->add('price', IntegerType::class, [
                     'required' => false
-                ))
-                ->add('location',  EntityType::class, array(
+                ])
+                ->add('location',  EntityType::class, [
                     'class' => 'TrackBundle:Location',
                     'choice_label' => 'name'
-                ))
-                ->add('type',  EntityType::class, array(
+                ])
+                ->add('type',  EntityType::class, [
                     'class' => 'TrackBundle:ProductType',
                     'choice_label' => 'name'
-                ))
-                ->add('description', TextType::class, array(
+                ])
+                ->add('description', TextType::class, [
                     'required' => false
-                ));
-        
-        // get attributes (previously checked or added)
-        $attributes = $product->getAttributeRelations();
-        
-        // for adding to an array later
-        $attribute_count = 0;
-        $idArr = [];
-        
-        // add the attributes to the form
-        foreach($attributes as $attribute) {
-            $attribute_count++;
-            $idArr[] = [$attribute->getProduct(), $attribute->getAttribute()];
-            
-            $fieldid = "attribute_" . $attribute_count;
-            $fieldname = $attribute->getAttribute()
-                            ->getAttrCode();
-            $fieldlabel = $attribute->getAttribute()
-                            ->getName();
-            $fieldvalue = $attribute->getValue();
-            
-            $editForm->add($fieldid, TextType::class, [
-                'mapped'    => false,
-                'label'     => $fieldlabel,
-                'required'  => false,
-                'attr'      => [
-                    'id'        => $fieldid,
-                    'value'     => $fieldvalue,
-                ],
-            ]);
-        }
+                ])
+                ->add('attributeRelations', CollectionType::class, [
+                    'entry_type' => TextType::class, 
+                ]);
         
         $editForm->add('save', SubmitType::class, ['label' => 'Save Changes']);
         
@@ -381,8 +355,6 @@ class ProductController extends Controller
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
             'sellable' => PRODUCT_SELLABLE,
-            'attributes' => $attributes,
-            'attribute_count' => $attribute_count,
         ));
     }
     
