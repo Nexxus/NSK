@@ -22,9 +22,16 @@
 
 namespace TrackBundle\Form;
 
+use TrackBundle\Entity\Product;
+use TrackBundle\Entity\ProductAttribute;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -36,32 +43,29 @@ class ProductType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('sku', TextType::class)
-                ->add('name', TextType::class)
-                ->add('quantity', IntegerType::class, array(
-                    'required' => false
-                ))
-                ->add('location',  EntityType::class, array(
-                    'class' => 'TrackBundle:Location',
-                    'choice_label' => 'name'
-                ))
-                ->add('type',  EntityType::class, array(
-                    'class' => 'TrackBundle:ProductType',
-                    'choice_label' => 'name'
-                ))
-                ->add('description', TextType::class, array(
-                    'required' => false
-                ))
-                ->add('status')
-                ->add('brand', TextType::class, array(
-                    'required' => false
-                ))
-                ->add('department', TextType::class, array(
-                    'required' => false
-                ))
-                ->add('owner', TextType::class, array(
-                    'required' => false
-                ));
+        $builder
+            ->add('sku', TextType::class)
+            ->add('name', TextType::class)
+            ->add('quantity', IntegerType::class, [
+                'required' => false
+            ])
+            ->add('price', IntegerType::class, [
+                'required' => false
+            ])
+            ->add('location',  EntityType::class, [
+                'class' => 'TrackBundle:Location',
+                'choice_label' => 'name'
+            ])
+            ->add('type',  EntityType::class, [
+                'class' => 'TrackBundle:ProductType',
+                'choice_label' => 'name'
+            ])
+            ->add('description', TextType::class, [
+                'required' => false
+            ])
+            ->add('save', SubmitType::class, [
+                'label' => 'Save Changes'
+            ]);
     }
     
     /**

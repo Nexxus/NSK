@@ -26,6 +26,7 @@ const PRODUCT_SELLABLE = true;
 
 use TrackBundle\Entity\Product;
 use TrackBundle\Entity\ProductAttribute;
+use TrackBundle\Form\ProductType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -269,35 +270,8 @@ class ProductController extends Controller
         $deleteForm = $this->createDeleteForm($product);
         
         // create form for editing
-        $editForm = $this->createFormBuilder($product)
-                ->add('sku', TextType::class)
-                ->add('name', TextType::class)
-                ->add('quantity', IntegerType::class, [
-                    'required' => false
-                ])
-                ->add('price', IntegerType::class, [
-                    'required' => false
-                ])
-                ->add('location',  EntityType::class, [
-                    'class' => 'TrackBundle:Location',
-                    'choice_label' => 'name'
-                ])
-                ->add('type',  EntityType::class, [
-                    'class' => 'TrackBundle:ProductType',
-                    'choice_label' => 'name'
-                ])
-                ->add('description', TextType::class, [
-                    'required' => false
-                ])
-                ->add('attributeRelations', CollectionType::class, [
-                    'entry_type' => TextType::class, 
-                    'mapped' => false,
-                ]);
+        $editForm = $this->createForm(ProductType::class, $product);
         
-        $editForm->add('save', SubmitType::class, ['label' => 'Save Changes']);
-        
-        $editForm = $editForm->getForm();
-                
         $editForm->handleRequest($request);
         
         // if product has type, check if it needs attributes
