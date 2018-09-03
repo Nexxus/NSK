@@ -266,11 +266,9 @@ class ProductController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        // create form for deleting
-        $deleteForm = $this->createDeleteForm($product);
-        
-        // create form for editing
+        // load forms
         $editForm = $this->createForm(ProductType::class, $product);
+        $deleteForm = $this->createDeleteForm($product);
         
         $editForm->handleRequest($request);
         
