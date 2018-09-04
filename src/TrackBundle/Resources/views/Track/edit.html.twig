@@ -66,7 +66,7 @@
             </div>
                 
         <h4>Product Attributes</h4>
-        {% for attr in edit_form.attributeRelations %}
+        {# for attr in edit_form.attributeRelations %}
             <div class="form-group">
                 <label class="control-label col-lg-2">
                     {{ form_label(attr) }} 
@@ -75,7 +75,7 @@
                     {{ form_widget(attr) }} 
                 </div>
             </div>
-        {% endfor %}
+        {% endfor #}
         {{ form_end(edit_form) }}
         <div class="form-group"> 
             <div class="col-lg-offset-2 col-lg-10">

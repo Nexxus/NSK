@@ -32,13 +32,8 @@ class ProductAttributeRelationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('value')
-    }
-
-    public function configureOptions(OptionResolver Resolver)
-    {
-        $resolver->setDefaults(array(
-            'data_class' => ProductAttributeRelation::class,
-        ));
+            ->add('attribute', EntityType::class, [
+               'class' => 'TrackBundle:ProductAttribute',
+            ]);
     }
 }

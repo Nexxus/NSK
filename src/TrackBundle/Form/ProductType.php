@@ -25,6 +25,7 @@ namespace TrackBundle\Form;
 use TrackBundle\Entity\Product;
 use TrackBundle\Entity\ProductAttribute;
 use TrackBundle\Form\ProductAttributeRelationType;
+
 use Symfony\Component\Form\AbstractType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -53,42 +54,22 @@ class ProductType extends AbstractType
             ->add('price', IntegerType::class, [
                 'required' => false
             ])
-            ->add('location',  EntityType::class, [
-                'class' => 'TrackBundle:Location',
-                'choice_label' => 'name'
+            ->add('description', TextType::class, [
+                'required' => false
             ])
             ->add('type',  EntityType::class, [
                 'class' => 'TrackBundle:ProductType',
                 'choice_label' => 'name'
             ])
-            ->add('description', TextType::class, [
-                'required' => false
+            ->add('location',  EntityType::class, [
+                'class' => 'TrackBundle:Location',
+                'choice_label' => 'name'
             ])
             ->add('attributeRelations', CollectionType::class, [
-                'entry_type' => ProductAttributeType::class,
+                'entry_type' => ProductAttributeRelationType::class,
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Save Changes'
             ]);
     }
-    
-    /**
-     * {@inheritdoc}
-     */
-    public function configureOptions(OptionsResolver $resolver)
-    {
-        $resolver->setDefaults(array(
-            'data_class' => 'TrackBundle\Entity\Product'
-        ));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getBlockPrefix()
-    {
-        return 'trackbundle_product';
-    }
-
-
 }
