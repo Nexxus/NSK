@@ -46,7 +46,20 @@ class LocationController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         $locations = $em->getRepository('TrackBundle:Location')->findAll();
+        
+        $query = $em->createQuery("SELECT "
+                . "  l.id,"
+                . "  l.name,"
+                . "  count(p.id) as product_count"
+                . " FROM TrackBundle:Location l"
+                . " LEFT JOIN TrackBundle:Product p"
+                . "     WITH p.location = l.id"
+                . " GROUP BY"
+                . "     l.id");
 
+        $locations = $query->getResult();
+        
+        
         return $this->render('AdminBundle:Location:index.html.twig', array(
             'locations' => $locations,
         ));
@@ -109,7 +122,7 @@ class LocationController extends Controller
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('admin_location_edit', array('id' => $location->getId()));
+            return $this->redirectToRoute('admin_location_index');
         }
 
         return $this->render('AdminBundle:Location:edit.html.twig', array(
@@ -122,19 +135,19 @@ class LocationController extends Controller
     /**
      * Deletes a location entity.
      *
-     * @Route("/{id}", name="admin_location_delete")
-     * @Method("DELETE")
+     * @Route("/{id}/delete", name="admin_location_delete")
+     * @Method("GET")
      */
-    public function deleteAction(Request $request, Location $location)
+    public function deleteAction($id)
     {
-        $form = $this->createDeleteForm($location);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($location);
-            $em->flush($location);
-        }
+        $em = $this->getDoctrine()->getManager();
+        
+        $query = $em->createQuery(""
+                . "DELETE FROM TrackBundle:Location l"
+                . " WHERE l.id = :id")
+                ->setParameter("id", $id);
+        
+        $query->getResult();
 
         return $this->redirectToRoute('admin_location_index');
     }

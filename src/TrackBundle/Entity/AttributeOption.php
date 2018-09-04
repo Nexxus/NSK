@@ -3,34 +3,35 @@
 /*
  * Nexxus Stock Keeping (online voorraad beheer software)
  * Copyright (C) 2018 Copiatek Scan & Computer Solution BV
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
- * 
+ *
  * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
  */
 
 namespace TrackBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * ProductStatus
+ * AttributeOption
  *
- * @ORM\Table(name="product_status")
- * @ORM\Entity(repositoryClass="TrackBundle\Repository\ProductStatusRepository")
+ * @ORM\Table(name="attribute_option")
+ * @ORM\Entity(repositoryClass="TrackBundle\Repository\AttributeOptionRepository")
  */
-class ProductStatus
+class AttributeOption
 {
     /**
      * @var int
@@ -42,24 +43,25 @@ class ProductStatus
     private $id;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="pindex", type="integer", nullable=true)
-     */
-    private $pindex;
-
-    /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(name="name", type="string", length=255, unique=true)
+     * @
      */
     private $name;
 
+    /**
+     * @var Attribute
+     *
+     * @ORM\ManyToOne(targetEntity="Attribute", inversedBy="options", fetch="EAGER")
+     * @ORM\JoinColumn(name="attribute_id", referencedColumnName="id", nullable=false)
+     */
+    private $attribute;
 
     /**
      * Get id
      *
-     * @return int
+     * @return integer
      */
     public function getId()
     {
@@ -67,35 +69,11 @@ class ProductStatus
     }
 
     /**
-     * Set pindex
-     *
-     * @param integer $pindex
-     *
-     * @return ProductStatus
-     */
-    public function setPindex($pindex)
-    {
-        $this->pindex = $pindex;
-
-        return $this;
-    }
-
-    /**
-     * Get pindex
-     *
-     * @return int
-     */
-    public function getPindex()
-    {
-        return $this->pindex;
-    }
-    
-    /**
      * Set name
      *
      * @param string $name
      *
-     * @return ProductStatus
+     * @return AttributeOption
      */
     public function setName($name)
     {
@@ -113,14 +91,28 @@ class ProductStatus
     {
         return $this->name;
     }
-    
+
     /**
-     * If object is treated like a string: return name
-     * 
-     * @return string
+     * Set attribute
+     *
+     * @param Attribute $attribute
+     *
+     * @return AttributeOption
      */
-    public function __toString()
+    public function setAttribute(Attribute $attribute)
     {
-        return $this->name;
+        $this->attribute = $attribute;
+
+        return $this;
+    }
+
+    /**
+     * Get attribute
+     *
+     * @return Attribute
+     */
+    public function getAttribute()
+    {
+        return $this->attribute;
     }
 }

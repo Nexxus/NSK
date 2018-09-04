@@ -1,3 +1,7 @@
+track_attribute:
+    resource: "@TrackBundle/Controller/AttributeController.php"
+    type:     annotation
+
 admin:
     resource: "@AdminBundle/Controller/"
     type:     annotation

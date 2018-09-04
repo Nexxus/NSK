@@ -32,8 +32,10 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Doctrine\ORM\EntityManagerInterface;
+
 use TrackBundle\Entity\ProductType;
 use TrackBundle\Entity\ProductTypeAttribute;
+use TrackBundle\Entity\Attribute;
 
 /**
  * @Route("admin/type")
@@ -137,21 +139,37 @@ class ProductTypeController extends Controller
                 ->add('name', TextType::class)
                 ->add('save', SubmitType::class)
                 ->getForm();
-         
         $editForm->handleRequest($request);
         
         // get all attributes
         $attributes = $em->getRepository('TrackBundle:Attribute')->findAll();
         
-        // get type's attributes
-        $typeattributes = $em->getRepository('TrackBundle:ProductTypeAttribute')
-                ->findBy(array("typeId" => $producttype->getId()));
+        $choices = [];
+        foreach($attributes as $attr) {
+            $choices[$attr->getName()] = $attr->getId();
+        }
         
+        $attrForm = $this->createFormBuilder()
+                ->add('attribute', ChoiceType::class, [
+                    'choices' => $choices
+                ])
+                ->add('save', SubmitType::class)
+                ->getForm();
+        $attrForm->handleRequest($request);
+        
+        // product edited
         if($editForm->isSubmitted() && $editForm->isValid()) {
             $em->persist($producttype);
             $em->flush();
             
             return $this->redirectToRoute('producttype_index');
+        }
+        
+        // attribute added
+        if($attrForm->isSubmitted()) {
+            $attr = $attrForm->getData();
+
+            $this->addAttributeToOneType($producttype->getId(), $attr['attribute']);
         }
         
         // create attr name list (not quite done)
@@ -170,9 +188,18 @@ class ProductTypeController extends Controller
             );
         }*/
         
+        // put attributes in array
+        $attributeCollection = $producttype->getAttributes();
+        $attrList = [];
+        for($i=0;$i<$attributeCollection->count();$i++) {
+           $attrList[] = $attributeCollection->get($i);
+        }
+        
         return $this->render('AdminBundle:Type:edit.html.twig', array(
             'form' => $editForm->createView(),
             'producttype' => $producttype,
+            'attrform' => $attrForm->createView(),
+            'attrlist' => $attrList,
         ));
     }
     
@@ -196,40 +223,46 @@ class ProductTypeController extends Controller
         
         return $this->redirectToRoute('producttype_index');
     }
-    
     /**
-     * For creating new attributes for Product Types 
-     * (affects templates, not existing products)
+     * Bind attribute to a product type.
      * 
-     * @Route("/edit/{id}/addattr", name="producttype_edit_attradd") 
-     * @Method("GET")
+     * @param type $typeid
+     * @param type $attrid
      */
-    public function addAttribute($id)
+    public function addAttributeToOneType($typeid, $attrid) 
     {
         $em = $this->getDoctrine()->getManager();
         
-        $pt_attribute = new ProductTypeAttribute();
-        $pt_attribute->setTypeId($id);
-        $pt_attribute->setAttrId(1);
+        $producttype = $em->getRepository('TrackBundle:ProductType')
+                ->find($typeid);
         
-        $em->persist($pt_attribute);
+        $attribute = $em->getRepository('TrackBundle:Attribute')
+                ->find($attrid);
+        
+        $producttype->addAttribute($attribute);
+        $em->persist($producttype);
         $em->flush();
-        
-        return $this->redirectToRoute('producttype_edit', 
-            array('id' => $id)
-        );
     }
     
     /**
-     * Get all attributes that belong to this producttype
+     * Delete producttype, make sure no products are assigned to it
+     * 
+     * @Route("/removeAttribute/{type}/{attr}", name="producttype_removeAttribute")
+     * @Method("GET")
      */
-    public function getAttribute(Product $product)
+    public function removeAttributeOfType(ProductType $type, Attribute $attr) 
     {
         $em = $this->getDoctrine()->getManager();
         
-        $typeattributes = $em->getRepository('TrackBundle:ProductTypeAttribute')
-                ->findBy(array("typeId" => $this->getId()));
+        $producttype = $em->getRepository('TrackBundle:ProductType')
+                ->find($type);
         
-        $this->attributes = $typeattributes;
+        $producttype->removeAttribute($attr);
+        $em->persist($producttype);
+        $em->flush();
+        
+        return $this->redirectToRoute('producttype_edit', [
+            'id' => $type->getId()
+        ]);
     }
 }
