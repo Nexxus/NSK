@@ -3,20 +3,20 @@
 /*
  * Nexxus Stock Keeping (online voorraad beheer software)
  * Copyright (C) 2018 Copiatek Scan & Computer Solution BV
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
- * 
+ *
  * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
  */
 
@@ -24,6 +24,7 @@ namespace AppBundle\Entity;
 
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
+use TrackBundle\Entity\Location;
 
 
 /**
@@ -42,7 +43,7 @@ use Doctrine\ORM\Mapping as ORM;
  * })
  */
 
-class User extends BaseUser 
+class User extends BaseUser
 {
     /**
      * @var int
@@ -55,34 +56,34 @@ class User extends BaseUser
 
     /**
      * @var string
-     * 
+     *
      * @ORM\Column(name="firstname", type="string", length=255, nullable=true)
      */
     protected $firstname;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="lastname", type="string", length=255, nullable=true)
      */
     protected $lastname;
-    
+
     /**
-     * @var int
+     * @var Location
      *
      * @ORM\ManyToOne(targetEntity="TrackBundle\Entity\Location")
      * @ORM\JoinColumn(name="location", referencedColumnName="id")
      */
     private $location;
-    
-    
-    
+
+
+
     public function __construct()
     {
         parent::__construct();
-        
+
     }
-    
+
     /**
      * Get id
      *
@@ -188,7 +189,7 @@ class User extends BaseUser
     {
         return $this->firstname;
     }
-    
+
     /**
      * Set lastname
      *
@@ -212,13 +213,13 @@ class User extends BaseUser
     {
         return $this->lastname;
     }
-    
+
     /**
      * Set location
      *
-     * @param integer $location
+     * @param Location $location
      *
-     * @return Product
+     * @return Location
      */
     public function setLocation($location)
     {
@@ -230,7 +231,7 @@ class User extends BaseUser
     /**
      * Get location
      *
-     * @return int
+     * @return Location
      */
     public function getLocation()
     {

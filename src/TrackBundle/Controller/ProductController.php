@@ -26,6 +26,7 @@ const PRODUCT_SELLABLE = true;
 
 use TrackBundle\Entity\Product;
 use TrackBundle\Entity\ProductAttribute;
+use TrackBundle\Form\ProductType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -37,20 +38,21 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 /**
  * Product controller. 
  * 
- * @Route("track")
+ * @Route("/track/products")
  */
 class ProductController extends Controller
 {
     /**
      * Lists all product entities.
      * 
-     * @Route("/index/{page}/{sort}/{by}/{only}/{spec}", name="track_index", defaults={"page" = 1, "sort" = "updatedAt", "by" = "DESC"})
+     * @Route("/index/{page}/{sort}/{by}/{only}/{spec}", name="track_index", defaults={"page" = 1, "sort" = "id", "by" = "DESC"})
      * @Method({"GET", "POST"})
      */
     public function indexAction(Request $request, $sort, $by, $page = 1, $only = null, $spec = null)
@@ -59,6 +61,9 @@ class ProductController extends Controller
         
         $user = $this->get('security.token_storage')->getToken()->getUser();
         
+        // retrieve message
+        $msg = $request->query->get('msg');
+
         // retrieve search query
         $search_query = $request->request->get('item_search');
         
@@ -72,8 +77,6 @@ class ProductController extends Controller
             $this->clearSearchQuery($search_session);
         }
         
-        
-        
         // get products
         $productquery = $em->getRepository('TrackBundle:Product')->createQueryBuilder('p')
                 ->orderBy('p.'.$sort , $by)
@@ -83,13 +86,6 @@ class ProductController extends Controller
         // load search query from slide menu
         $stored_query = $this->loadSearchQuery($search_session);
         $productquery = $this->searchSpecific($productquery, $stored_query);
-        
-        // if coming from admin panel, only show sold
-        if($only=='sold') {
-            $productquery->andWhere('p.status = 999');
-        } else {
-            $productquery->andWhere('p.status < 999 OR p.status IS NULL');
-        }
         
         // Only admins and Copiatek people can see all products
         if($user->getLocation() !== null 
@@ -108,17 +104,16 @@ class ProductController extends Controller
         // obtain data for the dropdowns
         $locations  = $em->getRepository('TrackBundle:Location')->findAll();
         $types      = $em->getRepository('TrackBundle:ProductType')->findAll();
-        $brands     = $em->getRepository('TrackBundle:Brand')->findAll();
         
         return $this->render('TrackBundle:Track:index.html.twig', array(
             'products' => $products,
+            'msg' => $msg,
             'page' => $page,
             'searched' => $this->checkSearchQuery($search_session),
             'search_options' => [
                 'specifics' => [
                     'locations' => $locations,
-                    'types' => $types,
-                    'brands' => $brands
+                    'types' => $types
                 ],
             ],
             'search_query' => [
@@ -133,33 +128,49 @@ class ProductController extends Controller
      * Creates a new product entity.
      *
      * @Route("/new", name="track_new")
-     * @Method({"GET", "POST"})
      */
-    public function newAction(Request $request)
-    {
+    public function newAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
-
         $product = new Product();
         $repository_product = $this->getDoctrine()->getRepository(Product::class);
-
         $query = $repository_product->createQueryBuilder('p')
-                ->orderBy('p.id', 'DESC')
-                ->getQuery();
-
+            ->orderBy('p.id', 'DESC')
+            ->getQuery();
         $result = $query->getResult();
+
+        $locCheck = $em->createQuery(
+                'SELECT l'
+                . ' FROM TrackBundle:Location l')
+                ->getResult();
+        if(!$locCheck) {
+            return $this->redirectToRoute(
+                'track_index', array(
+                    'msg' => 'No locations made yet',
+                )
+            );
+        }
+
+        $typeCheck = $em->createQuery(
+                'SELECT pt'
+                . ' FROM TrackBundle:ProductType pt')
+                ->getResult();
+        if(!$typeCheck) {
+            return $this->redirectToRoute(
+                'track_index', array(
+                    'msg' => 'No types made yet',
+                )
+            );
+        }
+        // Check if necessary constants are filled
+        
         if(count($result)>0) {
             $generatedsku = ($result[0]->getId() + 1);
-        }
-        else  {
+        } else  {
             $generatedsku = "0";
         }
-
+        
         $form = $this->createFormBuilder($product)
-            ->add('checkbox', ChoiceType::class, array(
-                'choices' => array(
-                'scan existing barcode' => true,
-                'generate new barcode' => false
-            ),'mapped' => false))
+            
             ->add('sku')
             ->add('name')
             ->add('quantity')
@@ -167,10 +178,13 @@ class ProductController extends Controller
             ->add('location')
             ->add('type')
             ->add('description')
-            ->add('status')
-            ->add('brand')
-            ->add('department')
-            ->add('owner')
+            ->add('barcodeOption', ChoiceType::class, [
+                'choices' => [
+                    'Scan Existing Barcode' => true,
+                    'Generate New Barcode' => false
+                    ],
+                'mapped' => false
+                ])
             ->add('saveAmount', IntegerType::class, [
                 'mapped' => false,
                 'attr' => [
@@ -181,54 +195,42 @@ class ProductController extends Controller
             ->getForm();
 
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
-            // if the dropdown has 'generate new' this wil make the temp var into a pre-generated SKU
-            // adds a prefix to the SKU bound to the type (if applicable)
-            if ($form->get('checkbox')->getData() == false) {
+            if ($form->get('barcodeOption')->getData() === false) {
                 if ($form->get('type')->getData()) {
                     $generatedsku = substr($form->get('type')->getData(), 0, 1) . $generatedsku;
                 }
                 $product->setSku($generatedsku);
             }
-
-            if($this->checkExistingSku($product->getSku() )) {
-                $em->persist($product);
-                $em->flush($product);
-
-                // add potential attributes
-                $this->checkAttributeTemplate($product);
-
-
-                return $this->redirectToRoute('track_show', array('id' => $product->getId()));
-            }
-            else {
-                return $this->render('TrackBundle:Track:new.html.twig', array(
-                    'product'       => $product,
-                    'form'          => $form->createView(),
-                    'error_msg'     => 'DuplicateSku',
-                    'sellable'      => PRODUCT_SELLABLE,
-                ));
-            }
-            /* Disabled for now, doesn't work properly */
-            // $saveAmount = $form->get('saveAmount')->getData();
-            //if($saveAmount == 1 || $saveAmount == null) {
-            /*} elseif($saveAmount > 1) {
+            $saveAmount = $form->get('saveAmount')->getData();
+            if ($saveAmount > 0) {
                 for($i=0;$i<$saveAmount;$i++) {
-                    $copy = $product;
-
-                    $copy->setSku($copy->getSku() . $i);
-
-                    if($this->checkExistingSku($copy->getSku() )) {
+                    $copy = clone $product;
+                    if($saveAmount > 1) {
+                        $copy->setSku($copy->getSku() . $i);
+                    }
+                    if($this->checkExistingSku($copy->getSku() ) === true) {
                         $em->persist($copy);
                         $em->flush($copy);
-
-                        // add potential attributes
-                        $this->checkAttributeTemplate($copy);
+                        $i++;
+                    } else {
+                        return $this->render('TrackBundle:Track:new.html.twig', array(
+                            'product'       => $product,
+                            'form'          => $form->createView(),
+                            'error_msg'     => 'DuplicateSku',
+                            'sellable'      => PRODUCT_SELLABLE,
+                        ));
                     }
                 }
                 return $this->redirectToRoute('track_index');
-              }*/
+            } else {
+                return $this->render('TrackBundle:Track:new.html.twig', array(
+                    'product'       => $product,
+                    'form'          => $form->createView(),
+                    'error_msg'     => 'WrongInput',
+                    'sellable'      => PRODUCT_SELLABLE,
+                ));
+            }
         }
 
         return $this->render('TrackBundle:Track:new.html.twig', array(
@@ -246,13 +248,9 @@ class ProductController extends Controller
     public function showAction(Product $product)
     {
         $deleteForm = $this->createDeleteForm($product);
-        
-        // get attributes (previously checked or added)
-        $attributes = $this->getProductAttributes($product);
 
         return $this->render('TrackBundle:Track:show.html.twig', array(
             'product' => $product,
-            'attributes' => $attributes,
             'delete_form' => $deleteForm->createView(),
             'sellable'      => PRODUCT_SELLABLE,
         ));
@@ -268,147 +266,25 @@ class ProductController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        // create form for deleting
+        // load forms
+        $editForm = $this->createForm(ProductType::class, $product);
         $deleteForm = $this->createDeleteForm($product);
         
-        // if user isn't allowed to be here, redirect
-        $user = $this->get('security.token_storage')->getToken()->getUser();
-        if(!$this->checkUserLocRights($user, $product->getLocation())) {
-            return $this->redirectToRoute("track_index");
-        }
-        
-        echo $product->getLocation();
-        echo $user->getLocation();
-        
-        
-        // create form for editing
-        $editForm = $this->createFormBuilder($product)
-                ->add('sku', TextType::class)
-                ->add('name', TextType::class)
-                ->add('quantity', IntegerType::class, array(
-                    'required' => false
-                ))
-                ->add('price', IntegerType::class, array(
-                    'required' => false
-                ))
-                ->add('location',  EntityType::class, array(
-                    'class' => 'TrackBundle:Location',
-                    'choice_label' => 'name'
-                ))
-                ->add('type',  EntityType::class, array(
-                    'class' => 'TrackBundle:ProductType',
-                    'choice_label' => 'name'
-                ))
-                ->add('description', TextType::class, array(
-                    'required' => false
-                ))
-                ->add('status')
-                ->add('brand', TextType::class, array(
-                    'required' => false
-                ))
-                ->add('department', TextType::class, array(
-                    'required' => false
-                ))
-                ->add('owner', TextType::class, array(
-                    'required' => false
-                ));
-        
-        // get attributes (previously checked or added)
-        $query = $em->createQuery('SELECT'
-                . '     pa.id,'
-                . '     a.attr_code,'
-                . '     a.name,'
-                . '     pa.value'
-                . ' FROM'
-                . '     TrackBundle:ProductAttribute pa '
-                . ' LEFT JOIN TrackBundle:Attribute a '
-                . '     WITH pa.attrId = a.id '
-                . 'WHERE '
-                . '     pa.productid = :id')
-                ->setParameter('id', $product->getId());
-        $attributes = $query->getResult();
-        
-        $attribute_form = $this->createFormBuilder("");
-        $attribute_count = 0;
-        
-        $idArr = [];
-        
-        // add the attributes to the form
-        foreach($attributes as $attribute) {
-            $attribute_count++;
-            $idArr[] = $attribute['id'];
-            
-            $fieldid = "attribute_" . $attribute['id'];
-            $fieldname = $attribute['attr_code'];
-            $fieldlabel = $attribute['name'];
-            $fieldvalue = $attribute['value'];
-            
-            $editForm->add($fieldid, TextType::class, [
-                'mapped'    => false,
-                'label'     => $fieldlabel,
-                'required'  => false,
-                'attr'      => [
-                    'id'        => $fieldid,
-                    'value'     => $fieldvalue,
-                ],
-            ]);
-        }
-        
-        $editForm->add('save', SubmitType::class, ['label' => 'Save Changes']);
-        
-        $editForm = $editForm->getForm();
-                
         $editForm->handleRequest($request);
         
         // if product has type, check if it needs attributes
-        $this->checkAttributeTemplate($product);
+        $this->applyAttributeTemplate($product);
         
-        if ($editForm->isSubmitted() && $editForm->isValid()) {
+        if ($editForm->isSubmitted() && $editForm->isValid()) 
+        {
+            // save product
+            $em->persist($product);
+            $em->flush($product);
             
-            // check for sku
-            $skuquery = $em->createQuery(
-                    'SELECT p.sku'
-                    . ' FROM TrackBundle:Product p'
-                    . ' WHERE p.sku = :givensku'
-                    . ' AND p.id <> :id')
-                    ->setParameter('givensku', $product->getSku())
-                    ->setParameter('id', $product->getId());
-            $result = $skuquery->getResult();
-            
-            $attributeArr = [];
-            
-            // put attributes in array
-            foreach($idArr as $id) {
-                  $attributeArr[$id] = [
-                      'id'    => $id,
-                      'value' => $editForm->get('attribute_' . $id)->getData()
-                  ];
-            }
-            
-            if(count($result)==0)
-            {
-                // save product
-                $em->persist($product);
-                $em->flush($product);
-                
-                // save attributes
-                foreach($attributeArr as $attr){
-                    $query = $em->createQuery(
-                              'UPDATE '
-                            . '     TrackBundle:ProductAttribute pa'
-                            . ' SET   pa.value = :value'
-                            . ' WHERE pa.id  = :id')
-                            ->setParameter('value', $attr['value'])
-                            ->setParameter('id', $attr['id']);
-                    $result = $query->getResult();
-                } 
-                
-                return $this->redirectToRoute('track_show', array('id' => $product->getId()));
-            } 
-            else 
-            {
-                return $this->redirectToRoute('track_edit', array('id' => $product->getId()));
-            }
+            return $this->redirectToRoute('track_edit', 
+                array('id' => $product->getId())
+            );
+
         }
         
         return $this->render('TrackBundle:Track:edit.html.twig', array(
@@ -416,8 +292,6 @@ class ProductController extends Controller
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
             'sellable' => PRODUCT_SELLABLE,
-            'attributes' => $attributes,
-            'attribute_count' => $attribute_count,
         ));
     }
     
@@ -514,75 +388,14 @@ class ProductController extends Controller
      * 
      * @param Product $product
      */
-    private function checkAttributeTemplate(Product $product) {
-        if($product->getType() != null) {
-            $attr_repository = $this->getDoctrine()->getRepository(ProductAttribute::class);
-            
-            // check for attributes
-            $query = $attr_repository->findBy(
-                    ['productid' => $product->getId()]
-            );
-
-            if(count($query)==0) {   
-                $this->applyAttributeTemplate($product);   
-            }
-        }
-    }
-    
-    /**
-     * Add attributes to product
-     */
     private function applyAttributeTemplate(Product $product) {
-        $em = $this->getDoctrine()->getManager();
-        
-        // get id to insert into productattr rows
-        $type_id = $product->getType();
-        
-        // find matching attributes to add
-        $query = $em->createQuery(''
-                . 'SELECT'
-                . '     pta.id, '
-                . '     IDENTITY(pta.attrId) as attrid, '
-                . '     pta.typeId, '
-                . '     a.name'
-                . ' FROM TrackBundle:ProductTypeAttribute pta'
-                . ' LEFT JOIN TrackBundle:Attribute a '
-                . '     WITH pta.attrId = a.id'
-                . ' WHERE'
-                . '     pta.typeId = :type_id')
-                ->setParameter('type_id', $type_id);
-        $result = $query->getResult();
-        
-        // apply empty attributes to product
-        foreach($result as $attr) {
-            $prod_attr = new ProductAttribute();
-            $prod_attr->setProductid($product->getId());
-            $prod_attr->setAttrId($attr['attrid']);
+        if($product->getType() != null) {
+            // check if product already has attributes
             
-            $em->persist($prod_attr);
+            // add missing attributes
+            
+            // save product 
         }
-        
-        $em->flush();
-        
-    }
-    
-    public function getProductAttributes(Product $product) {
-        $em = $this->getDoctrine()->getManager();
-        
-        $query = $em->createQuery('SELECT'
-                . '     pa.id,'
-                . '     a.name,'
-                . '     pa.value'
-                . ' FROM'
-                . '     TrackBundle:ProductAttribute pa '
-                . ' LEFT JOIN TrackBundle:Attribute a '
-                . '     WITH pa.attrId = a.id '
-                . 'WHERE '
-                . '     pa.productid = :id')
-                ->setParameter('id', $product->getId());
-        $attributes = $query->getResult();
-        
-        return $attributes;
     }
     
     /*
@@ -626,48 +439,6 @@ class ProductController extends Controller
         $products = $products->getQuery()->getResult();
         
         return $products;
-    }
-    
-    public function addAttributesToProductForm(Form $editForm) {
-        
-        $em = $this->getDoctrine()->getManager();
-            
-        // get attributes (previously checked or added)
-        $query = $em->createQuery('SELECT'
-                . '     pa.id,'
-                . '     a.attr_code,'
-                . '     a.name,'
-                . '     pa.value'
-                . ' FROM'
-                . '     TrackBundle:ProductAttribute pa '
-                . ' LEFT JOIN TrackBundle:Attribute a '
-                . '     WITH pa.attrId = a.id '
-                . 'WHERE '
-                . '     pa.productid = :id')
-                ->setParameter('id', $product->getId());
-        $attributes = $query->getResult();
-        
-        $idArr = [];
-        
-        // add the attributes to the form
-        foreach($attributes as $attribute) {
-            $idArr[] = $attribute['id'];
-            
-            $fieldid = "attribute_" . $attribute['id'];
-            $fieldname = $attribute['attr_code'];
-            $fieldlabel = $attribute['name'];
-            $fieldvalue = $attribute['value'];
-            
-            $editForm->add($fieldid, TextType::class, [
-                'mapped'    => false,
-                'label'     => $fieldlabel,
-                'required'  => false,
-                'attr'      => [
-                    'id'        => $fieldid,
-                    'value'     => $fieldvalue,
-                ],
-            ]);
-        }
     }
     
     /**

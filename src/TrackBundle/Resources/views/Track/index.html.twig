@@ -23,7 +23,11 @@
         <h1>{% trans %}Product List{% endtrans %}</h1>
 
         <h2>{{ app.request.get('order') }}</h2>
-        
+
+        {% if msg is defined %}
+            <h4>{{ msg }}</h4>
+        {% endif %}
+
         <h4><a href="{{ path('track_new') }}">{% trans %}Create a new product{% endtrans %}</a></h4>
         <button class="btn btn-success" name="product-search-form-btn" id="product-search-form-btn"><span class="glyphicon glyphicon-search"></span>&nbsp;{% trans %}Search{% endtrans %}</button>
     </div>
@@ -181,23 +185,6 @@
                         {% trans %}Type{% endtrans %}
                     </th>
 
-
-                    <th>
-                        {% trans %}Status{% endtrans %}
-                    </th>
-
-                    <th>
-                        {% trans %}Brand{% endtrans %}
-                    </th>
-
-                    <th>
-                        {% trans %}Department{% endtrans %}
-                    </th>
-
-                    <th>
-                        {% trans %}Owner{% endtrans %}
-                    </th>
-
                     <th>
                         {% trans %}Actions{% endtrans %}
                     </th>
@@ -216,10 +203,6 @@
                     <td>{{ product.location }}</td>
                     {# <td>{{ product.description}}</td> #}
                     <td>{{ product.type }}</td>
-                    <td>{{ product.status }}</td>
-                    <td>{{ product.brand }}</td>
-                    <td>{{ product.department }}</td>
-                    <td>{{ product.owner }}</td>
                     <td>
                         <div class="list-group">
                             <a class="list-group-item" href="{{ path('track_edit', { 'id': product.id }) }}">

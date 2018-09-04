@@ -3,14 +3,14 @@
 {% block body %}
     <h1>{% trans %}User List{% endtrans %}</h1>
     
-    <a href="{{ path('fos_user_registration_register')}}"><h4>{% trans %}Create new User{% endtrans %}</h4></a>
+    <a href="{{ path('admin_user_new')}}"><h4>{% trans %}Create new User{% endtrans %}</h4></a>
     
     <table class="table table-striped">
         <tr>
             <th>#</th>
             <th>Username</th>
             <th>Email</th>
-            <th>Roles</th>
+            <th>Role</th>
             <th>&nbsp;</th>
         </tr>
         {% for u in users %}

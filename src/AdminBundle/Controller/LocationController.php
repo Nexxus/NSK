@@ -122,7 +122,7 @@ class LocationController extends Controller
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('admin_location_edit', array('id' => $location->getId()));
+            return $this->redirectToRoute('admin_location_index');
         }
 
         return $this->render('AdminBundle:Location:edit.html.twig', array(
