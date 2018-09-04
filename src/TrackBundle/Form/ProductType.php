@@ -65,7 +65,7 @@ class ProductType extends AbstractType
                 'required' => false
             ])
             ->add('attributeRelations', CollectionType::class, [
-                'entry_type' => P::class,
+                'entry_type' => ProductAttributeType::class,
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Save Changes'
