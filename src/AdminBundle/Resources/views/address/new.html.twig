@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1>Address creation</h1>
+<table class="table table-striped">
+
+{{ form_start(form) }}
+    <tr>
+        <td>{% trans %}Type{% endtrans %}:</td>
+        <td>{{ form_widget(form.type) }}</td>
+    </tr>
+    <tr>
+        <td>{% trans %}Street1{% endtrans %}:</td>
+        <td>{{ form_widget(form.street1) }}</td>
+    </tr>
+    <tr>
+        <td>{% trans %}Street2{% endtrans %}:</td>
+        <td>{{ form_widget(form.street2) }}</td>
+    </tr>
+    <tr>
+        <td>{% trans %}City{% endtrans %}:</td>
+        <td>{{ form_widget(form.city) }}</td>
+    </tr>
+    <tr>
+        <td>{% trans %}Country{% endtrans %}:</td>
+        <td>{{ form_widget(form.country) }}</td>
+    </tr>
+    <tr>
+        <td>{% trans %}State{% endtrans %}:</td>
+        <td>{{ form_widget(form.state) }}</td>
+    </tr>
+    <tr>
+        <td>{% trans %}Zip{% endtrans %}:</td>
+        <td>{{ form_widget(form.zip) }}</td>
+    </tr>
+    <tr>
+        <td>
+            <input type="submit" value="Create" />
+        </td>
+        <td>
+            <a href="{{ path('admin_address_index') }}">Back to the list</a>
+        </td>
+    </tr>
+</table>
+{{ form_end(form) }}
+{% endblock %}

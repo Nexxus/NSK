@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Address</h1>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Type</th>
+            <th>Street1</th>
+            <th>Street2</th>
+            <th>City</th>
+            <th>Country</th>
+            <th>State</th>
+            <th>Zip</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><a href="{{ path('admin_address_show', { 'id': address.id }) }}">{{ address.id }}</a></td>
+                <td>{{ address.type }}</td>
+                <td>{{ address.street1 }}</td>
+                <td>{{ address.street2 }}</td>
+                <td>{{ address.city }}</td>
+                <td>{{ address.country }}</td>
+                <td>{{ address.state }}</td>
+                <td>{{ address.zip }}</td>
+                <td>
+                    <a href="{{ path('admin_address_edit', {'id': address.id} ) }}"><button class="btn btn-success" name="Edit">Edit</button></a>
+                    {{ form_start(delete_form) }}
+                    <input class="btn btn-danger" type="submit" value="Delete">
+                    {{ form_end(delete_form) }}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <a href="{{ path('admin_address_index') }}">Back to the list</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}
