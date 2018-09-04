@@ -24,6 +24,7 @@ namespace TrackBundle\Form;
 
 use TrackBundle\Entity\Product;
 use TrackBundle\Entity\ProductAttribute;
+use TrackBundle\Form\ProductAttributeRelationType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -64,8 +65,7 @@ class ProductType extends AbstractType
                 'required' => false
             ])
             ->add('attributeRelations', CollectionType::class, [
-                'entry_type' => ProductAttributeRelationType::class,
-                'mapped' => false,
+                'entry_type' => P::class,
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Save Changes'
