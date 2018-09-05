@@ -23,6 +23,9 @@
 namespace AdminBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use TrackBundle\Entity\Product;
+use TrackBundle\Entity\PurchaseOrder;
 
 /**
  * Partner
@@ -31,6 +34,12 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Partner extends ACompany
 {
+    public function __construct() {
+        $this->products = new ArrayCollection();
+        $this->orders = new ArrayCollection();
+        parent::__construct();
+    }
+
     /**
      * @var bool
      *
@@ -44,6 +53,20 @@ class Partner extends ACompany
      * @ORM\Column(type="boolean")
      */
     private $isOwner;
+
+    /**
+     * @var ArrayCollection|Product[] Products that this partner owns
+     *
+     * @ORM\OneToMany(targetEntity="TrackBundle\Entity\Product", mappedBy="owner", fetch="LAZY")
+     */
+    private $products;
+
+    /**
+     * @var ArrayCollection|PurchaseOrder[] Purchase orders that this partner supplied
+     *
+     * @ORM\OneToMany(targetEntity="TrackBundle\Entity\PurchaseOrder", mappedBy="supplier", fetch="LAZY")
+     */
+    private $orders;
 
     /**
      * @param bool $name
@@ -63,5 +86,59 @@ class Partner extends ACompany
     public function getIsPartner()
     {
         return $this->isPartner;
+    }
+
+    /**
+     * @param PurchaseOrder $purchaseOrder
+     * @return Partner
+     */
+    public function addPurchaseOrder(PurchaseOrder $purchaseOrder)
+    {
+        $this->orders[] = $purchaseOrder;
+
+        return $this;
+    }
+
+    /**
+     * @param PurchaseOrder $purchaseOrder
+     */
+    public function removePurchaseOrder(PurchaseOrder $purchaseOrder)
+    {
+        $this->orders->removeElement($purchaseOrder);
+    }
+
+    /**
+     * @return ArrayCollection|PurchaseOrder[]
+     */
+    public function getPurchaseOrders()
+    {
+        return $this->orders;
+    }
+
+    /**
+     * @param Product $product
+     * @return Partner
+     */
+    public function addProduct(Product $product)
+    {
+        $this->products[] = $product;
+
+        return $this;
+    }
+
+    /**
+     * @param Product $product
+     */
+    public function removeProduct(Product $product)
+    {
+        $this->products->removeElement($product);
+    }
+
+    /**
+     * @return ArrayCollection|Product[]
+     */
+    public function getProducts()
+    {
+        return $this->products;
     }
 }

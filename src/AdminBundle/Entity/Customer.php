@@ -23,6 +23,8 @@
 namespace AdminBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use TrackBundle\Entity\SalesOrder;
 
 /**
  * Customer
@@ -31,5 +33,43 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Customer extends ACompany
 {
+    public function __construct() {
+        $this->orders = new ArrayCollection();
+        parent::__construct();
+    }
+
+    /**
+     * @var ArrayCollection|SalesOrder[] Sales orders that this customer bought
+     *
+     * @ORM\OneToMany(targetEntity="TrackBundle\Entity\SalesOrder", mappedBy="customer", fetch="LAZY")
+     */
+    private $orders;
+
+    /**
+     * @param SalesOrder $salesOrder
+     * @return Customer
+     */
+    public function addSalesOrder(SalesOrder $salesOrder)
+    {
+        $this->orders[] = $salesOrder;
+
+        return $this;
+    }
+
+    /**
+     * @param SalesOrder $salesOrder
+     */
+    public function removeSalesOrder(SalesOrder $salesOrder)
+    {
+        $this->orders->removeElement($salesOrder);
+    }
+
+    /**
+     * @return ArrayCollection|SalesOrder[]
+     */
+    public function getSalesOrders()
+    {
+        return $this->orders;
+    }
 }
 

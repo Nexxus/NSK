@@ -24,6 +24,7 @@ namespace TrackBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use AdminBundle\Entity\Partner;
 
 /**
  * Product
@@ -169,6 +170,14 @@ class Product
      * @ORM\OneToMany(targetEntity="Service", mappedBy="product", fetch="LAZY")
      */
     private $services;
+
+    /**
+     * @var Partner
+     *
+     * @ORM\ManyToOne(targetEntity="AdminBundle\Entity\Partner", fetch="EAGER")
+     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id")
+     */
+    private $owner;
 
     /**
      * Get id
@@ -370,6 +379,24 @@ class Product
     public function getLocation()
     {
         return $this->location;
+    }
+
+    /**
+     * @return Product
+     */
+    public function setOwner(Partner $partner)
+    {
+        $this->owner = $partner;
+
+        return $this;
+    }
+
+    /**
+     * @return Partner
+     */
+    public function getOwner()
+    {
+        return $this->owner;
     }
 
     /**
