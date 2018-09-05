@@ -22,7 +22,7 @@
 
 namespace AdminBundle\Controller;
 
-use TrackBundle\Entity\OrderStatus;
+use TrackBundle\Entity\ProductStatus;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -34,12 +34,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * @Route("/admin/orderstatus")
+ * @Route("/admin/productstatus")
  */
-class OrderStatusController extends Controller
+class ProductStatusController extends Controller
 {
     /**
-     * @Route("/", name="status_index")
+     * @Route("/", name="pstatus_index")
      */
     public function indexAction()
     {
@@ -50,31 +50,31 @@ class OrderStatusController extends Controller
                 . '     s.id,'
                 . '     s.pindex,'
                 . '     s.name,'
-                . '     count(o.id) as order_count '
-                . ' FROM TrackBundle:OrderStatus s'
-                . ' LEFT JOIN TrackBundle:AOrder o'
-                . '     WITH o.status = s.id'
+                . '     count(p.id) as product_count '
+                . ' FROM TrackBundle:ProductStatus s'
+                . ' LEFT JOIN TrackBundle:Product p'
+                . '     WITH p.status = s.id'
                 . ' WHERE '
                 . '     s.pindex < 999'
                 . ' GROUP BY '
                 . '     s.id');
-        $orderstatus = $query->getResult();
+        $productstatus = $query->getResult();
 
-        return $this->render('AdminBundle:OrderStatus:index.html.twig', array(
-            'orderstatus' => $orderstatus));
+        return $this->render('AdminBundle:ProductStatus:index.html.twig', array(
+            'productstatus' => $productstatus));
     }
 
     /**
-     * @Route("/create", name="status_create")
+     * @Route("/create", name="pstatus_create")
      */
     public function createAction(Request $request)
     {
 
-        $status = new OrderStatus();
-        $status->setName("Order Status Name");
+        $status = new ProductStatus();
+        $status->setName("Product Status Name");
         $status->setPindex(1);
 
-        $em = $this->getDoctrine()->getRepository('TrackBundle:OrderStatus');
+        $em = $this->getDoctrine()->getRepository('TrackBundle:ProductStatus');
 
         $statusall = $em->findAll();
 
@@ -124,10 +124,10 @@ class OrderStatusController extends Controller
             $em->persist($task);
             $em->flush();
 
-            return $this->redirectToRoute('status_index');
+            return $this->redirectToRoute('pstatus_index');
         }
 
-        return $this->render('AdminBundle:OrderStatus:new.html.twig', array(
+        return $this->render('AdminBundle:ProductStatus:new.html.twig', array(
             'form' => $form->createView(),
             'statusall' => $statusall,
         ));
@@ -135,14 +135,14 @@ class OrderStatusController extends Controller
 
 
     /**
-     * @Route("/edit/{id}", name="status_edit")
+     * @Route("/edit/{id}", name="pstatus_edit")
      * @Method({"GET", "POST"})
      */
     public function editAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $status = $em->getRepository('TrackBundle:OrderStatus')
+        $status = $em->getRepository('TrackBundle:ProductStatus')
                     ->find($id);
 
         $form = $this->createFormBuilder($status)
@@ -160,31 +160,31 @@ class OrderStatusController extends Controller
             $em->persist($status);
             $em->flush();
 
-            return $this->redirectToRoute('status_index');
+            return $this->redirectToRoute('pstatus_index');
         }
 
 
-        return $this->render('AdminBundle:OrderStatus:edit.html.twig', array(
+        return $this->render('AdminBundle:ProductStatus:edit.html.twig', array(
                 'form' => $form->createView(),
             ));
     }
 
     /**
-     * @Route("/delete/{id}/{pindex}", name="status_delete")
+     * @Route("/delete/{id}/{pindex}", name="pstatus_delete")
      */
     public function deleteAction($id, $pindex)
     {
         $em = $this->getDoctrine()->getManager();
 
         $query = $em->createQuery(
-                "DELETE FROM TrackBundle:OrderStatus s"
+                "DELETE FROM TrackBundle:ProductStatus s"
                 . " WHERE s.id = :statusid"
         )->setParameter("statusid", $id)
          ->getResult();
 
         $this->shiftIndex($pindex, "remove");
 
-        return $this->redirectToRoute('status_index');
+        return $this->redirectToRoute('pstatus_index');
     }
 
     /**
@@ -201,7 +201,7 @@ class OrderStatusController extends Controller
 
         $query = $em->createQuery(
                 "SELECT s "
-                . " FROM TrackBundle:OrderStatus s"
+                . " FROM TrackBundle:ProductStatus s"
                 . " WHERE s.pindex >= :space"
                 . " AND s.name != :name"
         )->setParameter('space', $pindex)
@@ -211,7 +211,7 @@ class OrderStatusController extends Controller
         if($method == "add") {
             foreach($statuses as $status) {
                 $query = $em->createQuery(
-                        "UPDATE TrackBundle:OrderStatus s"
+                        "UPDATE TrackBundle:ProductStatus s"
                         . " SET s.pindex = s.pindex+1"
                         . " WHERE s.id = :id"
                 )->setParameter('id', $status->getId())
@@ -221,7 +221,7 @@ class OrderStatusController extends Controller
         if($method == "remove") {
             foreach($statuses as $status) {
                 $query = $em->createQuery(
-                        "UPDATE TrackBundle:OrderStatus s"
+                        "UPDATE TrackBundle:ProductStatus s"
                         . " SET s.pindex = s.pindex-1"
                         . " WHERE s.id = :id"
                 )->setParameter('id', $status->getId())

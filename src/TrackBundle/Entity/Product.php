@@ -24,6 +24,7 @@ namespace TrackBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use AdminBundle\Entity\Partner;
 
 /**
  * Product
@@ -44,7 +45,7 @@ class Product
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
     }
-    
+
     /**
      * @ORM\PreUpdate()
      */
@@ -71,11 +72,11 @@ class Product
 
     /**
      * @var int
-     * 
+     *
      * @ORM\Column(type="integer")
      */
     private $quantity;
-    
+
     /**
      * @var string
      *
@@ -121,17 +122,27 @@ class Product
     private $location;
 
     /**
-     * @var createdAt
-     * 
+     * @var \DateTime
+     *
      * @ORM\Column(type="datetime")
      */
     protected $createdAt;
-    
+
     /**
+     * @var \DateTime
+     *
      * @ORM\Column(type="datetime")
      */
     protected $updatedAt;
-    
+
+    /**
+     * @var ProductStatus
+     *
+     * @ORM\ManyToOne(targetEntity="ProductStatus", fetch="EAGER")
+     * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
+     */
+    private $status;
+
     /**
      * @var ArrayCollection|ProductAttributeRelation[]
      *
@@ -159,6 +170,14 @@ class Product
      * @ORM\OneToMany(targetEntity="Service", mappedBy="product", fetch="LAZY")
      */
     private $services;
+
+    /**
+     * @var Partner
+     *
+     * @ORM\ManyToOne(targetEntity="AdminBundle\Entity\Partner", fetch="EAGER")
+     * @ORM\JoinColumn(name="owner_id", referencedColumnName="id")
+     */
+    private $owner;
 
     /**
      * Get id
@@ -363,6 +382,24 @@ class Product
     }
 
     /**
+     * @return Product
+     */
+    public function setOwner(Partner $partner)
+    {
+        $this->owner = $partner;
+
+        return $this;
+    }
+
+    /**
+     * @return Partner
+     */
+    public function getOwner()
+    {
+        return $this->owner;
+    }
+
+    /**
      * Add attributeRelation
      *
      * @param ProductAttributeRelation $attributeRelation
@@ -497,12 +534,12 @@ class Product
     {
         return $this->services;
     }
-    
+
     public function getCreatedAt()
     {
         return $this->updatedAt->format('d-m-Y H:i');
     }
-    
+
     public function getUpdatedAt()
     {
         return $this->updatedAt->format('d-m-Y H:i');

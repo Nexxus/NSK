@@ -47,21 +47,21 @@ abstract class AOrder
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=16, unique=true)
      */
-    private $orderNr;
+    protected $orderNr;
 
     /**
      * @var ArrayCollection|ProductAttributeRelation[] Which products have this attribute
      *
      * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="order", cascade={"all"})
      */
-    private $productRelations;
+    protected $productRelations;
 
     /**
      * @var OrderStatus
@@ -69,7 +69,7 @@ abstract class AOrder
      * @ORM\ManyToOne(targetEntity="OrderStatus", fetch="EAGER")
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
      */
-    private $status;
+    protected $status;
 
     /**
      * Get id

@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h2>{% trans %}Create New Status{% endtrans %}</h2>
+    <table>
+    {{ form_start(form) }}
+    <input type="hidden" name="form[test]" value="Testvalue">
+    <tr>
+        <td>Status Name</td>
+        <td>{{ form_widget(form.name) }}</td>
+    </tr>
+    <tr>
+        <td>Index Placement</td>
+        <td>{{ form_widget(form.pindex) }}</td>
+    <tr>
+        <td>&nbsp;</td>     
+        <td>{{ form_widget(form.save) }}</td>
+    </tr>
+    </table>
+    {{ form_end(form) }}
+{% endblock %}
