@@ -25,11 +25,43 @@ namespace AdminBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Customer
+ * Partner
  *
  * @ORM\Entity(repositoryClass="AdminBundle\Repository\CompanyRepository")
  */
-class Customer extends ACompany
+class Partner extends ACompany
 {
-}
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean")
+     */
+    private $isPartner;
 
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean")
+     */
+    private $isOwner;
+
+    /**
+     * @param bool $name
+     *
+     * @return Partner
+     */
+    public function setIsPartner($isPartner)
+    {
+        $this->isPartner = $isPartner;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsPartner()
+    {
+        return $this->isPartner;
+    }
+}
