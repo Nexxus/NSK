@@ -28,7 +28,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Address
  *
  * @ORM\Table(name="address")
- * @ORM\Entity(repositoryClass="AdminBundle\Repository\CompanyRepository")
+ * @ORM\Entity(repositoryClass="AdminBundle\Repository\AddressRepository")
  */
 class Address
 {

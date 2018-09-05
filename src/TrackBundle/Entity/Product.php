@@ -44,7 +44,7 @@ class Product
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
     }
-    
+
     /**
      * @ORM\PreUpdate()
      */
@@ -71,11 +71,11 @@ class Product
 
     /**
      * @var int
-     * 
+     *
      * @ORM\Column(type="integer")
      */
     private $quantity;
-    
+
     /**
      * @var string
      *
@@ -121,17 +121,27 @@ class Product
     private $location;
 
     /**
-     * @var createdAt
-     * 
+     * @var \DateTime
+     *
      * @ORM\Column(type="datetime")
      */
     protected $createdAt;
-    
+
     /**
+     * @var \DateTime
+     *
      * @ORM\Column(type="datetime")
      */
     protected $updatedAt;
-    
+
+    /**
+     * @var ProductStatus
+     *
+     * @ORM\ManyToOne(targetEntity="ProductStatus", fetch="EAGER")
+     * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
+     */
+    private $status;
+
     /**
      * @var ArrayCollection|ProductAttributeRelation[]
      *
@@ -497,12 +507,12 @@ class Product
     {
         return $this->services;
     }
-    
+
     public function getCreatedAt()
     {
         return $this->updatedAt->format('d-m-Y H:i');
     }
-    
+
     public function getUpdatedAt()
     {
         return $this->updatedAt->format('d-m-Y H:i');
