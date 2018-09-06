@@ -1,252 +1,75 @@
 <?php
 
+/*
+ * Nexxus Stock Keeping (online voorraad beheer software)
+ * Copyright (C) 2018 Copiatek Scan & Computer Solution BV
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see licenses.
+ *
+ * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ */
+
 namespace AdminBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use TrackBundle\Entity\SalesOrder;
 
 /**
  * Customer
  *
- * @ORM\Table(name="customer")
- * @ORM\Entity(repositoryClass="AdminBundle\Repository\CustomerRepository")
+ * @ORM\Entity(repositoryClass="AdminBundle\Repository\CompanyRepository")
  */
-class Customer
+class Customer extends ACompany
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="firstname", type="string", length=255)
-     */
-    private $firstname;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="sirname", type="string", length=255, nullable=true)
-     */
-    private $sirname;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="phone", type="string", length=255, nullable=true)
-     */
-    private $phone;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="email", type="string", length=255, nullable=true)
-     */
-    private $email;
-
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="partner", type="boolean")
-     */
-    private $partner;
-
-    /**
-     * @var int
-     * @ORM\ManyToOne(targetEntity="Company")
-     * @ORM\JoinColumn(name="company", referencedColumnName="id", nullable=true)
-     */
-    private $companyId;
-
-    /**
-     * @var int
-     * @ORM\ManyToOne(targetEntity="Address")
-     * @ORM\JoinColumn(name="address", referencedColumnName="id", nullable=true)
-     */
-    private $addressId;
-
-
-    /**
-     * Get id
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
+    public function __construct() {
+        $this->orders = new ArrayCollection();
+        parent::__construct();
     }
 
     /**
-     * Set firstname
+     * @var ArrayCollection|SalesOrder[] Sales orders that this customer bought
      *
-     * @param string $firstname
-     *
+     * @ORM\OneToMany(targetEntity="TrackBundle\Entity\SalesOrder", mappedBy="customer", fetch="LAZY")
+     */
+    private $orders;
+
+    /**
+     * @param SalesOrder $salesOrder
      * @return Customer
      */
-    public function setFirstname($firstname)
+    public function addSalesOrder(SalesOrder $salesOrder)
     {
-        $this->firstname = $firstname;
+        $this->orders[] = $salesOrder;
 
         return $this;
     }
 
     /**
-     * Get firstname
-     *
-     * @return string
+     * @param SalesOrder $salesOrder
      */
-    public function getFirstname()
+    public function removeSalesOrder(SalesOrder $salesOrder)
     {
-        return $this->firstname;
+        $this->orders->removeElement($salesOrder);
     }
 
     /**
-     * Set sirname
-     *
-     * @param string $sirname
-     *
-     * @return Customer
+     * @return ArrayCollection|SalesOrder[]
      */
-    public function setSirname($sirname)
+    public function getSalesOrders()
     {
-        $this->sirname = $sirname;
-
-        return $this;
-    }
-
-    /**
-     * Get sirname
-     *
-     * @return string
-     */
-    public function getSirname()
-    {
-        return $this->sirname;
-    }
-
-    /**
-     * Set phone
-     *
-     * @param string $phone
-     *
-     * @return Customer
-     */
-    public function setPhone($phone)
-    {
-        $this->phone = $phone;
-
-        return $this;
-    }
-
-    /**
-     * Get phone
-     *
-     * @return string
-     */
-    public function getPhone()
-    {
-        return $this->phone;
-    }
-
-    /**
-     * Set email
-     *
-     * @param string $email
-     *
-     * @return Customer
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    /**
-     * Get email
-     *
-     * @return string
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * Set partner
-     *
-     * @param boolean $partner
-     *
-     * @return Customer
-     */
-    public function setPartner($partner)
-    {
-        $this->partner = $partner;
-
-        return $this;
-    }
-
-    /**
-     * Get partner
-     *
-     * @return bool
-     */
-    public function getPartner()
-    {
-        return $this->partner;
-    }
-
-    /**
-     * Set companyId
-     *
-     * @param integer $companyId
-     *
-     * @return Customer
-     */
-    public function setCompanyId($companyId)
-    {
-        $this->companyId = $companyId;
-
-        return $this;
-    }
-
-    /**
-     * Get companyId
-     *
-     * @return int
-     */
-    public function getCompanyId()
-    {
-        return $this->companyId;
-    }
-
-    /**
-     * Set addressId
-     *
-     * @param integer $addressId
-     *
-     * @return Company
-     */
-    public function setAddressId($addressId)
-    {
-        $this->addressId = $addressId;
-
-        return $this;
-    }
-
-    /**
-     * Get addressId
-     *
-     * @return int
-     */
-    public function getAddressId()
-    {
-        return $this->addressId;
+        return $this->orders;
     }
 }
 
