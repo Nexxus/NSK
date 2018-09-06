@@ -65,8 +65,9 @@ class ProductType extends AbstractType
                 'class' => 'TrackBundle:Location',
                 'choice_label' => 'name'
             ])
-            ->add('attributeRelations', CollectionType::class, [
-                'entry_type' => ProductAttributeRelationType::class,
+            ->add('attributeRelations', EntityType::class, [
+                'class' => 'TrackBundle:ProductAttributeRelation',
+                'choice_label' => 'Attribute'
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Save Changes'
