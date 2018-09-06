@@ -20,10 +20,10 @@
         {{ form_errors(form) }}
             <div class="form-group">
                 <label class="control-label col-lg-2">
-                    {% trans %} SKU Barcode {% endtrans %}
+                    {% trans %} Generate SKU {% endtrans %}
                 </label>
                 <div class="col-lg-10">
-                    {{ form_widget(form.barcodeOption) }}
+                    {{ form_widget(form.generatesku) }}
                 </div>
             </div>    
             <div class="form-group">
@@ -34,7 +34,6 @@
                     {{ form_widget(form.sku) }}
                 </div>
             </div>
-            
             <div class="form-group">
                 <label class="control-label col-lg-2">
                     {% trans %} Name {% endtrans %}
@@ -103,6 +102,8 @@
 {% endblock %}
 
 {% block javascripts %}
-    
+    $(document).ready(function() {
+        console.log("test");
+    });
     
 {% endblock %}    

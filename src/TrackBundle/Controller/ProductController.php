@@ -171,6 +171,16 @@ class ProductController extends Controller
         
         $form = $this->createFormBuilder($product)
             
+            ->add('generatesku', ChoiceType::class, [
+                'mapped' => false,
+                'choices' => [
+                    'Yes' => true,
+                    'No' => false
+                ],
+                'attr' => [
+                    'id' => 'generateSkuSelect'
+                ]
+            ])
             ->add('sku')
             ->add('name')
             ->add('quantity')
@@ -178,13 +188,6 @@ class ProductController extends Controller
             ->add('location')
             ->add('type')
             ->add('description')
-            ->add('barcodeOption', ChoiceType::class, [
-                'choices' => [
-                    'Scan Existing Barcode' => true,
-                    'Generate New Barcode' => false
-                    ],
-                'mapped' => false
-                ])
             ->add('saveAmount', IntegerType::class, [
                 'mapped' => false,
                 'attr' => [
@@ -203,7 +206,6 @@ class ProductController extends Controller
                 $product->setSku($generatedsku);
             }
             $saveAmount = $form->get('saveAmount')->getData();
-            if ($saveAmount > 0) {
                 for($i=0;$i<$saveAmount;$i++) {
                     $copy = clone $product;
                     if($saveAmount > 1) {
@@ -222,15 +224,7 @@ class ProductController extends Controller
                         ));
                     }
                 }
-                return $this->redirectToRoute('track_index');
-            } else {
-                return $this->render('TrackBundle:Track:new.html.twig', array(
-                    'product'       => $product,
-                    'form'          => $form->createView(),
-                    'error_msg'     => 'WrongInput',
-                    'sellable'      => PRODUCT_SELLABLE,
-                ));
-            }
+            return $this->redirectToRoute('track_index');
         }
 
         return $this->render('TrackBundle:Track:new.html.twig', array(
