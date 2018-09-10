@@ -175,8 +175,8 @@ class ProductController extends Controller
             ->add('generatesku', ChoiceType::class, [
                 'mapped' => false,
                 'choices' => [
-                    'Yes' => true,
-                    'No' => false
+                    'Yes' => 'Yes',
+                    'No' => 'No'
                 ],
                 'attr' => [
                     'id' => 'generateSkuSelect'

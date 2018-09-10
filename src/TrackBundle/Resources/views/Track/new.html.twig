@@ -20,13 +20,13 @@
         {{ form_errors(form) }}
             <div class="form-group">
                 <label class="control-label col-lg-2">
-                    {% trans %} Generate SKU {% endtrans %}
+                    {% trans %} Generate New SKU {% endtrans %}
                 </label>
                 <div class="col-lg-10">
                     {{ form_widget(form.generatesku) }}
                 </div>
             </div>    
-            <div class="form-group">
+            <div class="form-group editForm-sku">
                 <label class="control-label col-lg-2">
                     {% trans %} SKU {% endtrans %}
                 </label>
@@ -102,8 +102,24 @@
 {% endblock %}
 
 {% block javascripts %}
-    $(document).ready(function() {
-        console.log("test");
-    });
-    
+    <script>
+        // toggle custom SKU field
+        $(document).ready(function() {
+            $(".editForm-sku").hide();
+
+            $("#form_generatesku").change(function() 
+            {
+                switch($("#form_generatesku").val()) 
+                {
+                    case 'Yes':
+                        $(".editForm-sku").slideUp();
+                        break;
+                    case 'No':
+                        $(".editForm-sku").slideDown();
+                        break;
+                    default:
+                }
+            });
+        });
+    </script>
 {% endblock %}    
