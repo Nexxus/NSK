@@ -407,20 +407,53 @@ class ProductController extends Controller
     private function applyAttributeTemplate(Product $product) {
         if($product->getType()) {
             // check if product already has attributes
-            $attributes = $product->getAttributeRelations();
-
-            foreach($attributes->toArray() as $attr) {
-                print_r("<pre>");
-                print_r($attr->getValue());
-                print_r("</pre>");
-            }
+            $missing = $this->compareAttributeTemplate($product);
+            print_r("<pre>"); print_r($missing); print_r("</pre>");
             
             // add missing attributes
+            foreach($missing as $id) {
+                echo $id;
+            }
 
             // save product
         }
     }
 
+    /*
+     * Compares attributes of a product and product type, returns missing attributes
+     */
+    private function compareAttributeTemplate(Product $product) 
+    {
+        // put attributes in array
+        $prodAttrs = $product->getAttributeRelations();
+
+        $type = $product->getType();
+
+        $prodAttributeArr = [];
+
+        foreach($prodAttrs->toArray() as $attr) {
+            $prodAttributeArr[] = $attr->getAttribute()->getId();
+        }
+
+////////// print_r("<pre>"); print_r($prodAttributeArr); print_r("</pre>");
+
+        // put type attributes in array
+        $typeAttrs = $product->getType()->getAttributes();
+
+        $typeAttributeArr = [];
+        foreach($typeAttrs->toArray() as $attr) {
+            $typeAttributeArr[] = $attr->getId();
+        }
+
+////////// print_r("<pre>"); print_r($typeAttributeArr); print_r("</pre>");
+
+        $missing = array_diff($typeAttributeArr, $prodAttributeArr);
+
+////////// print_r("<pre>"); print_r($missing); print_r("</pre>");
+        
+        return $missing;
+    }
+    
     /*
      * Returns true if a SKU in the database is not taken
      */
