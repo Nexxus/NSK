@@ -182,7 +182,9 @@ class ProductController extends Controller
                     'id' => 'generateSkuSelect'
                 ]
             ])
-            ->add('sku')
+            ->add('sku', TextType::class, [
+                'required' => false,
+            ])
             ->add('name')
             ->add('quantity')
             ->add('price')
@@ -199,32 +201,40 @@ class ProductController extends Controller
             ->getForm();
 
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            if ($form->get('barcodeOption')->getData() === false) {
-                if ($form->get('type')->getData()) {
+
+        // submit product form
+        if ($form->isSubmitted() && $form->isValid()) 
+        {
+            // generate sku if requested
+            if ($form->get('generatesku')->getData() === 'Yes') 
+            {
+                if ($form->get('type')->getData()) 
+                {
                     $generatedsku = substr($form->get('type')->getData(), 0, 1) . $generatedsku;
+                    $product->setSku($generatedsku);
                 }
-                $product->setSku($generatedsku);
             }
             $saveAmount = $form->get('saveAmount')->getData();
-                for($i=0;$i<$saveAmount;$i++) {
-                    $copy = clone $product;
-                    if($saveAmount > 1) {
-                        $copy->setSku($copy->getSku() . $i);
-                    }
-                    if($this->checkExistingSku($copy->getSku() ) === true) {
-                        $em->persist($copy);
-                        $em->flush($copy);
-                        $i++;
-                    } else {
-                        return $this->render('TrackBundle:Track:new.html.twig', array(
-                            'product'       => $product,
-                            'form'          => $form->createView(),
-                            'error_msg'     => 'DuplicateSku',
-                            'sellable'      => PRODUCT_SELLABLE,
-                        ));
-                    }
+
+            for($i=0;$i<$saveAmount;$i++) {
+                $copy = clone $product;
+
+                if($saveAmount > 1) {
+                    $copy->setSku($copy->getSku() . $i);
                 }
+
+                if($this->checkExistingSku($copy->getSku() ) === true) {
+                    $em->persist($copy);
+                    $em->flush($copy);
+                } else {
+                    return $this->render('TrackBundle:Track:new.html.twig', array(
+                        'product'       => $product,
+                        'form'          => $form->createView(),
+                        'error_msg'     => 'DuplicateSku',
+                        'sellable'      => PRODUCT_SELLABLE,
+                    ));
+                }
+            }
             return $this->redirectToRoute('track_index');
         }
 
