@@ -44,6 +44,8 @@ class ProductAttributeRelationType extends AbstractType
          * the object is not yet present at the buildForm function call.
          * Therefor the code can be wrapped in the presetdata event listener.
          */
+
+        // Source: https://symfony.com/doc/3.4/form/dynamic_form_modification.html 
 		$builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
 
             $form = $event->getForm();
@@ -63,9 +65,11 @@ class ProductAttributeRelationType extends AbstractType
                 }
             ]);
 
+            // loading proper attribute type
             switch ($relation->getAttribute()->getType()) {
                 case Attribute::TYPE_FILE:
                     throw new \Exception('Not yet implemented');
+                    break;
                 case Attribute::TYPE_PRODUCT:
                     $form->add('valueProduct', EntityType::class, [
                        'class' => 'TrackBundle:Product',
