@@ -396,8 +396,7 @@ class ProductController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('track_delete', array('id' => $product->getId())))
             ->setMethod('DELETE')
-            ->getForm()
-        ;
+            ->getForm();
     }
 
     /**
@@ -406,9 +405,16 @@ class ProductController extends Controller
      * @param Product $product
      */
     private function applyAttributeTemplate(Product $product) {
-        if($product->getType() != null) {
+        if($product->getType()) {
             // check if product already has attributes
+            $attributes = $product->getAttributeRelations();
 
+            foreach($attributes->toArray() as $attr) {
+                print_r("<pre>");
+                print_r($attr->getValue());
+                print_r("</pre>");
+            }
+            
             // add missing attributes
 
             // save product
