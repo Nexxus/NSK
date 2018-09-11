@@ -6,16 +6,16 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 /**
-* @Route("/track/stock")
+* @Route("/track/sales")
 */
-class OrderController extends Controller
+class SalesOrderController extends Controller
 {
     /**
      * @Route("/index")
      */
     public function indexAction()
     {
-        return $this->render('TrackBundle:Order:index.html.twig', array(
+        return $this->render('TrackBundle:SalesOrder:index.html.twig', array(
             // ...
         ));
     }
@@ -25,7 +25,7 @@ class OrderController extends Controller
      */
     public function editAction()
     {
-        return $this->render('TrackBundle:Order:edit.html.twig', array(
+        return $this->render('TrackBundle:SalesOrder:edit.html.twig', array(
             // ...
         ));
     }
@@ -35,7 +35,7 @@ class OrderController extends Controller
      */
     public function showAction()
     {
-        return $this->render('TrackBundle:Order:show.html.twig', array(
+        return $this->render('TrackBundle:SalesOrder:show.html.twig', array(
             // ...
         ));
     }
@@ -45,7 +45,7 @@ class OrderController extends Controller
      */
     public function deleteAction()
     {
-        return $this->render('TrackBundle:Order:delete.html.twig', array(
+        return $this->render('TrackBundle:SalesOrder:delete.html.twig', array(
             // ...
         ));
     }

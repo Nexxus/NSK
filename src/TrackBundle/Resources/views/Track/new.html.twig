@@ -20,13 +20,14 @@
         {{ form_errors(form) }}
             <div class="form-group">
                 <label class="control-label col-lg-2">
-                    {% trans %} Generate SKU {% endtrans %}
+                    {% trans %} Generate New SKU {% endtrans %}
+                    &nbsp;<span class="glyphicon glyphicon-barcode"></span>
                 </label>
                 <div class="col-lg-10">
                     {{ form_widget(form.generatesku) }}
                 </div>
             </div>    
-            <div class="form-group">
+            <div class="form-group editForm-sku">
                 <label class="control-label col-lg-2">
                     {% trans %} SKU {% endtrans %}
                 </label>
@@ -102,8 +103,44 @@
 {% endblock %}
 
 {% block javascripts %}
-    $(document).ready(function() {
-        console.log("test");
-    });
-    
+    <script>
+        function formSlideSku() {
+            $("#form_generatesku").change(function() 
+            {
+                switch($("#form_generatesku").val()) 
+                {
+                    case 'Yes':
+                        $(".editForm-sku").slideUp();
+                        break;
+                    case 'No':
+                        $(".editForm-sku").slideDown();
+                        break;
+                    default:
+                }
+            });
+        }
+
+        // toggle custom SKU field
+        $(document).ready(function() {
+            $(".editForm-sku").hide();
+            formSlideSku();
+        });
+
+        /*(function( $ ){
+            $.fn.formSlidesSku = function() {
+                switch($("#form_generatesku").val()) 
+                {
+                    case 'Yes':
+                        $(".editForm-sku").slideUp();
+                        break;
+                    case 'No':
+                        $(".editForm-sku").slideDown();
+                        break;
+                    default:
+                }
+            }
+        })( jQuery );*/
+
+        
+    </script>
 {% endblock %}    
