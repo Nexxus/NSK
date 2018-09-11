@@ -459,7 +459,7 @@ class ProductController extends Controller
     }
     
     /*
-     * Returns true if a SKU in the database is not free
+     * Returns true if a SKU in the database is free
      */
     public function checkFreeSku($sku) {
         $em = $this->getDoctrine()->getManager();
