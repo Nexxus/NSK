@@ -271,14 +271,14 @@ class ProductController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
+        // if product has type, check if it needs attributes
+        $this->applyAttributeTemplate($product);
+
         // load forms
         $editForm = $this->createForm(ProductType::class, $product);
         $deleteForm = $this->createDeleteForm($product);
 
         $editForm->handleRequest($request);
-
-        // if product has type, check if it needs attributes
-        $this->applyAttributeTemplate($product);
 
         if ($editForm->isSubmitted() && $editForm->isValid())
         {
@@ -404,18 +404,27 @@ class ProductController extends Controller
      *
      * @param Product $product
      */
-    private function applyAttributeTemplate(Product $product) {
+    private function applyAttributeTemplate(Product $product) 
+    {
+        $em = $this->getDoctrine()->getManager();
+
         if($product->getType()) {
             // check if product already has attributes
             $missing = $this->compareAttributeTemplate($product);
-            print_r("<pre>"); print_r($missing); print_r("</pre>");
             
             // add missing attributes
-            foreach($missing as $id) {
-                echo $id;
+            foreach($missing as $attr) {
+                $newAttributeRelation = new ProductAttributeRelation();
+                $newAttributeRelation->setProduct($product);
+                $newAttributeRelation->setAttribute($attr);
+                $newAttributeRelation->setValue('');
+                $newAttributeRelation->setQuantity(1);
+                $product->addAttributeRelation($newAttributeRelation);
             }
 
             // save product
+            $em->persist($product);
+            $em->flush($product);
         }
     }
 
@@ -424,34 +433,29 @@ class ProductController extends Controller
      */
     private function compareAttributeTemplate(Product $product) 
     {
-        // put attributes in array
+        // get product attributes
         $prodAttrs = $product->getAttributeRelations();
-
         $type = $product->getType();
-
         $prodAttributeArr = [];
 
         foreach($prodAttrs->toArray() as $attr) {
             $prodAttributeArr[] = $attr->getAttribute()->getId();
         }
 
-////////// print_r("<pre>"); print_r($prodAttributeArr); print_r("</pre>");
-
-        // put type attributes in array
+        // get type attributes
         $typeAttrs = $product->getType()->getAttributes();
-
         $typeAttributeArr = [];
         foreach($typeAttrs->toArray() as $attr) {
             $typeAttributeArr[] = $attr->getId();
         }
 
-////////// print_r("<pre>"); print_r($typeAttributeArr); print_r("</pre>");
+        $diff = array_diff($typeAttributeArr, $prodAttributeArr);
 
-        $missing = array_diff($typeAttributeArr, $prodAttributeArr);
+        // get missing attributes
+        $attributes = $this->getDoctrine()->getRepository(Attribute::class)
+                        ->findBy(['id' => $diff]);
 
-////////// print_r("<pre>"); print_r($missing); print_r("</pre>");
-        
-        return $missing;
+        return $attributes;
     }
     
     /*
