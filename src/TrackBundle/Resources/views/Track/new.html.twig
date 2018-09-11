@@ -104,10 +104,7 @@
 
 {% block javascripts %}
     <script>
-        // toggle custom SKU field
-        $(document).ready(function() {
-            $(".editForm-sku").hide();
-
+        function formSlideSku() {
             $("#form_generatesku").change(function() 
             {
                 switch($("#form_generatesku").val()) 
@@ -121,6 +118,29 @@
                     default:
                 }
             });
+        }
+
+        // toggle custom SKU field
+        $(document).ready(function() {
+            $(".editForm-sku").hide();
+            formSlideSku();
         });
+
+        /*(function( $ ){
+            $.fn.formSlidesSku = function() {
+                switch($("#form_generatesku").val()) 
+                {
+                    case 'Yes':
+                        $(".editForm-sku").slideUp();
+                        break;
+                    case 'No':
+                        $(".editForm-sku").slideDown();
+                        break;
+                    default:
+                }
+            }
+        })( jQuery );*/
+
+        
     </script>
 {% endblock %}    

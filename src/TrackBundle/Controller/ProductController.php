@@ -180,7 +180,8 @@ class ProductController extends Controller
                 ],
                 'attr' => [
                     'id' => 'generateSkuSelect'
-                ]
+                ],
+                'data' => 'Yes',
             ])
             ->add('sku', TextType::class, [
                 'required' => false,
@@ -205,15 +206,10 @@ class ProductController extends Controller
         // submit product form
         if ($form->isSubmitted() && $form->isValid()) 
         {
-            // generate sku if requested
-            if ($form->get('generatesku')->getData() === 'Yes') 
+            // generate sku if requested, or if sku is null 
+            if ($form->get('generatesku')->getData() === 'Yes' || $product->getSku() === null) 
             {
-                if ($form->get('type')->getData()) 
-                {
-                    $generatedsku = substr($form->get('type')->getData(), 0, 1)
-                                     . $generatedsku;
-                } 
-                $product->setSku($generatedsku);
+                $product = $this->generateNewSku($product);
             }
             $saveAmount = $form->get('saveAmount')->getData();
 
@@ -463,7 +459,7 @@ class ProductController extends Controller
     }
     
     /*
-     * Returns true if a SKU in the database is not taken
+     * Returns true if a SKU in the database is not free
      */
     public function checkFreeSku($sku) {
         $em = $this->getDoctrine()->getManager();
@@ -476,6 +472,34 @@ class ProductController extends Controller
         $result = $skuquery->getResult();
 
         return (count($result) == 0);
+    }
+
+    /*
+     * Generates new SKU, avoids duplicates
+     */
+    public function generateNewSku(Product $product)
+    {
+        $num = $product->getId();
+        echo "Test" .$num;
+        $gsku = $product->getSku();
+        echo $gsku;
+
+        // if type is set, add prefix
+        if ($product->getType())
+        {
+            $gsku = substr($product->getType(), 0, 1) . $gsku;
+        } 
+
+        // increment if taken
+        $free = $this->checkFreeSku($gsku);
+        while(!$free) {
+            $num++;
+            $gsku = substr($product->getType(), 0, 1) . $num;
+            $free = $this->checkFreeSku($gsku);
+        }
+
+        $product->setSku($gsku);
+        return $product;
     }
 
     /**
