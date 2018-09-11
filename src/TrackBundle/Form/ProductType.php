@@ -57,7 +57,8 @@ class ProductType extends AbstractType
             ])
             ->add('type',  EntityType::class, [
                 'class' => 'TrackBundle:ProductType',
-                'choice_label' => 'name'
+                'choice_label' => 'name',
+                'required' => false,
             ])
             ->add('location',  EntityType::class, [
                 'class' => 'TrackBundle:Location',

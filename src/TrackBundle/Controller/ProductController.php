@@ -210,9 +210,10 @@ class ProductController extends Controller
             {
                 if ($form->get('type')->getData()) 
                 {
-                    $generatedsku = substr($form->get('type')->getData(), 0, 1) . $generatedsku;
-                    $product->setSku($generatedsku);
-                }
+                    $generatedsku = substr($form->get('type')->getData(), 0, 1)
+                                     . $generatedsku;
+                } 
+                $product->setSku($generatedsku);
             }
             $saveAmount = $form->get('saveAmount')->getData();
 
@@ -223,9 +224,12 @@ class ProductController extends Controller
                     $copy->setSku($copy->getSku() . $i);
                 }
 
-                if($this->checkExistingSku($copy->getSku() ) === true) {
+                // if product has type, check if it needs attributes
+                if($this->checkFreeSku($copy->getSku() ) === true) {
                     $em->persist($copy);
                     $em->flush($copy);
+                    
+                    if($copy->getType()) { $this->applyAttributeTemplate($copy); }
                 } else {
                     return $this->render('TrackBundle:Track:new.html.twig', array(
                         'product'       => $product,
@@ -461,7 +465,7 @@ class ProductController extends Controller
     /*
      * Returns true if a SKU in the database is not taken
      */
-    public function checkExistingSku($sku) {
+    public function checkFreeSku($sku) {
         $em = $this->getDoctrine()->getManager();
 
         $skuquery = $em->createQuery(
