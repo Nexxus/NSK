@@ -225,7 +225,7 @@ class ProductController extends Controller
                     $em->persist($copy);
                     $em->flush($copy);
                     
-                    if($copy->getType()) { $this->applyAttributeTemplate($copy); }
+                    //if($copy->getType()) { $this->applyAttributeTemplate($copy); }
                 } else {
                     return $this->render('TrackBundle:Track:new.html.twig', array(
                         'product'       => $product,
@@ -360,6 +360,22 @@ class ProductController extends Controller
                     array('err' => 'nif'));
         }
 
+    }
+
+    /**
+     * Applies all attributes that cohere to the Product Type
+     *
+     * @Route("/edit/import/template/{id}", name="track_import_template")
+     * @Method({"GET", "POST"})
+     */
+    public function importAttributeTemplate(Product $product)
+    {
+        if($product->getType()) { 
+            $this->applyAttributeTemplate($product);
+        }
+        
+
+        return $this->redirectToRoute("track_edit", array('id' => $product->getId()));
     }
 
     /**
