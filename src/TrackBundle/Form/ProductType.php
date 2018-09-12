@@ -74,9 +74,8 @@ class ProductType extends AbstractType
                 'required' => false,
                 'query_builder' => function (EntityRepository $er) use ($product) {
                     /** @var Product $product */
-                    return $er->createQueryBuilder('a')
-                        ->where(":ptype MEMBER OF a.productTypes")
-                        ->setParameter("ptype", $product->getType()); }
+                    return $er->createQueryBuilder('a');
+                }
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Save Changes'

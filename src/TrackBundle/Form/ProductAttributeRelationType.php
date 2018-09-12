@@ -59,9 +59,7 @@ class ProductAttributeRelationType extends AbstractType
                 'required' => true,
                 'query_builder' => function (EntityRepository $er) use ($relation) {
                     /** @var ProductAttributeRelation $relation */
-                    return $er->createQueryBuilder('a')
-                        ->where(":ptype MEMBER OF a.productTypes")
-                        ->setParameter("ptype", $relation->getProduct()->getType());
+                    return $er->createQueryBuilder('a');
                 }
             ]);
 
