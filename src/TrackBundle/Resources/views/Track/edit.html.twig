@@ -73,18 +73,42 @@
                 </div>
             </div>
                 
-        <h4>Product Attributes <a href="{{ path('track_import_template', {'id': product.id}) }}" class='btn btn-success btn-sm'>&plus; Import Template</a></h4>
-        {# for attr in edit_form.attributeRelations %}
+        <h4>Product Attributes
+            <a class="btn btn-primary" onClick="slideAttrs()">
+                Show
+            </a>
+        </h4>
+        <div class="section-attributes">
+            <a href="{{ path('track_import_template', {'id': product.id}) }}" 
+                class='btn btn-success'>&plus; Import Template</a>
+            {% for attr in edit_form.attributeRelations %}
+                <div class="form-group">
+                    <label class="control-label col-lg-2">
+                        {{ form_label(attr) }} 
+                    </label>
+                    <div class="col-lg-10">
+                        {{ form_widget(attr) }} 
+                    </div>
+                </div>
+            {% endfor %}
             <div class="form-group">
                 <label class="control-label col-lg-2">
-                    {{ form_label(attr) }} 
+                    {% trans %} Add new Attribute {% endtrans %}
                 </label>
                 <div class="col-lg-10">
-                    {{ form_widget(attr) }} 
+                    {{ form_widget(edit_form.newAttribute) }}
                 </div>
             </div>
-        {% endfor #}
+        </div>
+        <hr>
+        <div class="form-group"> 
+            <div class="col-lg-offset-2 col-lg-10">
+                {{ form_widget(edit_form.save) }}
+            </div>
+        </div>
+
         {{ form_end(edit_form) }}
+
         <div class="form-group"> 
             <div class="col-lg-offset-2 col-lg-10">
                 <a href="{{ path('track_index') }}">
@@ -100,4 +124,16 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+       $(document).ready(function () {
+          $(".section-attributes").hide(); 
+       });
+
+       function slideAttrs() {
+            $(".section-attributes").slideToggle();
+       }
+    </script>
 {% endblock %}

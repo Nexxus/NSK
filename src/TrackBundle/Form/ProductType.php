@@ -82,7 +82,10 @@ class ProductType extends AbstractType
                 }
             ])
             ->add('save', SubmitType::class, [
-                'label' => 'Save Changes'
+                'label' => 'Save Changes',
+                'attr' => [
+                    'class' => 'btn btn-success',
+                ]
             ]);
     }
 }
