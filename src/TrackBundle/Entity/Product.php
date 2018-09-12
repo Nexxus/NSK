@@ -380,6 +380,28 @@ class Product
     {
         return $this->location;
     }
+    /** 
+     * Set status
+     *
+     * @param integer $status
+     *
+     * @return Product
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return int
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
 
     /**
      * @return Product
