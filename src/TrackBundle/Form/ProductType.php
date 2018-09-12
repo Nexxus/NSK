@@ -64,6 +64,10 @@ class ProductType extends AbstractType
                 'class' => 'TrackBundle:Location',
                 'choice_label' => 'name'
             ])
+            ->add('status',  EntityType::class, [
+                'class' => 'TrackBundle:ProductStatus',
+                'choice_label' => 'name'
+            ])
             ->add('attributeRelations', CollectionType::class, [
                 'entry_type' => ProductAttributeRelationType::class
             ])
