@@ -282,9 +282,15 @@ class ProductController extends Controller
 
         if ($editForm->isSubmitted() && $editForm->isValid())
         {
-            // add new attribute
             $newAttribute = $editForm['newAttribute']->getData();
-            if ($newAttribute)
+
+            // check if attribute exists, don't add if it doesn't
+            if(isset($newAttribute)) {
+               $taken = $product->containsAttributeRelation($newAttribute->getId());
+            }
+
+            // add new attribute
+            if ($newAttribute && !$taken)
             {
                 $newAttributeRelation = new ProductAttributeRelation();
                 $newAttributeRelation->setAttribute($newAttribute);

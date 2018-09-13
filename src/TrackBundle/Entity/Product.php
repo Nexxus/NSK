@@ -456,6 +456,23 @@ class Product
     }
 
     /**
+     * Check if product has attribute as relation on key, returns true if it does
+     */
+    public function containsAttributeRelation($id) 
+    {
+        $bool = false;
+
+        foreach($this->getAttributeRelations() as $attr) 
+        {
+            if($id === $attr->getAttribute()->getId()) 
+            {
+                $bool = true;
+            }
+        }
+        return $bool;
+    }
+
+    /**
      * Add orderRelation
      *
      * @param ProductOrderRelation $orderRelation
