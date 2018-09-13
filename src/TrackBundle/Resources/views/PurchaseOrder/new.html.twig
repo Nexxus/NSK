@@ -3,5 +3,59 @@
 {% block title %}TrackBundle:PurchaseOrder:new{% endblock %}
 
 {% block body %}
-<h1>{% trans %}Create a Purchase Order{% endtrans %}</h1>
+    <h1>{% trans %}Create a Purchase Order{% endtrans %}</h1>
+    <a class="btn btn-success" onClick="addNewProduct()">+ Add Product</a>
+
+    <hr>
+        <div id="product-list" class="container">
+            <form>
+                <div class="form-group row">
+                    <div class="form-group col-sm-1">
+                        1.
+                    </div>
+                    <div class="form-group col-sm-3">
+                        <label for="product-type">
+                            {% trans %}Type{% endtrans %}
+                        </label>
+                        <select class="form-control" id="product-types" name="product-types">
+                            <option name="test">test</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-sm-2">
+                        <label for="product-quantity">
+                            {% trans %}Quantity{% endtrans %}
+                        </label>
+                        <input class="form-control" type="text" id="product-quantity" placeholder="0">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <label for="product-comments">
+                            {% trans %}Comments{% endtrans %}
+                        </label>
+                        <input class="form-control" type="text" id="product-comments" placeholder="">
+                    </div>
+                </div>
+            </form>
+        </div>
+    <hr>
+    <p>
+        Opgehaald? Ja/Nee
+    </p>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        var types = {{ types|json_encode|raw }};
+
+        $(document).ready(function () {
+        }); 
+
+        var productItem = "";
+
+        function addNewProduct() {
+            var current = document.getElementById('product-list').innerHTML;
+            var ptest = "bing<br>";
+            
+            document.getElementById('product-list').innerHTML = current+"test";
+        }
+    </script>
 {% endblock %}

@@ -2,6 +2,10 @@
 
 namespace TrackBundle\Controller;
 
+use TrackBundle\Entity\Attribute;
+use TrackBundle\Entity\Product;
+use TrackBundle\Entity\ProductType;
+use TrackBundle\Entity\ProductAttributeRelation;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,8 +37,20 @@ class PurchaseOrderController extends Controller
      */
     public function newAction(Request $request)
     {
+        $em = $this->getDoctrine()->getManager();
+
+        // get types
+        $types = []; 
+        $tRepo = $this->getDoctrine()->getRepository(ProductType::class)
+            ->findAll();
+
+        foreach($tRepo as $type) 
+        {
+            $types[] = $type->getName();
+        }
+
         return $this->render('TrackBundle:PurchaseOrder:new.html.twig', array(
-            // ...
+            'types' => $types,
         ));
     }
 
