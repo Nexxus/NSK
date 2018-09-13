@@ -286,11 +286,11 @@ class ProductController extends Controller
 
             // check if attribute exists, don't add if it doesn't
             if(isset($newAttribute)) {
-               $taken = $product->containsAttributeRelation($newAttribute->getId());
+               $alreadyExists = $product->containsAttributeRelation($newAttribute->getId());
             }
 
             // add new attribute
-            if ($newAttribute && !$taken)
+            if ($newAttribute && !$alreadyExists)
             {
                 $newAttributeRelation = new ProductAttributeRelation();
                 $newAttributeRelation->setAttribute($newAttribute);
