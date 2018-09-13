@@ -7,8 +7,9 @@
     <a class="btn btn-success" onClick="addNewProduct()">+ Add Product</a>
 
     <hr>
-        <div id="product-list" class="container">
-            <form>
+        <form>
+            <div id="product-list" class="container">
+                <h4>Product List</h4>
                 <div class="form-group row">
                     <div class="form-group col-sm-1">
                         1.
@@ -34,28 +35,50 @@
                         <input class="form-control" type="text" id="product-comments" placeholder="">
                     </div>
                 </div>
-            </form>
-        </div>
+            </div>
     <hr>
-    <p>
-        Opgehaald? Ja/Nee
-    </p>
-{% endblock %}
-
-{% block javascripts %}
-    <script>
-        var types = {{ types|json_encode|raw }};
-
-        $(document).ready(function () {
-        }); 
-
-        var productItem = "";
-
-        function addNewProduct() {
-            var current = document.getElementById('product-list').innerHTML;
-            var ptest = "bing<br>";
-            
-            document.getElementById('product-list').innerHTML = current+"test";
-        }
-    </script>
-{% endblock %}
+            <div id="contact-info" class="container">
+                <h4>Contact information</h4>
+                <div class="form-group row">
+                    <div class="form-group col-sm-6">
+                         <b>{% trans %}Name Company{% endtrans %}</b>
+                         <input class="form-control" type="text" id="contact-company">
+                     </div>
+                     <div class="form-group col-sm-3">
+                         <b>{% trans %}Name{% endtrans %}</b>
+                         <input class="form-control" type="text" id="contact-PersonFName">
+                     </div>
+                     <div class="form-group col-sm-3">
+                         <b>{% trans %}Lastname{% endtrans %}</b>
+                         <input class="form-control" type="text" id="contact-PersonLName">
+                     </div>
+                 </div>
+                 <div class="form-group row">
+                     <div class="form-group col-sm-6">
+                         <b>{% trans %}Phone Number{% endtrans %}</b>
+                         <input class="form-control" type="text" id="contact-phone">
+                 </div>
+             </div>
+         </form>
+     <p>
+         Opgehaald? Ja/Nee
+     </p>
+ {% endblock %}
+ 
+ {% block javascripts %}
+     <script>
+         var types = {{ types|json_encode|raw }};
+ 
+         $(document).ready(function () {
+         }); 
+ 
+         var productItem = "";
+ 
+         function addNewProduct() {
+             var current = document.getElementById('product-list').innerHTML;
+             var ptest = "bing<br>";
+             
+             document.getElementById('product-list').innerHTML = current+"test";
+         }
+     </script>
+ {% endblock %}
