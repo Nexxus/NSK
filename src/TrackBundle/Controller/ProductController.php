@@ -285,7 +285,8 @@ class ProductController extends Controller
             $newAttribute = $editForm['newAttribute']->getData();
 
             // check if attribute exists, don't add if it doesn't
-            if(isset($newAttribute)) {
+            if(isset($newAttribute)) 
+            {
                $alreadyExists = $product->containsAttributeRelation($newAttribute->getId());
             }
 
