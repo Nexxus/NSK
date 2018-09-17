@@ -9,56 +9,89 @@
     <hr>
         <form>
             <div id="product-list" class="container">
-                <h4>Product List</h4>
-                <div class="form-group row">
-                    <div class="form-group col-sm-1">
-                        1.
-                    </div>
-                    <div class="form-group col-sm-3">
-                        <label for="product-type">
-                            {% trans %}Type{% endtrans %}
-                        </label>
-                        <select class="form-control" id="product-types" name="product-types">
-                            <option name="test">test</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-sm-2">
-                        <label for="product-quantity">
-                            {% trans %}Quantity{% endtrans %}
-                        </label>
-                        <input class="form-control" type="text" id="product-quantity" placeholder="0">
-                    </div>
-                    <div class="form-group col-sm-6">
-                        <label for="product-comments">
-                            {% trans %}Comments{% endtrans %}
-                        </label>
-                        <input class="form-control" type="text" id="product-comments" placeholder="">
-                    </div>
-                </div>
+                <h4>Product List</h4><br>
+                <ol>
+                    <li class="form-group row">
+                        <div class="form-group col-sm-3">
+                            <label for="product-type">
+                                {% trans %}Type{% endtrans %}
+                            </label>
+                            <select class="form-control" id="product-types" name="product-types">
+                            </select>
+                        </div>
+                        <div class="form-group col-sm-2">
+                            <label for="product-quantity">
+                                {% trans %}Quantity{% endtrans %}
+                            </label>
+                            <input class="form-control" type="text" id="product-quantity">
+                        </div>
+                        <div class="form-group col-sm-6">
+                            <label for="product-comments">
+                                {% trans %}Comments{% endtrans %}
+                            </label>
+                            <input class="form-control" type="text" id="product-comments">
+                        </div>
+                    </li>
+                </ol>
             </div>
     <hr>
             <div id="contact-info" class="container">
-                <h4>Contact information</h4>
+               <h4>Contact information</h4>
+               <div class="form-group row">
+                    <div class="form-group col-sm-6">
+                        <b>{% trans %}Name Company{% endtrans %}</b>
+                        <input class="form-control" type="text" id="contact-company">
+                    </div>
+                    <div class="form-group col-sm-3">
+                        <b>{% trans %}Name{% endtrans %}</b>
+                        <input class="form-control" type="text" id="contact-PersonFName">
+                    </div>
+                    <div class="form-group col-sm-3">
+                        <b>{% trans %}Lastname{% endtrans %}</b>
+                        <input class="form-control" type="text" id="contact-PersonLName">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="form-group col-sm-4">
+                        <b>{% trans %}Phone Number{% endtrans %}</b>
+                        <input class="form-control" type="text" id="contact-phone">
+                    </div>
+                    <div class="form-group col-sm-4">
+                        <b>{% trans %}Email{% endtrans %}</b>
+                        <input class="form-control" type="text" id="contact-email">
+                    </div>
+                    <div class="form-group col-sm-4">
+                        <b>{% trans %}Pickup Date{% endtrans %}</b>
+                        <input class="form-control" type="date" id="contact-pickupdate">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="form-group col-sm-10">
+                        <b>{% trans %}Address{% endtrans %}</b>
+                        <input class="form-control" type="text" id="contact-address">
+                    </div>
+                </div>
                 <div class="form-group row">
                     <div class="form-group col-sm-6">
-                         <b>{% trans %}Name Company{% endtrans %}</b>
-                         <input class="form-control" type="text" id="contact-company">
-                     </div>
-                     <div class="form-group col-sm-3">
-                         <b>{% trans %}Name{% endtrans %}</b>
-                         <input class="form-control" type="text" id="contact-PersonFName">
-                     </div>
-                     <div class="form-group col-sm-3">
-                         <b>{% trans %}Lastname{% endtrans %}</b>
-                         <input class="form-control" type="text" id="contact-PersonLName">
-                     </div>
-                 </div>
-                 <div class="form-group row">
-                     <div class="form-group col-sm-6">
-                         <b>{% trans %}Phone Number{% endtrans %}</b>
-                         <input class="form-control" type="text" id="contact-phone">
-                 </div>
-             </div>
+                        <b>{% trans %}City{% endtrans %}</b>
+                        <input class="form-control" type="text" id="contact-city">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <b>{% trans %}Province{% endtrans %}</b>
+                        <input class="form-control" type="text" id="contact-Province">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="form-group col-sm-6">
+                        <b>{% trans %}Zipcode{% endtrans %}</b>
+                        <input class="form-control" type="text" id="contact-zipcode">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <b>{% trans %}Country{% endtrans %}</b>
+                        <input class="form-control" type="text" id="contact-country">
+                    </div>
+                </div>
+            </div>
          </form>
      <p>
          Opgehaald? Ja/Nee
@@ -72,13 +105,33 @@
          $(document).ready(function () {
          }); 
  
-         var productItem = "";
+         var productitem = "<li class=\"form-group row\">" +
+                        "<div class=\"form-group col-sm-3\">" +
+                            "<label for=\"product-type\">" +
+                                "{% trans %}Type{% endtrans %}" +
+                            "</label>" +
+                            "<select class=\"form-control\" id=\"product-types\" name=\"product-types\">" +
+                            "</select>" +
+                        "</div>" +
+                        "<div class=\"form-group col-sm-2\">" +
+                            "<label for=\"product-quantity\">" +
+                                "{% trans %}Quantity{% endtrans %}" +
+                            "</label>" +
+                            "<input class=\"form-control\" type=\"text\" id=\"product-quantity\">" +
+                        "</div>" +
+                        "<div class=\"form-group col-sm-6\">" +
+                            "<label for=\"product-comments\">" +
+                                "{% trans %}Comments{% endtrans %}" +
+                            "</label>" +
+                            "<input class=\"form-control\" type=\"text\" id=\"product-comments\">" +
+                        "</div>" +
+                    "</li>";
  
          function addNewProduct() {
              var current = document.getElementById('product-list').innerHTML;
              var ptest = "bing<br>";
              
-             document.getElementById('product-list').innerHTML = current+"test";
+             document.getElementById('product-list').innerHTML = current+productitem;
          }
      </script>
  {% endblock %}
