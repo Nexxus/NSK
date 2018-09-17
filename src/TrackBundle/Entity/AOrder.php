@@ -57,9 +57,9 @@ abstract class AOrder
     protected $orderNr;
 
     /**
-     * @var ArrayCollection|ProductAttributeRelation[] Which products have this attribute
+     * @var ArrayCollection|ProductOrderRelation[] Which products have this attribute
      *
-     * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="order", cascade={"all"})
+     * @ORM\OneToMany(targetEntity="ProductOrderRelation", mappedBy="order", cascade={"all"})
      */
     protected $productRelations;
 
