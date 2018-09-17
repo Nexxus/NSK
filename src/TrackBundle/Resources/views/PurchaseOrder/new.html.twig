@@ -105,27 +105,7 @@
          $(document).ready(function () {
          }); 
  
-         var productitem = "<li class=\"form-group row\">" +
-                        "<div class=\"form-group col-sm-3\">" +
-                            "<label for=\"product-type\">" +
-                                "{% trans %}Type{% endtrans %}" +
-                            "</label>" +
-                            "<select class=\"form-control\" id=\"product-types\" name=\"product-types\">" +
-                            "</select>" +
-                        "</div>" +
-                        "<div class=\"form-group col-sm-2\">" +
-                            "<label for=\"product-quantity\">" +
-                                "{% trans %}Quantity{% endtrans %}" +
-                            "</label>" +
-                            "<input class=\"form-control\" type=\"text\" id=\"product-quantity\">" +
-                        "</div>" +
-                        "<div class=\"form-group col-sm-6\">" +
-                            "<label for=\"product-comments\">" +
-                                "{% trans %}Comments{% endtrans %}" +
-                            "</label>" +
-                            "<input class=\"form-control\" type=\"text\" id=\"product-comments\">" +
-                        "</div>" +
-                    "</li>";
+         var productitem = "<li class=\"form-group row\">";
  
          function addNewProduct() {
              var current = document.getElementById('product-list').innerHTML;

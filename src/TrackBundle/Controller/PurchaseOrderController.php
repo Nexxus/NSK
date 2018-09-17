@@ -49,8 +49,14 @@ class PurchaseOrderController extends Controller
             $types[] = $type->getName();
         }
 
+        $form = $this->createFormBuilder("")
+                    ->add('type', ChoiceType::class, [
+                        'mapped' => false,
+                    ]);
+
         return $this->render('TrackBundle:PurchaseOrder:new.html.twig', array(
             'types' => $types,
+            'form' => $form,
         ));
     }
 
