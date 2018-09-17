@@ -3,6 +3,12 @@
 {% block title %}TrackBundle:PurchaseOrder:new{% endblock %}
 
 {% block body %}
+    <h1>Form Test</h1>
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+    
+    <hr>
     <h1>{% trans %}Create a Purchase Order{% endtrans %}</h1>
     <a class="btn btn-success" onClick="addNewProduct()">+ Add Product</a>
 
