@@ -54,3 +54,4 @@ class PurchaseOrderType extends AbstractType
             ]);
 
     }
+}

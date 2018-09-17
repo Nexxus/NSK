@@ -6,6 +6,7 @@ use TrackBundle\Entity\Attribute;
 use TrackBundle\Entity\Product;
 use TrackBundle\Entity\ProductType;
 use TrackBundle\Entity\ProductAttributeRelation;
+use TrackBundle\Form\PurchaseOrderType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -51,11 +52,7 @@ class PurchaseOrderController extends Controller
 
         $pOrderData = ['msg' => 'Create a Purchase Order'];
 
-        $form = $this->createFormBuilder($pOrderData)
-                    ->add('type', ChoiceType::class, [
-                        'mapped' => false,
-                    ])
-                    ->getForm();
+        $form = $this->createForm(PurchaseOrderType::class);
 
         return $this->render('TrackBundle:PurchaseOrder:new.html.twig', array(
             'types' => $types,
