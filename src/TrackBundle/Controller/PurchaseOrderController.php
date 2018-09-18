@@ -40,14 +40,21 @@ class PurchaseOrderController extends Controller
     public function newAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
+        $request = Request::createFromGlobals();
 
         // get types
         $types = $this->getDoctrine()->getRepository(ProductType::class)
             ->findAll();
 
-        echo "<pre>";
-        print_r($_POST);
-        echo "</pre>";
+        // on submit, process form
+        if(isset($_POST)) {
+            $test = $request->get('porder');
+
+            echo "<pre>";
+            print_r($test);
+            echo "</pre>";
+            
+        }
 
         return $this->render('TrackBundle:PurchaseOrder:new.html.twig', array(
             'types' => $types,
