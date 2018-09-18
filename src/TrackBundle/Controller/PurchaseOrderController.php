@@ -46,14 +46,24 @@ class PurchaseOrderController extends Controller
         $types = $this->getDoctrine()->getRepository(ProductType::class)
             ->findAll();
 
-        // on submit, process form
+        // on submit, retrieve form
         if(isset($_POST)) {
-            $test = $request->get('porder');
+            $porder = $request->get('porder');
 
             echo "<pre>";
-            print_r($test);
+            print_r($porder);
             echo "</pre>";
-            
+
+            // create order
+
+            // create products
+            foreach($porder['product'] as $product) {
+                $p = new Product();
+
+
+            }
+
+            // create or bind to contact
         }
 
         return $this->render('TrackBundle:PurchaseOrder:new.html.twig', array(

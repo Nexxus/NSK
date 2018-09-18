@@ -5,7 +5,7 @@
 {% block body %}
     <h1>{% trans %}Create a Purchase Order{% endtrans %}</h1>
     <a class="btn btn-success" onClick="addProduct()">+ Add Product</a>
-
+    <a class="btn btn-danger" onClick="removeProduct()">- Remove</a>
     <hr>
         <form method="POST" name="PurchaseOrder">
             <div id="product-list" class="container">
@@ -100,7 +100,7 @@
                     </div>
                     <div class="form-group col-sm-4">
                         <b>{% trans %}Email{% endtrans %}</b>
-                        <input class="form-control" type="text" id="contact-email">
+                        <input class="form-control" type="email" id="contact-email">
                     </div>
                     <div class="form-group col-sm-4">
                         <b>{% trans %}Pickup Date{% endtrans %}</b>
@@ -166,6 +166,11 @@
             
          function addProduct() {
              prodArr.push(1);
+             renderProductList();
+         }
+
+         function removeProduct() {
+             prodArr.pop(1);
              renderProductList();
          }
      </script>
