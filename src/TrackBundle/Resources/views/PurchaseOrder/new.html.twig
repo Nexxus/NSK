@@ -4,7 +4,7 @@
 
 {% block body %}
     <h1>{% trans %}Create a Purchase Order{% endtrans %}</h1>
-    <a class="btn btn-success" onClick="addNewProduct()">+ Add Product</a>
+    <a class="btn btn-success" onClick="addProduct()">+ Add Product</a>
 
     <hr>
         <form>
@@ -20,6 +20,11 @@
                                 {% trans %}Type{% endtrans %}
                             </label>
                             <select class="form-control" id="product-types" name="product-types">
+                                {% for type in types %}
+                                    <option name="{{ type.id }}">
+                                        {{ type.name }}
+                                    </option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="form-group col-sm-2">
@@ -106,19 +111,28 @@
  {% block javascripts %}
      <script>
          var types = {{ types|json_encode|raw }};
+
+         var prodArr = [1];
  
          $(document).ready(function () {
              var products = document.getElementsByClassName("productList-item");
-             for(product in products) {
-                console.log("hey");
-             }
+
+             renderProductList();
          }); 
  
-         function addNewProduct() {
-             var current = document.getElementById('product-list').innerHTML;
-             var ptest = "bing<br>";
-             
-             document.getElementById('product-list').innerHTML = current+productitem;
+         function renderProductList() {
+            $('.productList-item').each(function(i, obj) {
+                $(obj).hide();
+                if(i in prodArr) {
+                    $(obj).show();
+                    console.log(prodArr);
+                }
+             });
+         }
+            
+         function addProduct() {
+             prodArr.push(1);
+             renderProductList();
          }
      </script>
  {% endblock %}

@@ -40,23 +40,11 @@ class PurchaseOrderController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         // get types
-        $types = []; 
-        $tRepo = $this->getDoctrine()->getRepository(ProductType::class)
+        $types = $this->getDoctrine()->getRepository(ProductType::class)
             ->findAll();
-
-        foreach($tRepo as $type) 
-        {
-            $types[] = $type->getName();
-        }
-
-        $form = $this->createFormBuilder("")
-                    ->add('type', ChoiceType::class, [
-                        'mapped' => false,
-                    ]);
 
         return $this->render('TrackBundle:PurchaseOrder:new.html.twig', array(
             'types' => $types,
-            'form' => $form,
         ));
     }
 
