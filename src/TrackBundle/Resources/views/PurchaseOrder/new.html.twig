@@ -33,7 +33,13 @@
                             </label>
                             <input class="form-control" type="text" id="product-{{ i }}-quantity" name="porder[product][{{ i }}][quantity]">
                         </div>
-                        <div class="form-group col-sm-6">
+                        <div class="form-group col-sm-3">
+                            <label for="product-comments">
+                                {% trans %}Name{% endtrans %}
+                            </label>
+                            <input class="form-control" type="text" id="product-name[{{ i }}]" name="porder[product][{{ i }}][name]">
+                        </div>
+                        <div class="form-group col-sm-4">
                             <label for="product-comments">
                                 {% trans %}Comments{% endtrans %}
                             </label>
@@ -45,14 +51,13 @@
                 </ol>
             </div>
         <hr>
-            <div id="contact-info" class="container">
-               <h4>Contact information</h4>
-                 
+            <div id="contact-select" class="container">
+                <h4>Select a Contact</h4> 
                 <div class="form-group row col-sm-6">
                     <label for="contact-newexisting">
                         {% trans %}New or Existing{% endtrans %}
                     </label>
-                    <select class="form-control" name="porder[contact][new]" id="contact-newexisting">
+                    <select class="form-control" name="porder[contact][new]" id="contact-newexisting" onChange="toggleContactForm(this.value)">
                         <option>
                             -- {% trans %} Choose {% endtrans %}--
                         </option>
@@ -76,8 +81,11 @@
                         </label>
                     </b>
                  </div>
+            </div>
+            <div id="contact-info" class="container">
                <div class="form-group row col-sm-12">
                 <hr>
+                   <h4>Contact information</h4>
                 </div>
                <div class="form-group row">
                     <div class="form-group col-sm-6">
@@ -172,6 +180,25 @@
          function removeProduct() {
              prodArr.pop(1);
              renderProductList();
+         }
+
+         function toggleContactForm(toggle) {
+            switch(toggle) {
+                case 'new':
+                    console.log("new");
+                    $("#contact-info").prop("disabled", false);
+                    $("#contact-info").prop("disabled", false);
+                    $("#contact-info").show();
+                    break;
+                case 'existing':
+                    console.log("existing");
+                    $("#contact-info").prop("disabled", true);
+                    $("#contact-info").prop("disabled", true);
+                    $("#contact-info").hide();
+                    break;
+
+                default:
+            }
          }
      </script>
  {% endblock %}
