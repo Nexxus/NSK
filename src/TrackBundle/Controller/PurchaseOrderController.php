@@ -40,6 +40,9 @@ class PurchaseOrderController extends Controller
     public function newAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
+
+        $porder = $request->get('porder');
+
         $request = Request::createFromGlobals();
 
         // get types
@@ -47,20 +50,17 @@ class PurchaseOrderController extends Controller
             ->findAll();
 
         // on submit, retrieve form
-        if(isset($_POST)) {
+        if(isset($porder)) {
             $porder = $request->get('porder');
 
-            echo "<pre>";
-            print_r($porder);
-            echo "</pre>";
-
             // create order
+            echo "<pre>"; print_r($porder);echo "</pre>";
 
             // create products
             foreach($porder['product'] as $product) {
                 $p = new Product();
 
-
+                //return $this->redirectToRoute('track_index');
             }
 
             // create or bind to contact
