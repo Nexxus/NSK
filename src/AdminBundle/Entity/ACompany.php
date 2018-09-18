@@ -166,6 +166,30 @@ abstract class ACompany
         return $this->representative;
     }
 
+    /**
+     * Set Email
+     *
+     * @param string $email
+     *
+     * @return ACompany
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * Get Email
+     *
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
     public function addAddress(Address $address)
     {
         $this->addresses[] = $address;
