@@ -8,6 +8,7 @@ use TrackBundle\Entity\ProductType;
 use TrackBundle\Entity\ProductAttributeRelation;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -34,6 +35,7 @@ class PurchaseOrderController extends Controller
 
     /**
      * @Route("/new", name="purchaseorder_new")
+     * @Method({"GET", "POST"})
      */
     public function newAction(Request $request)
     {
@@ -42,6 +44,10 @@ class PurchaseOrderController extends Controller
         // get types
         $types = $this->getDoctrine()->getRepository(ProductType::class)
             ->findAll();
+
+        echo "<pre>";
+        print_r($_POST);
+        echo "</pre>";
 
         return $this->render('TrackBundle:PurchaseOrder:new.html.twig', array(
             'types' => $types,

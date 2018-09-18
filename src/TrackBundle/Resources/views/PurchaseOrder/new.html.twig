@@ -7,7 +7,7 @@
     <a class="btn btn-success" onClick="addProduct()">+ Add Product</a>
 
     <hr>
-        <form>
+        <form method="POST" name="PurchaseOrder">
             <div id="product-list" class="container">
                 <h4>Product List</h4><br>
                 <ol>
@@ -19,7 +19,7 @@
                             <label for="product-type">
                                 {% trans %}Type{% endtrans %}
                             </label>
-                            <select class="form-control" id="product-types" name="product-types">
+                            <select class="form-control" id="product-types" name="product-types[{{ i }}]">
                                 {% for type in types %}
                                     <option name="{{ type.id }}">
                                         {{ type.name }}
@@ -31,13 +31,13 @@
                             <label for="product-quantity">
                                 {% trans %}Quantity{% endtrans %}
                             </label>
-                            <input class="form-control" type="text" id="product-quantity">
+                            <input class="form-control" type="text" id="product-quantity[{{ i }}]">
                         </div>
                         <div class="form-group col-sm-6">
                             <label for="product-comments">
                                 {% trans %}Comments{% endtrans %}
                             </label>
-                            <input class="form-control" type="text" id="product-comments">
+                            <input class="form-control" type="text" id="product-comments[{{ i }}]">
                         </div>
                     </li>
                     </div>
@@ -47,6 +47,18 @@
         <hr>
             <div id="contact-info" class="container">
                <h4>Contact information</h4>
+                 <div class="form-check col-sm-8">
+                     <b>Picked up?
+                        <input class="form-check-input" type="radio" name="contact-pickedup" value="Yes">
+                        <label class="form-check-label" for="contact-pickedup">
+                            Yes
+                        </label>
+                        <input class="form-check-input" type="radio" name="contact-pickedup" value="No" checked>
+                        <label class="form-check-label" for="contact-pickedup">
+                            No
+                        </label>
+                    </b>
+                 </div>
                <div class="form-group row">
                     <div class="form-group col-sm-6">
                         <b>{% trans %}Name Company{% endtrans %}</b>
@@ -102,10 +114,8 @@
                     </div>
                 </div>
             </div>
+            <button class="btn btn-success">Create Order</button>
          </form>
-     <p>
-         Opgehaald? Ja/Nee
-     </p>
  {% endblock %}
  
  {% block javascripts %}
@@ -123,8 +133,12 @@
          function renderProductList() {
             $('.productList-item').each(function(i, obj) {
                 $(obj).hide();
+                $(obj).find('input').prop("disabled", true);
+                $(obj).find('select').prop("disabled", true);
                 if(i in prodArr) {
                     $(obj).show();
+                    $(obj).find('input').prop("disabled", false);
+                    $(obj).find('select').prop("disabled", false);
                     console.log(prodArr);
                 }
              });
