@@ -11,6 +11,9 @@
             <div id="product-list" class="container">
                 <h4>Product List</h4><br>
                 <ol>
+                {% set k = 10 %}
+                {% for i in 1..k %}
+                    <div class="productList-item">
                     <li class="form-group row">
                         <div class="form-group col-sm-3">
                             <label for="product-type">
@@ -32,9 +35,11 @@
                             <input class="form-control" type="text" id="product-comments">
                         </div>
                     </li>
+                    </div>
+                    {% endfor %}
                 </ol>
             </div>
-    <hr>
+        <hr>
             <div id="contact-info" class="container">
                <h4>Contact information</h4>
                <div class="form-group row">
@@ -103,9 +108,11 @@
          var types = {{ types|json_encode|raw }};
  
          $(document).ready(function () {
+             var products = document.getElementsByClassName("productList-item");
+             for(product in products) {
+                console.log("hey");
+             }
          }); 
- 
-         var productitem = "<li class=\"form-group row\">";
  
          function addNewProduct() {
              var current = document.getElementById('product-list').innerHTML;
