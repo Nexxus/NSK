@@ -1,0 +1,253 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    
+
+<div class="row">
+    <div class="col-md-2 hidden-sm">
+        <div class="panel panel-default">
+            <div class="panel-heading">{% trans %}Frequent tasks{% endtrans %}</div>
+            <div class="panel-body">
+                <ul style="padding-left: 15px">
+                    <li><a href="#">{% trans %}Purchase orders{% endtrans %}</a></li>
+                    <li><a href="#">{% trans %}Sales orders{% endtrans %}</a></li>
+                    <li><a href="#">{% trans %}Stock{% endtrans %}</a></li>
+                    <li><a href="#">{% trans %}Customers{% endtrans %}</a></li>
+                    <li><a href="#">{% trans %}New customers{% endtrans %}</a></li>
+                    <li><a href="#">{% trans %}Suppliers{% endtrans %}</a></li>
+                    <li><a href="#">{% trans %}New supplier{% endtrans %}</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">{% trans %}Search{% endtrans %}</div>
+                    <div class="panel-body panel-dashboardsearch">
+                        {{ form_start(form) }}
+                        <div class="row">
+                            <div class="col-sm-10">
+                                {{ form_widget(form.query) }}
+                            </div>
+                            <div class="col-sm-2">
+                                {{ form_widget(form.submit) }}
+                            </div>
+                        </div>
+                        {{ form_widget(form.type) }}
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="panel panel-default">
+                    <div class="panel-body panel-body-small">
+                        <h5>{% trans %}Last 5 sales{% endtrans %}</h5>
+                        <ul>
+                            <li>Huawei XP542</li>
+                            <li>HP Invento 2.0</li>
+                            <li>Dell Vostro 321 units</li>
+                            <li>Sony Vaio Excellent</li>
+                            <li>Lenavo laptops 15 inch 12 units</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="panel panel-default">
+                    <div class="panel-body panel-body-small">
+                        <h5>{% trans %}Most active locations{% endtrans %}</h5>
+                        <ul>
+                            <li>Den Haag</li>
+                            <li>Amsterdam</li>
+                            <li>Arnhem</li>
+                            <li>Breda</li>
+                            <li>Lutjebroek</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="panel panel-default">
+                    <div class="panel-body panel-body-small">
+                        <h5>{% trans %}Last editted products{% endtrans %}</h5>
+                        <ul>
+                            <li>HP Invento 2.0</li>
+                            <li>Lenavo laptops 15 inch 12 units</li>
+                            <li>Huawei XP542</li>
+                            <li>Dell Vostro 321 units</li>
+                            <li>Sony Vaio Excellent</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="panel panel-default">
+                    <div class="panel-body panel-body-small">
+                        <h5>{% trans %}Messages{% endtrans %}</h5>
+                        <ul>
+                            <li>Vandaag uren registreren</li>
+                            <li>Terugbelverzoek voor Sjors</li>
+                            <li>Dell's ophalen in Arnhem</li>
+                            <li>Sony Vaio Excellent</li>
+                            <li>Vrijdag borrel met bitterballen</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <a class="btn btn-primary btn-120" href="#" role="button">+ {% trans %}Reparation{% endtrans %}</a>
+                        <div class="btn-group pull-right">
+                          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="glyphicon glyphicon-menu-hamburger" aria-label="Menu"></span> <span class="caret"></span>
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li><a href="#">{% trans %}New reparation{% endtrans %}</a></li>
+                            <li><a href="#">{% trans %}List all reparations{% endtrans %}</a></li>
+                            <li><a href="#">{% trans %}Edit order statusses{% endtrans %}</a></li>
+                          </ul>
+                        </div>
+                        <div id="chart1"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <a class="btn btn-primary btn-120" href="#" role="button">+ {% trans %}Purchase{% endtrans %}</a>
+                        <div class="btn-group pull-right">
+                          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="glyphicon glyphicon-menu-hamburger" aria-label="Menu"></span> <span class="caret"></span>
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li><a href="#">{% trans %}New purchase{% endtrans %}</a></li>
+                            <li><a href="#">{% trans %}List all purchase orders{% endtrans %}</a></li>
+                            <li><a href="#">{% trans %}Edit order statusses{% endtrans %}</a></li>
+                          </ul>
+                        </div>
+                        <div id="chart2"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <a class="btn btn-primary btn-120" href="#" role="button">+ {% trans %}Sale{% endtrans %}</a>
+                        <div class="btn-group pull-right">
+                          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="glyphicon glyphicon-menu-hamburger" aria-label="Menu"></span> <span class="caret"></span>
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li><a href="#">{% trans %}New sales order{% endtrans %}</a></li>
+                            <li><a href="#">{% trans %}List all sales orders{% endtrans %}</a></li>
+                            <li><a href="#">{% trans %}Edit order statusses{% endtrans %}</a></li>
+                          </ul>
+                        </div>
+                        <div id="chart3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2 hidden-sm">
+        <div class="panel panel-default">
+            <div class="panel-heading">{% trans %}Routeplanner{% endtrans %}</div>
+            <div class="panel-body">
+                <div style="overflow: hidden;">
+                    <img src="{{ asset('images/dummymap.jpg') }}" style="height: 290px; margin-left: -50%" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart1);
+      google.charts.setOnLoadCallback(drawChart2);
+      google.charts.setOnLoadCallback(drawChart3);
+
+      function drawChart1() {
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('date');
+        data.addColumn('number');
+        data.addColumn({ type: 'string', role: 'style' });
+        data.addRows([
+          [new Date(2018, 1, 1), { v: 323, f: '323,00' }, 'color: #006e2e'],
+          [new Date(2018, 1, 2), { v: 223, f: '223,00' }, 'color: #006e2e'],
+          [new Date(2018, 1, 3), { v: 634, f: '634,00' }, 'color: #006e2e'],
+          [new Date(2018, 1, 4), { v: 435, f: '435,00' }, 'color: #006e2e'],
+          [new Date(2018, 1, 5), { v: 231, f: '231,00' }, 'color: #006e2e'],
+        ]);
+
+        var options = {
+            'title': null,
+            'legend': { 'position': 'none' },
+            'chartArea': { 'width': '80%', 'height': '70%' },
+        };
+
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart1'));
+        chart.draw(data, options);
+      }
+
+      function drawChart2() {
+
+          var data = new google.visualization.DataTable();
+          data.addColumn('date');
+          data.addColumn('number');
+          data.addColumn({ type: 'string', role: 'style' });
+          data.addRows([
+            [new Date(2018, 1, 1), { v: 5342, f: '5342,00' }, 'color: #bb0000'],
+            [new Date(2018, 1, 2), { v: 4611, f: '4611,00' }, 'color: #bb0000'],
+            [new Date(2018, 1, 3), { v: 5844, f: '5844,00' }, 'color: #bb0000'],
+            [new Date(2018, 1, 4), { v: 3211, f: '3211,00' }, 'color: #bb0000'],
+            [new Date(2018, 1, 5), { v: 2345, f: '2345,00' }, 'color: #bb0000'],
+          ]);
+
+          var options = {
+              'title': null,
+              'legend': { 'position': 'none' },
+              'chartArea': { 'width': '80%', 'height': '70%' },
+          };
+
+          var chart = new google.visualization.ColumnChart(document.getElementById('chart2'));
+          chart.draw(data, options);
+      }
+
+      function drawChart3() {
+
+          var data = new google.visualization.DataTable();
+          data.addColumn('date');
+          data.addColumn('number');
+          data.addColumn({ type: 'string', role: 'style' });
+          data.addRows([
+            [new Date(2018, 1, 1), { v: 23, f: '23,00' }, 'color: #15007c'],
+            [new Date(2018, 1, 2), { v: 23, f: '23,00' }, 'color: #15007c'],
+            [new Date(2018, 1, 3), { v: 34, f: '34,00' }, 'color: #15007c'],
+            [new Date(2018, 1, 4), { v: 35, f: '35,00' }, 'color: #15007c'],
+            [new Date(2018, 1, 5), { v: 31, f: '31,00' }, 'color: #15007c'],
+          ]);
+
+          var options = {
+              'title': null,
+              'legend': { 'position': 'none' },
+              'chartArea': { 'width': '80%', 'height': '70%' },
+          };
+
+          var chart = new google.visualization.ColumnChart(document.getElementById('chart3'));
+          chart.draw(data, options);
+      }
+
+    </script>
+
+{% endblock %}

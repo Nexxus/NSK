@@ -3,8 +3,20 @@
 {% block body %}
     <h1>Customer list</h1>
 
-    <h4><a href="{{ path('customer_edit', { 'id': 0 }) }}">Create new customer</a></h4>
-    
+    {{ form_start(form) }}
+    <div class="row" style="margin-bottom: 20px">
+        <div class="col-sm-7">
+            {{ form_widget(form.query) }}
+        </div>
+        <div class="col-sm-2">
+            {{ form_widget(form.submit) }}
+        </div>
+        <div class="col-sm-3">
+            <a href="{{ path('customer_edit', { 'id': 0 }) }}" class="btn btn-primary pull-right" role="button">Create new customer</a>
+        </div>
+    </div>
+    {{ form_end(form) }}
+
     <table class="table table-bordered">
         <thead>
             <tr>

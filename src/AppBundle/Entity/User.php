@@ -71,7 +71,7 @@ class User extends BaseUser
     /**
      * @var Location
      *
-     * @ORM\ManyToOne(targetEntity="TrackBundle\Entity\Location")
+     * @ORM\ManyToOne(targetEntity="TrackBundle\Entity\Location", inversedBy="users")
      * @ORM\JoinColumn(name="location", referencedColumnName="id")
      */
     private $location;
@@ -219,7 +219,7 @@ class User extends BaseUser
      *
      * @param Location $location
      *
-     * @return Location
+     * @return User
      */
     public function setLocation($location)
     {

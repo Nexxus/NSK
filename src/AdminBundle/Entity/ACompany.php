@@ -24,6 +24,7 @@ namespace AdminBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use TrackBundle\Entity\Location;
 
 /**
  * Company
@@ -83,6 +84,14 @@ abstract class ACompany
      * @ORM\Column(name="email", type="string", length=255, nullable=true)
      */
     protected $email;
+
+    /**
+     * @var Location
+     *
+     * @ORM\ManyToOne(targetEntity="TrackBundle\Entity\Location", inversedBy="companies")
+     * @ORM\JoinColumn(name="location", referencedColumnName="id")
+     */
+    protected $location;
 
     /**
      * Get id
@@ -208,6 +217,30 @@ abstract class ACompany
     public function getAddresses()
     {
         return $this->addresses;
+    }
+
+    /**
+     * Set location
+     *
+     * @param Location $location
+     *
+     * @return ACompany
+     */
+    public function setLocation($location)
+    {
+        $this->location = $location;
+
+        return $this;
+    }
+
+    /**
+     * Get location
+     *
+     * @return Location
+     */
+    public function getLocation()
+    {
+        return $this->location;
     }
 }
 

@@ -26,6 +26,8 @@ use AdminBundle\Entity\Customer;
 use AdminBundle\Form\CustomerType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
@@ -37,13 +39,31 @@ class CustomerController extends Controller
     /**
      * @Route("/", name="customer_index")
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
         $repo = $this->getDoctrine()->getRepository('AdminBundle:Customer');
-        $customers = $repo->findAll();
+
+        $customers = array();
+
+        $form = $this->createFormBuilder(array())
+            ->add('query', TextType::class, ['label' => false, 'attr' => ['placeholder' => 'Search by Id, KvK, e-mail or name']])
+            ->add('submit', SubmitType::class, ['label' => 'Search'])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+        }
+        else
+        {
+            $customers = $repo->findAll();
+        }
 
         return $this->render('AdminBundle:Customer:index.html.twig', array(
-            'customers' => $customers));
+            'customers' => $customers,
+            'form' => $form->createView()
+            ));
     }
 
     /**
