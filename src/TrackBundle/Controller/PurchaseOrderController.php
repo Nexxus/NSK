@@ -6,6 +6,9 @@ use TrackBundle\Entity\Attribute;
 use TrackBundle\Entity\Product;
 use TrackBundle\Entity\ProductType;
 use TrackBundle\Entity\ProductAttributeRelation;
+use TrackBundle\Entity\Location;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -48,6 +51,10 @@ class PurchaseOrderController extends Controller
 
         $request = Request::createFromGlobals();
 
+        // get contacts
+        $partners = $this->getDoctrine()->getRepository(Partner::class)
+            ->findAll();
+
         // get types
         $types = $this->getDoctrine()->getRepository(ProductType::class)
             ->findAll();
@@ -76,23 +83,39 @@ class PurchaseOrderController extends Controller
                 $address->setCompany($company);
 
                 $company->addAddress($address);
+
+                // create location
+                $location = new Location();
+                $location->setName($company->getName());
             }
 
             // create order
             echo "<pre>"; print_r($porder);echo "</pre>";
 
+            // access ProductController for methods
+            // $productController = $this->get('productController');
+
             // create products
             foreach($porder['product'] as $p)
             {
                 $product = new Product();
+
+                // generate sku
+                $type = $em->getRepository(ProductType::class)
+                    ->find($p['type']);
+
+                $product->setType($type);
+                $product = $this->generateNewSku($product);
+                $product->setName($p['comments']);
                 $product->setQuantity($p['quantity']);
-                $product->setDescription($p['comments']);
+                $product->setLocation($location);
 
                 $em->persist($product);
             }
 
             $em->persist($company);
             $em->persist($address);
+            $em->persist($location);
             $em->flush();
 
             return $this->redirectToRoute('track_index');
@@ -100,6 +123,7 @@ class PurchaseOrderController extends Controller
 
         return $this->render('TrackBundle:PurchaseOrder:new.html.twig', array(
             'types' => $types,
+            'partners' => $partners,
         ));
     }
 
@@ -123,4 +147,48 @@ class PurchaseOrderController extends Controller
         ));
     }
 
+    /*
+     * Returns true if a SKU in the database is free
+     */
+    public function checkFreeSku($sku) {
+        $em = $this->getDoctrine()->getManager();
+
+        $skuquery = $em->createQuery(
+                    'SELECT p.sku'
+                    . ' FROM TrackBundle:Product p'
+                    . ' WHERE p.sku = :givensku')
+                    ->setParameter('givensku', $sku);
+        $result = $skuquery->getResult();
+
+        return (count($result) == 0);
+    }
+
+    /*
+     * Generates new SKU, avoids duplicates
+     */
+    public function generateNewSku(Product $product)
+    {
+        $num  = 0;
+        $gsku = "";
+        
+        // if type is set, add prefix
+        if ($product->getType())
+        {
+            $gsku = substr($product->getType(), 0, 1) . $gsku;
+            echo "sku is " . $gsku;
+        } 
+
+        // increment if taken
+        $free = $this->checkFreeSku($gsku);
+        while(!$free) {
+            $num++;
+            $gsku = substr($product->getType(), 0, 1) . $num;
+            $free = $this->checkFreeSku($gsku);
+        }
+
+        echo "sku" . $gsku;
+
+        $product->setSku($gsku);
+        return $product;
+    }
 }

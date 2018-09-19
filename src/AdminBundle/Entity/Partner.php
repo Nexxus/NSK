@@ -30,7 +30,7 @@ use TrackBundle\Entity\PurchaseOrder;
 /**
  * Partner
  *
- * @ORM\Entity(repositoryClass="AdminBundle\Repository\CompanyRepository")
+ * @ORM\Entity(repositoryClass="AdminBundle\Repository\PartnerRepository")
  */
 class Partner extends ACompany
 {

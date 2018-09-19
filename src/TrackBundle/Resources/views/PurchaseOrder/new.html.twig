@@ -57,16 +57,18 @@
                     <label for="contact-newexisting">
                         {% trans %}New or Existing{% endtrans %}
                     </label>
-                    <select class="form-control" name="porder[contact][new]" id="contact-newexisting" onChange="toggleContactForm(this.value)">
-                        <option>
+                    <select class="form-control" name="porder[contact][new]" id="contact-newexisting" onChange="toggleContactForm()">
+                        <option value="choose">
                             -- {% trans %} Choose {% endtrans %}--
                         </option>
                         <option name="new" value="new">
                             {% trans %}New Contact{% endtrans %}
                         </option>
-                        <option name="existing" value="existing">
-                            {% trans %}Existing Contact{% endtrans %}
+                        {% for p in partners %}
+                        <option name="{{ p.name }}" value="{{ p.id }}">
+                            {{ p.name }}
                         </option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="form-check col-sm-6">
@@ -157,6 +159,8 @@
              var products = document.getElementsByClassName("productList-item");
 
              renderProductList();
+             toggleContactForm();
+
          }); 
  
          function renderProductList() {
@@ -183,22 +187,20 @@
              renderProductList();
          }
 
-         function toggleContactForm(toggle) {
-            switch(toggle) {
+         function toggleContactForm() {
+            switch($("#contact-newexisting").val()) {
+                case 'choose':
                 case 'new':
-                    console.log("new");
-                    $("#contact-info").prop("disabled", false);
-                    $("#contact-info").prop("disabled", false);
-                    $("#contact-info").show();
+                    console.log($("#contact-newexisting").val());
+                    $("#contact-info-new").prop("disabled", false);
+                    $("#contact-info-new").prop("disabled", false);
+                    $("#contact-info-new").show();
                     break;
-                case 'existing':
-                    console.log("existing");
-                    $("#contact-info").prop("disabled", true);
-                    $("#contact-info").prop("disabled", true);
-                    $("#contact-info").hide();
-                    break;
-
                 default:
+                    console.log($("#contact-newexisting").val());
+                    $("#contact-info-new").prop("disabled", true);
+                    $("#contact-info-new").prop("disabled", true);
+                    $("#contact-info-new").hide();
             }
          }
      </script>

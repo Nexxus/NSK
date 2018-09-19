@@ -11,3 +11,5 @@ services:
         class: AppBundle\Menu\Builder
     productController:
         class: TrackBundle\Controller\ProductController
+        arguments:
+          $em: '@doctrine.orm.entity_manager'
