@@ -89,16 +89,17 @@ class ProductController extends Controller
         $productquery = $this->searchSpecific($productquery, $stored_query);
 
         // Only admins and Copiatek people can see all products
-        if($user->getLocation() !== null
-                && !in_array('ROLE_ADMIN', $user->getRoles())
-                && !in_array('ROLE_COPIA', $user->getRoles())
-        ) {
-            // convert location to ID using the manager
-            $locid = $em->getUnitOfWork()->getEntityIdentifier($user->getLocation());
-            $userloc = $locid['id'];
+        // Jorrit: This code is obsolete now it is in class LocationFilter
+        //if($user->getLocation() !== null
+        //        && !in_array('ROLE_ADMIN', $user->getRoles())
+        //        && !in_array('ROLE_COPIA', $user->getRoles())
+        //) {
+        //    // convert location to ID using the manager
+        //    $locid = $em->getUnitOfWork()->getEntityIdentifier($user->getLocation());
+        //    $userloc = $locid['id'];
 
-            $productquery->andWhere("p.location = ". $userloc);
-        }
+        //    $productquery->andWhere("p.location = ". $userloc);
+        //}
 
         $products = $productquery->getQuery()->getResult();
 

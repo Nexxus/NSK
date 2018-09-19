@@ -39,7 +39,10 @@ class OnRequestListener
         if($this->tokenStorage->getToken())
         {
             $user = $this->tokenStorage->getToken()->getUser();
-            if($user->getLocation() && !in_array('ROLE_ADMIN', $user->getRoles()))
+            
+            if($user->getLocation() 
+               && !in_array('ROLE_ADMIN', $user->getRoles())
+               && !in_array('ROLE_COPIA', $user->getRoles()))
             {
                 $filter = $this->em->getFilters()->enable('location');
                 $filter->setParameter('locationId', $user->getLocation()->getId());
