@@ -29,7 +29,7 @@ use TrackBundle\Entity\SalesOrder;
 /**
  * Customer
  *
- * @ORM\Entity(repositoryClass="AdminBundle\Repository\CompanyRepository")
+ * @ORM\Entity
  */
 class Customer extends ACompany
 {

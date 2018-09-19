@@ -116,7 +116,7 @@ class Product
     /**
      * @var Location
      *
-     * @ORM\ManyToOne(targetEntity="Location", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="Location", inversedBy="products", fetch="EAGER")
      * @ORM\JoinColumn(name="location_id", referencedColumnName="id", nullable=false)
      */
     private $location;

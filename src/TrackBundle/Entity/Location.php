@@ -24,6 +24,10 @@ namespace TrackBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use TrackBundle\Entity\AOrder;
+use AdminBundle\Entity\ACompany;
+use AppBundle\Entity\User;
+use TrackBundle\Entity\Product;
 
 /**
  * Location
@@ -37,6 +41,9 @@ class Location
 {
     public function __construct() {
         $this->products = new ArrayCollection();
+        $this->users = new ArrayCollection();
+        $this->orders = new ArrayCollection();
+        $this->companies = new ArrayCollection();
     }
 
     /**
@@ -61,6 +68,27 @@ class Location
      * @ORM\OneToMany(targetEntity="Product", mappedBy="location", fetch="LAZY")
      */
     private $products;
+
+    /**
+     * @var ArrayCollection|User[]
+     *
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\User", mappedBy="location", fetch="LAZY")
+     */
+    private $users;
+
+    /**
+     * @var ArrayCollection|AOrder[]
+     *
+     * @ORM\OneToMany(targetEntity="AOrder", mappedBy="location", fetch="LAZY")
+     */
+    private $orders;
+
+    /**
+     * @var ArrayCollection|ACompany[]
+     *
+     * @ORM\OneToMany(targetEntity="AdminBundle\Entity\ACompany", mappedBy="location", fetch="LAZY")
+     */
+    private $companies;
 
     /**
      * Get id
@@ -129,7 +157,109 @@ class Location
     {
         return $this->products;
     }
-    
+
+    /**
+     * Add order
+     *
+     * @param AOrder $order
+     *
+     * @return Location
+     */
+    public function addOrder(AOrder $order)
+    {
+        $this->orders[] = $order;
+
+        return $this;
+    }
+
+    /**
+     * Remove order
+     *
+     * @param AOrder $order
+     */
+    public function removeOrder(AOrder $order)
+    {
+        $this->orders->removeElement($order);
+    }
+
+    /**
+     * Get orders
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getOrders()
+    {
+        return $this->orders;
+    }
+
+    /**
+     * Add company
+     *
+     * @param ACompany $company
+     *
+     * @return Location
+     */
+    public function addCompany(ACompany $company)
+    {
+        $this->companies[] = $company;
+
+        return $this;
+    }
+
+    /**
+     * Remove company
+     *
+     * @param ACompany $company
+     */
+    public function removeCompany(ACompany $company)
+    {
+        $this->companies->removeElement($company);
+    }
+
+    /**
+     * Get companies
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCompanies()
+    {
+        return $this->companies;
+    }
+
+    /**
+     * Add user
+     *
+     * @param User $user
+     *
+     * @return Location
+     */
+    public function addUser(User $user)
+    {
+        $this->users[] = $user;
+
+        return $this;
+    }
+
+    /**
+     * Remove user
+     *
+     * @param User $user
+     */
+    public function removeUser(User $user)
+    {
+        $this->users->removeElement($user);
+    }
+
+    /**
+     * Get users
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUsers()
+    {
+        return $this->users;
+    }
+
     public function __toString() {
         return $this->getName();
     }
