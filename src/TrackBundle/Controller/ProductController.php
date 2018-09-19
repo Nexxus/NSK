@@ -225,7 +225,7 @@ class ProductController extends Controller
                     $em->persist($copy);
                     $em->flush($copy);
                     
-                    if($copy->getType()) { $this->applyAttributeTemplate($copy); }
+                    //if($copy->getType()) { $this->applyAttributeTemplate($copy); }
                 } else {
                     return $this->render('TrackBundle:Track:new.html.twig', array(
                         'product'       => $product,
@@ -282,9 +282,16 @@ class ProductController extends Controller
 
         if ($editForm->isSubmitted() && $editForm->isValid())
         {
-            // add new attribute
             $newAttribute = $editForm['newAttribute']->getData();
-            if ($newAttribute)
+
+            // check if attribute exists, don't add if it doesn't
+            if(isset($newAttribute)) 
+            {
+               $alreadyExists = $product->containsAttributeRelation($newAttribute->getId());
+            }
+
+            // add new attribute
+            if ($newAttribute && !$alreadyExists)
             {
                 $newAttributeRelation = new ProductAttributeRelation();
                 $newAttributeRelation->setAttribute($newAttribute);
@@ -360,6 +367,22 @@ class ProductController extends Controller
                     array('err' => 'nif'));
         }
 
+    }
+
+    /**
+     * Applies all attributes that cohere to the Product Type
+     *
+     * @Route("/edit/import/template/{id}", name="track_import_template")
+     * @Method({"GET", "POST"})
+     */
+    public function importAttributeTemplate(Product $product)
+    {
+        if($product->getType()) { 
+            $this->applyAttributeTemplate($product);
+        }
+        
+
+        return $this->redirectToRoute("track_edit", array('id' => $product->getId()));
     }
 
     /**
@@ -480,9 +503,7 @@ class ProductController extends Controller
     public function generateNewSku(Product $product)
     {
         $num = $product->getId();
-        echo "Test" .$num;
         $gsku = $product->getSku();
-        echo $gsku;
 
         // if type is set, add prefix
         if ($product->getType())

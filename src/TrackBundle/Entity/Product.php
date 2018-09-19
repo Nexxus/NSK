@@ -380,6 +380,28 @@ class Product
     {
         return $this->location;
     }
+    /** 
+     * Set status
+     *
+     * @param integer $status
+     *
+     * @return Product
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return int
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
 
     /**
      * @return Product
@@ -431,6 +453,23 @@ class Product
     public function getAttributeRelations()
     {
         return $this->attributeRelations;
+    }
+
+    /**
+     * Check if product has attribute as relation on key, returns true if it does
+     */
+    public function containsAttributeRelation($id) 
+    {
+        $bool = false;
+
+        foreach($this->getAttributeRelations() as $attr) 
+        {
+            if($id === $attr->getAttribute()->getId()) 
+            {
+                $bool = true;
+            }
+        }
+        return $bool;
     }
 
     /**
