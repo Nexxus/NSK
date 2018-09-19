@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek â€“ info@copiatek.nl â€“ Postbus 547 2501 CM Den Haag
  */
 
 namespace AdminBundle\Entity;
@@ -30,7 +30,7 @@ use TrackBundle\Entity\PurchaseOrder;
 /**
  * Partner
  *
- * @ORM\Entity(repositoryClass="AdminBundle\Repository\PartnerRepository")
+ * @ORM\Entity
  */
 class Partner extends ACompany
 {
@@ -45,7 +45,7 @@ class Partner extends ACompany
      *
      * @ORM\Column(type="boolean")
      */
-    private $isPartner;
+    private $isSupplier;
 
     /**
      * @var bool
@@ -73,9 +73,9 @@ class Partner extends ACompany
      *
      * @return Partner
      */
-    public function setIsPartner($isPartner)
+    public function setIsSupplier($isSupplier)
     {
-        $this->isPartner = $isPartner;
+        $this->isSupplier = $isSupplier;
 
         return $this;
     }
@@ -83,9 +83,29 @@ class Partner extends ACompany
     /**
      * @return bool
      */
-    public function getIsPartner()
+    public function getIsSupplier()
     {
-        return $this->isPartner;
+        return $this->isSupplier;
+    }
+
+    /**
+     * @param bool $name
+     *
+     * @return Partner
+     */
+    public function setIsOwner($isOwner)
+    {
+        $this->isOwner = $isOwner;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsOwner()
+    {
+        return $this->isOwner;
     }
 
     /**

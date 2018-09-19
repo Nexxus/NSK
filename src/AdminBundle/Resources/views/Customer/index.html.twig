@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Customer list</h1>
+
+    {{ form_start(form) }}
+    <div class="row" style="margin-bottom: 20px">
+        <div class="col-sm-7">
+            {{ form_widget(form.query) }}
+        </div>
+        <div class="col-sm-2">
+            {{ form_widget(form.submit) }}
+        </div>
+        <div class="col-sm-3">
+            <a href="{{ path('customer_edit', { 'id': 0 }) }}" class="btn btn-primary pull-right" role="button">Create new customer</a>
+        </div>
+    </div>
+    {{ form_end(form) }}
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Representative</th>
+                <th>E-mail</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for customer in customers %}
+            <tr>
+                <td>{{ customer.id }}</td>
+                <td>{{ customer.name }}</td>
+                <td>{{ customer.representative }}</td>
+                <td>{{ customer.email }}</td>
+                <td>
+                    <a class="btn btn-success" href="{{ path('customer_edit', { 'id': customer.id }) }}">Edit</a>
+                    {% if customer.salesOrders|length == 0 %}
+                    <a class="btn btn-warning" href="{{ path('customer_delete', { 'id': customer.id }) }}">Delete</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="99">
+                    <h4>{% trans %}No records found{% endtrans %}</h4>
+                </td>
+            </tr>
+        {% endfor %}
+        
+        </tbody>
+    </table>
+{% endblock %}

@@ -45,13 +45,6 @@ class Address
     private $id;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="type", type="integer")
-     */
-    private $type;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="street1", type="string", length=255, nullable=true)
