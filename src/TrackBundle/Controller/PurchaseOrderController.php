@@ -18,6 +18,9 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
+use AdminBundle\Entity\Partner;
+use AdminBundle\Entity\Address;
+
 /**
  * @Route("/track/purchaseorder")
  */
@@ -50,44 +53,49 @@ class PurchaseOrderController extends Controller
             ->findAll();
 
         // on submit, retrieve form
-        if(isset($porder)) {
+        if(isset($porder)) 
+        {
             $porder = $request->get('porder');
 
             // new contact, create it
-            if($porder['contact']['new']=='new') {
+            if($porder['contact']['new']=='new') 
+            {
+                $con = $porder['contact'];
                 $company = new Partner();
-                $company->setName();
-                $company->setKvkNr();
+                $company->setName($con['companyname']);
+                $company->setKvkNr(0);
 
                 // create and add address
                 $address = new Address();
                 $address->setType(0);
-                $address->setParentId();
-                $address->setType();
-                $address->setStreet1();
-                $address->setStreet2();
-                $address->setCity();
-                $address->setCountry();
-                $address->setState();
-                $address->setZip();
-                $address->setAddresstype();
-                
-                $company->setRepresentative();
+                $address->setStreet1($con['address']);
+                $address->setCity($con['city']);
+                $address->setCountry($con['country']);
+                $address->setState($con['province']);
+                $address->setZip($con['zipcode']);
+                $address->setCompany($company);
 
-                echo "test";
+                $company->addAddress($address);
             }
 
             // create order
             echo "<pre>"; print_r($porder);echo "</pre>";
 
             // create products
-            foreach($porder['product'] as $product) {
-                $p = new Product();
+            foreach($porder['product'] as $p)
+            {
+                $product = new Product();
+                $product->setQuantity($p['quantity']);
+                $product->setDescription($p['comments']);
 
-                //return $this->redirectToRoute('track_index');
+                $em->persist($product);
             }
 
-            // create or bind to contact
+            $em->persist($company);
+            $em->persist($address);
+            $em->flush();
+
+            return $this->redirectToRoute('track_index');
         }
 
         return $this->render('TrackBundle:PurchaseOrder:new.html.twig', array(
