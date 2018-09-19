@@ -218,5 +218,29 @@ abstract class ACompany
     {
         return $this->addresses;
     }
+
+    /**
+     * Set location
+     *
+     * @param Location $location
+     *
+     * @return ACompany
+     */
+    public function setLocation($location)
+    {
+        $this->location = $location;
+
+        return $this;
+    }
+
+    /**
+     * Get location
+     *
+     * @return Location
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
 }
 
