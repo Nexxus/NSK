@@ -22,7 +22,7 @@
                             </label>
                             <select class="form-control" id="product-type" name="porder[product][{{ i }}][type]">
                                 {% for type in types %}
-                                    <option name="{{ type.id }}">
+                                    <option value="{{ type.id }}">
                                         {{ type.name }}
                                     </option>
                                 {% endfor %}
@@ -58,10 +58,7 @@
                     <label for="contact-newexisting">
                         {% trans %}New or Existing{% endtrans %}
                     </label>
-                    <select class="form-control" name="porder[contact][new]" id="contact-newexisting" onChange="toggleContactForm()">
-                        <option value="choose">
-                            -- {% trans %} Choose {% endtrans %}--
-                        </option>
+                    <select class="form-control" name="porder[contact][new]" id="contact-newexisting" onChange="toggleContactForm()" required>
                         <option name="new" value="new">
                             {% trans %}New Contact{% endtrans %}
                         </option>
