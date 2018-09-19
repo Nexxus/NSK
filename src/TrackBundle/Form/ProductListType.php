@@ -32,26 +32,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Doctrine\ORM\EntityRepository;
 
 use TrackBundle\Entity\PurchaseOrder;
+use TrackBundle\Entity\Product;
 
-class PurchaseOrderType extends AbstractType
+class ProductListType extends AbstractType
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function buildForm(FormBuilderInterface $builder, array $options)
-    {
-        $builder
-            ->add('products', CollectionType::class, [
-                'entry_type' => ProductListType::class,   
-            ])
-            ->add('status', EntityType::class, [
-                'class' => 'TrackBundle:OrderStatus',
-                'choice_label' => 'name'
-            ])
-            ->add('supplier', EntityType::class, [
-                'class' => 'AdminBundle:Partner',
-                'choice_label' => 'name'
-            ]);
 
-    }
 }
