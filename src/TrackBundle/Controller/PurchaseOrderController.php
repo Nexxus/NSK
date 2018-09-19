@@ -52,7 +52,7 @@ class PurchaseOrderController extends Controller
         $request = Request::createFromGlobals();
 
         // get contacts
-        $contacts = $this->getDoctrine()->getRepository(Partner::class)
+        $partners = $this->getDoctrine()->getRepository(Partner::class)
             ->findAll();
 
         // get types

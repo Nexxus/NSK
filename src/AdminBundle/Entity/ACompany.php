@@ -226,7 +226,7 @@ abstract class ACompany
      *
      * @return ACompany
      */
-    public function setLocation($location)
+    public function setLocation(Location $location)
     {
         $this->location = $location;
 
