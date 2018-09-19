@@ -52,12 +52,12 @@ class DashboardController extends Controller
                 'expanded' => true,
                 'multiple' => false,
                 'choices' => [
-                    'Products in stock' => 'Product',
-                    'Purchase orders' => 'PurchaseOrder',
-                    'Sales orders' => 'SalesOrder',
-                    'Customers' => 'Customer',
+                    'Producten in voorraad' => 'Product',
+                    'Inkooporders' => 'PurchaseOrder',
+                    'Verkooporders' => 'SalesOrder',
+                    'Klanten' => 'Customer',
                     'Partners' => 'Partner',
-                    'Locations' => 'Location'
+                    'Locaties' => 'Location'
                 ]
             ])
             ->add('submit', SubmitType::class, ['label' => 'Search'])
