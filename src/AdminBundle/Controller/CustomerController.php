@@ -45,23 +45,28 @@ class CustomerController extends Controller
 
         $customers = array();
 
-        $form = $this->createFormBuilder(array())
-            ->add('query', TextType::class, ['label' => false, 'attr' => ['placeholder' => 'Search by Id, KvK, e-mail or name']])
+        $form = $this->createFormBuilder(array(), array('allow_extra_fields' => true))
+            ->add('query', TextType::class, ['label' => false, 'attr' => ['placeholder' => 'Zoeken op Id, KvK, e-mail of (deel van) naam']])
             ->add('submit', SubmitType::class, ['label' => 'Search'])
             ->getForm();
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            $data = $form->getData();
+            $customers = $repo->findBySearchQuery($data['query']);
         }
         else
         {
             $customers = $repo->findAll();
         }
 
+        $paginator = $this->get('knp_paginator');
+        $customersPage = $paginator->paginate($customers, $request->query->getInt('page', 1), 10);
+
         return $this->render('AdminBundle:Customer:index.html.twig', array(
-            'customers' => $customers,
+            'customers' => $customersPage,
             'form' => $form->createView()
             ));
     }

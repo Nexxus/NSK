@@ -28,7 +28,7 @@ use Doctrine\ORM\Mapping as ORM;
  * ProductImage
  *
  * @ORM\Table(name="product_image")
- * @ORM\Entity(repositoryClass="TrackBundle\Repository\ProductImageRepository")
+ * @ORM\Entity
  */
 class ProductImage
 {

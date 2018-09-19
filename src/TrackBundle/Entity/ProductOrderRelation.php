@@ -28,7 +28,7 @@ use Doctrine\ORM\Mapping as ORM;
  * ProductOrderRelation
  *
  * @ORM\Table(name="product_order")
- * @ORM\Entity(repositoryClass="TrackBundle\Repository\ProductOrderRepository")
+ * @ORM\Entity
  */
 class ProductOrderRelation
 {

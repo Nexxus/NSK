@@ -30,7 +30,7 @@ use TrackBundle\Entity\Location;
  * AOrder
  *
  * @ORM\Table(name="aorder")
- * @ORM\Entity(repositoryClass="TrackBundle\Repository\OrderRepository")
+ * @ORM\Entity
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({"s" = "SalesOrder", "p" = "PurchaseOrder"})

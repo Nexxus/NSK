@@ -28,7 +28,7 @@ use AdminBundle\Entity\Customer;
 /**
  * SalesOrder
  *
- * @ORM\Entity(repositoryClass="TrackBundle\Repository\SalesOrderRepository")
+ * @ORM\Entity
  */
 class SalesOrder extends AOrder
 {

@@ -29,7 +29,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * Attribute
  *
  * @ORM\Table(name="attribute")
- * @ORM\Entity(repositoryClass="TrackBundle\Repository\AttributeRepository")
+ * @ORM\Entity
  */
 class Attribute
 {

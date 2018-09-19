@@ -22,18 +22,30 @@
 
 namespace AdminBundle\Repository;
 
+use AdminBundle\Entity\Customer;
+
 class CustomerRepository extends \Doctrine\ORM\EntityRepository
 {
-    /*
+    /**
      * This function searches in fields: Id, Kvk, Email, Name
      */
     public function findBySearchQuery($query)
     {
-        $qb = $this->getEntityManager()->createQueryBuilder()
-            ->select('c')
-            ->from(Category::class, 'c')
-            ->where("c.isBarbecueCategory = false");
+        if (is_numeric($query))
+        {
+            $q = $this->getEntityManager()
+                ->createQuery("SELECT c FROM AdminBundle:Customer c WHERE c.id = ?1 OR c.kvkNr = ?1 OR c.name LIKE ?2");
+        }
+        else
+        {
+            $q = $this->getEntityManager()
+                ->createQuery("SELECT c FROM AdminBundle:Customer c WHERE c.email = ?1 OR c.name LIKE ?2");
+        }
 
-        return $qb->getQuery()->getResult();
+        $q = $q
+            ->setParameter(1, $query)
+            ->setParameter(2, '%' . $query . '%');
+
+        return $q->getResult();
     }
 }

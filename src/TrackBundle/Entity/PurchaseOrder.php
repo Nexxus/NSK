@@ -28,7 +28,7 @@ use AdminBundle\Entity\Partner;
 /**
  * PurchaseOrder
  *
- * @ORM\Entity(repositoryClass="TrackBundle\Repository\PurchaseOrderRepository")
+ * @ORM\Entity
  */
 class PurchaseOrder extends AOrder
 {

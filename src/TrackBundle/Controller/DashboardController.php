@@ -43,7 +43,7 @@ class DashboardController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $data = array('type' => 'Product');
+        $data = array('type' => 'customer');
 
         $form = $this->createFormBuilder($data)
             ->add('query', TextType::class, ['label' => false])
@@ -52,13 +52,23 @@ class DashboardController extends Controller
                 'expanded' => true,
                 'multiple' => false,
                 'choices' => [
-                    'Producten in voorraad' => 'Product',
-                    'Inkooporders' => 'PurchaseOrder',
-                    'Verkooporders' => 'SalesOrder',
-                    'Klanten' => 'Customer',
-                    'Partners' => 'Partner',
-                    'Locaties' => 'Location'
-                ]
+                    'Producten in voorraad' => 'product',
+                    'Inkooporders' => 'surchaseOrder',
+                    'Verkooporders' => 'salesOrder',
+                    'Klanten' => 'customer',
+                    'Partners' => 'partner',
+                    'Locaties' => 'location'
+                ],
+                // this disabling callback is temporarely
+                'choice_attr' => function($key, $val, $index) {
+                    $disabled = false;
+
+                    if ($key != "customer") {
+                        $disabled = true;
+                    }
+
+                    return $disabled ? ['disabled' => 'disabled'] : [];
+                }
             ])
             ->add('submit', SubmitType::class, ['label' => 'Search'])
             ->getForm();
@@ -66,7 +76,8 @@ class DashboardController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
+            $data = $form->getData();
+            return $this->redirectToRoute($data['type'] . '_index', [], 307); // 307 means it stays POST
         }
 
         return $this->render('TrackBundle:Dashboard:index.html.twig', array(

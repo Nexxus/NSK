@@ -27,7 +27,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Service
  *
- * @ORM\Entity(repositoryClass="TrackBundle\Repository\ServiceRepository")
+ * @ORM\Entity
  */
 class Service extends Product
 {
