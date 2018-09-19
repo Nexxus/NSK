@@ -53,6 +53,30 @@ class PurchaseOrderController extends Controller
         if(isset($porder)) {
             $porder = $request->get('porder');
 
+            // new contact, create it
+            if($porder['contact']['new']=='new') {
+                $company = new Partner();
+                $company->setName();
+                $company->setKvkNr();
+
+                // create and add address
+                $address = new Address();
+                $address->setType(0);
+                $address->setParentId();
+                $address->setType();
+                $address->setStreet1();
+                $address->setStreet2();
+                $address->setCity();
+                $address->setCountry();
+                $address->setState();
+                $address->setZip();
+                $address->setAddresstype();
+                
+                $company->setRepresentative();
+
+                echo "test";
+            }
+
             // create order
             echo "<pre>"; print_r($porder);echo "</pre>";
 
