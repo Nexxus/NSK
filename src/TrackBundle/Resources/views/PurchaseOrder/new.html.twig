@@ -51,7 +51,27 @@
                     {% endfor %}
                 </ol>
             </div>
-        <hr>
+            <hr>
+            <div id="order-info" class="container">
+                <h4>Order Information</h4> 
+                <div class="form-check col-sm-12">
+                     <b>{% trans %}Order Status{% endtrans %}</b>
+                </div>
+                <br>
+                <div class="form-check col-sm-6">
+                     <b>{% trans %}Picked up?{% endtrans %}<br>
+                        <input class="form-check-input" type="radio" name="porder[contact][pickedup]" value="Yes">
+                        <label class="form-check-label" for="contact-pickedup">
+                            {% trans %}Yes{% endtrans %}
+                        </label>
+                        <input class="form-check-input" type="radio" name="porder[contact][pickedup]" value="No" checked>
+                        <label class="form-check-label" for="contact-pickedup">
+                            {% trans %}No{% endtrans %}
+                        </label>
+                    </b>
+                 </div>
+            </div>
+            <hr>
             <div id="contact-select" class="container">
                 <h4>Select a Contact</h4> 
                 <div class="form-group row col-sm-6">
@@ -69,18 +89,7 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="form-check col-sm-6">
-                     <b>{% trans %}Picked up?{% endtrans %}<br>
-                        <input class="form-check-input" type="radio" name="porder[contact][pickedup]" value="Yes">
-                        <label class="form-check-label" for="contact-pickedup">
-                            {% trans %}Yes{% endtrans %}
-                        </label>
-                        <input class="form-check-input" type="radio" name="porder[contact][pickedup]" value="No" checked>
-                        <label class="form-check-label" for="contact-pickedup">
-                            {% trans %}No{% endtrans %}
-                        </label>
-                    </b>
-                 </div>
+                
             </div>
             <div id="contact-info-new" class="container">
                <div class="form-group row col-sm-12">

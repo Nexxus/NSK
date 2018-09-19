@@ -2,6 +2,7 @@
 
 namespace TrackBundle\Controller;
 
+use TrackBundle\Entity\PurchaseOrder;
 use TrackBundle\Entity\Attribute;
 use TrackBundle\Entity\Product;
 use TrackBundle\Entity\ProductType;
@@ -34,8 +35,11 @@ class PurchaseOrderController extends Controller
      */
     public function indexAction()
     {
+        $orderRepo = $this->getDoctrine()->getRepository(PurchaseOrder::class)
+            ->findAll();
+
         return $this->render('TrackBundle:PurchaseOrder:index.html.twig', array(
-            // ...
+            'orders' => $orderRepo,
         ));
     }
 
@@ -119,6 +123,11 @@ class PurchaseOrderController extends Controller
                 $em->persist($product);
                 $em->flush();
             }
+
+            // create order
+            $order = new PurchaseOrder();
+            $order->setLocation($partner->getLocation());
+            $em->persist($order);
 
             $em->persist($partner);
             $em->flush();
