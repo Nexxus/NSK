@@ -24,6 +24,7 @@ namespace TrackBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use TrackBundle\Entity\Location;
 
 /**
  * AOrder
@@ -70,6 +71,14 @@ abstract class AOrder
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
      */
     protected $status;
+
+    /**
+     * @var Location
+     *
+     * @ORM\ManyToOne(targetEntity="TrackBundle\Entity\Location", inversedBy="orders")
+     * @ORM\JoinColumn(name="location", referencedColumnName="id")
+     */
+    protected $location;
 
     /**
      * Get id
@@ -162,4 +171,29 @@ abstract class AOrder
     {
         return $this->status;
     }
+
+    /**
+     * Set location
+     *
+     * @param Location $location
+     *
+     * @return AOrder
+     */
+    public function setLocation($location)
+    {
+        $this->location = $location;
+
+        return $this;
+    }
+
+    /**
+     * Get location
+     *
+     * @return Location
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
+
 }

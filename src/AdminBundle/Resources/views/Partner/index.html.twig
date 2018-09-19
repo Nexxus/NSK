@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Partner list</h1>
+
+    <h4><a href="{{ path('partner_edit', { 'id': 0 }) }}">Create new partner</a></h4>
+    
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Representative</th>
+                <th>E-mail</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for partner in partners %}
+            <tr>
+                <td>{{ partner.id }}</td>
+                <td>{{ partner.name }}</td>
+                <td>{{ partner.representative }}</td>
+                <td>{{ partner.email }}</td>
+                <td>
+                    <a class="btn btn-success" href="{{ path('partner_edit', { 'id': partner.id }) }}">Edit</a>
+                    {% if partner.purchaseOrders|length == 0 %}
+                    <a class="btn btn-warning" href="{{ path('partner_delete', { 'id': partner.id }) }}">Delete</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="99">
+                    <h4>{% trans %}No records found{% endtrans %}</h4>
+                </td>
+            </tr>
+        {% endfor %}
+        
+        </tbody>
+    </table>
+{% endblock %}
