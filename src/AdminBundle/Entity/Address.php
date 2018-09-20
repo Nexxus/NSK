@@ -112,30 +112,6 @@ class Address
     }
 
     /**
-     * Set parentId
-     *
-     * @param integer $parentId
-     *
-     * @return Address
-     */
-    public function setParentId($parentId)
-    {
-        $this->parentId = $parentId;
-
-        return $this;
-    }
-
-    /**
-     * Get parentId
-     *
-     * @return int
-     */
-    public function getParentId()
-    {
-        return $this->parentId;
-    }
-
-    /**
      * Set type
      *
      * @param integer $type

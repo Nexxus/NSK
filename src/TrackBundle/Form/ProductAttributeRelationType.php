@@ -59,9 +59,7 @@ class ProductAttributeRelationType extends AbstractType
                 'required' => true,
                 'query_builder' => function (EntityRepository $er) use ($relation) {
                     /** @var ProductAttributeRelation $relation */
-                    return $er->createQueryBuilder('a')
-                        ->where(":ptype MEMBER OF a.productTypes")
-                        ->setParameter("ptype", $relation->getProduct()->getType());
+                    return $er->createQueryBuilder('a');
                 }
             ]);
 
@@ -74,7 +72,7 @@ class ProductAttributeRelationType extends AbstractType
                     $form->add('valueProduct', EntityType::class, [
                        'class' => 'TrackBundle:Product',
                        'choice_label' => 'name',
-                       'required' => true,
+                       'required' => false,
                        'label' => 'Product being attribute'
                     ]);
                     break;
@@ -82,7 +80,7 @@ class ProductAttributeRelationType extends AbstractType
                     $form->add('value', EntityType::class, [
                        'class' => 'TrackBundle:AttributeOption',
                        'choice_label' => 'name',
-                       'required' => true,
+                       'required' => false,
                        'label' => 'Select specification',
                        'query_builder' => function (EntityRepository $er) use ($relation) {
                            /** @var ProductAttributeRelation $relation */
@@ -93,7 +91,10 @@ class ProductAttributeRelationType extends AbstractType
                     ]);
                     break;
                 case Attribute::TYPE_TEXT:
-                    $form->add('value', TextType::class, ['label' => 'Description']);
+                    $form->add('value', TextType::class, [
+                        'label' => 'Description',
+                        'required' => false,
+                    ]);
                     break;
             }
 

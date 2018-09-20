@@ -17,44 +17,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek â€“ info@copiatek.nl â€“ Postbus 547 2501 CM Den Haag
  */
 
-namespace TrackBundle\Entity;
+namespace TrackBundle\Form;
 
-use Doctrine\ORM\Mapping as ORM;
-use AdminBundle\Entity\Partner;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Doctrine\ORM\EntityRepository;
 
-/**
- * PurchaseOrder
- *
- * @ORM\Entity
- */
-class PurchaseOrder extends AOrder
+use TrackBundle\Entity\PurchaseOrder;
+use TrackBundle\Entity\Product;
+
+class ProductListType extends AbstractType
 {
-    /**
-     * @var Partner Deliverer of this order
-     *
-     * @ORM\ManyToOne(targetEntity="AdminBundle\Entity\Partner", fetch="EAGER")
-     * @ORM\JoinColumn(name="supplier_id", referencedColumnName="id")
-     */
-    private $supplier;
 
-    /**
-     * @return PurchaseOrder
-     */
-    public function setSupplier(Partner $partner)
-    {
-        $this->supplier = $partner;
-
-        return $this;
-    }
-
-    /**
-     * @return Partner
-     */
-    public function getSupplier()
-    {
-        return $this->supplier;
-    }
 }

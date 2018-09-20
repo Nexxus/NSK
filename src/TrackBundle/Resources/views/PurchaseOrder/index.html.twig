@@ -1,0 +1,33 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}TrackBundle:PurchaseOrder:index{% endblock %}
+
+{% block body %}
+    <div class="product_table col-sm-12">
+        <table class="table table-striped">
+            <thead>
+                <th>
+                    Order #
+                </th>
+                <th>
+                    Status
+                </th>
+                <th>
+                    Location
+                </th>
+                <th>
+                    Supplier
+                </th>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.orderNr }}</td>
+                    <td>{{ order.status }}</td>
+                    <td>{{ order.location }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

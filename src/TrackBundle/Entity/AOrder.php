@@ -53,12 +53,12 @@ abstract class AOrder
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=16, unique=true)
+     * @ORM\Column(type="string", length=16, unique=true, nullable=true)
      */
     protected $orderNr;
 
     /**
-     * @var ArrayCollection|ProductAttributeRelation[] Which products have this attribute
+     * @var ArrayCollection|ProductOrderRelation[] Which products have this attribute
      *
      * @ORM\OneToMany(targetEntity="ProductOrderRelation", mappedBy="order", cascade={"all"})
      */
