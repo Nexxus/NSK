@@ -10,7 +10,7 @@
             <div class="panel-body">
                 <ul class="nav nav-pills nav-stacked nav-dashboard">
                     <li><a href="{{ path('purchaseorder_index') }}">{% trans %}Inkooporders{% endtrans %}</a></li>
-                    <li><a href="#">{% trans %}Verkooporders{% endtrans %}</a></li>
+                    <li><a href="{{ path('salesorder_index') }}">{% trans %}Verkooporders{% endtrans %}</a></li>
                     <li><a href="{{ path('track_index') }}">{% trans %}Voorraad{% endtrans %}</a></li>
                     <li><a href="{{ path('customer_index') }}">{% trans %}Klanten{% endtrans %}</a></li>
                     <li><a href="{{ path('customer_edit', {'id': 0}) }}">{% trans %}Nieuwe klant{% endtrans %}</a></li>
@@ -139,14 +139,14 @@
             <div class="col-md-4">
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <a class="btn btn-primary btn-120" href="#" role="button">+ {% trans %}Verkoop{% endtrans %}</a>
+                        <a class="btn btn-primary btn-120" href="{{ path('salesorder_index') }}" role="button">+ {% trans %}Verkoop{% endtrans %}</a>
                         <div class="btn-group pull-right">
                           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="glyphicon glyphicon-menu-hamburger" aria-label="Menu"></span> <span class="caret"></span>
                           </button>
                           <ul class="dropdown-menu">
-                            <li><a href="#">{% trans %}Nieuwe verkooporder{% endtrans %}</a></li>
-                            <li><a href="#f">{% trans %}Lijst van alle verkooporders{% endtrans %}</a></li>
+                            <li><a href="{{ path('salesorder_index') }}">{% trans %}Nieuwe verkooporder{% endtrans %}</a></li>
+                            <li><a href="{{ path('salesorder_index') }}">{% trans %}Lijst van alle verkooporders{% endtrans %}</a></li>
                             <li><a href="{{ path('status_index') }}">{% trans %}Orderstatussen wijzigen{% endtrans %}</a></li>
                           </ul>
                         </div>

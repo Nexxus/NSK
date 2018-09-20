@@ -43,8 +43,8 @@ class SupplierType extends AbstractType
             ->add('representative', TextType::class, ['required' => false])
             ->add('email', EmailType::class)
             ->add('addresses', CollectionType::class, ['entry_type' => AddressType::class])
-            ->add('isPartner', CheckboxType::class, ['required' => false, 'label' => 'This supplier should be rewards as a partner'])
-            ->add('isOwner', CheckboxType::class, ['required' => false, 'label' => 'This supplier should be rewards as an owner'])
+            ->add('isPartner', CheckboxType::class, ['required' => false, 'label' => 'This supplier should be rewarded as partner'])
+            ->add('isOwner', CheckboxType::class, ['required' => false, 'label' => 'This supplier should be rewarded as owner'])
             ->add('save', SubmitType::class, ['label' => 'Save']);
     }
 

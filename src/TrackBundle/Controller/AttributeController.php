@@ -8,6 +8,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
  * Attribute controller.
@@ -17,20 +19,38 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 class AttributeController extends Controller
 {
     /**
-     * Lists all attribute entities.
-     *
      * @Route("/", name="admin_attribute_index")
-     * @Method("GET")
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
+        $repo = $this->getDoctrine()->getRepository('TrackBundle:Attribute');
 
-        $attributes = $em->getRepository('TrackBundle:Attribute')->findAll();
+        $attributes = array();
+
+        $form = $this->createFormBuilder(array(), array('allow_extra_fields' => true))
+            ->add('query', TextType::class, ['label' => false, 'attr' => ['placeholder' => 'Zoeken op Id, KvK, e-mail of (deel van) naam']])
+            ->add('submit', SubmitType::class, ['label' => 'Search'])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            $data = $form->getData();
+            $attributes = $repo->findBySearchQuery($data['query']);
+        }
+        else
+        {
+            $attributes = $repo->findAll();
+        }
+
+        $paginator = $this->get('knp_paginator');
+        $attributesPage = $paginator->paginate($attributes, $request->query->getInt('page', 1), 10);
 
         return $this->render('TrackBundle:Attribute:index.html.twig', array(
-            'attributes' => $attributes,
-        ));
+            'attributes' => $attributesPage,
+            'form' => $form->createView()
+            ));
     }
 
     /**
@@ -55,7 +75,7 @@ class AttributeController extends Controller
                     ]
                 ])
                 ->getForm();
-        
+
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {

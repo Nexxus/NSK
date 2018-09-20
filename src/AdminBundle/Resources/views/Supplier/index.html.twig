@@ -3,16 +3,30 @@
 {% block body %}
     <h1>Supplier list</h1>
 
-    <h4><a href="{{ path('supplier_edit', { 'id': 0 }) }}">Create new supplier</a></h4>
-    
+    {{ form_start(form) }}
+    <div class="row" style="margin-bottom: 20px">
+        <div class="col-sm-7">
+            {{ form_widget(form.query) }}
+        </div>
+        <div class="col-sm-2">
+            {{ form_widget(form.submit) }}
+        </div>
+        <div class="col-sm-3">
+            <a href="{{ path('supplier_edit', { 'id': 0 }) }}" class="btn btn-primary pull-right" role="button">Create new supplier</a>
+        </div>
+    </div>
+    {{ form_end(form) }}
+
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Name</th>
+                <th{% if suppliers.isSorted('c.id') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(suppliers, 'Id', 'c.id') }}</th>
+                <th{% if suppliers.isSorted('c.name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(suppliers, 'Name', 'c.name') }}</th>
                 <th>Representative</th>
-                <th>E-mail</th>
-                <th></th>
+                <th{% if suppliers.isSorted('c.email') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(suppliers, 'E-mail', 'c.email') }}</th>
+                <th width="1%"></th>
+            </tr>
+            <tr>
             </tr>
         </thead>
         <tbody>
@@ -22,10 +36,10 @@
                 <td>{{ supplier.name }}</td>
                 <td>{{ supplier.representative }}</td>
                 <td>{{ supplier.email }}</td>
-                <td>
-                    <a class="btn btn-success" href="{{ path('supplier_edit', { 'id': supplier.id }) }}">Edit</a>
+                <td nowrap>
+                    <a class="btn btn-success" href="{{ path('supplier_edit', { 'id': supplier.id }) }}"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
                     {% if supplier.purchaseOrders|length == 0 %}
-                    <a class="btn btn-warning" href="{{ path('supplier_delete', { 'id': supplier.id }) }}">Delete</a>
+                    <a class="btn btn-danger" href="{{ path('supplier_delete', { 'id': supplier.id }) }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
                     {% endif %}
                 </td>
             </tr>
@@ -39,4 +53,8 @@
         
         </tbody>
     </table>
+
+    <div class="navigation">
+        {{ knp_pagination_render(suppliers) }}
+    </div>
 {% endblock %}

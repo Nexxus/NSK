@@ -45,7 +45,7 @@ class Builder implements ContainerAwareInterface
         if($role->isGranted('ROLE_USER')) {
             $menu->addChild('Producten', array('route' => 'track_index'));
             $menu->addChild('Inkoop', array('route' => 'purchaseorder_index'));
-            $menu->addChild('Verkoop', array('route' => 'underconstruction'));
+            $menu->addChild('Verkoop', array('route' => 'salesorder_index'));
             $menu->addChild('Klanten', array('route' => 'customer_index'));
             $menu->addChild('Leveranciers', array('route' => 'supplier_index'));
         }

@@ -28,6 +28,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 
 /**
@@ -38,14 +40,38 @@ class SupplierController extends Controller
     /**
      * @Route("/", name="supplier_index")
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
         $repo = $this->getDoctrine()->getRepository('AdminBundle:Supplier');
-        $suppliers = $repo->findAll();
+
+        $suppliers = array();
+
+        $form = $this->createFormBuilder(array(), array('allow_extra_fields' => true))
+            ->add('query', TextType::class, ['label' => false, 'attr' => ['placeholder' => 'Zoeken op Id, KvK, e-mail of (deel van) naam']])
+            ->add('submit', SubmitType::class, ['label' => 'Search'])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            $data = $form->getData();
+            $suppliers = $repo->findBySearchQuery($data['query']);
+        }
+        else
+        {
+            $suppliers = $repo->findAll();
+        }
+
+        $paginator = $this->get('knp_paginator');
+        $suppliersPage = $paginator->paginate($suppliers, $request->query->getInt('page', 1), 10);
 
         return $this->render('AdminBundle:Supplier:index.html.twig', array(
-            'suppliers' => $suppliers));
+            'suppliers' => $suppliersPage,
+            'form' => $form->createView()
+            ));
     }
+
 
     /**
      * @Route("/edit/{id}", name="supplier_edit")

@@ -12,6 +12,8 @@ use TrackBundle\Entity\PurchaseOrder;
 use TrackBundle\Entity\Product;
 use TrackBundle\Entity\ProductType;
 use TrackBundle\Entity\Location;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
  * @Route("/track/purchaseorder")
@@ -19,16 +21,38 @@ use TrackBundle\Entity\Location;
 class PurchaseOrderController extends Controller
 {
     /**
-     * @Route("/index", name="purchaseorder_index")
+     * @Route("/", name="purchaseorder_index")
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
-        $orderRepo = $this->getDoctrine()->getRepository(PurchaseOrder::class)
-            ->findAll();
+        $repo = $this->getDoctrine()->getRepository(PurchaseOrder::class);
+
+        $orders = array();
+
+        $form = $this->createFormBuilder(array(), array('allow_extra_fields' => true))
+            ->add('query', TextType::class, ['label' => false, 'attr' => ['placeholder' => 'Zoeken op ordernummer']])
+            ->add('submit', SubmitType::class, ['label' => 'Search'])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            $data = $form->getData();
+            $orders = $repo->findBySearchQuery($data['query']);
+        }
+        else
+        {
+            $orders = $repo->findAll();
+        }
+
+        $paginator = $this->get('knp_paginator');
+        $ordersPage = $paginator->paginate($orders, $request->query->getInt('page', 1), 10);
 
         return $this->render('TrackBundle:PurchaseOrder:index.html.twig', array(
-            'orders' => $orderRepo,
-        ));
+            'orders' => $ordersPage,
+            'form' => $form->createView()
+            ));
     }
 
     /**
