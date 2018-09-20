@@ -138,6 +138,7 @@ class PurchaseOrderController extends Controller
         return $this->render('TrackBundle:PurchaseOrder:new.html.twig', array(
             'types' => $types->findAll(),
             'partners' => $partnerRepository->findAll(),
+
         ));
     }
 
