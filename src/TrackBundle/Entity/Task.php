@@ -29,7 +29,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * Task
  *
  * @ORM\Table(name="task")
- * @ORM\Entity(repositoryClass="TrackBundle\Repository\TaskRepository")
+ * @ORM\Entity
  */
 class Task
 {

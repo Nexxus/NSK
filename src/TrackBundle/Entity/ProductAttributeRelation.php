@@ -30,7 +30,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Attributes unique to specific products are stored here
  *
  * @ORM\Table(name="product_attribute")
- * @ORM\Entity(repositoryClass="TrackBundle\Repository\ProductAttributeRepository")
+ * @ORM\Entity
  */
 class ProductAttributeRelation
 {

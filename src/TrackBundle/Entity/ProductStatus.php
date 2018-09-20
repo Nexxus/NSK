@@ -28,7 +28,7 @@ use Doctrine\ORM\Mapping as ORM;
  * ProductStatus
  *
  * @ORM\Table(name="product_status")
- * @ORM\Entity(repositoryClass="TrackBundle\Repository\ProductStatusRepository")
+ * @ORM\Entity
  */
 class ProductStatus
 {

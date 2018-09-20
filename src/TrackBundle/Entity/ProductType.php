@@ -31,7 +31,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * Types bound to products by ID
  *
  * @ORM\Table(name="product_type")
- * @ORM\Entity(repositoryClass="TrackBundle\Repository\ProductTypeRepository")
+ * @ORM\Entity
  */
 class ProductType
 {

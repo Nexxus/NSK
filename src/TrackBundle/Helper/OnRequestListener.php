@@ -20,41 +20,33 @@
  * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
  */
 
-namespace TrackBundle\Entity;
+namespace TrackBundle\Helper;
 
-use Doctrine\ORM\Mapping as ORM;
-use AdminBundle\Entity\Customer;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
-/**
- * SalesOrder
- *
- * @ORM\Entity
- */
-class SalesOrder extends AOrder
+class OnRequestListener
 {
-    /**
-     * @var Customer Buyer of this order
-     *
-     * @ORM\ManyToOne(targetEntity="AdminBundle\Entity\Customer", fetch="EAGER")
-     * @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
-     */
-    private $customer;
+    protected $em;
+    protected $tokenStorage;
 
-    /**
-     * @return SalesOrder
-     */
-    public function setCustomer(Customer $customer)
+    public function __construct($em, $tokenStorage)
     {
-        $this->customer = $customer;
-
-        return $this;
+        $this->em = $em;
+        $this->tokenStorage = $tokenStorage;
     }
-
-    /**
-     * @return Customer
-     */
-    public function getCustomer()
+    public function onKernelRequest(GetResponseEvent $event)
     {
-        return $this->customer;
+        if($this->tokenStorage->getToken())
+        {
+            $user = $this->tokenStorage->getToken()->getUser();
+            
+            if($user->getLocation() 
+               && !in_array('ROLE_ADMIN', $user->getRoles())
+               && !in_array('ROLE_COPIA', $user->getRoles()))
+            {
+                $filter = $this->em->getFilters()->enable('location');
+                $filter->setParameter('locationId', $user->getLocation()->getId());
+            }
+        }
     }
 }
