@@ -23,7 +23,7 @@
 namespace TrackBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use AdminBundle\Entity\Partner;
+use AdminBundle\Entity\Supplier;
 
 /**
  * PurchaseOrder
@@ -33,9 +33,9 @@ use AdminBundle\Entity\Partner;
 class PurchaseOrder extends AOrder
 {
     /**
-     * @var Partner Deliverer of this order
+     * @var Supplier Deliverer of this order
      *
-     * @ORM\ManyToOne(targetEntity="AdminBundle\Entity\Partner", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="AdminBundle\Entity\Supplier", fetch="EAGER")
      * @ORM\JoinColumn(name="supplier_id", referencedColumnName="id")
      */
     private $supplier;
@@ -43,15 +43,15 @@ class PurchaseOrder extends AOrder
     /**
      * @return PurchaseOrder
      */
-    public function setSupplier(Partner $partner)
+    public function setSupplier(Supplier $supplier)
     {
-        $this->supplier = $partner;
+        $this->supplier = $supplier;
 
         return $this;
     }
 
     /**
-     * @return Partner
+     * @return Supplier
      */
     public function getSupplier()
     {

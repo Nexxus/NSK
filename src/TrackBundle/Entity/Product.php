@@ -24,7 +24,7 @@ namespace TrackBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
-use AdminBundle\Entity\Partner;
+use AdminBundle\Entity\Supplier;
 
 /**
  * Product
@@ -172,9 +172,9 @@ class Product
     private $services;
 
     /**
-     * @var Partner
+     * @var Supplier
      *
-     * @ORM\ManyToOne(targetEntity="AdminBundle\Entity\Partner", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="AdminBundle\Entity\Supplier", fetch="EAGER")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id")
      */
     private $owner;
@@ -406,15 +406,15 @@ class Product
     /**
      * @return Product
      */
-    public function setOwner(Partner $partner)
+    public function setOwner(Supplier $supplier)
     {
-        $this->owner = $partner;
+        $this->owner = $supplier;
 
         return $this;
     }
 
     /**
-     * @return Partner
+     * @return Supplier
      */
     public function getOwner()
     {

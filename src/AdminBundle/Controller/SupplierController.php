@@ -22,8 +22,8 @@
 
 namespace AdminBundle\Controller;
 
-use AdminBundle\Entity\Partner;
-use AdminBundle\Form\PartnerType;
+use AdminBundle\Entity\Supplier;
+use AdminBundle\Form\SupplierType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -31,24 +31,24 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
 
 /**
- * @Route("/admin/partner")
+ * @Route("/admin/supplier")
  */
-class PartnerController extends Controller
+class SupplierController extends Controller
 {
     /**
-     * @Route("/", name="partner_index")
+     * @Route("/", name="supplier_index")
      */
     public function indexAction()
     {
-        $repo = $this->getDoctrine()->getRepository('AdminBundle:Partner');
-        $partners = $repo->findAll();
+        $repo = $this->getDoctrine()->getRepository('AdminBundle:Supplier');
+        $suppliers = $repo->findAll();
 
-        return $this->render('AdminBundle:Partner:index.html.twig', array(
-            'partners' => $partners));
+        return $this->render('AdminBundle:Supplier:index.html.twig', array(
+            'suppliers' => $suppliers));
     }
 
     /**
-     * @Route("/edit/{id}", name="partner_edit")
+     * @Route("/edit/{id}", name="supplier_edit")
      * @Method({"GET", "POST"})
      */
     public function editAction(Request $request, $id)
@@ -57,41 +57,41 @@ class PartnerController extends Controller
 
         if ($id == 0)
         {
-            $partner = new Partner();
+            $supplier = new Supplier();
         }
         else
         {
-            $partner = $em->getRepository('AdminBundle:Partner')->find($id);
+            $supplier = $em->getRepository('AdminBundle:Supplier')->find($id);
         }
 
-        $form = $this->createForm(PartnerType::class, $partner);
+        $form = $this->createForm(SupplierType::class, $supplier);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid())
         {
-            $em->persist($partner);
+            $em->persist($supplier);
             $em->flush();
 
-            return $this->redirectToRoute('partner_index');
+            return $this->redirectToRoute('supplier_index');
         }
 
 
-        return $this->render('AdminBundle:Partner:edit.html.twig', array(
+        return $this->render('AdminBundle:Supplier:edit.html.twig', array(
                 'form' => $form->createView(),
             ));
     }
 
     /**
-     * @Route("/delete/{id}", name="partner_delete")
+     * @Route("/delete/{id}", name="supplier_delete")
      */
     public function deleteAction($id)
     {
         $em = $this->getDoctrine()->getManager();
-        $partner = $em->getRepository('AdminBundle:Partner')->find($id);
-        $em->remove($partner);
+        $supplier = $em->getRepository('AdminBundle:Supplier')->find($id);
+        $em->remove($supplier);
         $em->flush();
 
-        return $this->redirectToRoute('partner_index');
+        return $this->redirectToRoute('supplier_index');
     }
 }

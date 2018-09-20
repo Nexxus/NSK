@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Partner list</h1>
+    <h1>Supplier list</h1>
 
-    <h4><a href="{{ path('partner_edit', { 'id': 0 }) }}">Create new partner</a></h4>
+    <h4><a href="{{ path('supplier_edit', { 'id': 0 }) }}">Create new supplier</a></h4>
     
     <table class="table table-bordered">
         <thead>
@@ -16,16 +16,16 @@
             </tr>
         </thead>
         <tbody>
-        {% for partner in partners %}
+        {% for supplier in suppliers %}
             <tr>
-                <td>{{ partner.id }}</td>
-                <td>{{ partner.name }}</td>
-                <td>{{ partner.representative }}</td>
-                <td>{{ partner.email }}</td>
+                <td>{{ supplier.id }}</td>
+                <td>{{ supplier.name }}</td>
+                <td>{{ supplier.representative }}</td>
+                <td>{{ supplier.email }}</td>
                 <td>
-                    <a class="btn btn-success" href="{{ path('partner_edit', { 'id': partner.id }) }}">Edit</a>
-                    {% if partner.purchaseOrders|length == 0 %}
-                    <a class="btn btn-warning" href="{{ path('partner_delete', { 'id': partner.id }) }}">Delete</a>
+                    <a class="btn btn-success" href="{{ path('supplier_edit', { 'id': supplier.id }) }}">Edit</a>
+                    {% if supplier.purchaseOrders|length == 0 %}
+                    <a class="btn btn-warning" href="{{ path('supplier_delete', { 'id': supplier.id }) }}">Delete</a>
                     {% endif %}
                 </td>
             </tr>

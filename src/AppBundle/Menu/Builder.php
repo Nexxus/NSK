@@ -47,7 +47,7 @@ class Builder implements ContainerAwareInterface
             $menu->addChild('Inkoop', array('route' => 'purchaseorder_index'));
             $menu->addChild('Verkoop', array('route' => 'underconstruction'));
             $menu->addChild('Klanten', array('route' => 'customer_index'));
-            $menu->addChild('Partners', array('route' => 'partner_index'));
+            $menu->addChild('Leveranciers', array('route' => 'supplier_index'));
         }
 
         return $menu;

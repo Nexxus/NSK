@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
-use AdminBundle\Entity\Partner;
+use AdminBundle\Entity\Supplier;
 use AdminBundle\Entity\Address;
 use TrackBundle\Entity\PurchaseOrder;
 use TrackBundle\Entity\Product;
@@ -44,7 +44,7 @@ class PurchaseOrderController extends Controller
         $request = Request::createFromGlobals();
 
         // get contacts
-        $partnerRepository = $this->getDoctrine()->getRepository(Partner::class);
+        $supplierRepository = $this->getDoctrine()->getRepository(Supplier::class);
 
         // get types
         $types = $this->getDoctrine()->getRepository(ProductType::class);
@@ -58,9 +58,9 @@ class PurchaseOrderController extends Controller
             if($porder['contact']['new']=='new')
             {
                 $con = $porder['contact'];
-                $partner = new Partner();
-                $partner->setName($con['companyname']);
-                $partner->setKvkNr(0);
+                $supplier = new Supplier();
+                $supplier->setName($con['companyname']);
+                $supplier->setKvkNr(0);
 
                 // create and add address
                 $address = new Address();
@@ -70,21 +70,21 @@ class PurchaseOrderController extends Controller
                 $address->setCountry($con['country']);
                 $address->setState($con['province']);
                 $address->setZip($con['zipcode']);
-                $address->setCompany($partner);
+                $address->setCompany($supplier);
 
                 $em->persist($address);
 
-                $partner->addAddress($address);
+                $supplier->addAddress($address);
 
                 // create location
                 $location = new Location();
-                $location->setName($partner->getName());
+                $location->setName($supplier->getName());
 
                 $em->persist($location);
 
-                $partner->setLocation($location);
+                $supplier->setLocation($location);
             } else {
-                $partner = $partnerRepository->find($porder['contact']['new']);
+                $supplier = $supplierRepository->find($porder['contact']['new']);
             }
 
             // create products
@@ -106,7 +106,7 @@ class PurchaseOrderController extends Controller
                     $product->setName($product->getType()->getName());
                 }
                 $product->setQuantity($p['quantity']);
-                $product->setLocation($partner->getLocation());
+                $product->setLocation($supplier->getLocation());
 
                 $em->persist($product);
                 $em->flush();
@@ -114,10 +114,10 @@ class PurchaseOrderController extends Controller
 
             // create order
             $order = new PurchaseOrder();
-            $order->setLocation($partner->getLocation());
+            $order->setLocation($supplier->getLocation());
             $em->persist($order);
 
-            $em->persist($partner);
+            $em->persist($supplier);
             $em->flush();
 
             return $this->redirectToRoute('track_index');
@@ -125,7 +125,7 @@ class PurchaseOrderController extends Controller
 
         return $this->render('TrackBundle:PurchaseOrder:new.html.twig', array(
             'types' => $types->findAll(),
-            'partners' => $partnerRepository->findAll(),
+            'suppliers' => $supplierRepository->findAll(),
 
         ));
     }

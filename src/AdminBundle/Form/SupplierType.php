@@ -26,14 +26,14 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use AdminBundle\Entity\Partner;
+use AdminBundle\Entity\Supplier;
 use AdminBundle\Form\AddressType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
-class PartnerType extends AbstractType
+class SupplierType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -43,18 +43,18 @@ class PartnerType extends AbstractType
             ->add('representative', TextType::class, ['required' => false])
             ->add('email', EmailType::class)
             ->add('addresses', CollectionType::class, ['entry_type' => AddressType::class])
-            ->add('isSupplier', CheckboxType::class, ['required' => false, 'label' => 'This partner should be rewards as a supplier'])
-            ->add('isOwner', CheckboxType::class, ['required' => false, 'label' => 'This partner should be rewards as an owner'])
+            ->add('isPartner', CheckboxType::class, ['required' => false, 'label' => 'This supplier should be rewards as a partner'])
+            ->add('isOwner', CheckboxType::class, ['required' => false, 'label' => 'This supplier should be rewards as an owner'])
             ->add('save', SubmitType::class, ['label' => 'Save']);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => Partner::class,
+            'data_class' => Supplier::class,
             'csrf_protection' => true,
             'csrf_field_name' => '_token',
-            'csrf_token_id'   => 'Partner'
+            'csrf_token_id'   => 'Supplier'
         ));
     }
 }

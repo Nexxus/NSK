@@ -56,7 +56,7 @@ class DashboardController extends Controller
                     'Inkooporders' => 'purchaseOrder',
                     'Verkooporders' => 'salesOrder',
                     'Klanten' => 'customer',
-                    'Partners' => 'partner',
+                    'Leveranciers' => 'supplier',
                     'Locaties' => 'location'
                 ],
                 // this disabling callback is temporarely
