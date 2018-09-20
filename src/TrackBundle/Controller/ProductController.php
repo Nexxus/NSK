@@ -503,9 +503,7 @@ class ProductController extends Controller
     public function generateNewSku(Product $product)
     {
         $num = $product->getId();
-        echo "Test" .$num;
         $gsku = $product->getSku();
-        echo $gsku;
 
         // if type is set, add prefix
         if ($product->getType())

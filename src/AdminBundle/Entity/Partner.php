@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek â€“ info@copiatek.nl â€“ Postbus 547 2501 CM Den Haag
  */
 
 namespace AdminBundle\Entity;

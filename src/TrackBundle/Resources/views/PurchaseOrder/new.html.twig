@@ -5,26 +5,204 @@
 {% block body %}
     
     <h1>{% trans %}Create a Purchase Order{% endtrans %}</h1>
-    <a class="btn btn-success" onClick="addNewProduct()">+ Add Product</a>
-    {{ form_start(form) }}
-    {{ form_widget(form) }}
-    {{ form_end(form) }}
-    
+    <a class="btn btn-success" onClick="addProduct()">+ Add Product</a>
+    <a class="btn btn-danger" onClick="removeProduct()">- Remove</a>
     <hr>
+        <form method="POST" name="PurchaseOrder">
+            <div id="product-list" class="container">
+                <h4>Product List</h4><br>
+                <ol>
+                {% set k = 10 %}
+                {% for i in 1..k %}
+                    <div class="productList-item">
+                    <li class="form-group row">
+                        <div class="form-group col-sm-3">
+                            <label for="product-type">
+                                {% trans %}Type{% endtrans %}
+                            </label>
+                            <select class="form-control" id="product-type" name="porder[product][{{ i }}][type]">
+                                {% for type in types %}
+                                    <option name="{{ type.id }}">
+                                        {{ type.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-sm-2">
+                            <label for="product-quantity">
+                                {% trans %}Quantity{% endtrans %}
+                            </label>
+                            <input class="form-control" type="text" id="product-{{ i }}-quantity" name="porder[product][{{ i }}][quantity]">
+                        </div>
+                        {#<div class="form-group col-sm-3">
+                            <label for="product-comments">
+                                {% trans %}Name{% endtrans %}
+                            </label>
+                            <input class="form-control" type="text" id="product-name[{{ i }}]" name="porder[product][{{ i }}][name]">
+                        </div>#}
+                        <div class="form-group col-sm-4">
+                            <label for="product-comments">
+                                {% trans %}Comments{% endtrans %}
+                            </label>
+                            <input class="form-control" type="text" id="product-comments[{{ i }}]" name="porder[product][{{ i }}][comments]">
+                        </div>
+                    </li>
+                    </div>
+                    {% endfor %}
+                </ol>
+            </div>
+        <hr>
+            <div id="contact-select" class="container">
+                <h4>Select a Contact</h4> 
+                <div class="form-group row col-sm-6">
+                    <label for="contact-newexisting">
+                        {% trans %}New or Existing{% endtrans %}
+                    </label>
+                    <select class="form-control" name="porder[contact][new]" id="contact-newexisting" onChange="toggleContactForm()">
+                        <option value="choose">
+                            -- {% trans %} Choose {% endtrans %}--
+                        </option>
+                        <option name="new" value="new">
+                            {% trans %}New Contact{% endtrans %}
+                        </option>
+                        {% for p in partners %}
+                        <option name="{{ p.name }}" value="{{ p.id }}">
+                            {{ p.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-check col-sm-6">
+                     <b>{% trans %}Picked up?{% endtrans %}<br>
+                        <input class="form-check-input" type="radio" name="porder[contact][pickedup]" value="Yes">
+                        <label class="form-check-label" for="contact-pickedup">
+                            {% trans %}Yes{% endtrans %}
+                        </label>
+                        <input class="form-check-input" type="radio" name="porder[contact][pickedup]" value="No" checked>
+                        <label class="form-check-label" for="contact-pickedup">
+                            {% trans %}No{% endtrans %}
+                        </label>
+                    </b>
+                 </div>
+            </div>
+            <div id="contact-info-new" class="container">
+               <div class="form-group row col-sm-12">
+                <hr>
+                   <h4>Contact information</h4>
+                </div>
+               <div class="form-group row">
+                    <div class="form-group col-sm-6">
+                        <b>{% trans %}Name Company{% endtrans %}</b>
+                        <input class="form-control" type="text" name="porder[contact][companyname]" id="contact-company">
+                    </div>
+                    <div class="form-group col-sm-3">
+                        <b>{% trans %}Rep. Name{% endtrans %}</b>
+                        <input class="form-control" type="text" id="contact-PersonFName" name="porder[contact][PersonFName]">
+                    </div>
+                    <div class="form-group col-sm-3">
+                        <b>{% trans %}Rep. Lastname{% endtrans %}</b>
+                        <input class="form-control" type="text" id="contact-PersonLName" name="porder[contact][PersonLName]">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="form-group col-sm-4">
+                        <b>{% trans %}Phone Number{% endtrans %}</b>
+                        <input class="form-control" type="text" id="contact-phone" name="porder[contact][phone]">
+                    </div>
+                    <div class="form-group col-sm-4">
+                        <b>{% trans %}Email{% endtrans %}</b>
+                        <input class="form-control" type="email" id="contact-email" name="porder[contact][email]">
+                    </div>
+                    <div class="form-group col-sm-4">
+                        <b>{% trans %}Pickup Date{% endtrans %}</b>
+                        <input class="form-control" type="date" id="contact-pickupdate" name="porder[contact][pickupdate]">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="form-group col-sm-10">
+                        <b>{% trans %}Address{% endtrans %}</b>
+                        <input class="form-control" type="text" id="contact-address" name="porder[contact][address]">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="form-group col-sm-6">
+                        <b>{% trans %}City{% endtrans %}</b>
+                        <input class="form-control" type="text" id="contact-city" name="porder[contact][city]">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <b>{% trans %}Province{% endtrans %}</b>
+                        <input class="form-control" type="text" id="contact-Province" name="porder[contact][province]">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="form-group col-sm-6">
+                        <b>{% trans %}Zipcode{% endtrans %}</b>
+                        <input class="form-control" type="text" id="contact-zipcode" name="porder[contact][zipcode]">
+                    </div>
+                    <div class="form-group col-sm-6">
+                        <b>{% trans %}Country{% endtrans %}</b>
+                        <input class="form-control" type="text" id="contact-country" name="porder[contact][country]">
+                    </div>
+                </div>
+            </div>
+            <div id="contact-info-existing" class="container">
+            <button class="btn btn-success">Create Order</button>
+         </form>
  {% endblock %}
  
  {% block javascripts %}
      <script>
          var types = {{ types|json_encode|raw }};
+
+         var prodArr = [1];
  
          $(document).ready(function () {
+             var products = document.getElementsByClassName("productList-item");
+
+             renderProductList();
+             toggleContactForm();
+
          }); 
  
-         function addNewProduct() {
-             var current = document.getElementById('product-list').innerHTML;
-             var ptest = "bing<br>";
-             
-             document.getElementById('product-list').innerHTML = current+productitem;
+         function renderProductList() {
+            $('.productList-item').each(function(i, obj) {
+                $(obj).hide();
+                $(obj).find('input').prop("disabled", true);
+                $(obj).find('select').prop("disabled", true);
+                if(i in prodArr) {
+                    $(obj).show();
+                    $(obj).find('input').prop("disabled", false);
+                    $(obj).find('select').prop("disabled", false);
+                    console.log(prodArr);
+                }
+             });
+         }
+            
+         function addProduct() {
+             prodArr.push(1);
+             renderProductList();
+         }
+
+         function removeProduct() {
+             prodArr.pop(1);
+             renderProductList();
+         }
+
+         function toggleContactForm() {
+            switch($("#contact-newexisting").val()) {
+                case 'choose':
+                case 'new':
+                    console.log($("#contact-newexisting").val());
+                    $("#contact-info-new").prop("disabled", false);
+                    $("#contact-info-new").prop("disabled", false);
+                    $("#contact-info-new").show();
+                    break;
+                default:
+                    console.log($("#contact-newexisting").val());
+                    $("#contact-info-new").prop("disabled", true);
+                    $("#contact-info-new").prop("disabled", true);
+                    $("#contact-info-new").hide();
+            }
          }
      </script>
  {% endblock %}
