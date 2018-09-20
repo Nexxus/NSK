@@ -39,8 +39,8 @@ class OnRequestListener
         if($this->tokenStorage->getToken())
         {
             $user = $this->tokenStorage->getToken()->getUser();
-            
-            if($user->getLocation() 
+
+            if(is_a($user, \AppBundle\Entity\User::class) && $user->getLocation()
                && !in_array('ROLE_ADMIN', $user->getRoles())
                && !in_array('ROLE_COPIA', $user->getRoles()))
             {
