@@ -60,8 +60,6 @@ class ProductController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $user = $this->get('security.token_storage')->getToken()->getUser();
-
         // retrieve message
         $msg = $request->query->get('msg');
 
@@ -205,10 +203,10 @@ class ProductController extends Controller
         $form->handleRequest($request);
 
         // submit product form
-        if ($form->isSubmitted() && $form->isValid()) 
+        if ($form->isSubmitted() && $form->isValid())
         {
-            // generate sku if requested, or if sku is null 
-            if ($form->get('generatesku')->getData() === 'Yes' || $product->getSku() === null) 
+            // generate sku if requested, or if sku is null
+            if ($form->get('generatesku')->getData() === 'Yes' || $product->getSku() === null)
             {
                 $product = $this->generateNewSku($product);
             }
@@ -225,7 +223,7 @@ class ProductController extends Controller
                 if($this->checkFreeSku($copy->getSku() ) === true) {
                     $em->persist($copy);
                     $em->flush($copy);
-                    
+
                     if($copy->getType()) { $this->applyAttributeTemplate($copy); }
                 } else {
                     return $this->render('TrackBundle:Track:new.html.twig', array(
@@ -364,6 +362,23 @@ class ProductController extends Controller
     }
 
     /**
+     * Finds and displays a product entity.
+     *
+     * @Route("/inlist/{id}", name="track_inlist")
+     * @Method("GET")
+     */
+    public function inlistAction(Product $product)
+    {
+        $deleteForm = $this->createDeleteForm($product);
+
+        return $this->render('TrackBundle:Track:inlist.html.twig', array(
+            'product' => $product,
+            'delete_form' => $deleteForm->createView(),
+            'sellable'      => PRODUCT_SELLABLE,
+        ));
+    }
+
+    /**
      * Get a product by a SKU
      *
      * @param type $sku
@@ -405,14 +420,14 @@ class ProductController extends Controller
      *
      * @param Product $product
      */
-    private function applyAttributeTemplate(Product $product) 
+    private function applyAttributeTemplate(Product $product)
     {
         $em = $this->getDoctrine()->getManager();
 
         if($product->getType()) {
             // check if product already has attributes
             $missing = $this->compareAttributeTemplate($product);
-            
+
             // add missing attributes
             foreach($missing as $attr) {
                 $newAttributeRelation = new ProductAttributeRelation();
@@ -432,7 +447,7 @@ class ProductController extends Controller
     /*
      * Compares attributes of a product and product type, returns missing attributes
      */
-    private function compareAttributeTemplate(Product $product) 
+    private function compareAttributeTemplate(Product $product)
     {
         // get product attributes
         $prodAttrs = $product->getAttributeRelations();
@@ -458,7 +473,7 @@ class ProductController extends Controller
 
         return $attributes;
     }
-    
+
     /*
      * Returns true if a SKU in the database is free
      */
@@ -489,7 +504,7 @@ class ProductController extends Controller
         if ($product->getType())
         {
             $gsku = substr($product->getType(), 0, 1) . $gsku;
-        } 
+        }
 
         // increment if taken
         $free = $this->checkFreeSku($gsku);

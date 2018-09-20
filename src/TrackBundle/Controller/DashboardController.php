@@ -52,8 +52,8 @@ class DashboardController extends Controller
                 'expanded' => true,
                 'multiple' => false,
                 'choices' => [
-                    'Producten in voorraad' => 'product',
-                    'Inkooporders' => 'surchaseOrder',
+                    'Producten in voorraad' => 'track',
+                    'Inkooporders' => 'purchaseOrder',
                     'Verkooporders' => 'salesOrder',
                     'Klanten' => 'customer',
                     'Partners' => 'partner',
