@@ -20,7 +20,7 @@
  * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
  */
 
-namespace TrackBundle\Helper;
+namespace TrackBundle\Filter;
 
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 

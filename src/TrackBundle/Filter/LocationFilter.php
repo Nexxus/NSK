@@ -20,17 +20,16 @@
  * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
  */
 
-namespace TrackBundle\Helper;
+namespace TrackBundle\Filter;
 
 use Doctrine\ORM\Mapping\ClassMetaData;
 use Doctrine\ORM\Query\Filter\SQLFilter;
-use AppBundle\Entity\User;
 
 class LocationFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
     {
-        if ($targetEntity->name != User::class && $targetEntity->reflClass->hasProperty("location"))
+        if ($targetEntity->reflClass->hasProperty("location"))
         {
             return $targetTableAlias.'.location_id = ' . $this->getParameter('locationId');
         }

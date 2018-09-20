@@ -2,28 +2,16 @@
 
 namespace TrackBundle\Controller;
 
-use TrackBundle\Entity\PurchaseOrder;
-use TrackBundle\Entity\Attribute;
-use TrackBundle\Entity\Product;
-use TrackBundle\Entity\ProductType;
-use TrackBundle\Entity\ProductAttributeRelation;
-use TrackBundle\Entity\Location;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-
 use AdminBundle\Entity\Partner;
 use AdminBundle\Entity\Address;
+use TrackBundle\Entity\PurchaseOrder;
+use TrackBundle\Entity\Product;
+use TrackBundle\Entity\ProductType;
+use TrackBundle\Entity\Location;
 
 /**
  * @Route("/track/purchaseorder")
@@ -62,12 +50,12 @@ class PurchaseOrderController extends Controller
         $types = $this->getDoctrine()->getRepository(ProductType::class);
 
         // on submit, retrieve form
-        if(isset($porder)) 
+        if(isset($porder))
         {
             $porder = $request->get('porder');
 
             // new contact, create it
-            if($porder['contact']['new']=='new') 
+            if($porder['contact']['new']=='new')
             {
                 $con = $porder['contact'];
                 $partner = new Partner();
@@ -111,7 +99,7 @@ class PurchaseOrderController extends Controller
                 $product->setType($type);
                 $product = $this->generateNewSku($product);
 
-                if($p['comments']!='') 
+                if($p['comments']!='')
                 {
                     $product->setName($p['comments']);
                 } else {
@@ -162,6 +150,21 @@ class PurchaseOrderController extends Controller
         ));
     }
 
+    /**
+     * @Route("/inlist/{class}/{id}", name="purchaseorder_inlist")
+     * @Method("GET")
+     * @param string $entity Full entity name of object holding the orders collection association
+     */
+    public function inlistAction($entity, $id)
+    {
+        $object = $this->getDoctrine()->getEntityManager()->find($entity, $id);
+        $orders = $object->getPurchaseOrders();
+
+        return $this->render('TrackBundle:PurchaseOrder:inlist.html.twig', array(
+            'orders' => $orders
+        ));
+    }
+
     /*
      * Returns true if a SKU in the database is free
      */
@@ -185,12 +188,12 @@ class PurchaseOrderController extends Controller
     {
         $num  = 0;
         $gsku = "";
-        
+
         // if type is set, add prefix
         if ($product->getType())
         {
             $gsku = substr($product->getType()->getName(), 0, 1);
-        } 
+        }
 
         // increment if taken
         $free = $this->checkFreeSku($gsku);

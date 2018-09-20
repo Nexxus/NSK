@@ -282,7 +282,7 @@ class ProductController extends Controller
             $newAttribute = $editForm['newAttribute']->getData();
 
             // check if attribute exists, don't add if it doesn't
-            if(isset($newAttribute)) 
+            if(isset($newAttribute))
             {
                $alreadyExists = $product->containsAttributeRelation($newAttribute->getId());
             }
@@ -364,23 +364,6 @@ class ProductController extends Controller
                     array('err' => 'nif'));
         }
 
-    }
-
-    /**
-     * Finds and displays a product entity.
-     *
-     * @Route("/inlist/{id}", name="track_inlist")
-     * @Method("GET")
-     */
-    public function inlistAction(Product $product)
-    {
-        $deleteForm = $this->createDeleteForm($product);
-
-        return $this->render('TrackBundle:Track:inlist.html.twig', array(
-            'product' => $product,
-            'delete_form' => $deleteForm->createView(),
-            'sellable'      => PRODUCT_SELLABLE,
-        ));
     }
 
     /**

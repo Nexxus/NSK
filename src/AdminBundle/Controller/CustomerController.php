@@ -102,6 +102,7 @@ class CustomerController extends Controller
 
 
         return $this->render('AdminBundle:Customer:edit.html.twig', array(
+                'customer' => $customer,
                 'form' => $form->createView(),
             ));
     }
