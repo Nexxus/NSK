@@ -28,11 +28,11 @@ use TrackBundle\Entity\Product;
 use TrackBundle\Entity\PurchaseOrder;
 
 /**
- * Partner
+ * Supplier
  *
  * @ORM\Entity
  */
-class Partner extends ACompany
+class Supplier extends ACompany
 {
     public function __construct() {
         $this->products = new ArrayCollection();
@@ -45,7 +45,7 @@ class Partner extends ACompany
      *
      * @ORM\Column(type="boolean")
      */
-    private $isSupplier;
+    private $isPartner;
 
     /**
      * @var bool
@@ -55,14 +55,14 @@ class Partner extends ACompany
     private $isOwner;
 
     /**
-     * @var ArrayCollection|Product[] Products that this partner owns
+     * @var ArrayCollection|Product[] Products that this supplier owns
      *
      * @ORM\OneToMany(targetEntity="TrackBundle\Entity\Product", mappedBy="owner", fetch="LAZY")
      */
     private $products;
 
     /**
-     * @var ArrayCollection|PurchaseOrder[] Purchase orders that this partner supplied
+     * @var ArrayCollection|PurchaseOrder[] Purchase orders that this supplier supplied
      *
      * @ORM\OneToMany(targetEntity="TrackBundle\Entity\PurchaseOrder", mappedBy="supplier", fetch="LAZY")
      */
@@ -71,11 +71,11 @@ class Partner extends ACompany
     /**
      * @param bool $name
      *
-     * @return Partner
+     * @return Supplier
      */
-    public function setIsSupplier($isSupplier)
+    public function setIsPartner($isPartner)
     {
-        $this->isSupplier = $isSupplier;
+        $this->isPartner = $isPartner;
 
         return $this;
     }
@@ -83,15 +83,15 @@ class Partner extends ACompany
     /**
      * @return bool
      */
-    public function getIsSupplier()
+    public function getIsPartner()
     {
-        return $this->isSupplier;
+        return $this->isPartner;
     }
 
     /**
      * @param bool $name
      *
-     * @return Partner
+     * @return Supplier
      */
     public function setIsOwner($isOwner)
     {
@@ -110,7 +110,7 @@ class Partner extends ACompany
 
     /**
      * @param PurchaseOrder $purchaseOrder
-     * @return Partner
+     * @return Supplier
      */
     public function addPurchaseOrder(PurchaseOrder $purchaseOrder)
     {
@@ -137,7 +137,7 @@ class Partner extends ACompany
 
     /**
      * @param Product $product
-     * @return Partner
+     * @return Supplier
      */
     public function addProduct(Product $product)
     {

@@ -68,7 +68,7 @@ doctrine:
         auto_mapping: true
         filters:
             location:
-                class:   TrackBundle\Helper\LocationFilter
+                class:   TrackBundle\Filter\LocationFilter
                 enabled: false
 
 # Swiftmailer Configuration

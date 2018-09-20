@@ -22,28 +22,29 @@
 
 namespace AdminBundle\Controller;
 
-use AdminBundle\Entity\Customer;
-use AdminBundle\Form\CustomerType;
+use AdminBundle\Entity\Supplier;
+use AdminBundle\Form\SupplierType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+
 
 /**
- * @Route("/admin/customer")
+ * @Route("/admin/supplier")
  */
-class CustomerController extends Controller
+class SupplierController extends Controller
 {
     /**
-     * @Route("/", name="customer_index")
+     * @Route("/", name="supplier_index")
      */
     public function indexAction(Request $request)
     {
-        $repo = $this->getDoctrine()->getRepository('AdminBundle:Customer');
+        $repo = $this->getDoctrine()->getRepository('AdminBundle:Supplier');
 
-        $customers = array();
+        $suppliers = array();
 
         $form = $this->createFormBuilder(array(), array('allow_extra_fields' => true))
             ->add('query', TextType::class, ['label' => false, 'attr' => ['placeholder' => 'Zoeken op Id, KvK, e-mail of (deel van) naam']])
@@ -55,24 +56,25 @@ class CustomerController extends Controller
         if ($form->isSubmitted() && $form->isValid())
         {
             $data = $form->getData();
-            $customers = $repo->findBySearchQuery($data['query']);
+            $suppliers = $repo->findBySearchQuery($data['query']);
         }
         else
         {
-            $customers = $repo->findAll();
+            $suppliers = $repo->findAll();
         }
 
         $paginator = $this->get('knp_paginator');
-        $customersPage = $paginator->paginate($customers, $request->query->getInt('page', 1), 10);
+        $suppliersPage = $paginator->paginate($suppliers, $request->query->getInt('page', 1), 10);
 
-        return $this->render('AdminBundle:Customer:index.html.twig', array(
-            'customers' => $customersPage,
+        return $this->render('AdminBundle:Supplier:index.html.twig', array(
+            'suppliers' => $suppliersPage,
             'form' => $form->createView()
             ));
     }
 
+
     /**
-     * @Route("/edit/{id}", name="customer_edit")
+     * @Route("/edit/{id}", name="supplier_edit")
      * @Method({"GET", "POST"})
      */
     public function editAction(Request $request, $id)
@@ -81,42 +83,41 @@ class CustomerController extends Controller
 
         if ($id == 0)
         {
-            $customer = new Customer();
+            $supplier = new Supplier();
         }
         else
         {
-            $customer = $em->getRepository('AdminBundle:Customer')->find($id);
+            $supplier = $em->getRepository('AdminBundle:Supplier')->find($id);
         }
 
-        $form = $this->createForm(CustomerType::class, $customer);
+        $form = $this->createForm(SupplierType::class, $supplier);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid())
         {
-            $em->persist($customer);
+            $em->persist($supplier);
             $em->flush();
 
-            return $this->redirectToRoute('customer_index');
+            return $this->redirectToRoute('supplier_index');
         }
 
 
-        return $this->render('AdminBundle:Customer:edit.html.twig', array(
-                'customer' => $customer,
+        return $this->render('AdminBundle:Supplier:edit.html.twig', array(
                 'form' => $form->createView(),
             ));
     }
 
     /**
-     * @Route("/delete/{id}", name="customer_delete")
+     * @Route("/delete/{id}", name="supplier_delete")
      */
     public function deleteAction($id)
     {
         $em = $this->getDoctrine()->getManager();
-        $customer = $em->getRepository('AdminBundle:Customer')->find($id);
-        $em->remove($customer);
+        $supplier = $em->getRepository('AdminBundle:Supplier')->find($id);
+        $em->remove($supplier);
         $em->flush();
 
-        return $this->redirectToRoute('customer_index');
+        return $this->redirectToRoute('supplier_index');
     }
 }

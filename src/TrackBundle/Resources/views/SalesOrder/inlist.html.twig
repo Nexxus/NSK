@@ -1,0 +1,37 @@
+
+<div class="panel panel-default">
+
+    <div class="panel-heading"><h4><span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Sales orders{% endtrans %}</h4></div>
+
+    <table class="table table-bordered">
+        <thead>
+            <th>
+                Order #
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Location
+            </th>
+            <th>
+                Supplier
+            </th>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+                <tr>
+                    <td>{{ order.orderNr }}</td>
+                    <td>{{ order.status }}</td>
+                    <td>{{ order.location }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="99">
+                        <h4>{% trans %}No records found{% endtrans %}</h4>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

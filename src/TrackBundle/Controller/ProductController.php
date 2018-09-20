@@ -28,20 +28,14 @@ use TrackBundle\Entity\Attribute;
 use TrackBundle\Entity\Product;
 use TrackBundle\Entity\ProductAttributeRelation;
 use TrackBundle\Form\ProductType;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 /**
  * Product controller.
@@ -66,6 +60,8 @@ class ProductController extends Controller
         // retrieve search query
         $search_query = $request->request->get('item_search');
 
+        $search_query1 = $request->request->get('query');
+
         // session for managing search queries
         $search_session = new Session();
         $search_session = $this->storeSearchQuery($search_query, $search_session);
@@ -85,20 +81,6 @@ class ProductController extends Controller
         // load search query from slide menu
         $stored_query = $this->loadSearchQuery($search_session);
         $productquery = $this->searchSpecific($productquery, $stored_query);
-
-        // Only admins and Copiatek people can see all products
-        // Jorrit: This code is obsolete now it is in class LocationFilter
-        //if($user->getLocation() !== null
-        //        && !in_array('ROLE_ADMIN', $user->getRoles())
-        //        && !in_array('ROLE_COPIA', $user->getRoles())
-        //) {
-        //    // convert location to ID using the manager
-        //    $locid = $em->getUnitOfWork()->getEntityIdentifier($user->getLocation());
-        //    $userloc = $locid['id'];
-
-        //    $productquery->andWhere("p.location = ". $userloc);
-        //}
-
         $products = $productquery->getQuery()->getResult();
 
         // obtain data for the dropdowns
@@ -282,7 +264,7 @@ class ProductController extends Controller
             $newAttribute = $editForm['newAttribute']->getData();
 
             // check if attribute exists, don't add if it doesn't
-            if(isset($newAttribute)) 
+            if(isset($newAttribute))
             {
                $alreadyExists = $product->containsAttributeRelation($newAttribute->getId());
             }
@@ -364,23 +346,6 @@ class ProductController extends Controller
                     array('err' => 'nif'));
         }
 
-    }
-
-    /**
-     * Finds and displays a product entity.
-     *
-     * @Route("/inlist/{id}", name="track_inlist")
-     * @Method("GET")
-     */
-    public function inlistAction(Product $product)
-    {
-        $deleteForm = $this->createDeleteForm($product);
-
-        return $this->render('TrackBundle:Track:inlist.html.twig', array(
-            'product' => $product,
-            'delete_form' => $deleteForm->createView(),
-            'sellable'      => PRODUCT_SELLABLE,
-        ));
     }
 
     /**

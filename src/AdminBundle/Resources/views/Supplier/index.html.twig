@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Supplier list</h1>
+
+    {{ form_start(form) }}
+    <div class="row" style="margin-bottom: 20px">
+        <div class="col-sm-7">
+            {{ form_widget(form.query) }}
+        </div>
+        <div class="col-sm-2">
+            {{ form_widget(form.submit) }}
+        </div>
+        <div class="col-sm-3">
+            <a href="{{ path('supplier_edit', { 'id': 0 }) }}" class="btn btn-primary pull-right" role="button">Create new supplier</a>
+        </div>
+    </div>
+    {{ form_end(form) }}
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th{% if suppliers.isSorted('c.id') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(suppliers, 'Id', 'c.id') }}</th>
+                <th{% if suppliers.isSorted('c.name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(suppliers, 'Name', 'c.name') }}</th>
+                <th>Representative</th>
+                <th{% if suppliers.isSorted('c.email') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(suppliers, 'E-mail', 'c.email') }}</th>
+                <th width="1%"></th>
+            </tr>
+            <tr>
+            </tr>
+        </thead>
+        <tbody>
+        {% for supplier in suppliers %}
+            <tr>
+                <td>{{ supplier.id }}</td>
+                <td>{{ supplier.name }}</td>
+                <td>{{ supplier.representative }}</td>
+                <td>{{ supplier.email }}</td>
+                <td nowrap>
+                    <a class="btn btn-success" href="{{ path('supplier_edit', { 'id': supplier.id }) }}"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
+                    {% if supplier.purchaseOrders|length == 0 %}
+                    <a class="btn btn-danger" href="{{ path('supplier_delete', { 'id': supplier.id }) }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="99">
+                    <h4>{% trans %}No records found{% endtrans %}</h4>
+                </td>
+            </tr>
+        {% endfor %}
+        
+        </tbody>
+    </table>
+
+    <div class="navigation">
+        {{ knp_pagination_render(suppliers) }}
+    </div>
+{% endblock %}
