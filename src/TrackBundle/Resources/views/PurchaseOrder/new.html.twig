@@ -22,7 +22,7 @@
                             </label>
                             <select class="form-control" id="product-type" name="porder[product][{{ i }}][type]">
                                 {% for type in types %}
-                                    <option name="{{ type.id }}">
+                                    <option value="{{ type.id }}">
                                         {{ type.name }}
                                     </option>
                                 {% endfor %}
@@ -51,27 +51,13 @@
                     {% endfor %}
                 </ol>
             </div>
-        <hr>
-            <div id="contact-select" class="container">
-                <h4>Select a Contact</h4> 
-                <div class="form-group row col-sm-6">
-                    <label for="contact-newexisting">
-                        {% trans %}New or Existing{% endtrans %}
-                    </label>
-                    <select class="form-control" name="porder[contact][new]" id="contact-newexisting" onChange="toggleContactForm()">
-                        <option value="choose">
-                            -- {% trans %} Choose {% endtrans %}--
-                        </option>
-                        <option name="new" value="new">
-                            {% trans %}New Contact{% endtrans %}
-                        </option>
-                        {% for p in partners %}
-                        <option name="{{ p.name }}" value="{{ p.id }}">
-                            {{ p.name }}
-                        </option>
-                        {% endfor %}
-                    </select>
+            <hr>
+            <div id="order-info" class="container">
+                <h4>Order Information</h4> 
+                <div class="form-check col-sm-12">
+                     <b>{% trans %}Order Status{% endtrans %}</b>
                 </div>
+                <br>
                 <div class="form-check col-sm-6">
                      <b>{% trans %}Picked up?{% endtrans %}<br>
                         <input class="form-check-input" type="radio" name="porder[contact][pickedup]" value="Yes">
@@ -84,6 +70,25 @@
                         </label>
                     </b>
                  </div>
+            </div>
+            <hr>
+            <div id="contact-select" class="container">
+                <h4>Select a Contact</h4> 
+                <div class="form-group row col-sm-6">
+                    <label for="contact-newexisting">
+                        {% trans %}New or Existing{% endtrans %}
+                    </label>
+                    <select class="form-control" name="porder[contact][new]" id="contact-newexisting" onChange="toggleContactForm()" required>
+                        <option name="new" value="new">
+                            {% trans %}New Contact{% endtrans %}
+                        </option>
+                        {% for p in partners %}
+                        <option name="{{ p.name }}" value="{{ p.id }}">
+                            {{ p.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
             <div id="contact-info-new" class="container">
                <div class="form-group row col-sm-12">

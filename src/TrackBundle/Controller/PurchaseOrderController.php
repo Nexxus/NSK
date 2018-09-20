@@ -2,6 +2,7 @@
 
 namespace TrackBundle\Controller;
 
+use TrackBundle\Entity\PurchaseOrder;
 use TrackBundle\Entity\Attribute;
 use TrackBundle\Entity\Product;
 use TrackBundle\Entity\ProductType;
@@ -34,8 +35,11 @@ class PurchaseOrderController extends Controller
      */
     public function indexAction()
     {
+        $orderRepo = $this->getDoctrine()->getRepository(PurchaseOrder::class)
+            ->findAll();
+
         return $this->render('TrackBundle:PurchaseOrder:index.html.twig', array(
-            // ...
+            'orders' => $orderRepo,
         ));
     }
 
@@ -52,12 +56,10 @@ class PurchaseOrderController extends Controller
         $request = Request::createFromGlobals();
 
         // get contacts
-        $contacts = $this->getDoctrine()->getRepository(Partner::class)
-            ->findAll();
+        $partnerRepository = $this->getDoctrine()->getRepository(Partner::class);
 
         // get types
-        $types = $this->getDoctrine()->getRepository(ProductType::class)
-            ->findAll();
+        $types = $this->getDoctrine()->getRepository(ProductType::class);
 
         // on submit, retrieve form
         if(isset($porder)) 
@@ -68,9 +70,9 @@ class PurchaseOrderController extends Controller
             if($porder['contact']['new']=='new') 
             {
                 $con = $porder['contact'];
-                $company = new Partner();
-                $company->setName($con['companyname']);
-                $company->setKvkNr(0);
+                $partner = new Partner();
+                $partner->setName($con['companyname']);
+                $partner->setKvkNr(0);
 
                 // create and add address
                 $address = new Address();
@@ -80,20 +82,22 @@ class PurchaseOrderController extends Controller
                 $address->setCountry($con['country']);
                 $address->setState($con['province']);
                 $address->setZip($con['zipcode']);
-                $address->setCompany($company);
+                $address->setCompany($partner);
 
-                $company->addAddress($address);
+                $em->persist($address);
+
+                $partner->addAddress($address);
 
                 // create location
                 $location = new Location();
-                $location->setName($company->getName());
+                $location->setName($partner->getName());
+
+                $em->persist($location);
+
+                $partner->setLocation($location);
+            } else {
+                $partner = $partnerRepository->find($porder['contact']['new']);
             }
-
-            // create order
-            echo "<pre>"; print_r($porder);echo "</pre>";
-
-            // access ProductController for methods
-            // $productController = $this->get('productController');
 
             // create products
             foreach($porder['product'] as $p)
@@ -106,24 +110,35 @@ class PurchaseOrderController extends Controller
 
                 $product->setType($type);
                 $product = $this->generateNewSku($product);
-                $product->setName($p['comments']);
+
+                if($p['comments']!='') 
+                {
+                    $product->setName($p['comments']);
+                } else {
+                    $product->setName($product->getType()->getName());
+                }
                 $product->setQuantity($p['quantity']);
-                $product->setLocation($location);
+                $product->setLocation($partner->getLocation());
 
                 $em->persist($product);
+                $em->flush();
             }
 
-            $em->persist($company);
-            $em->persist($address);
-            $em->persist($location);
+            // create order
+            $order = new PurchaseOrder();
+            $order->setLocation($partner->getLocation());
+            $em->persist($order);
+
+            $em->persist($partner);
             $em->flush();
 
             return $this->redirectToRoute('track_index');
         }
 
         return $this->render('TrackBundle:PurchaseOrder:new.html.twig', array(
-            'types' => $types,
-            'partners' => $partners,
+            'types' => $types->findAll(),
+            'partners' => $partnerRepository->findAll(),
+
         ));
     }
 
@@ -174,8 +189,7 @@ class PurchaseOrderController extends Controller
         // if type is set, add prefix
         if ($product->getType())
         {
-            $gsku = substr($product->getType(), 0, 1) . $gsku;
-            echo "sku is " . $gsku;
+            $gsku = substr($product->getType()->getName(), 0, 1);
         } 
 
         // increment if taken
@@ -185,8 +199,6 @@ class PurchaseOrderController extends Controller
             $gsku = substr($product->getType(), 0, 1) . $num;
             $free = $this->checkFreeSku($gsku);
         }
-
-        echo "sku" . $gsku;
 
         $product->setSku($gsku);
         return $product;
