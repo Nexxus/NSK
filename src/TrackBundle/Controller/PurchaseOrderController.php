@@ -67,6 +67,8 @@ class PurchaseOrderController extends Controller
 
         $request = Request::createFromGlobals();
 
+        $location = $this->get('security.token_storage')->getToken()->getUser()->getLocation();
+
         // get contacts
         $supplierRepository = $this->getDoctrine()->getRepository(Supplier::class);
 
@@ -97,16 +99,12 @@ class PurchaseOrderController extends Controller
                 $address->setCompany($supplier);
 
                 $em->persist($address);
+                $em->persist($supplier);
 
                 $supplier->addAddress($address);
 
-                // create location
-                $location = new Location();
-                $location->setName($supplier->getName());
-
-                $em->persist($location);
-
                 $supplier->setLocation($location);
+
             } else {
                 $supplier = $supplierRepository->find($porder['contact']['new']);
             }
@@ -130,7 +128,7 @@ class PurchaseOrderController extends Controller
                     $product->setName($product->getType()->getName());
                 }
                 $product->setQuantity($p['quantity']);
-                $product->setLocation($supplier->getLocation());
+                $product->setLocation($location);
 
                 $em->persist($product);
                 $em->flush();
@@ -138,13 +136,14 @@ class PurchaseOrderController extends Controller
 
             // create order
             $order = new PurchaseOrder();
-            $order->setLocation($supplier->getLocation());
+            $order->setSupplier($supplier);
+            $order->setLocation($location);
             $em->persist($order);
 
             $em->persist($supplier);
             $em->flush();
 
-            return $this->redirectToRoute('track_index');
+            return $this->redirectToRoute('purchaseorder_index');
         }
 
         return $this->render('TrackBundle:PurchaseOrder:new.html.twig', array(
