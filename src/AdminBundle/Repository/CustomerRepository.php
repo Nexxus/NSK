@@ -22,8 +22,6 @@
 
 namespace AdminBundle\Repository;
 
-use AdminBundle\Entity\Customer;
-
 class CustomerRepository extends \Doctrine\ORM\EntityRepository
 {
     /**

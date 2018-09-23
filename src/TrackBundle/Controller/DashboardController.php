@@ -43,7 +43,7 @@ class DashboardController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $data = array('type' => 'customer');
+        $data = array('type' => 'purchaseOrder');
 
         $form = $this->createFormBuilder($data)
             ->add('query', TextType::class, ['label' => false])
@@ -53,22 +53,12 @@ class DashboardController extends Controller
                 'multiple' => false,
                 'choices' => [
                     'Producten in voorraad' => 'track',
-                    'Inkooporders' => 'purchaseOrder',
-                    'Verkooporders' => 'salesOrder',
+                    'Inkooporders' => 'purchaseorder',
+                    'Verkooporders' => 'salesorder',
                     'Klanten' => 'customer',
-                    'Partners' => 'partner',
-                    'Locaties' => 'location'
-                ],
-                // this disabling callback is temporarely
-                'choice_attr' => function($key, $val, $index) {
-                    $disabled = false;
-
-                    if ($key != "customer") {
-                        $disabled = true;
-                    }
-
-                    return $disabled ? ['disabled' => 'disabled'] : [];
-                }
+                    'Leveranciers' => 'supplier'
+                    //'Locaties' => 'location'
+                ]
             ])
             ->add('submit', SubmitType::class, ['label' => 'Search'])
             ->getForm();

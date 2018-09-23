@@ -33,7 +33,7 @@ use TrackBundle\Entity\Location;
  * @ORM\Entity(repositoryClass="AdminBundle\Repository\CompanyRepository")
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"c" = "Customer", "p" = "Partner"})
+ * @ORM\DiscriminatorMap({"c" = "Customer", "s" = "Supplier"})
  */
 abstract class ACompany
 {

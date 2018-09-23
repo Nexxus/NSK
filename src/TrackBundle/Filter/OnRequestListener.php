@@ -35,11 +35,10 @@ class OnRequestListener
         $this->tokenStorage = $tokenStorage;
     }
     public function onKernelRequest(GetResponseEvent $event)
-    {
+    {   
         if($this->tokenStorage->getToken())
         {
             $user = $this->tokenStorage->getToken()->getUser();
-
             if(is_a($user, \AppBundle\Entity\User::class) && $user->getLocation()
                && !in_array('ROLE_ADMIN', $user->getRoles())
                && !in_array('ROLE_COPIA', $user->getRoles()))

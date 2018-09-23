@@ -4,12 +4,13 @@
     <h1>Customer edit</h1>
 
     {{ form_start(form) }}
-        {{ form_widget(form) }}
+    {{ form_widget(form) }}
     {{ form_end(form) }}
 
-    <ul>
-        <li>
-            <a href="{{ path('customer_index') }}">Back to the list</a>
-        </li>
-    </ul>
+    {{
+     render(controller(
+            'TrackBundle:SalesOrder:inlist',
+            { 'entity': 'AdminBundle:Customer', 'id': customer.id, }
+        ))
+    }}
 {% endblock %}

@@ -40,7 +40,7 @@ class OnRequestListener
         {
             $user = $this->tokenStorage->getToken()->getUser();
             
-            if($user->getLocation() 
+            if(isset($user->location) 
                && !in_array('ROLE_ADMIN', $user->getRoles())
                && !in_array('ROLE_COPIA', $user->getRoles()))
             {
