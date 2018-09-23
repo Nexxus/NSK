@@ -66,10 +66,6 @@ doctrine:
         auto_generate_proxy_classes: "%kernel.debug%"
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
-        filters:
-            location:
-                class:   TrackBundle\Helper\LocationFilter
-                enabled: false
 
 # Swiftmailer Configuration
 swiftmailer:
@@ -86,8 +82,3 @@ fos_user:
     from_email:
         address: ben.wolthuis@copiatek.nl
         sender_name: Copiatek BV
-
-# KnpPaginatorBundle
-knp_paginator:
-    template:
-        pagination: '@KnpPaginator/Pagination/twitter_bootstrap_v3_pagination.html.twig' 
