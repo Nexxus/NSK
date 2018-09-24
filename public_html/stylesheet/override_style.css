@@ -55,6 +55,10 @@ a.list-group-item-success.active {
     background: #15007c;
 }
 
+.nav-dashboard > li > a {
+    padding: 10px 3px;
+}
+
 .btn {
     padding: 5px 10px;
 }

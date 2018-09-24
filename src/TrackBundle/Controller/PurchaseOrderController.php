@@ -103,8 +103,13 @@ class PurchaseOrderController extends Controller
 
                 $supplier->addAddress($address);
 
-                $supplier->setLocation($location);
+                // create location
+                $location = new Location();
+                $location->setName($supplier->getName());
 
+                $em->persist($location);
+
+                $supplier->setLocation($location);
             } else {
                 $supplier = $supplierRepository->find($porder['contact']['new']);
             }
@@ -128,7 +133,7 @@ class PurchaseOrderController extends Controller
                     $product->setName($product->getType()->getName());
                 }
                 $product->setQuantity($p['quantity']);
-                $product->setLocation($location);
+                $product->setLocation($supplier->getLocation());
 
                 $em->persist($product);
                 $em->flush();
@@ -136,8 +141,7 @@ class PurchaseOrderController extends Controller
 
             // create order
             $order = new PurchaseOrder();
-            $order->setSupplier($supplier);
-            $order->setLocation($location);
+            $order->setLocation($supplier->getLocation());
             $em->persist($order);
 
             $em->persist($supplier);
