@@ -284,9 +284,10 @@ class ProductController extends Controller
             $em->persist($product);
             $em->flush();
 
-            return $this->redirectToRoute('track_edit',
+            /*return $this->redirectToRoute('track_edit',
                 array('id' => $product->getId())
-            );
+            );*/
+            return $this->redirectToRoute('track_index');
 
         }
 
