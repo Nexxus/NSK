@@ -9,12 +9,6 @@ services:
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
     app.menubuilder:
         class: AppBundle\Menu\Builder
-<<<<<<< HEAD
-    productController:
-        class: TrackBundle\Controller\ProductController
-        arguments:
-          $em: '@doctrine.orm.entity_manager'
-=======
     on_request_listener:
         class: TrackBundle\Filter\OnRequestListener
         arguments: ["@doctrine.orm.entity_manager", "@security.token_storage"]
@@ -23,4 +17,3 @@ services:
                 name: kernel.event_listener
                 event: kernel.request
                 method: onKernelRequest
->>>>>>> 0646e40759d39b397190db9ff3785e91fbe7a0f3
