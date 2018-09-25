@@ -25,7 +25,7 @@ namespace TrackBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use TrackBundle\Entity\AOrder;
-use AdminBundle\Entity\ACompany;
+use TrackBundle\Entity\ACompany;
 use AppBundle\Entity\User;
 use TrackBundle\Entity\Product;
 
@@ -86,7 +86,7 @@ class Location
     /**
      * @var ArrayCollection|ACompany[]
      *
-     * @ORM\OneToMany(targetEntity="AdminBundle\Entity\ACompany", mappedBy="location", fetch="LAZY")
+     * @ORM\OneToMany(targetEntity="TrackBundle\Entity\ACompany", mappedBy="location", fetch="LAZY")
      */
     private $companies;
 

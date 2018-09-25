@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Customer edit</h1>
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+
+    {{
+     render(controller(
+            'TrackBundle:SalesOrder:inlist',
+            { 'entity': 'TrackBundle:Customer', 'id': customer.id, }
+        ))
+    }}
+{% endblock %}

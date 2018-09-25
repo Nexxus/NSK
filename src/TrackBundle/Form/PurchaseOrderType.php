@@ -49,7 +49,7 @@ class PurchaseOrderType extends AbstractType
                 'choice_label' => 'name'
             ])
             ->add('supplier', EntityType::class, [
-                'class' => 'AdminBundle:Partner',
+                'class' => 'TrackBundle:Partner',
                 'choice_label' => 'name'
             ]);
 

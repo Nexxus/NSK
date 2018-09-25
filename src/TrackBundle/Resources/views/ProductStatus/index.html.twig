@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>{% trans %}Status List{% endtrans %}</h1>
+    <h4><a href="{{ path('pstatus_create') }}">{% trans %}Create a new Status{% endtrans %}</a></h4>
+    <table class="table table-striped">
+        <tr>
+            <th>Index</th>
+            <th>{% trans %}Name{% endtrans %}</th>
+            <th>&nbsp;</th>
+        </tr>
+    {% for a in productstatus %}
+        <tr>
+            <td>{{ a.pindex }}</td>
+            <td>{{ a.name }}</td>
+            <td>
+                <a href="{{ path("pstatus_edit", {id: a.id}) }}">
+                    <button type="button" class="btn btn-default">
+                        {% trans %}Edit{% endtrans %}
+                    </button>
+                </a>
+                {% if a.product_count == 0 %}
+                <a href="{{ path("pstatus_delete", {id: a.id, pindex: a.pindex}) }}">
+                    <button type="button" class="btn btn-danger" href="#">
+                        {% trans %}Delete{% endtrans %}
+                    </button>
+                </a>
+                {% else %}
+                    <button type="button" class="btn">
+                    {% trans %}Status is in use{% endtrans %}
+                    </button>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endblock %}

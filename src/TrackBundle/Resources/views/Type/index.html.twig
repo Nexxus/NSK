@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+     <h1>{% trans %}Product Type List{% endtrans %}</h1>
+    <h2>{{ app.request.get('order') }}</h2>
+    <h4><a href="{{ path('producttype_new') }}">{% trans %}Create a new product type{% endtrans %}</a></h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Pindex</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+    {% for i in products %}
+        <tr>
+            <td>{{ i.id }}</td>
+            <td><a href="{{ path('producttype_show', {'id': i.id}) }}">{{ i.name }}</a></td>
+            <td>{{ i.pindex }}</td>
+            <td>
+                <a href="{{ path('producttype_edit', {'id': i.id} ) }}"><button class="btn btn-success" name="Edit">Edit</button></a>
+                {% if i.productcount < 1 %}
+                <a href="{{ path('producttype_delete', {'id': i.id} ) }}"><button class="btn btn-danger" name="Delete">Delete</button></a>
+            {% else %}
+                <button class="btn" name="CannotDelete">{% trans %}Type in use{% endtrans %}</button>
+            {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+{% endblock %}
+    

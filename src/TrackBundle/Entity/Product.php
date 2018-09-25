@@ -24,7 +24,7 @@ namespace TrackBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
-use AdminBundle\Entity\Supplier;
+use TrackBundle\Entity\Supplier;
 
 /**
  * Product
@@ -174,7 +174,7 @@ class Product
     /**
      * @var Supplier
      *
-     * @ORM\ManyToOne(targetEntity="AdminBundle\Entity\Supplier", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="TrackBundle\Entity\Supplier", fetch="EAGER")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id")
      */
     private $owner;

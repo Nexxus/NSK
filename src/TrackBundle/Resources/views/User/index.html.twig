@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>{% trans %}User List{% endtrans %}</h1>
+    
+    <a href="{{ path('admin_user_new')}}"><h4>{% trans %}Create new User{% endtrans %}</h4></a>
+    
+    <table class="table table-striped">
+        <tr>
+            <th>#</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>&nbsp;</th>
+        </tr>
+        {% for u in users %}
+            <tr>
+                <td>{{ u.id }}</td>
+                <td>{{ u.username }}</td>
+                <td>{{ u.email }}</td>
+                <td>
+                    {{ u.roles[0] }}
+                </td>
+                <td>
+                    <a href="{{ path('admin_user_edit', {'id': u.id}) }}">
+                    <button class="btn" name="editUser" >
+                        Edit
+                    </button></a>
+                    {#<a href="{{ path('admin_user_delete', {'id': u.id}) }}">
+                    <button class="btn" name="deleteUser" >
+                        Edit
+                    </button></a>#}
+                </td>
+            </tr>
+        {% endfor %}
+        
+    </table>
+{% endblock %}

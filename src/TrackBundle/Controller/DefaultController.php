@@ -17,44 +17,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek â€“ info@copiatek.nl â€“ Postbus 547 2501 CM Den Haag
  */
 
-namespace TrackBundle\Entity;
+namespace TrackBundle\Controller;
 
-use Doctrine\ORM\Mapping as ORM;
-use TrackBundle\Entity\Supplier;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
 /**
- * PurchaseOrder
- *
- * @ORM\Entity
- */
-class PurchaseOrder extends AOrder
+* @Route("/admin")
+*/
+class DefaultController extends Controller
 {
     /**
-     * @var Supplier Deliverer of this order
-     *
-     * @ORM\ManyToOne(targetEntity="TrackBundle\Entity\Supplier", fetch="EAGER")
-     * @ORM\JoinColumn(name="supplier_id", referencedColumnName="id")
-     */
-    private $supplier;
+     * @Route("/", name="admin_index")
 
-    /**
-     * @return PurchaseOrder
      */
-    public function setSupplier(Supplier $supplier)
+    public function indexAction()
     {
-        $this->supplier = $supplier;
-
-        return $this;
-    }
-
-    /**
-     * @return Supplier
-     */
-    public function getSupplier()
-    {
-        return $this->supplier;
+        return $this->render('TrackBundle::index.html.twig');
     }
 }

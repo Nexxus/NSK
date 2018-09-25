@@ -23,7 +23,7 @@
 namespace TrackBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use AdminBundle\Entity\Customer;
+use TrackBundle\Entity\Customer;
 
 /**
  * SalesOrder
@@ -35,7 +35,7 @@ class SalesOrder extends AOrder
     /**
      * @var Customer Buyer of this order
      *
-     * @ORM\ManyToOne(targetEntity="AdminBundle\Entity\Customer", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="TrackBundle\Entity\Customer", fetch="EAGER")
      * @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
      */
     private $customer;

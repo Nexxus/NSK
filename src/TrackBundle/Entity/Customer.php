@@ -23,38 +23,53 @@
 namespace TrackBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use TrackBundle\Entity\Supplier;
+use Doctrine\Common\Collections\ArrayCollection;
+use TrackBundle\Entity\SalesOrder;
 
 /**
- * PurchaseOrder
+ * Customer
  *
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="TrackBundle\Repository\CustomerRepository")
  */
-class PurchaseOrder extends AOrder
+class Customer extends ACompany
 {
-    /**
-     * @var Supplier Deliverer of this order
-     *
-     * @ORM\ManyToOne(targetEntity="TrackBundle\Entity\Supplier", fetch="EAGER")
-     * @ORM\JoinColumn(name="supplier_id", referencedColumnName="id")
-     */
-    private $supplier;
+    public function __construct() {
+        $this->orders = new ArrayCollection();
+        parent::__construct();
+    }
 
     /**
-     * @return PurchaseOrder
+     * @var ArrayCollection|SalesOrder[] Sales orders that this customer bought
+     *
+     * @ORM\OneToMany(targetEntity="TrackBundle\Entity\SalesOrder", mappedBy="customer", fetch="LAZY")
      */
-    public function setSupplier(Supplier $supplier)
+    private $orders;
+
+    /**
+     * @param SalesOrder $salesOrder
+     * @return Customer
+     */
+    public function addSalesOrder(SalesOrder $salesOrder)
     {
-        $this->supplier = $supplier;
+        $this->orders[] = $salesOrder;
 
         return $this;
     }
 
     /**
-     * @return Supplier
+     * @param SalesOrder $salesOrder
      */
-    public function getSupplier()
+    public function removeSalesOrder(SalesOrder $salesOrder)
     {
-        return $this->supplier;
+        $this->orders->removeElement($salesOrder);
+    }
+
+    /**
+     * @return ArrayCollection|SalesOrder[]
+     */
+    public function getSalesOrders()
+    {
+        return $this->orders;
     }
 }
+

@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h2>{% trans %}Create New Status{% endtrans %}</h2>
+    <table>
+    {{ form_start(form) }}
+    <input type="hidden" name="form[test]" value="Testvalue">
+    <tr>
+        <td>Status Name</td>
+        <td>{{ form_widget(form.name) }}</td>
+    </tr>
+    {% if form.placement is defined %}
+    <tr>
+        <td>Index Placement</td>
+        <td>
+            <select id="form_pindex" name="form[pindex]">
+            {% for key in statusall %}
+                <option value="{{ key.pindex }}">
+                    {{ key.name|trans }}
+                </option>
+            {% endfor %}
+            </select>
+        </td>
+        
+         <td>
+             {{ form_widget(form.placement) }}
+         </td>
+    </tr>
+    {% endif %}
+    <tr>
+        <td>&nbsp;</td>     
+        <td>{{ form_widget(form.save) }}</td>
+    </tr>
+    </table>
+    {{ form_end(form) }}
+{% endblock %}
