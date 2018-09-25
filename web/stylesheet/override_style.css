@@ -1,0 +1,102 @@
+
+/*
+    Copiatek 
+    Dark blue: #15007c
+    Dark green: #006e2e
+    Green: #009649
+*/
+
+
+body {
+    color: #15007c;
+    font-size: 10pt;
+}
+
+* {
+  -webkit-border-radius: 0 !important;
+     -moz-border-radius: 0 !important;
+          border-radius: 0 !important;
+}
+
+.btn-primary {
+    background-color: #15007c;
+}
+
+.navbar-gradient {
+  background: #006e2e;
+}
+.navbar-inverse .badge {
+  background-color: #fff;
+  color: #009649;
+}
+.text-success,
+.text-success:hover {
+  color: #009649;
+}
+.has-success .form-control-feedback {
+  color: #009649;
+}
+.has-success .form-control:focus {
+  border: 2px solid #009649;
+}
+.has-success .input-group-addon {
+  border-color: #009649;
+}
+a.list-group-item-success.active {
+  background-color: #009649;
+}
+
+.navbar-default .navbar-nav > .active{
+    background: #15007c;
+}
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus {
+    background: #15007c;
+}
+
+.nav-dashboard > li > a {
+    padding: 10px 3px;
+}
+
+.btn {
+    padding: 5px 10px;
+}
+
+.btn-120 {
+    min-width: 120px;
+}
+
+.panel-body h5 {
+    margin: 0px;
+}
+
+.panel-body-small {
+    font-size: 11px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden; 
+}
+
+.panel-body-small h5 {
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.panel-body-small ul {
+    padding-left: 15px
+}
+
+.panel-dashboardsearch div.radio {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.panel-dashboardsearch #form_submit {
+    width: 100%;
+    height: 45px;
+}
+
+.pagination > .disabled > span {
+    background-color: #ddd;
+}
