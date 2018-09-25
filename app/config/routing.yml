@@ -2,12 +2,8 @@ track_attribute:
     resource: "@TrackBundle/Controller/AttributeController.php"
     type:     annotation
 
-admin:
-    resource: "@AdminBundle/Controller/"
-    type:     annotation
-    prefix:   /
 
-tn_t:
+track:
     resource: "@TrackBundle/Controller/"
     type:     annotation
     prefix:   /
