@@ -10,7 +10,7 @@ services:
     app.menubuilder:
         class: AppBundle\Menu\Builder
     on_request_listener:
-        class: TrackBundle\Filter\OnRequestListener
+        class: AppBundle\Filter\OnRequestListener
         arguments: ["@doctrine.orm.entity_manager", "@security.token_storage"]
         tags:
             -

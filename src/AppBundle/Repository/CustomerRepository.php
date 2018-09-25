@@ -20,23 +20,30 @@
  * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
  */
 
-namespace AppBundle\Controller;
+namespace AppBundle\Repository;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-
-/**
-* @Route("/admin")
-*/
-class DefaultController extends Controller
+class CustomerRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
-     * @Route("/", name="admin_index")
-
+     * This function searches in fields: Id, Kvk, Email, Name
      */
-    public function indexAction()
+    public function findBySearchQuery($query)
     {
-        return $this->render('AppBundle::index.html.twig');
+        if (is_numeric($query))
+        {
+            $q = $this->getEntityManager()
+                ->createQuery("SELECT c FROM AppBundle:Customer c WHERE c.id = ?1 OR c.kvkNr = ?1 OR c.name LIKE ?2");
+        }
+        else
+        {
+            $q = $this->getEntityManager()
+                ->createQuery("SELECT c FROM AppBundle:Customer c WHERE c.email = ?1 OR c.name LIKE ?2");
+        }
+
+        $q = $q
+            ->setParameter(1, $query)
+            ->setParameter(2, '%' . $query . '%');
+
+        return $q->getResult();
     }
 }

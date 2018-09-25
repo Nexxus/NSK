@@ -20,23 +20,21 @@
  * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
  */
 
-namespace AppBundle\Controller;
+namespace AppBundle\Form;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Doctrine\ORM\EntityRepository;
 
-/**
-* @Route("/admin")
-*/
-class DefaultController extends Controller
+use AppBundle\Entity\PurchaseOrder;
+use AppBundle\Entity\Product;
+
+class ProductListType extends AbstractType
 {
-    /**
-     * @Route("/", name="admin_index")
 
-     */
-    public function indexAction()
-    {
-        return $this->render('AppBundle::index.html.twig');
-    }
 }

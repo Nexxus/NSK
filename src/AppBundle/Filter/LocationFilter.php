@@ -17,26 +17,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek â€“ info@copiatek.nl â€“ Postbus 547 2501 CM Den Haag
+ * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
  */
 
-namespace AppBundle\Controller;
+namespace AppBundle\Filter;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Doctrine\ORM\Mapping\ClassMetaData;
+use Doctrine\ORM\Query\Filter\SQLFilter;
 
-/**
-* @Route("/admin")
-*/
-class DefaultController extends Controller
+class LocationFilter extends SQLFilter
 {
-    /**
-     * @Route("/", name="admin_index")
-
-     */
-    public function indexAction()
+    public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
     {
-        return $this->render('AppBundle::index.html.twig');
+        if ($targetEntity->reflClass->hasProperty("location"))
+        {
+            return $targetTableAlias.'.location_id = ' . $this->getParameter('locationId');
+        }
+
+        return "";
     }
 }

@@ -17,26 +17,44 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek â€“ info@copiatek.nl â€“ Postbus 547 2501 CM Den Haag
+ * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
  */
 
-namespace AppBundle\Controller;
+namespace AppBundle\Entity;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Doctrine\ORM\Mapping as ORM;
+use AppBundle\Entity\Supplier;
 
 /**
-* @Route("/admin")
-*/
-class DefaultController extends Controller
+ * PurchaseOrder
+ *
+ * @ORM\Entity
+ */
+class PurchaseOrder extends AOrder
 {
     /**
-     * @Route("/", name="admin_index")
-
+     * @var Supplier Deliverer of this order
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Supplier", fetch="EAGER")
+     * @ORM\JoinColumn(name="supplier_id", referencedColumnName="id")
      */
-    public function indexAction()
+    private $supplier;
+
+    /**
+     * @return PurchaseOrder
+     */
+    public function setSupplier(Supplier $supplier)
     {
-        return $this->render('AppBundle::index.html.twig');
+        $this->supplier = $supplier;
+
+        return $this;
+    }
+
+    /**
+     * @return Supplier
+     */
+    public function getSupplier()
+    {
+        return $this->supplier;
     }
 }

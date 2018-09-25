@@ -9,7 +9,6 @@ class AppKernel extends Kernel
     {
         $bundles = [
             new AppBundle\AppBundle(),
-            new TrackBundle\TrackBundle(),
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Symfony\Bundle\SecurityBundle\SecurityBundle(),
             new Symfony\Bundle\TwigBundle\TwigBundle(),

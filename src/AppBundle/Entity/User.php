@@ -24,7 +24,7 @@ namespace AppBundle\Entity;
 
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
-use TrackBundle\Entity\Location;
+use AppBundle\Entity\Location;
 
 
 /**
@@ -71,7 +71,7 @@ class User extends BaseUser
     /**
      * @var Location
      *
-     * @ORM\ManyToOne(targetEntity="TrackBundle\Entity\Location", inversedBy="users")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Location", inversedBy="users")
      * @ORM\JoinColumn(name="location", referencedColumnName="id")
      */
     private $location;

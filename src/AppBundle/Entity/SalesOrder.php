@@ -17,26 +17,44 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek â€“ info@copiatek.nl â€“ Postbus 547 2501 CM Den Haag
+ * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
  */
 
-namespace AppBundle\Controller;
+namespace AppBundle\Entity;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Doctrine\ORM\Mapping as ORM;
+use AppBundle\Entity\Customer;
 
 /**
-* @Route("/admin")
-*/
-class DefaultController extends Controller
+ * SalesOrder
+ *
+ * @ORM\Entity
+ */
+class SalesOrder extends AOrder
 {
     /**
-     * @Route("/", name="admin_index")
-
+     * @var Customer Buyer of this order
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Customer", fetch="EAGER")
+     * @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
      */
-    public function indexAction()
+    private $customer;
+
+    /**
+     * @return SalesOrder
+     */
+    public function setCustomer(Customer $customer)
     {
-        return $this->render('AppBundle::index.html.twig');
+        $this->customer = $customer;
+
+        return $this;
+    }
+
+    /**
+     * @return Customer
+     */
+    public function getCustomer()
+    {
+        return $this->customer;
     }
 }
