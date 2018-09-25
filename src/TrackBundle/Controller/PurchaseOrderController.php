@@ -142,6 +142,8 @@ class PurchaseOrderController extends Controller
             // create order
             $order = new PurchaseOrder();
             $order->setLocation($supplier->getLocation());
+            $order->setSupplier($supplier);
+
             $em->persist($order);
 
             $em->persist($supplier);
