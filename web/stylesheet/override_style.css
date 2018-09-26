@@ -18,6 +18,15 @@ body {
           border-radius: 0 !important;
 }
 
+h1 {
+    font-size: 24px;
+}
+
+.btn, .form-control {
+    padding: 5px 10px;
+    height: 35px;
+}
+
 .btn-primary {
     background-color: #15007c;
 }
@@ -59,10 +68,6 @@ a.list-group-item-success.active {
     padding: 10px 3px;
 }
 
-.btn {
-    padding: 5px 10px;
-}
-
 .btn-120 {
     min-width: 120px;
 }
@@ -94,7 +99,6 @@ a.list-group-item-success.active {
 
 .panel-dashboardsearch #form_submit {
     width: 100%;
-    height: 45px;
 }
 
 .pagination > .disabled > span {
