@@ -60,7 +60,7 @@ abstract class AOrder
     /**
      * @var ArrayCollection|ProductOrderRelation[] Which products have this attribute
      *
-     * @ORM\OneToMany(targetEntity="ProductOrderRelation", mappedBy="order", cascade={"all"})
+     * @ORM\OneToMany(targetEntity="ProductOrderRelation", mappedBy="order", cascade={"all"}, orphanRemoval=true)
      */
     protected $productRelations;
 

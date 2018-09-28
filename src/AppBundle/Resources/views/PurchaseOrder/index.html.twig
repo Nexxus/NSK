@@ -6,7 +6,7 @@
     {{ form_start(form) }}
     <div class="row" style="margin-bottom: 20px">
         <div class="col-sm-7">
-            {{ form_widget(form.query) }}
+            {{ form_widget(form.query, {'attr': {'placeholder': 'Zoeken op ordernummer'} }) }}
         </div>
         <div class="col-sm-2">
             {{ form_widget(form.submit) }}

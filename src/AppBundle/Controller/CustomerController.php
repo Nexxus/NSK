@@ -24,6 +24,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Customer;
 use AppBundle\Form\CustomerType;
+use AppBundle\Form\IndexSearchType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -32,7 +33,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
 /**
- * @Route("/admin/customer")
+ * @Route("/customer")
  */
 class CustomerController extends Controller
 {
@@ -45,10 +46,7 @@ class CustomerController extends Controller
 
         $customers = array();
 
-        $form = $this->createFormBuilder(array(), array('allow_extra_fields' => true))
-            ->add('query', TextType::class, ['label' => false, 'attr' => ['placeholder' => 'Zoeken op Id, KvK, e-mail of (deel van) naam']])
-            ->add('submit', SubmitType::class, ['label' => 'Search'])
-            ->getForm();
+        $form = $this->createForm(IndexSearchType::class, array());
 
         $form->handleRequest($request);
 

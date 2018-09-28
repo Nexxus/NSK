@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>{% block title %}Nexxus Stock Keeping{% endblock %}</title>
+        <title>{% block title %}Nexxus{% endblock %}</title>
         
         <link href="{{ asset('bootstrap/stylesheet/bootstrap.css') }}" rel="stylesheet"/>
         <link href="{{ asset('stylesheet/override_style.css') }}" rel="stylesheet"/>
@@ -26,7 +26,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                   </button>
-                 <a class="navbar-brand" href="{{ path('home') }}">Copiatek {{ app.user.location.name|default("") }}</a>
+                 <a class="navbar-brand" href="{{ path('home') }}">Nexxus {{ app.user.location.name|default("") }}</a>
                 </div>
                 <div class="navbar-collapse collapse" id="mainMenu">
                     {% block navlist %}
@@ -44,17 +44,13 @@
             {% endblock %}
             
             {% block body %}
-            <h2>Nexxus Stock Keeping. Het OpenSource voorraad beheer systeem.</h2>
-			<p>A great way to keep track of your Stock and Inventory. You can also use this software as a Point of Sales, for Logistics and Distribution and even for Supplier and Client Management. <br>
-			Nexxus Stock Keeping works with existing barcodes, or it can generate a barcode for you when you create a new product. You can use any reference to create the barcode.
-			</p><br>
-			<p>Nexxus Stock Keeping is software van Copiatek. De software is uitgegeven onder GPL en is Open Source. Support is verkrijgbaar per abonnement. 
-			</p>
+
             {% endblock %}
             
         </div>
         <script src="{{ asset('bootstrap/js/jquery.min.js') }}"></script>
         <script src="{{ asset('bootstrap/js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('js/ajax-form.js') }}"></script>
         {% block javascripts %}
           
         {% endblock %}

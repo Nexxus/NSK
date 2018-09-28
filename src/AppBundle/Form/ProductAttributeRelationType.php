@@ -27,6 +27,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -44,8 +45,6 @@ class ProductAttributeRelationType extends AbstractType
          * the object is not yet present at the buildForm function call.
          * Therefor the code can be wrapped in the presetdata event listener.
          */
-
-        // Source: https://symfony.com/doc/3.4/form/dynamic_form_modification.html 
 		$builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
 
             $form = $event->getForm();
@@ -53,21 +52,12 @@ class ProductAttributeRelationType extends AbstractType
             /** @var ProductAttributeRelation */
             $relation = $event->getData();
 
-            $form->add('attribute',  EntityType::class, [
-                'class' => 'AppBundle:Attribute',
-                'choice_label' => 'name',
-                'required' => true,
-                'query_builder' => function (EntityRepository $er) use ($relation) {
-                    /** @var ProductAttributeRelation $relation */
-                    return $er->createQueryBuilder('a');
-                }
-            ]);
-
             // loading proper attribute type
+            if ($relation->getAttribute())
             switch ($relation->getAttribute()->getType()) {
                 case Attribute::TYPE_FILE:
                     throw new \Exception('Not yet implemented');
-                    break;
+
                 case Attribute::TYPE_PRODUCT:
                     $form->add('valueProduct', EntityType::class, [
                        'class' => 'AppBundle:Product',
@@ -97,16 +87,13 @@ class ProductAttributeRelationType extends AbstractType
                     ]);
                     break;
             }
-
-            $form->add('quantity', IntegerType::class);
-
         });
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => ProductAttributeRelation::class,
+            'data_class' => ProductAttributeRelation::class
         ));
     }
 }

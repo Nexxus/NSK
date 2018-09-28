@@ -146,14 +146,14 @@ class Product
     /**
      * @var ArrayCollection|ProductAttributeRelation[]
      *
-     * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="product", fetch="LAZY", cascade={"all"})
+     * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="product", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
      */
     private $attributeRelations;
 
     /**
      * @var ArrayCollection|ProductOrderRelation[]
      *
-     * @ORM\OneToMany(targetEntity="ProductOrderRelation", mappedBy="product", fetch="LAZY", cascade={"all"})
+     * @ORM\OneToMany(targetEntity="ProductOrderRelation", mappedBy="product", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
      */
     private $orderRelations;
 
@@ -380,7 +380,7 @@ class Product
     {
         return $this->location;
     }
-    /** 
+    /**
      * Set status
      *
      * @param integer $status
@@ -431,7 +431,6 @@ class Product
     public function addAttributeRelation(ProductAttributeRelation $attributeRelation)
     {
         $this->attributeRelations[] = $attributeRelation;
-
         return $this;
     }
 
@@ -458,13 +457,13 @@ class Product
     /**
      * Check if product has attribute as relation on key, returns true if it does
      */
-    public function containsAttributeRelation($id) 
+    public function containsAttributeRelation($id)
     {
         $bool = false;
 
-        foreach($this->getAttributeRelations() as $attr) 
+        foreach($this->getAttributeRelations() as $attr)
         {
-            if($id === $attr->getAttribute()->getId()) 
+            if($id === $attr->getAttribute()->getId())
             {
                 $bool = true;
             }

@@ -22,7 +22,7 @@ h1 {
     font-size: 24px;
 }
 
-.btn, .form-control {
+.btn, .form-control, .input-group-addon {
     padding: 5px 10px;
     height: 35px;
 }

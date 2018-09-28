@@ -14,6 +14,7 @@ use AppBundle\Entity\ProductType;
 use AppBundle\Entity\Location;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use AppBundle\Form\IndexSearchType;
 
 /**
  * @Route("/track/purchaseorder")
@@ -29,10 +30,7 @@ class PurchaseOrderController extends Controller
 
         $orders = array();
 
-        $form = $this->createFormBuilder(array(), array('allow_extra_fields' => true))
-            ->add('query', TextType::class, ['label' => false, 'attr' => ['placeholder' => 'Zoeken op ordernummer']])
-            ->add('submit', SubmitType::class, ['label' => 'Search'])
-            ->getForm();
+        $form = $this->createForm(IndexSearchType::class, array());
 
         $form->handleRequest($request);
 

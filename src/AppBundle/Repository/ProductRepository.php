@@ -3,24 +3,27 @@
 /*
  * Nexxus Stock Keeping (online voorraad beheer software)
  * Copyright (C) 2018 Copiatek Scan & Computer Solution BV
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
- * 
+ *
  * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Repository;
+
+use AppBundle\Entity\Product;
+use AppBundle\Entity\ProductAttributeRelation;
 
 /**
  * ProductRepository
@@ -30,25 +33,49 @@ namespace AppBundle\Repository;
  */
 class ProductRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function findSpecific($ord = array('id' => 'desc'))
-    {
-        return $this->findBy(array(),$ord);
-    }
-    
     /**
-     * Explode for url sort string
+     * This function searches in fields: Id, Sku, Name
      */
-    public function serializeSort($param = array())
+    public function findBySearchQuery($query)
     {
-        $order = array();
-        $ordArray = explode(",",$param);
-        
-        foreach($ordArray as $key)
+        if (is_numeric($query))
         {
-            $v = explode("=",$key);
-            $order[$v[0]] = $v[1];
+            $q = $this->getEntityManager()
+                ->createQuery("SELECT c FROM AppBundle:Product c WHERE c.id = ?1 OR c.sku = ?1 OR c.name LIKE ?2");
         }
-        
-        return $order;
+        else
+        {
+            $q = $this->getEntityManager()
+                ->createQuery("SELECT c FROM AppBundle:Product c WHERE c.name LIKE ?2");
+        }
+
+        $q = $q
+            ->setParameter(1, $query)
+            ->setParameter(2, '%' . $query . '%');
+
+        return $q->getResult();
+    }
+
+    public function generateAttributeRelations(Product $product)
+    {
+        // get all possible attributes for this product type
+        $allAttributes = $product->getType()->getAttributes();
+
+        // add new attributes to this product
+        foreach ($allAttributes as $newAttribute)
+        {
+            $exists = $product->getAttributeRelations()->exists(function($key, $r) use ($newAttribute) {
+                /** @var ProductAttributeRelation $r */
+                return $r->getAttribute() == $newAttribute;
+            });
+
+            if (!$exists)
+            {
+                $r = new ProductAttributeRelation();
+                $r->setAttribute($newAttribute);
+                $r->setProduct($product);
+                $product->addAttributeRelation($r);
+            }
+        }
     }
 }

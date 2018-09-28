@@ -24,6 +24,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Supplier;
 use AppBundle\Form\SupplierType;
+use AppBundle\Form\IndexSearchType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -33,7 +34,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 
 /**
- * @Route("/admin/supplier")
+ * @Route("/supplier")
  */
 class SupplierController extends Controller
 {
@@ -46,10 +47,7 @@ class SupplierController extends Controller
 
         $suppliers = array();
 
-        $form = $this->createFormBuilder(array(), array('allow_extra_fields' => true))
-            ->add('query', TextType::class, ['label' => false, 'attr' => ['placeholder' => 'Zoeken op Id, KvK, e-mail of (deel van) naam']])
-            ->add('submit', SubmitType::class, ['label' => 'Search'])
-            ->getForm();
+        $form = $this->createForm(IndexSearchType::class, array());
 
         $form->handleRequest($request);
 

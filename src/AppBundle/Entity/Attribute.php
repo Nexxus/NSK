@@ -92,7 +92,7 @@ class Attribute
     /**
      * @var ArrayCollection|ProductAttributeRelation[] Which products have this attribute
      *
-     * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="attribute", fetch="LAZY", cascade={"all"})
+     * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="attribute", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
      */
     private $productRelations;
 

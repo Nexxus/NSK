@@ -1,0 +1,66 @@
+
+{{ form_start(form, {'action': path('product_edit', {'id': product.id}), 'attr': {'class': 'ajax-form', 'target': '.modal-content'}}) }}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Product edit</h4>
+</div>
+
+<div class="modal-body">
+
+    {% if success %}
+    <div class="alert alert-success" role="alert">The product is saved successfully.</div>
+    {% elseif success is same as(false) %}
+    <div class="alert alert-danger" role="alert">The product could not be saved. Please check details below.</div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-6">
+            {{ form_row(form.sku) }} 
+            {{ form_row(form.name) }} 
+            {{ form_row(form.quantity) }} 
+            {{ form_row(form.price) }} 
+        </div>
+        <div class="col-md-6">
+            {{ form_row(form.description) }} 
+            {{ form_row(form.type) }} 
+            {{ form_row(form.location) }} 
+            {{ form_row(form.status) }} 
+        </div>
+    </div>
+
+    
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Product type specific attributes{% endtrans %}
+        </div>
+        <div class="panel-body">
+
+            {% for formRelation in form.attributeRelations %}
+
+                <div class="row" style="margin-bottom: 2px">
+                    <div class="col-md-3 col-md-offset-2">
+                        {{ formRelation.vars.data.attribute.name }}
+                    </div>
+                    <div class="col-md-5">
+                        {% if formRelation.vars.data.attribute.type == 3 %}
+                        {{ form_widget(formRelation.valueProduct) }}
+                        {% else %}
+                        {{ form_widget(formRelation.value) }}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+
+   
+        </div>
+    </div>
+
+    <div class="text-center">{{ form_widget(form.save) }} </div>
+
+</div>
+
+{{ form_end(form) }}
+
+
+       

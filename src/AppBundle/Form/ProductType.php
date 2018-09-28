@@ -28,10 +28,12 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Doctrine\ORM\EntityRepository;
 
 use AppBundle\Entity\Product;
+use AppBundle\Entity\ProductAttributeRelation;
 
 class ProductType extends AbstractType
 {
@@ -40,16 +42,13 @@ class ProductType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        /** @var Product */
-        $product = $builder->getData();
-
         $builder
             ->add('sku', TextType::class)
             ->add('name', TextType::class)
             ->add('quantity', IntegerType::class, [
                 'required' => false
             ])
-            ->add('price', IntegerType::class, [
+            ->add('price', MoneyType::class, [
                 'required' => false
             ])
             ->add('description', TextType::class, [
@@ -58,7 +57,6 @@ class ProductType extends AbstractType
             ->add('type',  EntityType::class, [
                 'class' => 'AppBundle:ProductType',
                 'choice_label' => 'name',
-                'required' => false,
             ])
             ->add('location',  EntityType::class, [
                 'class' => 'AppBundle:Location',
@@ -69,22 +67,14 @@ class ProductType extends AbstractType
                 'choice_label' => 'name'
             ])
             ->add('attributeRelations', CollectionType::class, [
-                'entry_type' => ProductAttributeRelationType::class
-            ])
-            ->add('newAttribute',  EntityType::class, [
-                'mapped' => false,
-                'class' => 'AppBundle:Attribute',
-                'choice_label' => 'name',
-                'required' => false,
-                'query_builder' => function (EntityRepository $er) use ($product) {
-                    /** @var Product $product */
-                    return $er->createQueryBuilder('a');
-                }
+                'entry_type' => ProductAttributeRelationType::class,
+                'entry_options' => ['label' => false],
+                'label' => 'Attributes',
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Save Changes',
                 'attr' => [
-                    'class' => 'btn btn-success',
+                    'class' => 'btn-success',
                 ]
             ]);
     }

@@ -25,26 +25,15 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * ProductAttribute
- *
- * Attributes unique to specific products are stored here
- *
  * @ORM\Table(name="product_attribute")
  * @ORM\Entity
  */
 class ProductAttributeRelation
 {
     /**
-     * @var int
-     *
-     * @ORM\Column(type="integer", nullable=false, options={"default" : 1})
-     */
-    private $quantity = 1;
-
-    /**
      * @var string Text, File path or Option text; depends on type of attribute
      *
-     * @ORM\Column(type="string", length=255, nullable=false)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $value;
 
@@ -73,30 +62,6 @@ class ProductAttributeRelation
      * @ORM\JoinColumn(name="attribute_id", referencedColumnName="id", nullable=false)
      */
     private $attribute;
-
-    /**
-     * Set quantity
-     *
-     * @param integer $quantity
-     *
-     * @return ProductAttributeRelation
-     */
-    public function setQuantity($quantity)
-    {
-        $this->quantity = $quantity;
-
-        return $this;
-    }
-
-    /**
-     * Get quantity
-     *
-     * @return integer
-     */
-    public function getQuantity()
-    {
-        return $this->quantity;
-    }
 
     /**
      * Set value
