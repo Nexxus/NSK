@@ -67,7 +67,7 @@ class DashboardController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
-            return $this->redirectToRoute($data['type'] . '_index', [], 307); // 307 means it stays POST
+            return $this->redirectToRoute($data['type'] . '_index', ['query' => $data['query'] ]);
         }
 
         return $this->render('AppBundle:Dashboard:index.html.twig', array(

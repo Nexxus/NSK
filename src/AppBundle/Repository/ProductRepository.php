@@ -22,8 +22,10 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\AOrder;
 use AppBundle\Entity\Product;
 use AppBundle\Entity\ProductAttributeRelation;
+use AppBundle\Entity\ProductOrderRelation;
 
 /**
  * ProductRepository
@@ -74,8 +76,26 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
                 $r = new ProductAttributeRelation();
                 $r->setAttribute($newAttribute);
                 $r->setProduct($product);
+                $this->_em->persist($r);
                 $product->addAttributeRelation($r);
             }
+        }
+    }
+
+    public function generateOrderRelation(Product $product, AOrder $order)
+    {
+        $exists = $product->getOrderRelations()->exists(function($key, $r) use ($order) {
+            /** @var ProductOrderRelation $r */
+            return $r->getOrder() == $order;
+        });
+
+        if (!$exists)
+        {
+            $r = new ProductOrderRelation();
+            $r->setOrder($order);
+            $r->setProduct($product);
+            $this->_em->persist($r);
+            $product->addOrderRelation($r);
         }
     }
 }

@@ -25,17 +25,15 @@ namespace AppBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\MoneyType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
-use AppBundle\Entity\Product;
-use AppBundle\Entity\ProductAttributeRelation;
+use AppBundle\Entity\PurchaseOrder;
 
-class ProductType extends AbstractType
+class PurchaseOrderForm extends AbstractType
 {
     /**
      * {@inheritdoc}
@@ -43,33 +41,37 @@ class ProductType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('sku', TextType::class)
-            ->add('name', TextType::class)
-            ->add('quantity', IntegerType::class, [
+            ->add('orderNr', TextType::class)
+            ->add('status', EntityType::class, [
+                'class' => 'AppBundle:OrderStatus',
+                'choice_label' => 'name'
+            ])
+            ->add('supplier', EntityType::class, [
+                'class' => 'AppBundle:Supplier',
+                'choice_label' => 'name',
+                'label' => 'Select',
                 'required' => false
             ])
-            ->add('price', MoneyType::class, [
+            ->add('newSupplier', SupplierForm::class, [
+                'mapped' => false,
                 'required' => false
             ])
-            ->add('description', TextType::class, [
-                'required' => false
+            ->add('newOrExistingSupplier', ChoiceType::class, [
+                'label' => false,
+                'mapped' => false,
+                'expanded' => true,
+                'multiple' => false,
+                'data' => 'existing',
+                'choices' => [
+                    'Existing' => 'existing',
+                    'New' => 'new',
+                ]
             ])
-            ->add('type',  EntityType::class, [
+            ->add('newProduct',  EntityType::class, [
+                'required' => false,
+                'mapped' => false,
                 'class' => 'AppBundle:ProductType',
                 'choice_label' => 'name',
-            ])
-            ->add('location',  EntityType::class, [
-                'class' => 'AppBundle:Location',
-                'choice_label' => 'name'
-            ])
-            ->add('status',  EntityType::class, [
-                'class' => 'AppBundle:ProductStatus',
-                'choice_label' => 'name'
-            ])
-            ->add('attributeRelations', CollectionType::class, [
-                'entry_type' => ProductAttributeRelationType::class,
-                'entry_options' => ['label' => false],
-                'label' => 'Attributes',
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Save Changes',
@@ -77,5 +79,16 @@ class ProductType extends AbstractType
                     'class' => 'btn-success',
                 ]
             ]);
+
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults(array(
+            'data_class' => PurchaseOrder::class,
+            'csrf_protection' => true,
+            'csrf_field_name' => '_token',
+            'csrf_token_id'   => 'porder'
+        ));
     }
 }

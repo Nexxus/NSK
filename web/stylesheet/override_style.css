@@ -22,9 +22,18 @@ h1 {
     font-size: 24px;
 }
 
+.form-group {
+    margin-bottom: 8px;
+}
+
 .btn, .form-control, .input-group-addon {
     padding: 5px 10px;
     height: 35px;
+}
+
+.radio {
+    display: inline-block;
+    margin-right: 10px;
 }
 
 .btn-primary {
@@ -90,11 +99,6 @@ a.list-group-item-success.active {
 
 .panel-body-small ul {
     padding-left: 15px
-}
-
-.panel-dashboardsearch div.radio {
-    display: inline-block;
-    margin-right: 10px;
 }
 
 .panel-dashboardsearch #form_submit {

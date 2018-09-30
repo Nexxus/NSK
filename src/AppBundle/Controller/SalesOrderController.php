@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use AppBundle\Entity\SalesOrder;
-use AppBundle\Form\IndexSearchType;
+use AppBundle\Form\IndexSearchForm;
 
 /**
  * @Route("/track/salesorder")
@@ -25,7 +25,7 @@ class SalesOrderController extends Controller
 
         $orders = array();
 
-        $form = $this->createForm(IndexSearchType::class, array());
+        $form = $this->createForm(IndexSearchForm::class, array());
 
         $form->handleRequest($request);
 

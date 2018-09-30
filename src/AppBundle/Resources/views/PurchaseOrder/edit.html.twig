@@ -1,7 +1,139 @@
 {% extends "::base.html.twig" %}
 
-{% block title %}AppBundle:PurchaseOrder:edit{% endblock %}
-
 {% block body %}
-<h1>Welcome to the PurchaseOrder:edit page</h1>
-{% endblock %}
+    
+    <h1 style="margin-bottom: 30px">{% trans %}Create a Purchase Order{% endtrans %}</h1>
+
+    {% if success %}
+    <div class="alert alert-success" role="alert">The order is saved successfully.</div>
+    {% elseif success is same as(false) %}
+    <div class="alert alert-danger" role="alert">The order could not be saved. Please check details below.</div>
+    {% endif %}
+
+    {{ form_start(form) }}
+    {{ form_widget(form._token) }}
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Order number and status{% endtrans %}
+                </div>
+                <div class="panel-body">
+                    {{ form_row(form.orderNr) }} 
+                    {{ form_row(form.status) }} 
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Supplier{% endtrans %}
+                </div>
+                <div class="panel-body">
+                    {{ form_row(form.newOrExistingSupplier) }} 
+                    <div id="existingSupplier">
+                        {{ form_row(form.supplier) }} 
+                    </div>
+                    <div id="newSupplier">
+                        {{ form_row(form.newSupplier.name) }} 
+                        {{ form_row(form.newSupplier.kvkNr) }} 
+                        {{ form_row(form.newSupplier.representative) }} 
+                        {{ form_row(form.newSupplier.email) }} 
+                        {{ form_row(form.newSupplier.street) }} 
+                        {{ form_row(form.newSupplier.streetExtra) }} 
+                        {{ form_row(form.newSupplier.city) }} 
+                        {{ form_row(form.newSupplier.zip) }} 
+                        {{ form_row(form.newSupplier.state) }} 
+                        {{ form_row(form.newSupplier.country) }} 
+                        {{ form_row(form.newSupplier.street2) }} 
+                        {{ form_row(form.newSupplier.streetExtra2) }} 
+                        {{ form_row(form.newSupplier.city2) }} 
+                        {{ form_row(form.newSupplier.zip2) }} 
+                        {{ form_row(form.newSupplier.state2) }} 
+                        {{ form_row(form.newSupplier.country2) }} 
+                        {{ form_row(form.newSupplier.isPartner) }} 
+                        {{ form_row(form.newSupplier.isOwner) }} 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+            
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Products{% endtrans %}
+        </div>
+        {% if ( order.id > 0) %}
+        <div id="productList"></div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-6">
+                    {{ form_row(form.newProduct) }}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="panel-body">Please save order first...</div>
+        {% endif %}
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-body text-center">
+            {{ form_widget(form.save) }}
+        </div>
+    </div>
+            
+    {{ form_end(form, {'render_rest': false}) }}
+
+ {% endblock %}
+ 
+ {% block javascripts %}
+     <script>
+
+         /* New or existing supplier */
+
+         newOrExistingSupplier();
+
+         $('input[name="purchase_order_form[newOrExistingSupplier]"]').change(function () {
+             newOrExistingSupplier();
+         });
+
+         function newOrExistingSupplier() {
+             var val = $('input[name="purchase_order_form[newOrExistingSupplier]"]:checked').val()
+
+             if (val == 'new') {
+                 $('div#newSupplier').show();
+                 $('div#existingSupplier').hide();
+             }
+             else {
+                 $('div#newSupplier').hide();
+                 $('div#existingSupplier').show();
+             }
+         }
+
+         /* Product list */
+
+         {% if ( order.id > 0) %}
+
+         loadProducts();
+
+         function loadProducts() {
+             $("#productList").load('{{ path('product_list', { 'orderId': order.id }) }}');
+         }
+
+         {% endif %}
+
+         /* New product */
+
+         $('select[name="purchase_order_form[newProduct]"]').change(function () {
+             if ($(this).val()) {
+                 $("#modalEditor").modal('show');
+                 $("#modalEditor .modal-content").load('{{ path('product_edit', { 'id': 0, 'purchaseOrderId': order.id }) }}/' + $(this).val());
+             }
+         });
+
+     </script>
+ {% endblock %}

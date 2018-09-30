@@ -36,7 +36,7 @@ class ProductOrderRelation
      * @var Product
      *
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="Product", inversedBy="orderRelation", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="Product", inversedBy="orderRelations", fetch="EAGER")
      * @ORM\JoinColumn(name="product_id", referencedColumnName="id", nullable=false)
      */
     private $product;
@@ -45,7 +45,7 @@ class ProductOrderRelation
      * @var AOrder
      *
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="AOrder", inversedBy="productRelation", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="AOrder", inversedBy="productRelations", fetch="EAGER")
      * @ORM\JoinColumn(name="order_id", referencedColumnName="id", nullable=false)
      */
     private $order;

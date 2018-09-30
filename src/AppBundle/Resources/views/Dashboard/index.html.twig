@@ -121,13 +121,13 @@
             <div class="col-md-4">
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <a class="btn btn-primary btn-120" href="{{ path('purchaseorder_new') }}" role="button">+ {% trans %}Inkoop{% endtrans %}</a>
+                        <a class="btn btn-primary btn-120" href="{{ path('purchaseorder_edit') }}" role="button">+ {% trans %}Inkoop{% endtrans %}</a>
                         <div class="btn-group pull-right">
                           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="glyphicon glyphicon-menu-hamburger" aria-label="Menu"></span> <span class="caret"></span>
                           </button>
                           <ul class="dropdown-menu">
-                            <li><a href="{{ path('purchaseorder_new') }}">{% trans %}Nieuwe inkooporder{% endtrans %}</a></li>
+                            <li><a href="{{ path('purchaseorder_edit') }}">{% trans %}Nieuwe inkooporder{% endtrans %}</a></li>
                             <li><a href="{{ path('purchaseorder_index') }}">{% trans %}Lijst van alle inkooporders{% endtrans %}</a></li>
                             <li><a href="{{ path('status_index') }}">{% trans %}Orderstatussen wijzigen{% endtrans %}</a></li>
                           </ul>

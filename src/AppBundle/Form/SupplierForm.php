@@ -27,25 +27,40 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use AppBundle\Entity\Supplier;
-use AppBundle\Form\AddressType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
-class SupplierType extends AbstractType
+class SupplierForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name', TextType::class)
+            ->add('name', TextType::class, ['required' => true])
             ->add('kvkNr', TextType::class, ['required' => false])
             ->add('representative', TextType::class, ['required' => false])
-            ->add('email', EmailType::class)
-            ->add('addresses', CollectionType::class, ['entry_type' => AddressType::class])
+            ->add('email', EmailType::class, ['required' => true])
+            ->add('street', TextType::class)
+            ->add('streetExtra', TextType::class, ['required' => false, 'label' => 'Street2'])
+            ->add('city', TextType::class)
+            ->add('zip', TextType::class, ['required' => false])
+            ->add('state', TextType::class, ['required' => false])
+            ->add('country', TextType::class, ['required' => false])
+            ->add('street2', TextType::class, ['required' => false, 'label' => 'Street'])
+            ->add('streetExtra2', TextType::class, ['required' => false, 'label' => 'Street2'])
+            ->add('city2', TextType::class, ['required' => false, 'label' => 'City'])
+            ->add('zip2', TextType::class, ['required' => false, 'label' => 'Zip'])
+            ->add('state2', TextType::class, ['required' => false, 'label' => 'State'])
+            ->add('country2', TextType::class, ['required' => false, 'label' => 'Country'])
             ->add('isPartner', CheckboxType::class, ['required' => false, 'label' => 'This supplier should be rewarded as partner'])
             ->add('isOwner', CheckboxType::class, ['required' => false, 'label' => 'This supplier should be rewarded as owner'])
-            ->add('save', SubmitType::class, ['label' => 'Save']);
+            ->add('save', SubmitType::class, [
+                'label' => 'Save Changes',
+                'attr' => [
+                    'class' => 'btn-success',
+                ]
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

@@ -1,10 +1,10 @@
-﻿
-/*
+﻿/*
 
-Generic converter from normal form to ajax form (in a modal)
+Generic converter from normal form to ajax form
 Author: Jorrit Steetskamp
 
 */
+
 $(document).on("submit", '.ajax-form', function (e) {
     e.preventDefault();
     var form = $(e.target);

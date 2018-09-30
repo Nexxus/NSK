@@ -23,8 +23,8 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Supplier;
-use AppBundle\Form\SupplierType;
-use AppBundle\Form\IndexSearchType;
+use AppBundle\Form\SupplierForm;
+use AppBundle\Form\IndexSearchForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -47,7 +47,7 @@ class SupplierController extends Controller
 
         $suppliers = array();
 
-        $form = $this->createForm(IndexSearchType::class, array());
+        $form = $this->createForm(IndexSearchForm::class, array());
 
         $form->handleRequest($request);
 
@@ -77,6 +77,8 @@ class SupplierController extends Controller
      */
     public function editAction(Request $request, $id)
     {
+        $success = null;
+
         $em = $this->getDoctrine()->getManager();
 
         if ($id == 0)
@@ -88,7 +90,7 @@ class SupplierController extends Controller
             $supplier = $em->getRepository('AppBundle:Supplier')->find($id);
         }
 
-        $form = $this->createForm(SupplierType::class, $supplier);
+        $form = $this->createForm(SupplierForm::class, $supplier);
 
         $form->handleRequest($request);
 
@@ -96,13 +98,17 @@ class SupplierController extends Controller
         {
             $em->persist($supplier);
             $em->flush();
-
-            return $this->redirectToRoute('supplier_index');
+            $success = true;
+        }
+        else if ($form->isSubmitted())
+        {
+            $success = false;
         }
 
-
         return $this->render('AppBundle:Supplier:edit.html.twig', array(
+                'supplier' => $supplier,
                 'form' => $form->createView(),
+                'success' => $success,
             ));
     }
 

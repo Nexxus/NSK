@@ -23,12 +23,14 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Product;
-use AppBundle\Form\ProductType;
-use AppBundle\Form\IndexSearchType;
+use AppBundle\Entity\ProductType;
+use AppBundle\Entity\ProductOrderRelation;
+use AppBundle\Entity\PurchaseOrder;
+use AppBundle\Entity\AOrder;
+use AppBundle\Form\ProductForm;
+use AppBundle\Form\IndexSearchForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 /**
@@ -45,7 +47,7 @@ class ProductController extends Controller
 
         $products = array();
 
-        $form = $this->createForm(IndexSearchType::class, array());
+        $form = $this->createForm(IndexSearchForm::class, array());
 
         $form->handleRequest($request);
 
@@ -69,9 +71,22 @@ class ProductController extends Controller
     }
 
     /**
-     * @Route("/edit/{id}", name="product_edit")
+     * @Route("/list/{orderId}", name="product_list")
      */
-    public function editAction(Request $request, $id)
+    public function listAction(Request $request, $orderId)
+    {
+        /** @var AOrder */
+        $order = $this->getDoctrine()->getEntityManager()->find(AOrder::class, $orderId);
+
+        return $this->render('AppBundle:Product:list.ajax.twig', array(
+            'productRelations' => $order->getProductRelations()
+            ));
+    }
+
+    /**
+     * @Route("/edit/{id}/{purchaseOrderId}/{productTypeId}", name="product_edit")
+     */
+    public function editAction(Request $request, $id = 0, $purchaseOrderId = 0, $productTypeId = 0)
     {
         $success = null;
 
@@ -83,6 +98,7 @@ class ProductController extends Controller
         if ($id == 0)
         {
             $product = new Product();
+            $product->setQuantity(1);
         }
         else
         {
@@ -90,9 +106,19 @@ class ProductController extends Controller
             $product = $repo->find($id);
         }
 
+        if ($productTypeId > 0)
+        {
+            $product->setType($em->getReference(ProductType::class, $productTypeId));
+        }
+
+        if ($purchaseOrderId > 0)
+        {
+            $repo->generateOrderRelation($product, $em->find(PurchaseOrder::class, $purchaseOrderId));
+        }
+
         $repo->generateAttributeRelations($product);
 
-        $form = $this->createForm(ProductType::class, $product);
+        $form = $this->createForm(ProductForm::class, $product);
 
         $form->handleRequest($request);
 
@@ -107,9 +133,10 @@ class ProductController extends Controller
             $success = false;
         }
 
-        return $this->render('AppBundle:Product:edit.html.twig', array(
+        return $this->render('AppBundle:Product:edit.ajax.twig', array(
                 'product' => $product,
                 'form' => $form->createView(),
+                'formAction' => $request->getRequestUri(),
                 'success' => $success,
             ));
     }

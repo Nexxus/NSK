@@ -9,15 +9,15 @@ use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\Supplier;
 use AppBundle\Entity\Address;
 use AppBundle\Entity\PurchaseOrder;
-use AppBundle\Entity\Product;
-use AppBundle\Entity\ProductType;
 use AppBundle\Entity\Location;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use AppBundle\Form\IndexSearchType;
+use AppBundle\Form\IndexSearchForm;
+use AppBundle\Form\PurchaseOrderForm;
+use Symfony\Component\Form\FormError;
 
 /**
- * @Route("/track/purchaseorder")
+ * @Route("/purchaseorder")
  */
 class PurchaseOrderController extends Controller
 {
@@ -30,7 +30,7 @@ class PurchaseOrderController extends Controller
 
         $orders = array();
 
-        $form = $this->createForm(IndexSearchType::class, array());
+        $form = $this->createForm(IndexSearchForm::class, array());
 
         $form->handleRequest($request);
 
@@ -54,118 +54,83 @@ class PurchaseOrderController extends Controller
     }
 
     /**
-     * @Route("/new", name="purchaseorder_new")
-     * @Method({"GET", "POST"})
+     * @Route("/edit/{id}", name="purchaseorder_edit")
      */
-    public function newAction(Request $request)
+    public function editAction(Request $request, $id = 0)
     {
+        $success = null;
+
         $em = $this->getDoctrine()->getManager();
 
-        $porder = $request->get('porder');
+        /** @var \AppBundle\Repository\PurchaseOrderRepository */
+        $repo = $em->getRepository('AppBundle:PurchaseOrder');
 
-        $location = $this->get('security.token_storage')->getToken()->getUser()->getLocation();
-
-        // get contacts
-        $supplierRepository = $this->getDoctrine()->getRepository(Supplier::class);
-
-        // get types
-        $types = $this->getDoctrine()->getRepository(ProductType::class);
-
-        // on submit, retrieve form
-        if(isset($porder))
+        if ($id == 0)
         {
-            $porder = $request->get('porder');
-
-            // new contact, create it
-            if($porder['contact']['new']=='new')
-            {
-                $con = $porder['contact'];
-                $supplier = new Supplier();
-                $supplier->setName($con['companyname']);
-                $supplier->setKvkNr(0);
-
-                // create and add address
-                $address = new Address();
-                $address->setType(0);
-                $address->setStreet1($con['address']);
-                $address->setCity($con['city']);
-                $address->setCountry($con['country']);
-                $address->setState($con['province']);
-                $address->setZip($con['zipcode']);
-                $address->setCompany($supplier);
-
-                $em->persist($address);
-                $em->persist($supplier);
-
-                $supplier->addAddress($address);
-                $supplier->setLocation($location);
-            } else {
-                $supplier = $supplierRepository->find($porder['contact']['new']);
-            }
-
-            // create products
-            foreach($porder['product'] as $p)
-            {
-                $product = new Product();
-
-                // generate sku
-                $type = $em->getRepository(ProductType::class)
-                    ->find($p['type']);
-
-                $product->setType($type);
-                $product = $this->generateNewSku($product);
-
-                if($p['comments']!='')
-                {
-                    $product->setName($p['comments']);
-                } else {
-                    $product->setName($product->getType()->getName());
-                }
-                $product->setQuantity($p['quantity']);
-                $product->setLocation($location);
-
-                $em->persist($product);
-                $em->flush();
-            }
-
-            // create order
             $order = new PurchaseOrder();
-            $order->setLocation($location);
-            $order->setSupplier($supplier);
-
-            $em->persist($order);
-
-            $em->persist($supplier);
-            $em->flush();
-
-            return $this->redirectToRoute('purchaseorder_index');
+        }
+        else
+        {
+            /** @var PurchaseOrder */
+            $order = $repo->find($id);
         }
 
-        return $this->render('AppBundle:PurchaseOrder:new.html.twig', array(
-            'types' => $types->findAll(),
-            'suppliers' => $supplierRepository->findAll(),
+        $location = $this->get('security.token_storage')->getToken()->getUser()->getLocation();
+        $order->setLocation($location);
 
-        ));
-    }
+        $form = $this->createForm(PurchaseOrderForm::class, $order);
 
-    /**
-     * @Route("/edit", name="purchaseorder_edit")
-     */
-    public function editAction()
-    {
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted())
+        {
+            if ($form->get('newOrExistingSupplier')->getData() == 'existing')
+            {
+                if (!$order->getSupplier())
+                {
+                    $form->get('supplier')->addError(new FormError('Please select existing supplier'));
+                }
+            }
+            else
+            {
+                /** @var Supplier */
+                $newSupplier = $form->get('newSupplier')->getData();
+                $newSupplier->addPurchaseOrder($order);
+                $em->persist($newSupplier);
+                $order->setSupplier($newSupplier);
+            }
+
+            if ($form->isValid())
+            {
+                $em->persist($order);
+                $em->flush();
+                $success = true;
+            }
+            else
+            {
+                $success = false;
+            }
+        }
+
         return $this->render('AppBundle:PurchaseOrder:edit.html.twig', array(
-            // ...
-        ));
+                'order' => $order,
+                'form' => $form->createView(),
+                'success' => $success,
+            ));
+
     }
 
     /**
-     * @Route("/delete", name="purchaseorder_delete")
+     * @Route("/delete/{id}", name="purchaseorder_delete")
      */
-    public function deleteAction()
+    public function deleteAction($id)
     {
-        return $this->render('AppBundle:PurchaseOrder:delete.html.twig', array(
-            // ...
-        ));
+        $em = $this->getDoctrine()->getManager();
+        $order = $em->getRepository('AppBundle:PurchaseOrder')->find($id);
+        $em->remove($order);
+        $em->flush();
+
+        return $this->redirectToRoute('purchaseorder_index');
     }
 
     /**
@@ -181,47 +146,5 @@ class PurchaseOrderController extends Controller
         return $this->render('AppBundle:PurchaseOrder:inlist.html.twig', array(
             'orders' => $orders
         ));
-    }
-
-    /*
-     * Returns true if a SKU in the database is free
-     */
-    public function checkFreeSku($sku) {
-        $em = $this->getDoctrine()->getManager();
-
-        $skuquery = $em->createQuery(
-                    'SELECT p.sku'
-                    . ' FROM AppBundle:Product p'
-                    . ' WHERE p.sku = :givensku')
-                    ->setParameter('givensku', $sku);
-        $result = $skuquery->getResult();
-
-        return (count($result) == 0);
-    }
-
-    /*
-     * Generates new SKU, avoids duplicates
-     */
-    public function generateNewSku(Product $product)
-    {
-        $num  = 0;
-        $gsku = "";
-
-        // if type is set, add prefix
-        if ($product->getType())
-        {
-            $gsku = substr($product->getType()->getName(), 0, 1);
-        }
-
-        // increment if taken
-        $free = $this->checkFreeSku($gsku);
-        while(!$free) {
-            $num++;
-            $gsku = substr($product->getType(), 0, 1) . $num;
-            $free = $this->checkFreeSku($gsku);
-        }
-
-        $product->setSku($gsku);
-        return $product;
     }
 }

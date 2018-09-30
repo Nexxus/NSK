@@ -23,8 +23,8 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Customer;
-use AppBundle\Form\CustomerType;
-use AppBundle\Form\IndexSearchType;
+use AppBundle\Form\CustomerForm;
+use AppBundle\Form\IndexSearchForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -46,7 +46,7 @@ class CustomerController extends Controller
 
         $customers = array();
 
-        $form = $this->createForm(IndexSearchType::class, array());
+        $form = $this->createForm(IndexSearchForm::class, array());
 
         $form->handleRequest($request);
 
@@ -75,6 +75,8 @@ class CustomerController extends Controller
      */
     public function editAction(Request $request, $id)
     {
+        $success = null;
+
         $em = $this->getDoctrine()->getManager();
 
         if ($id == 0)
@@ -86,7 +88,7 @@ class CustomerController extends Controller
             $customer = $em->getRepository('AppBundle:Customer')->find($id);
         }
 
-        $form = $this->createForm(CustomerType::class, $customer);
+        $form = $this->createForm(CustomerForm::class, $customer);
 
         $form->handleRequest($request);
 
@@ -94,14 +96,17 @@ class CustomerController extends Controller
         {
             $em->persist($customer);
             $em->flush();
-
-            return $this->redirectToRoute('customer_index');
+            $success = true;
         }
-
+        else if ($form->isSubmitted())
+        {
+            $success = false;
+        }
 
         return $this->render('AppBundle:Customer:edit.html.twig', array(
                 'customer' => $customer,
                 'form' => $form->createView(),
+                'success' => $success,
             ));
     }
 

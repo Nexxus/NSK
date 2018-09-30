@@ -23,8 +23,8 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\User;
-use AppBundle\Form\UserType;
-use AppBundle\Form\UserNewType;
+use AppBundle\Form\UserForm;
+use AppBundle\Form\UserNewForm;
 Use Symfony\Component\Form\FormError;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -61,7 +61,7 @@ class UserController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(UserForm::class, $user);
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()) {
@@ -89,7 +89,7 @@ class UserController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
-        $form = $this->createForm(UserNewType::class, $user);
+        $form = $this->createForm(UserNewForm::class, $user);
         $form->handleRequest($request);
 
         if($form->isSubmitted() && $form->isValid()) {

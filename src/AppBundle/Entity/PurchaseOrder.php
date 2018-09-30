@@ -23,6 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use AppBundle\Entity\Supplier;
 
 /**
@@ -35,6 +36,7 @@ class PurchaseOrder extends AOrder
     /**
      * @var Supplier Deliverer of this order
      *
+     * @Assert\Valid
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Supplier", fetch="EAGER")
      * @ORM\JoinColumn(name="supplier_id", referencedColumnName="id")
      */

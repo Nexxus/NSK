@@ -25,28 +25,26 @@ namespace AppBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use AppBundle\Entity\Address;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
-class AddressType extends AbstractType
+class IndexSearchForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('street1', TextType::class)
-            ->add('street2', TextType::class, ['required' => false])
-            ->add('city', TextType::class)
-            ->add('zip', TextType::class, ['required' => false])
-            ->add('state', TextType::class, ['required' => false])
-            ->add('country', TextType::class, ['required' => false])
-            ->add('addresstype', ChoiceType::class, ['required' => false, 'choices'  => ['Post' => 0, 'Invoice' => 1]]);
+            ->setMethod('GET')
+            ->add('query', TextType::class, ['label' => false, 'attr' => ['placeholder' => 'Zoeken op Id, Sku of (deel van) naam']])
+            ->add('submit', SubmitType::class, ['label' => 'Search']);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => Address::class
+            'allow_extra_fields' => true, // when request comes from dashboard
+            'csrf_protection' => true,
+            'csrf_field_name' => '_token',
+            'csrf_token_id'   => 'IndexSearch'
         ));
     }
 }

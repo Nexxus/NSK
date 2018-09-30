@@ -36,7 +36,7 @@ use Doctrine\ORM\EntityRepository;
 use AppBundle\Entity\ProductAttributeRelation;
 use AppBundle\Entity\Attribute;
 
-class ProductAttributeRelationType extends AbstractType
+class ProductAttributeRelationForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {

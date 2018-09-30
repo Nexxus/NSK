@@ -7,15 +7,16 @@
         <title>{% block title %}Nexxus{% endblock %}</title>
         
         <link href="{{ asset('bootstrap/stylesheet/bootstrap.css') }}" rel="stylesheet"/>
-        <link href="{{ asset('stylesheet/override_style.css') }}" rel="stylesheet"/>
-        
-        {% block stylesheets %}
-            
-        {% endblock %}
-            
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        <link href="{{ asset('stylesheet/override_style.css') }}" rel="stylesheet"/>  
+        <!-- <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" /> -->
     </head>
     <body>
+        <div class="modal fade" tabindex="-1" role="dialog" id="modalEditor" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content"></div>
+            </div>
+        </div>
+
         {% block navbar %}
         <nav class="navbar navbar-default navbar-gradient">
           <div class="container-fluid">
@@ -38,21 +39,16 @@
           </div>
         </nav>
         {% endblock %}
-        <div class="container">
-            
-            {% block breadcrumb %}
-            {% endblock %}
-            
-            {% block body %}
 
+        <div class="container">
+            {% block body %}
             {% endblock %}
-            
         </div>
+
         <script src="{{ asset('bootstrap/js/jquery.min.js') }}"></script>
         <script src="{{ asset('bootstrap/js/bootstrap.min.js') }}"></script>
         <script src="{{ asset('js/ajax-form.js') }}"></script>
         {% block javascripts %}
-          
         {% endblock %}
     </body>
 </html>

@@ -41,7 +41,7 @@
                 <td>{{ product.quantity }}</td>
                 <td>{{ product.price }}</td>
                 <td nowrap>
-                    <a class="btn btn-success" href="{{ path('product_edit', { 'id': product.id }) }}" data-toggle="modal" data-target="#productEditor"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
+                    <a class="btn btn-success" href="{{ path('product_edit', { 'id': product.id }) }}" data-toggle="modal" data-target="#modalEditor"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
                     <a class="btn btn-danger" href="{{ path('product_delete', { 'id': product.id }) }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
                 </td>
             </tr>
@@ -58,13 +58,6 @@
 
     <div class="navigation">
         {{ knp_pagination_render(products) }}
-    </div>
-
-    <div class="modal fade" tabindex="-1" role="dialog" id="productEditor">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-        </div>
-      </div>
     </div>
 
 {% endblock %}

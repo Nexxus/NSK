@@ -58,13 +58,6 @@ abstract class ACompany
     protected $name;
 
     /**
-     * @var ArrayCollection|Address[]
-     *
-     * @ORM\OneToMany(targetEntity="Address", mappedBy="company", cascade={"all"})
-     */
-    protected $addresses;
-
-    /**
      * @var int
      *
      * @ORM\Column(name="kvk_nr", type="integer", nullable=true)
@@ -84,6 +77,90 @@ abstract class ACompany
      * @ORM\Column(name="email", type="string", length=255, nullable=true)
      */
     protected $email;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $street;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $streetExtra;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $city;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $country;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $state;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $zip;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $street2;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $streetExtra2;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $city2;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $country2;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $state2;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $zip2;
 
     /**
      * @var Location
@@ -199,25 +276,225 @@ abstract class ACompany
         return $this->email;
     }
 
-    public function addAddress(Address $address)
+    /**
+     * @param string $street
+     *
+     * @return Acompany
+     */
+    public function setStreet($street)
     {
-        $this->addresses[] = $address;
+        $this->street = $street;
 
         return $this;
     }
 
-    public function removeAddress(Address $address)
+    /**
+     * @return string
+     */
+    public function getStreet()
     {
-        $this->addresses->removeElement($address);
+        return $this->street;
     }
 
     /**
-     * @return ArrayCollection
+     * @param string $street
      */
-    public function getAddresses()
+    public function setStreetExtra($streetExtra)
     {
-        return $this->addresses;
+        $this->streetExtra = $streetExtra;
+
+        return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getStreetExtra()
+    {
+        return $this->streetExtra;
+    }
+
+    /**
+     * @param string $city
+     */
+    public function setCity($city)
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCity()
+    {
+        return $this->city;
+    }
+
+    /**
+     * @param string $country
+     */
+    public function setCountry($country)
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCountry()
+    {
+        return $this->country;
+    }
+
+    /**
+     * @param string $state
+     */
+    public function setState($state)
+    {
+        $this->state = $state;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getState()
+    {
+        return $this->state;
+    }
+
+    /**
+     * @param string $zip
+     */
+    public function setZip($zip)
+    {
+        $this->zip = $zip;
+
+        return $this;
+    }
+
+    /**
+     * Get zip
+     *
+     * @return string
+     */
+    public function getZip()
+    {
+        return $this->zip;
+    }
+    /**
+     * @param string $street2
+     */
+    public function setStreet2($street2)
+    {
+        $this->street1 = $street2;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStreet2()
+    {
+        return $this->street2;
+    }
+
+    /**
+     * @param string $streetExtra2
+     */
+    public function setStreetExtra2($streetExtra2)
+    {
+        $this->streetExtra2 = $streetExtra2;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStreetExtra2()
+    {
+        return $this->streetExtra2;
+    }
+
+    /**
+     * @param string $city2
+     */
+    public function setCity2($city2)
+    {
+        $this->city2 = $city2;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCity2()
+    {
+        return $this->city2;
+    }
+
+    /**
+     * @param string $country2
+     */
+    public function setCountry2($country2)
+    {
+        $this->country2 = $country2;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCountry2()
+    {
+        return $this->country2;
+    }
+
+    /**
+     * @param string $state2
+     */
+    public function setState2($state2)
+    {
+        $this->state2 = $state2;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getState2()
+    {
+        return $this->state2;
+    }
+
+    /**
+     * @param string $zip2
+     */
+    public function setZip2($zip2)
+    {
+        $this->zip2 = $zip2;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getZip2()
+    {
+        return $this->zip2;
+    }
+
 
     /**
      * Set location

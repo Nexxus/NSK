@@ -29,7 +29,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 /**
 * @Route("/admin")
 */
-class DefaultController extends Controller
+class AdminController extends Controller
 {
     /**
      * @Route("/", name="admin_index")
