@@ -26,8 +26,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -67,7 +66,7 @@ class ProductAttributeRelationForm extends AbstractType
                     ]);
                     break;
                 case Attribute::TYPE_SELECT:
-                    $form->add('value', EntityType::class, [
+                    $form->add('value', ChoiceType::class, [
                        'class' => 'AppBundle:AttributeOption',
                        'choice_label' => 'name',
                        'required' => false,
