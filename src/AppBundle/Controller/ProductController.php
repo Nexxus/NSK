@@ -32,6 +32,7 @@ use AppBundle\Form\IndexSearchForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Form\FormError;
 
 /**
  * @Route("/product")
@@ -84,12 +85,11 @@ class ProductController extends Controller
     }
 
     /**
-     * @Route("/edit/{id}/{purchaseOrderId}/{productTypeId}", name="product_edit")
+     * @Route("/new/{purchaseOrderId}/{productTypeId}", name="product_new")
+     * @Route("/edit/{id}/{success}", name="product_edit")
      */
-    public function editAction(Request $request, $id = 0, $purchaseOrderId = 0, $productTypeId = 0)
+    public function editAction(Request $request, $id = 0, $purchaseOrderId = 0, $productTypeId = 0, $success = null)
     {
-        $success = null;
-
         $em = $this->getDoctrine()->getManager();
 
         /** @var \AppBundle\Repository\ProductRepository */
@@ -125,8 +125,17 @@ class ProductController extends Controller
         if ($form->isSubmitted() && $form->isValid())
         {
             $em->persist($product);
-            $em->flush();
-            $success = true;
+
+            try {
+                $em->flush();
+            }
+            catch (\Doctrine\DBAL\Exception\UniqueConstraintViolationException $e) {
+                $form->get('sku')->addError(new FormError('Already exists'));
+                $success = false;
+            }
+
+            if ($success !== false)
+                return $this->redirectToRoute("product_edit", array('id' => $product->getId(), 'success' => true));
         }
         else if ($form->isSubmitted())
         {

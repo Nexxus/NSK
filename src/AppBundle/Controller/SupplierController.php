@@ -29,7 +29,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-
+use Symfony\Component\Form\FormError;
 
 /**
  * @Route("/supplier")
@@ -70,13 +70,11 @@ class SupplierController extends Controller
 
 
     /**
-     * @Route("/edit/{id}", name="supplier_edit")
+     * @Route("/edit/{id}/{success}", name="supplier_edit")
      * @Method({"GET", "POST"})
      */
-    public function editAction(Request $request, $id = 0)
+    public function editAction(Request $request, $id = 0, $success = null)
     {
-        $success = null;
-
         $em = $this->getDoctrine()->getManager();
 
         if ($id == 0)
@@ -96,7 +94,8 @@ class SupplierController extends Controller
         {
             $em->persist($supplier);
             $em->flush();
-            $success = true;
+
+            return $this->redirectToRoute("supplier_edit", array('id' => $supplier->getId(), 'success' => true));
         }
         else if ($form->isSubmitted())
         {

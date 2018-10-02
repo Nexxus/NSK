@@ -135,7 +135,7 @@
          $('select[name="purchase_order_form[newProduct]"]').change(function () {
              if ($(this).val()) {
                  $("#modalEditor").modal('show');
-                 $("#modalEditor .modal-content").load('{{ path('product_edit', { 'id': 0, 'purchaseOrderId': order.id }) }}/' + $(this).val());
+                 $("#modalEditor .modal-content").load('{{ path('product_new', { 'purchaseOrderId': order.id }) }}/' + $(this).val());
              }
          });
 
