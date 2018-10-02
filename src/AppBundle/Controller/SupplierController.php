@@ -29,8 +29,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 
 /**
@@ -75,7 +73,7 @@ class SupplierController extends Controller
      * @Route("/edit/{id}", name="supplier_edit")
      * @Method({"GET", "POST"})
      */
-    public function editAction(Request $request, $id)
+    public function editAction(Request $request, $id = 0)
     {
         $success = null;
 

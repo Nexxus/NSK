@@ -3,7 +3,6 @@
     Copiatek 
     Dark blue: #15007c
     Dark green: #006e2e
-    Green: #009649
 */
 
 
@@ -22,6 +21,10 @@ h1 {
     font-size: 24px;
 }
 
+a {
+    color: #006e2e;
+}
+
 .form-group {
     margin-bottom: 8px;
 }
@@ -29,6 +32,11 @@ h1 {
 .btn, .form-control, .input-group-addon {
     padding: 5px 10px;
     height: 35px;
+}
+
+.btn-success {
+    background-color: #006e2e;
+    border-color: #006e2e;
 }
 
 .radio {
@@ -45,23 +53,23 @@ h1 {
 }
 .navbar-inverse .badge {
   background-color: #fff;
-  color: #009649;
+  color: #006e2e;
 }
 .text-success,
 .text-success:hover {
-  color: #009649;
+  color: #006e2e;
 }
 .has-success .form-control-feedback {
-  color: #009649;
+  color: #006e2e;
 }
 .has-success .form-control:focus {
-  border: 2px solid #009649;
+  border: 2px solid #006e2e;
 }
 .has-success .input-group-addon {
-  border-color: #009649;
+  border-color: #006e2e;
 }
 a.list-group-item-success.active {
-  background-color: #009649;
+  background-color: #006e2e;
 }
 
 .navbar-default .navbar-nav > .active{

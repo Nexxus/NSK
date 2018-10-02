@@ -114,6 +114,10 @@
              }
          }
 
+         $('[required]').prop('required', function () {
+             return $(this).is(':visible');
+         });
+
          /* Product list */
 
          {% if ( order.id > 0) %}

@@ -53,8 +53,7 @@ class PurchaseOrderForm extends AbstractType
                 'required' => false
             ])
             ->add('newSupplier', SupplierForm::class, [
-                'mapped' => false,
-                'required' => false
+                'mapped' => false
             ])
             ->add('newOrExistingSupplier', ChoiceType::class, [
                 'label' => false,

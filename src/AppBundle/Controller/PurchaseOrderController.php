@@ -54,12 +54,10 @@ class PurchaseOrderController extends Controller
     }
 
     /**
-     * @Route("/edit/{id}", name="purchaseorder_edit")
+     * @Route("/edit/{id}/{success}", name="purchaseorder_edit")
      */
-    public function editAction(Request $request, $id = 0)
+    public function editAction(Request $request, $id = 0, $success = null)
     {
-        $success = null;
-
         $em = $this->getDoctrine()->getManager();
 
         /** @var \AppBundle\Repository\PurchaseOrderRepository */
@@ -103,8 +101,17 @@ class PurchaseOrderController extends Controller
             if ($form->isValid())
             {
                 $em->persist($order);
-                $em->flush();
-                $success = true;
+
+                try {
+                    $em->flush();
+                }
+                catch (\Doctrine\DBAL\Exception\UniqueConstraintViolationException $e) {
+                    $form->get('orderNr')->addError(new FormError('Already exists'));
+                    $success = false;
+                }
+
+                if ($success !== false)
+                    return $this->redirectToRoute("purchaseorder_edit", array('id' => $order->getId(), 'success' => true));
             }
             else
             {

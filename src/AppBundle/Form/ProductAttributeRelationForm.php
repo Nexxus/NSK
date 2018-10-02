@@ -30,10 +30,10 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
-use Doctrine\ORM\EntityRepository;
 
 use AppBundle\Entity\ProductAttributeRelation;
 use AppBundle\Entity\Attribute;
+use AppBundle\Entity\AttributeOption;
 
 class ProductAttributeRelationForm extends AbstractType
 {
@@ -67,16 +67,9 @@ class ProductAttributeRelationForm extends AbstractType
                     break;
                 case Attribute::TYPE_SELECT:
                     $form->add('value', ChoiceType::class, [
-                       'class' => 'AppBundle:AttributeOption',
-                       'choice_label' => 'name',
+                       'choices' => $this->getAttributeOptions($relation->getAttribute()),
                        'required' => false,
-                       'label' => 'Select specification',
-                       'query_builder' => function (EntityRepository $er) use ($relation) {
-                           /** @var ProductAttributeRelation $relation */
-                           return $er->createQueryBuilder('ao')
-                                ->where("ao.attribute = :attr")
-                                ->setParameter("attr", $relation->getAttribute());
-                       }
+                       'label' => 'Select specification'
                     ]);
                     break;
                 case Attribute::TYPE_TEXT:
@@ -94,5 +87,19 @@ class ProductAttributeRelationForm extends AbstractType
         $resolver->setDefaults(array(
             'data_class' => ProductAttributeRelation::class
         ));
+    }
+
+    private function getAttributeOptions(Attribute $attribute)
+    {
+        $options = $attribute->getOptions();
+        $arr = array();
+
+        foreach ($options as $option)
+        {
+            /** @var AttributeOption $option */
+            $arr[$option->getName()] = $option->getId();
+        }
+
+        return $arr;
     }
 }

@@ -27,8 +27,6 @@ use AppBundle\Form\CustomerForm;
 use AppBundle\Form\IndexSearchForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
@@ -73,7 +71,7 @@ class CustomerController extends Controller
      * @Route("/edit/{id}", name="customer_edit")
      * @Method({"GET", "POST"})
      */
-    public function editAction(Request $request, $id)
+    public function editAction(Request $request, $id = 0)
     {
         $success = null;
 
