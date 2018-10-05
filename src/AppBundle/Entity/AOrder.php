@@ -58,6 +58,13 @@ abstract class AOrder
     protected $orderNr;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime")
+     */
+    protected $orderDate;
+
+    /**
      * @var ArrayCollection|ProductOrderRelation[] Which products have this attribute
      *
      * @ORM\OneToMany(targetEntity="ProductOrderRelation", mappedBy="order", cascade={"all"}, orphanRemoval=true)
@@ -112,6 +119,17 @@ abstract class AOrder
     public function getOrderNr()
     {
         return $this->orderNr;
+    }
+
+    public function getOrderDate()
+    {
+        return $this->orderDate;
+    }
+
+    public function setOrderDate(\DateTime $orderDate)
+    {
+        $this->orderDate = $orderDate;
+        return $this;
     }
 
     /**

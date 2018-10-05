@@ -66,6 +66,7 @@ class PurchaseOrderController extends Controller
         if ($id == 0)
         {
             $order = new PurchaseOrder();
+            $order->setOrderDate(new \DateTime());
         }
         else
         {
@@ -111,7 +112,15 @@ class PurchaseOrderController extends Controller
                 }
 
                 if ($success !== false)
+                {
+                    if (!$order->getOrderNr())
+                    {
+                        $order->setOrderNr($order->getOrderDate()->format("Y") . sprintf('%06d', $order->getId()));
+                        $em->flush();
+                    }
+
                     return $this->redirectToRoute("purchaseorder_edit", array('id' => $order->getId(), 'success' => true));
+                }
             }
             else
             {

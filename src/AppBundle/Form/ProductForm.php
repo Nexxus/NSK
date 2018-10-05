@@ -44,7 +44,9 @@ class ProductForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('sku', TextType::class)
+            ->add('sku', TextType::class, ['attr'=> [
+                'placeholder' => 'Keep empty for autogeneration', 'class' => 'focus']
+            ])
             ->add('name', TextType::class)
             ->add('quantity', IntegerType::class, [
                 'required' => false

@@ -124,6 +124,11 @@ class ProductController extends Controller
 
         if ($form->isSubmitted() && $form->isValid())
         {
+            if (!$product->getSku())
+            {
+                $product->setSku(time());
+            }
+
             $em->persist($product);
 
             try {

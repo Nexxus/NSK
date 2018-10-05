@@ -17,10 +17,11 @@
         <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Order status{% endtrans %}
+                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Order details{% endtrans %}
                 </div>
                 <div class="panel-body">
                     {{ form_row(form.orderNr) }} 
+                    {{ form_row(form.orderDate) }} 
                     {{ form_row(form.status) }} 
                 </div>
             </div>
@@ -134,8 +135,10 @@
 
          $('select[name="purchase_order_form[newProduct]"]').change(function () {
              if ($(this).val()) {
+                 $("#modalEditor .modal-content").load('{{ path('product_new', { 'purchaseOrderId': order.id }) }}/' + $(this).val(), function () {
+                     focusBarcodeInput();
+                 });
                  $("#modalEditor").modal('show');
-                 $("#modalEditor .modal-content").load('{{ path('product_new', { 'purchaseOrderId': order.id }) }}/' + $(this).val());
              }
          });
 
