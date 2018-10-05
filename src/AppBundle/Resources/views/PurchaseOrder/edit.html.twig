@@ -20,17 +20,21 @@
                     <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Order details{% endtrans %}
                 </div>
                 <div class="panel-body">
+                    {% if order.orderNr %} 
                     <div class="form-group">
                         {{ form_label(form.orderNr) }} 
                         <div class="col-sm-9">
                             <div class="input-group">
-                                {{ form_widget(form.orderNr) }} 
+                                {{ form_widget(form.orderNr) }}
                                 <span class="input-group-btn">
                                     <a class="btn btn-default" href="{{ path('barcode_single', { 'barcode': order.orderNr }) }}" target="_blank"><span class="glyphicon glyphicon-barcode" aria-label="Barcode"></span></a>
                                 </span>
                             </div>
                         </div>
                     </div>
+                    {% else %}
+                    {{ form_row(form.orderNr) }}
+                    {% endif %}
 
                     {{ form_row(form.orderDate) }} 
                     {{ form_row(form.status) }} 
