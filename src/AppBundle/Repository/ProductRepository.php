@@ -72,14 +72,14 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         {
             /** @var \AppBundle\Entity\SalesOrder $salesOrder */
             $result["salesorder-".$salesOrder->getId()] = sprintf("Sales order with nr %s, dated %s, to customer %s, at location %s",
-                $salesOrder->getOrderNr(), $salesOrder->getOrderDate(), $salesOrder->getCustomer()->getName(), $salesOrder->getLocation()->getName());
+                $salesOrder->getOrderNr(), $salesOrder->getOrderDate()->format("M j, Y"), $salesOrder->getCustomer()->getName(), $salesOrder->getLocation()->getName());
         }
 
         foreach ($this->_em->getRepository(\AppBundle\Entity\PurchaseOrder::class)->findBySearchQuery($query) as $purchaseOrder)
         {
             /** @var \AppBundle\Entity\PurchaseOrder $purchaseOrder */
             $result["salesorder-".$purchaseOrder->getId()] = sprintf("Purchase order with nr %s, dated %s, from supplier %s, at location %s",
-                $purchaseOrder->getOrderNr(), $purchaseOrder->getOrderDate(), $purchaseOrder->getSupplier()->getName(), $purchaseOrder->getLocation()->getName());
+                $purchaseOrder->getOrderNr(), $purchaseOrder->getOrderDate()->format("M j, Y"), $purchaseOrder->getSupplier()->getName(), $purchaseOrder->getLocation()->getName());
         }
 
         return $result;

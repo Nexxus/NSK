@@ -20,10 +20,10 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th{% if customers.isSorted('c.id') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(customers, 'Id', 'c.id') }}</th>
-                <th{% if customers.isSorted('c.name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(customers, 'Name', 'c.name') }}</th>
+                <th{% if customers.isSorted('id') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(customers, 'Id', 'id') }}</th>
+                <th{% if customers.isSorted('name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(customers, 'Name', 'name') }}</th>
                 <th>Representative</th>
-                <th{% if customers.isSorted('c.email') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(customers, 'E-mail', 'c.email') }}</th>
+                <th{% if customers.isSorted('email') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(customers, 'E-mail', 'email') }}</th>
                 <th width="1%"></th>
             </tr>
             <tr>
