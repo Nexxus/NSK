@@ -113,6 +113,15 @@ a.list-group-item-success.active {
     width: 100%;
 }
 
-.pagination > .disabled > span {
-    background-color: #ddd;
+.pagination > li > a {
+    background-color: #006e2e;
 }
+
+.pagination > li.disabled > span {
+    background-color: #bbb;
+}
+
+.pagination > li.active > span {
+    background-color: #15007c;
+}
+

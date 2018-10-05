@@ -85,3 +85,7 @@ fos_user:
     from_email:
         address: ben.wolthuis@copiatek.nl
         sender_name: Copiatek
+
+knp_paginator:
+    template:
+        pagination: KnpPaginatorBundle:Pagination:twitter_bootstrap_v3_pagination.html.twig
