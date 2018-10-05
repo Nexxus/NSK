@@ -48,7 +48,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         else
         {
             $q = $this->getEntityManager()
-                ->createQuery("SELECT c FROM AppBundle:Product c WHERE c.name LIKE ?1")->setParameter(1, '%' . $query . '%');
+                ->createQuery("SELECT c FROM AppBundle:Product c WHERE c.name LIKE ?2 OR c.sku = ?1")->setParameter(1, $query)->setParameter(2, '%' . $query . '%');
         }
 
         return $q->getResult();

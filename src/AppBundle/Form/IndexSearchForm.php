@@ -61,9 +61,7 @@ class IndexSearchForm extends AbstractType
         $resolver->setDefaults(array(
             //'allow_extra_fields' => true, // when request comes from dashboard
             'withRadioButtons' => false,
-            'csrf_protection' => true,
-            'csrf_field_name' => '_token',
-            'csrf_token_id'   => 'IndexSearch'
+            'csrf_protection' => false
         ));
     }
 }

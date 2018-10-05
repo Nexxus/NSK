@@ -58,7 +58,7 @@ class DashboardController extends Controller
             }
             else
             {
-                return $this->redirectToRoute($data['type'] . '_index', ['query' => $data['query'] ]);
+                return $this->redirectToRoute($data['type'] . '_index', ['index_search_form[query]' => $data['query'] ]);
             }
         }
 
