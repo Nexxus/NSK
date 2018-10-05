@@ -43,19 +43,46 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         if (is_numeric($query))
         {
             $q = $this->getEntityManager()
-                ->createQuery("SELECT c FROM AppBundle:Product c WHERE c.id = ?1 OR c.sku = ?1 OR c.name LIKE ?2");
+                ->createQuery("SELECT c FROM AppBundle:Product c WHERE c.id = ?1 OR c.sku = ?1")->setParameter(1, $query);
         }
         else
         {
             $q = $this->getEntityManager()
-                ->createQuery("SELECT c FROM AppBundle:Product c WHERE c.name LIKE ?2");
+                ->createQuery("SELECT c FROM AppBundle:Product c WHERE c.name LIKE ?1")->setParameter(1, '%' . $query . '%');
         }
 
-        $q = $q
-            ->setParameter(1, $query)
-            ->setParameter(2, '%' . $query . '%');
-
         return $q->getResult();
+    }
+
+    /**
+     * This function searches in fields: Sku (of products) and orderNr (of orders)
+     */
+    public function findByBarcodeSearchQuery($query)
+    {
+        $result = array();
+
+        foreach ($this->findBySearchQuery($query) as $product)
+        {
+            /** @var Product $product */
+            $result["product-".$product->getId()] = sprintf("Product '%s' with SKU %s, in quantity %s, at location %s",
+                $product->getName(), $product->getSku(), $product->getQuantity(), $product->getLocation()->getName());
+        }
+
+        foreach ($this->_em->getRepository(\AppBundle\Entity\SalesOrder::class)->findBySearchQuery($query) as $salesOrder)
+        {
+            /** @var \AppBundle\Entity\SalesOrder $salesOrder */
+            $result["salesorder-".$salesOrder->getId()] = sprintf("Sales order with nr %s, dated %s, to customer %s, at location %s",
+                $salesOrder->getOrderNr(), $salesOrder->getOrderDate(), $salesOrder->getCustomer()->getName(), $salesOrder->getLocation()->getName());
+        }
+
+        foreach ($this->_em->getRepository(\AppBundle\Entity\PurchaseOrder::class)->findBySearchQuery($query) as $purchaseOrder)
+        {
+            /** @var \AppBundle\Entity\PurchaseOrder $purchaseOrder */
+            $result["salesorder-".$purchaseOrder->getId()] = sprintf("Purchase order with nr %s, dated %s, from supplier %s, at location %s",
+                $purchaseOrder->getOrderNr(), $purchaseOrder->getOrderDate(), $purchaseOrder->getSupplier()->getName(), $purchaseOrder->getLocation()->getName());
+        }
+
+        return $result;
     }
 
     public function generateAttributeRelations(Product $product)

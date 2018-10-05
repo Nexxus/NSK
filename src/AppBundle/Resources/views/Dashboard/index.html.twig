@@ -41,6 +41,31 @@
                 </div>
             </div>
         </div>
+
+        {% if result is iterable %}
+
+        <div class="row">
+            <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">{% trans %}Found products and orders{% endtrans %}</div>
+            <div class="panel-body">
+                {% for line in result %}
+                <a class="btn btn-success pull-right" href="{{ path('product_edit', { 'id': 0 }) }}" data-toggle="modal" data-target="#modalEditor"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
+                {{ line }}
+                <hr />
+                {% endfor %}
+                {% if result|length %}
+                    <i>{{ result|length }} products and orders found</i>
+                {% else %}
+                    <i>No products or orders found</i>
+                {% endif %}
+            </div>
+        </div>
+            </div>
+        </div>
+
+        {% else %}
+
         <div class="row">
             <div class="col-md-3">
                 <div class="panel panel-default">
@@ -155,6 +180,9 @@
                 </div>
             </div>
         </div>
+        
+        {% endif %}
+
     </div>
     <div class="col-md-2 hidden-sm">
         <div class="panel panel-default">

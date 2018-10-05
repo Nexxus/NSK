@@ -26,22 +26,41 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class IndexSearchForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
-            ->setMethod('GET')
-            ->add('query', TextType::class, ['label' => false, 'attr' => ['placeholder' => 'Zoeken op Id, Sku of (deel van) naam']])
+        $builder->setMethod('GET')
+            ->add('query', TextType::class, ['label' => false, 'attr' => ['class' => 'focus']])
             ->add('submit', SubmitType::class, ['label' => 'Search']);
+
+        if ($options['withRadioButtons'])
+        {
+            $builder->add('type', ChoiceType::class, [
+                'label' => false,
+                'expanded' => true,
+                'multiple' => false,
+                'data' => 'barcode',
+                'choices' => [
+                    'Barcodes' => 'barcode',
+                    'Productnamen' => 'product',
+                    'Inkooporders' => 'purchaseorder',
+                    'Verkooporders' => 'salesorder',
+                    'Klanten' => 'customer',
+                    'Leveranciers' => 'supplier'
+                    //'Locaties' => 'location'
+                ]]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'allow_extra_fields' => true, // when request comes from dashboard
+            //'allow_extra_fields' => true, // when request comes from dashboard
+            'withRadioButtons' => false,
             'csrf_protection' => true,
             'csrf_field_name' => '_token',
             'csrf_token_id'   => 'IndexSearch'

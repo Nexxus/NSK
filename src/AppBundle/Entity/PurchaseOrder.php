@@ -29,7 +29,7 @@ use AppBundle\Entity\Supplier;
 /**
  * PurchaseOrder
  *
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\PurchaseOrderRepository")
  */
 class PurchaseOrder extends AOrder
 {

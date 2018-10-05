@@ -28,7 +28,7 @@ use AppBundle\Entity\Customer;
 /**
  * SalesOrder
  *
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\SalesOrderRepository")
  */
 class SalesOrder extends AOrder
 {

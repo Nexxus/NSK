@@ -26,9 +26,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use AppBundle\Form\IndexSearchForm;
 
 /**
  * Product controller.
@@ -43,34 +41,29 @@ class DashboardController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $data = array('type' => 'purchaseOrder');
+        $result = null;
 
-        $form = $this->createFormBuilder($data)
-            ->add('query', TextType::class, ['label' => false])
-            ->add('type', ChoiceType::class, [
-                'label' => false,
-                'expanded' => true,
-                'multiple' => false,
-                'choices' => [
-                    'Producten in voorraad' => 'track',
-                    'Inkooporders' => 'purchaseorder',
-                    'Verkooporders' => 'salesorder',
-                    'Klanten' => 'customer',
-                    'Leveranciers' => 'supplier'
-                    //'Locaties' => 'location'
-                ]
-            ])
-            ->add('submit', SubmitType::class, ['label' => 'Search'])
-            ->getForm();
+        $form = $this->createForm(IndexSearchForm::class, array(), array('withRadioButtons' => true));
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $data = $form->getData();
-            return $this->redirectToRoute($data['type'] . '_index', ['query' => $data['query'] ]);
+
+            if ($data['type'] == 'barcode')
+            {
+                $repo = $this->getDoctrine()->getRepository('AppBundle:Product');
+                $result = $repo->findByBarcodeSearchQuery($data['query']);
+            }
+            else
+            {
+                return $this->redirectToRoute($data['type'] . '_index', ['query' => $data['query'] ]);
+            }
         }
 
         return $this->render('AppBundle:Dashboard:index.html.twig', array(
+            'result' => $result,
             'form' => $form->createView()
         ));
     }
