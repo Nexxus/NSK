@@ -50,8 +50,8 @@ class Pickup
     private $id;
 
     /**
-     * @OneToOne(targetEntity="PurchaseOrder", inversedBy="pickup")
-     * @JoinColumn(name="order_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="PurchaseOrder", inversedBy="pickup")
+     * @ORM\JoinColumn(name="order_id", referencedColumnName="id")
      */
     private $order;
 

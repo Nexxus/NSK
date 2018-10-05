@@ -43,7 +43,7 @@ class PurchaseOrder extends AOrder
     private $supplier;
 
     /**
-     * @OneToOne(targetEntity="Pickup", mappedBy="order")
+     * @ORM\OneToOne(targetEntity="Pickup", mappedBy="order")
      */
     private $pickup;
 
