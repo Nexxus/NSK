@@ -43,6 +43,11 @@ class PurchaseOrder extends AOrder
     private $supplier;
 
     /**
+     * @OneToOne(targetEntity="Pickup", mappedBy="order")
+     */
+    private $pickup;
+
+    /**
      * @return PurchaseOrder
      */
     public function setSupplier(Supplier $supplier)
@@ -58,5 +63,23 @@ class PurchaseOrder extends AOrder
     public function getSupplier()
     {
         return $this->supplier;
+    }
+
+    /**
+     * @return PurchaseOrder
+     */
+    public function setPickup(Pickup $pickup)
+    {
+        $this->pickup = $pickup;
+
+        return $this;
+    }
+
+    /**
+     * @return Pickup
+     */
+    public function getPickup()
+    {
+        return $this->pickup;
     }
 }
