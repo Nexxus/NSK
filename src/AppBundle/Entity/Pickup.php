@@ -58,7 +58,7 @@ class Pickup
     /**
      * @var \DateTime
      *
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $pickupDate;
 
@@ -113,7 +113,7 @@ class Pickup
         return $this->pickupDate;
     }
 
-    public function setPickupDate(\DateTime $pickupDate)
+    public function setPickupDate($pickupDate)
     {
         $this->pickupDate = $pickupDate;
         return $this;

@@ -117,7 +117,7 @@ class AttributeController extends Controller
     public function editAction(Request $request, Attribute $attribute)
     {
         $deleteForm = $this->createDeleteForm($attribute);
-        $editForm = $this->createForm('AppBundle\Form\AttributeType', $attribute);
+        $editForm = $this->createForm('AppBundle\Form\AttributeForm', $attribute);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
