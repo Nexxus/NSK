@@ -25,92 +25,59 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * ProductImage
- *
- * @ORM\Table(name="product_image")
  * @ORM\Entity
+ * @ORM\Table(name="afile")
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"pr" = "ProductImageFile", "pi" = "PickupImageFile", "pa" = "PickupAgreementFile" })
  */
-class ProductImage
+abstract class AFile
 {
     /**
      * @var int
      *
-     * @ORM\Column(type="integer")
+     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @var Product
+     * @var string
      *
-     * @ORM\ManyToOne(targetEntity="Product", inversedBy="images")
-     * @ORM\JoinColumn(name="product_id", referencedColumnName="id", nullable=false)
+     * @ORM\Column(type="string", length=255, nullable=false)
      */
-    private $product;
+    private $originalClientFilename;
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=false)
      */
-    private $name;
+    private $uniqueServerFilename;
 
-    /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId()
+    public function setOriginalClientFilename($originalClientFilename)
     {
-        return $this->id;
-    }
-
-    /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return ProductImage
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
+        $this->originalClientFilename = $originalClientFilename;
 
         return $this;
     }
 
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName()
+    public function getOriginalClientFilename()
     {
-        return $this->name;
+        return $this->originalClientFilename;
     }
 
-    /**
-     * Set product
-     *
-     * @param Product $product
-     *
-     * @return ProductImage
-     */
-    public function setProduct(Product $product)
+    public function setUniqueServerFilename($uniqueServerFilename)
     {
-        $this->product = $product;
+        $this->uniqueServerFilename = $uniqueServerFilename;
 
         return $this;
     }
 
-    /**
-     * Get product
-     *
-     * @return Product
-     */
-    public function getProduct()
+    public function getUniqueServerFilename()
     {
-        return $this->product;
+        return $this->uniqueServerFilename;
     }
 }
+

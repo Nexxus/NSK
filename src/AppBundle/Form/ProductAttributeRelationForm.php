@@ -59,6 +59,12 @@ class ProductAttributeRelationForm extends AbstractType
 
                 case Attribute::TYPE_PRODUCT:
                     $form->add('valueProduct', EntityType::class, [
+                        'query_builder' => function (\Doctrine\ORM\EntityRepository $er) {
+                            return $er->createQueryBuilder('p')
+                                ->join("p.type", "t")
+                                ->where('t.isAttribute = true')
+                                ->orderBy('p.sku', 'ASC');
+                        },
                        'class' => 'AppBundle:Product',
                        'choice_label' => 'name',
                        'required' => false,

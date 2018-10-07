@@ -49,14 +49,13 @@ class PickupController extends Controller
         $pickup = new Pickup();
         $order = new PurchaseOrder();
         $supplier = new Supplier();
+
         $em->persist($pickup);
         $em->persist($order);
         $em->persist($supplier);
 
         $order->setSupplier($supplier);
         $pickup->setOrder($order);
-        $pickup->setHasPhoto(false);
-        $pickup->setHasProcessingAgreement(false);
 
         $form = $this->createForm(PickupForm::class, $pickup);
 

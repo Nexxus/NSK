@@ -24,12 +24,15 @@
         <script src="{{ asset('bootstrap/js/bootstrap.min.js') }}"></script>
         <script src="{{ asset('js/jquery.uploadifive.min.js') }}"></script>
 	    <script type="text/javascript">
-	        $(function() {
-	            $('#pickup_form_photo').uploadifive({
-			        'uploader' : 'uploadify.php'
-			        // Your options here
-		        });
-	        });
+
+            $('#pickup_form_images-input').uploadifive({
+				'checkScript': '{{ path('uploadifive_checkexists') }}',
+				'formData': {},
+				'uploadScript': '{{ path('uploadifive') }}',
+            	'multi': true,
+				'onUploadComplete': function(file, data) { console.log(data); }
+            });
+
 	    </script>
     </body>
 </html>

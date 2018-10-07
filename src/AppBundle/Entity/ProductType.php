@@ -72,6 +72,13 @@ class ProductType
     private $comment = null;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", nullable=false, options={"default" : false})
+     */
+    private $isAttribute = false;
+
+    /**
      * @var ArrayCollection|Attribute[] Which attributes should be selectable for products of this type
      *
      * @ORM\ManyToMany(targetEntity="Attribute", inversedBy="productTypes")
@@ -277,7 +284,32 @@ class ProductType
     {
         return $this->products;
     }
-    
+
+
+    /**
+     * Set isAttribute
+     *
+     * @param bool $isAttribute
+     *
+     * @return Product
+     */
+    public function setIsAttribute($isAttribute)
+    {
+        $this->isAttribute = $isAttribute;
+
+        return $this;
+    }
+
+    /**
+     * Get isAttribute
+     *
+     * @return bool
+     */
+    public function getIsAttribute()
+    {
+        return $this->isAttribute;
+    }
+
     public function __toString() {
         return $this->getName();
     }

@@ -23,8 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
-use AppBundle\Entity\Supplier;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Pickup
@@ -39,6 +38,10 @@ class Pickup
     const DATADESTRUCTION_STATEMENT = 2;
     const DATADESTRUCTION_SHRED = 3;
     const DATADESTRUCTION_KILLDISK = 4;
+
+    public function __construct() {
+        $this->images = new ArrayCollection();
+    }
 
     /**
      * @var int
@@ -77,18 +80,19 @@ class Pickup
     private $description;
 
     /**
-     * @var bool
+     * @var ArrayCollection|PickupImageFile[]
      *
-     * @ORM\Column(type="boolean")
+     * @ORM\OneToMany(targetEntity="PickupImageFile", mappedBy="pickup", fetch="EAGER")
      */
-    private $hasPhoto;
+    private $images;
 
     /**
-     * @var bool
+     * @var PickupAgreementFile
      *
-     * @ORM\Column(type="boolean")
+     * @ORM\OneToOne(targetEntity="PickupAgreementFile", mappedBy="pickup", fetch="EAGER")
+     * @ORM\JoinColumn(name="agreement_id", referencedColumnName="id")
      */
-    private $hasProcessingAgreement;
+    private $agreement;
 
     /**
      * @return Pickup
@@ -165,43 +169,32 @@ class Pickup
         return $this->description;
     }
 
-    /**
-     * @param bool $name
-     *
-     * @return Pickup
-     */
-    public function setHasPhoto($hasPhoto)
+    public function addImage(PickupImageFile $image)
     {
-        $this->hasPhoto = $hasPhoto;
+        $this->images[] = $image;
 
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function getHasPhoto()
+    public function removeImage(PickupImageFile $image)
     {
-        return $this->hasPhoto;
+        $this->images->removeElement($image);
     }
 
-    /**
-     * @param bool $name
-     *
-     * @return Pickup
-     */
-    public function setHasProcessingAgreement($hasProcessingAgreement)
+    public function getImages()
     {
-        $this->hasProcessingAgreement = $hasProcessingAgreement;
+        return $this->images;
+    }
+
+    public function setAgreement(PickupAgreementFile $agreement)
+    {
+        $this->agreement = $agreement;
 
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function getHasProcessingAgreement()
+    public function getAgreement()
     {
-        return $this->hasProcessingAgreement;
+        return $this->agreement;
     }
 }

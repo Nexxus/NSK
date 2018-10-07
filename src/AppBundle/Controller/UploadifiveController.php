@@ -35,11 +35,10 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class UploadifiveController extends Controller
 {
     private $checkToken = false;
-    private $mustBeImages = false;
+    private $mustBeImage = false;
+    private $uniqueServerFilename = true;
     private $uploadFolder = '/var/uploads';
-    private $subfolderInFormData = false;
-    private $filenameInFormData = false;
-    private $allowedExtensions = array('jpg', 'jpeg', 'gif', 'png');
+    private $allowedExtensions = array('jpg', 'jpeg', 'gif', 'png', 'pdf', 'doc', 'docx');
 
     /**
      * @Route("/", name="uploadifive")
@@ -53,49 +52,34 @@ class UploadifiveController extends Controller
             return new Response("Token is invalid.");
         }
         elseif (!$request->files->count())
-            return new Response("No files to upload.");
-
-        if ($this->subfolderInFormData)
         {
-            $fullUploadFolder = $this->get('kernel')->getRootDir() . DIRECTORY_SEPARATOR . '..' . $this->uploadFolder . DIRECTORY_SEPARATOR . $request->request->get('subfolder');
+            return new Response();
+        }
+
+        /** @var UploadedFile $file This action is called per file by UploadiFive */
+        $file = $request->files->get('Filedata');
+
+        if ($this->mustBeImage && !$this->isImage($file->getRealPath()))
+        {
+            return new Response("Error: File is not an image");
+        }
+        elseif (count($this->allowedExtensions) && !in_array(strtolower($file->getExtension()), $this->allowedExtensions))
+        {
+            return new Response("Error: File is not allowed");
+        }
+
+        if ($this->uniqueServerFilename)
+        {
+            $serverFilename = uniqid();
         }
         else
         {
-            $fullUploadFolder = $this->get('kernel')->getRootDir() . DIRECTORY_SEPARATOR . '..' . $this->uploadFolder;
+            $serverFilename = $file->getClientOriginalName();
         }
 
-        $count = 1;
+        $file->move($this->getFullUploadFolder(), $serverFilename);
 
-        /** @var UploadedFile $file */
-        foreach ($request->files->all() as $file)
-        {
-            if ($this->mustBeImages && !$this->isImage($file->getRealPath()))
-            {
-                continue;
-            }
-            elseif (count($this->allowedExtensions) && !in_array(strtolower($file->getExtension()), $this->allowedExtensions))
-            {
-                continue;
-            }
-
-            if ($this->filenameInFormData && $request->request->get('filename'))
-            {
-                if ($request->files->count() > 1)
-                    $filename = $request->request->get('filename') . "-" . $count;
-                else
-                    $filename = $request->request->get('filename');
-            }
-            else
-            {
-                $filename = $file->getClientOriginalName();
-            }
-
-            $file->move($fullUploadFolder, $filename);
-
-            $count++;
-        }
-
-        return new Response("1");
+        return new Response($serverFilename);
     }
 
     /**
@@ -104,12 +88,12 @@ class UploadifiveController extends Controller
      */
     public function checkexistsAction(Request $request)
     {
-        if ($this->filenameInFormData || $this->subfolderInFormData)
+        if ($this->uniqueServerFilename)
         {
-            return new Response("This function cannot be used with file or folder names in form data.");
+            return new Response("0"); // duhhh
         }
 
-        $fullPath = $this->get('kernel')->getRootDir() . DIRECTORY_SEPARATOR . '..' . $this->uploadFolder . DIRECTORY_SEPARATOR . $request->request->get('filename');
+        $fullPath = $this->getFullUploadFolder() . $request->request->get('filename');
 
         if (file_exists($fullPath)) {
             return new Response("1");
@@ -129,5 +113,13 @@ class UploadifiveController extends Controller
             return false;
         }
 
+    }
+
+    private function getFullUploadFolder()
+    {
+        return
+            $this->get('kernel')->getRootDir() . DIRECTORY_SEPARATOR .
+            '..' . DIRECTORY_SEPARATOR .
+            $this->uploadFolder . DIRECTORY_SEPARATOR;
     }
 }

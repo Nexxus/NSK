@@ -107,13 +107,6 @@ class Product
     private $price;
 
     /**
-     * @var bool
-     *
-     * @ORM\Column(type="boolean", nullable=false, options={"default" : false})
-     */
-    private $isAttribute = false;
-
-    /**
      * @var Location
      *
      * @ORM\ManyToOne(targetEntity="Location", inversedBy="products", fetch="EAGER")
@@ -158,9 +151,9 @@ class Product
     private $orderRelations;
 
     /**
-     * @var ArrayCollection|ProductImage[]
+     * @var ArrayCollection|ProductImageFile[]
      *
-     * @ORM\OneToMany(targetEntity="ProductImage", mappedBy="product", fetch="LAZY", cascade={"all"})
+     * @ORM\OneToMany(targetEntity="ProductImageFile", mappedBy="product", fetch="EAGER")
      */
     private $images;
 
@@ -310,30 +303,6 @@ class Product
     }
 
     /**
-     * Set isAttribute
-     *
-     * @param bool $isAttribute
-     *
-     * @return Product
-     */
-    public function setIsAttribute($isAttribute)
-    {
-        $this->isAttribute = $isAttribute;
-
-        return $this;
-    }
-
-    /**
-     * Get isAttribute
-     *
-     * @return bool
-     */
-    public function getIsAttribute()
-    {
-        return $this->isAttribute;
-    }
-
-    /**
      * Set type
      *
      * @param ProductType $type
@@ -383,7 +352,7 @@ class Product
     /**
      * Set status
      *
-     * @param integer $status
+     * @param ProductStatus $status
      *
      * @return Product
      */
@@ -396,7 +365,7 @@ class Product
     /**
      * Get status
      *
-     * @return int
+     * @return ProductStatus
      */
     public function getStatus()
     {
@@ -505,35 +474,18 @@ class Product
         return $this->orderRelations;
     }
 
-    /**
-     * Add image
-     *
-     * @param ProductImage $image
-     *
-     * @return Product
-     */
-    public function addImage(ProductImage $image)
+    public function addImage(ProductImageFile $image)
     {
         $this->images[] = $image;
 
         return $this;
     }
 
-    /**
-     * Remove image
-     *
-     * @param ProductImage $image
-     */
-    public function removeImage(ProductImage $image)
+    public function removeImage(ProductImageFile $image)
     {
         $this->images->removeElement($image);
     }
 
-    /**
-     * Get images
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
     public function getImages()
     {
         return $this->images;

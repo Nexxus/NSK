@@ -32,6 +32,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class PickupForm extends AbstractType
@@ -60,8 +61,10 @@ class PickupForm extends AbstractType
             ->add('qPhone', IntegerType::class, ['mapped' => false, 'required' => false])
             ->add('qPrinter', IntegerType::class, ['mapped' => false, 'required' => false])
             ->add('qMonitor', IntegerType::class, ['mapped' => false, 'required' => false])
-            ->add('photo', FileType::class, ['mapped' => false, 'required' => false])
-            ->add('processingAgreement', FileType::class, ['mapped' => false, 'required' => false])
+            ->add('images-input', FileType::class, ['mapped' => false, 'required' => false])
+            ->add('agreement-input', FileType::class, ['mapped' => false, 'required' => false])
+            ->add('images-names', HiddenType::class, ['mapped' => false, 'required' => false])
+            ->add('agreement-names', HiddenType::class, ['mapped' => false, 'required' => false])
             ->add('save', SubmitType::class, [
                 'label' => 'Send',
                 'attr' => [
