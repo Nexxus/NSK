@@ -69,6 +69,10 @@ doctrine:
             location:
                 class:   AppBundle\Filter\LocationFilter
                 enabled: false
+        dql:
+            string_functions:
+                SOUNDEX: AppBundle\Helper\SoundexFunction
+                REPLACE: AppBundle\Helper\ReplaceFunction
 
 # Swiftmailer Configuration
 swiftmailer:

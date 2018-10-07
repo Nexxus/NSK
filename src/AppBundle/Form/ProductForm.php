@@ -67,7 +67,8 @@ class ProductForm extends AbstractType
             ])
             ->add('status',  EntityType::class, [
                 'class' => 'AppBundle:ProductStatus',
-                'choice_label' => 'name'
+                'choice_label' => 'name',
+                'required' => false
             ])
             ->add('attributeRelations', CollectionType::class, [
                 'entry_type' => ProductAttributeRelationForm::class,

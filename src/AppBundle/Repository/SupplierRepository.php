@@ -22,6 +22,8 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\Supplier;
+
 /**
  * SupplierRepository
  *
@@ -51,5 +53,30 @@ class SupplierRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter(2, '%' . $query . '%');
 
         return $q->getResult();
+    }
+
+    /**
+     * @param Supplier $newSupplier
+     * @return Supplier
+     */
+    public function checkExists(Supplier $newSupplier)
+    {
+        $q = $this->getEntityManager()
+            ->createQuery("SELECT s FROM AppBundle:Supplier s WHERE SOUNDEX(s.name) like SOUNDEX(:name) or REPLACE(s.phone, '-', '') = :phone OR REPLACE(s.phone2, '-', '') = :phone OR s.email = :email")
+            ->setParameter("name", $newSupplier->getName())
+            ->setParameter("phone", $newSupplier->getPhone())
+            ->setParameter("email", $newSupplier->getEmail());
+
+        $result = $q->getResult();
+
+
+        if (count($result) == 1)
+        {
+            return $result[0];
+        }
+        else
+        {
+            return $newSupplier;
+        }
     }
 }

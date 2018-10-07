@@ -83,6 +83,20 @@ abstract class ACompany
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
+    private $phone;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $phone2;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
     private $street;
 
     /**
@@ -493,6 +507,42 @@ abstract class ACompany
     public function getZip2()
     {
         return $this->zip2;
+    }
+
+    /**
+     * @param string $phone
+     */
+    public function setPhone($phone)
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPhone()
+    {
+        return $this->phone;
+    }
+
+    /**
+     * @param string $phone2
+     */
+    public function setPhone2($phone2)
+    {
+        $this->phone2 = $phone2;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPhone2()
+    {
+        return $this->phone2;
     }
 
 

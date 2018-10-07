@@ -11,8 +11,7 @@
     {% endif %}
 
     {{ form_start(form) }}
-    {{ form_widget(form._token) }}
-
+    
     <div class="row">
         <div class="col-md-6">
             <div class="panel panel-default">
@@ -58,6 +57,7 @@
                         {{ form_row(form.newSupplier.kvkNr) }} 
                         {{ form_row(form.newSupplier.representative) }} 
                         {{ form_row(form.newSupplier.email) }} 
+                        {{ form_row(form.newSupplier.phone) }} 
                         {{ form_row(form.newSupplier.street) }} 
                         {{ form_row(form.newSupplier.streetExtra) }} 
                         {{ form_row(form.newSupplier.city) }} 
@@ -95,7 +95,8 @@
             {{ form_widget(form.save) }}
         </div>
     </div>
-            
+    
+    {{ form_widget(form._token) }}            
     {{ form_end(form, {'render_rest': false}) }}
 
  {% endblock %}

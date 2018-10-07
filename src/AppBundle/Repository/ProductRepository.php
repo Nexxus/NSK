@@ -125,4 +125,24 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
             $product->addOrderRelation($r);
         }
     }
+
+    /**
+     * @param int $quantity 
+     * @param string $typeName 
+     * @return Product
+     */
+    public function generateProductFromQuantity($quantity, $typeName)
+    {
+        $productType = $this->_em->getRepository("AppBundle:ProductType")->findOrCreate($typeName);
+
+        $product = new Product();
+        $product->setSku(time());
+        $product->setName($typeName);
+        $product->setQuantity($quantity);
+        $product->setDescription("Created by application");
+        $product->setType($productType);
+        $this->_em->persist($product);
+
+        return $product;
+    }
 }

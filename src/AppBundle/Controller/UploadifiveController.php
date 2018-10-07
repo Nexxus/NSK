@@ -63,7 +63,7 @@ class UploadifiveController extends Controller
         {
             return new Response("Error: File is not an image");
         }
-        elseif (count($this->allowedExtensions) && !in_array(strtolower($file->getExtension()), $this->allowedExtensions))
+        elseif (count($this->allowedExtensions) && !in_array(strtolower($file->getClientOriginalExtension()), $this->allowedExtensions))
         {
             return new Response("Error: File is not allowed");
         }
@@ -71,15 +71,13 @@ class UploadifiveController extends Controller
         if ($this->uniqueServerFilename)
         {
             $serverFilename = uniqid();
+            $file->move($this->getFullUploadFolder(), $serverFilename);
+            return new Response($serverFilename . $file->getClientOriginalName());
         }
         else
         {
-            $serverFilename = $file->getClientOriginalName();
+            return new Response($file->getClientOriginalName());
         }
-
-        $file->move($this->getFullUploadFolder(), $serverFilename);
-
-        return new Response($serverFilename);
     }
 
     /**

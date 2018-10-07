@@ -25,6 +25,9 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Pickup;
 use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Entity\Supplier;
+use AppBundle\Entity\PickupImageFile;
+use AppBundle\Entity\PickupAgreementFile;
+use AppBundle\Entity\ProductOrderRelation;
 use AppBundle\Form\PickupForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -48,6 +51,7 @@ class PickupController extends Controller
 
         $pickup = new Pickup();
         $order = new PurchaseOrder();
+        $order->setOrderDate(new \DateTime());
         $supplier = new Supplier();
 
         $em->persist($pickup);
@@ -61,11 +65,63 @@ class PickupController extends Controller
 
         $form->handleRequest($request);
 
-        if ($request->isMethod('POST') && $form->isSubmitted() && $this->captchaVerify($request->request->get('g-recaptcha-response')))
+        if ($request->isMethod('POST') && $form->isSubmitted()) // && $this->captchaVerify($request->request->get('g-recaptcha-response')))
         {
             if ($form->isValid())
             {
-                $em->persist($customer);
+                #region Form data processing
+
+                // Create full order
+
+                $location = $em->getReference("AppBundle:Location", $form->get('locationId')->getData());
+                $pickup->getOrder()->setLocation($location);
+
+                $pickup->getOrder()->setSupplier($em->getRepository('AppBundle:Supplier')->checkExists($pickup->getOrder()->getSupplier()));
+
+                $pickup->getOrder()->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData()));
+
+                // Images
+                $imageNames = $this->splitImagesNames($form->get('imagesNames')->getData());
+                foreach ($imageNames as $imageName)
+                {
+                    $file = new PickupImageFile();
+                    $file->setUniqueServerFilename(substr($imageName, 0, 13));
+                    $file->setOriginalClientFilename(substr($imageName, 13));
+                    $em->persist($file);
+                    $pickup->addImage($file);
+                }
+
+                // Agreement
+                $agreementName = $form->get('agreementName')->getData();
+                if ($agreementName)
+                {
+                    $file = new PickupAgreementFile();
+                    $file->setUniqueServerFilename(substr($agreementName, 0, 13));
+                    $file->setOriginalClientFilename(substr($agreementName, 13));
+                    $em->persist($file);
+                    $pickup->setAgreement($file);
+                }
+
+                // Products
+                $productTypes = array("Computer", "Server", "Phone", "Printer", "Monitor");
+                foreach ($productTypes as $productType)
+                {
+                    $quantity = $form->get('q'.$productType)->getData();
+                    if ($quantity)
+                    {
+                        $product = $em->getRepository('AppBundle:Product')->generateProductFromQuantity($quantity, $productType);
+                        $product->setLocation($location);
+
+                        $r = new ProductOrderRelation();
+                        $r->setOrder($pickup->getOrder());
+                        $r->setProduct($product);
+                        $em->persist($r);
+                        $pickup->getOrder()->addProductRelation($r);
+                    }
+                }
+
+                #endregion
+
                 $em->flush();
 
                 $success = true;
@@ -97,5 +153,13 @@ class PickupController extends Controller
         $data = json_decode($response);
 
         return $data->success;
+    }
+
+    private function splitImagesNames($imageNamesString)
+    {
+        $imageNames = explode(",", $imageNamesString);
+        $imageNames = array_filter($imageNames); // remove empty
+        $imageNames = array_unique($imageNames);
+        return $imageNames;
     }
 }

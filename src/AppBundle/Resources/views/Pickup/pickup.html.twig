@@ -14,10 +14,95 @@
     </head>
     <body>
         <div class="container">
+
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+
+                </div>
+            </div>
+
+
+
+            <h1>Welcome to the Nexxus pickup form</h1>
+            This form can be used for pickup creation.<br />
+            It is an example for webdesigners. <br />
+            The form is submittable from other websites and domains.<br />
+            The form can be applied as an API call too (reCaptcha must be disabled).<br /><br />
+            Please note the hidden form fields.<br /><br />
+
             {{form_start(form)}}
-            {{form_widget(form)}}
-            <div class="g-recaptcha" data-sitekey="6LdyzXMUAAAAAD_c780y1hElRPgST2XMzAfCJefH"></div>
-            {{form_end(form)}}
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Your details{% endtrans %}
+                </div>
+                <div class="panel-body">
+                    {{ form_row(form.supplier.name) }} 
+                    {{ form_row(form.supplier.representative) }} 
+                    {{ form_row(form.supplier.email) }} 
+                    {{ form_row(form.supplier.phone) }} 
+                    {{ form_row(form.supplier.street) }} 
+                    {{ form_row(form.supplier.streetExtra) }} 
+                    {{ form_row(form.supplier.city) }} 
+                    {{ form_row(form.supplier.zip) }} 
+                    {{ form_row(form.supplier.state) }} 
+                    {{ form_row(form.supplier.country) }} 
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}About the materials{% endtrans %}
+                </div>
+                <div class="panel-body">
+                    {{ form_row(form.pickupDate) }} 
+                    {{ form_row(form.description) }} 
+                    {{ form_row(form.dataDestruction) }} 
+                     <hr />
+                    <div class="row">
+                        <div class="col-md-3 col-md-offset-3">
+                            {{ form_row(form.qComputer) }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form_row(form.qServer) }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form_row(form.qPhone) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 col-md-offset-3">
+                            {{ form_row(form.qPrinter) }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form_row(form.qMonitor) }}
+                        </div>
+                    </div>
+                    <hr />
+                    {{ form_row(form.imagesInput) }} 
+                    {{ form_row(form.agreementInput) }} 
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="g-recaptcha" data-sitekey="6LdyzXMUAAAAAD_c780y1hElRPgST2XMzAfCJefH"></div>
+                        </div>
+                        <div class="col-md-4">
+                            {{ form_widget(form.save) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{ form_widget(form.imagesNames) }}
+            {{ form_widget(form.agreementName) }}
+            {{ form_widget(form.locationId) }}
+            {{ form_widget(form.orderStatusName) }}
+            {{ form_end(form, {'render_rest': false}) }}
         </div>
 
         <script src="{{ asset('bootstrap/js/jquery.min.js') }}"></script>
@@ -25,12 +110,34 @@
         <script src="{{ asset('js/jquery.uploadifive.min.js') }}"></script>
 	    <script type="text/javascript">
 
-            $('#pickup_form_images-input').uploadifive({
+            $('#pickup_form_imagesInput').uploadifive({
 				'checkScript': '{{ path('uploadifive_checkexists') }}',
 				'formData': {},
 				'uploadScript': '{{ path('uploadifive') }}',
             	'multi': true,
-				'onUploadComplete': function(file, data) { console.log(data); }
+            	'onUploadComplete': function (file, data) {
+            	    if (data.substring(0, 5) == 'Error') {
+            	        alert(data)
+            	    }
+            	    else {
+            	        $('#pickup_form_imagesNames').val($('#pickup_form_imagesNames').val() + ',' + data);
+            	    }
+            	}
+            });
+
+            $('#pickup_form_agreementInput').uploadifive({
+				'checkScript': '{{ path('uploadifive_checkexists') }}',
+				'formData': {},
+				'uploadScript': '{{ path('uploadifive') }}',
+            	'multi': false,
+            	'onUploadComplete': function (file, data) {
+            	    if (data.substring(0, 5) == 'Error') {
+            	        alert(data)
+            	    }
+            	    else {
+            	        $('#pickup_form_agreementName').val(data);
+            	    }
+            	}
             });
 
 	    </script>

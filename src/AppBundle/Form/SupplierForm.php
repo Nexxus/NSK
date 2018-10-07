@@ -30,7 +30,6 @@ use AppBundle\Entity\Supplier;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 class SupplierForm extends AbstractType
 {
@@ -41,6 +40,8 @@ class SupplierForm extends AbstractType
             ->add('kvkNr', TextType::class, ['required' => false])
             ->add('representative', TextType::class, ['required' => false])
             ->add('email', EmailType::class, ['required' => true])
+            ->add('phone', TextType::class, ['required' => true])
+            ->add('phone2', TextType::class, ['required' => false])
             ->add('street', TextType::class)
             ->add('streetExtra', TextType::class, ['required' => false, 'label' => 'Street2'])
             ->add('city', TextType::class)

@@ -27,7 +27,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use AppBundle\Entity\Pickup;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -40,6 +40,8 @@ class PickupForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+
+            // First the mapped fields
             ->add('supplier', SupplierForm::class, [
                 'property_path' => 'order.supplier'
             ])
@@ -55,16 +57,22 @@ class PickupForm extends AbstractType
                     'HDD wipe report KillDisk a €3,50' => Pickup::DATADESTRUCTION_KILLDISK
                 ]
             ])
-            ->add('description', IntegerType::class, ['required' => false])
-            ->add('qComputer', IntegerType::class, ['mapped' => false, 'required' => false])
-            ->add('qServer', IntegerType::class, ['mapped' => false, 'required' => false])
-            ->add('qPhone', IntegerType::class, ['mapped' => false, 'required' => false])
-            ->add('qPrinter', IntegerType::class, ['mapped' => false, 'required' => false])
-            ->add('qMonitor', IntegerType::class, ['mapped' => false, 'required' => false])
-            ->add('images-input', FileType::class, ['mapped' => false, 'required' => false])
-            ->add('agreement-input', FileType::class, ['mapped' => false, 'required' => false])
-            ->add('images-names', HiddenType::class, ['mapped' => false, 'required' => false])
-            ->add('agreement-names', HiddenType::class, ['mapped' => false, 'required' => false])
+            ->add('description', TextareaType::class, ['required' => false])
+
+            // Then the unmapped fields: quantities and files
+            ->add('qComputer', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Computers'])
+            ->add('qServer', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Servers'])
+            ->add('qPhone', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Phones'])
+            ->add('qPrinter', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Printers'])
+            ->add('qMonitor', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Monitors'])
+            ->add('imagesInput', FileType::class, ['mapped' => false, 'required' => false, 'label' => 'Images'])
+            ->add('agreementInput', FileType::class, ['mapped' => false, 'required' => false, 'label' => 'Processing Agreement'])
+
+            // Finally the hidden fields
+            ->add('imagesNames', HiddenType::class, ['mapped' => false, 'required' => false])
+            ->add('agreementName', HiddenType::class, ['mapped' => false, 'required' => false])
+            ->add('orderStatusName', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => "To plan and pickup"])
+            ->add('locationId', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => 1])
             ->add('save', SubmitType::class, [
                 'label' => 'Send',
                 'attr' => [

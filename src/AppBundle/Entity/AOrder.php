@@ -135,11 +135,11 @@ abstract class AOrder
     /**
      * Add productRelation
      *
-     * @param ProductAttributeRelation $productRelation
+     * @param ProductOrderRelation $productRelation
      *
      * @return AOrder
      */
-    public function addProductRelation(ProductAttributeRelation $productRelation)
+    public function addProductRelation(ProductOrderRelation $productRelation)
     {
         $this->productRelations[] = $productRelation;
 
@@ -149,9 +149,9 @@ abstract class AOrder
     /**
      * Remove productRelation
      *
-     * @param ProductAttributeRelation $productRelation
+     * @param ProductOrderRelation $productRelation
      */
-    public function removeProductRelation(ProductAttributeRelation $productRelation)
+    public function removeProductRelation(ProductOrderRelation $productRelation)
     {
         $this->productRelations->removeElement($productRelation);
     }
