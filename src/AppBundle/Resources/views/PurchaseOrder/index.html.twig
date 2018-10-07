@@ -20,7 +20,8 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th{% if orders.isSorted('orderNr') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, '#', 'orderNr') }}</th>
+                <th{% if orders.isSorted('orderNr') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Order nr', 'orderNr') }}</th>
+                <th{% if orders.isSorted('orderDate') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Order date', 'orderDate') }}</th>
                 <th{% if orders.isSorted('location.name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Location', 'location.name') }}</th>
                 <th{% if orders.isSorted('supplier.name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Supplier', 'supplier.name') }}</th>
                 <th width="1%"></th>
@@ -32,7 +33,8 @@
         {% for order in orders %}
             <tr>
                 <td>{{ order.orderNr }}</td>
-                <td>{{ order.location.name }}</td>
+                <td>{{ order.orderDate|date("Y-m-d") }}</td>
+                <td>{{ order.location.name|default("") }}</td>
                 <td>{{ order.supplier.name|default("") }}</td>
                 <td nowrap>
                     <a class="btn btn-success" href="{{ path('purchaseorder_edit', { 'id': order.id }) }}"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek â€“ info@copiatek.nl â€“ Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Form;
@@ -53,8 +53,8 @@ class PickupForm extends AbstractType
                     'Format is voldoende (gratis)' => Pickup::DATADESTRUCTION_FORMAT,
                     'Geen HDD aangeleverd' =>  Pickup::DATADESTRUCTION_NONE,
                     'Vernietigingsverklaring (gratis)' => Pickup::DATADESTRUCTION_STATEMENT,
-                    'HDD op locatie shredden a €12,50 (extra 0.89ct per KM)' => Pickup::DATADESTRUCTION_SHRED,
-                    'HDD wipe report KillDisk a €3,50' => Pickup::DATADESTRUCTION_KILLDISK
+                    'HDD op locatie shredden a â‚¬12,50 (extra 0.89ct per KM)' => Pickup::DATADESTRUCTION_SHRED,
+                    'HDD wipe report KillDisk a â‚¬3,50' => Pickup::DATADESTRUCTION_KILLDISK
                 ]
             ])
             ->add('description', TextareaType::class, ['required' => false])

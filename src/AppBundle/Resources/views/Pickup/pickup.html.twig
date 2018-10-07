@@ -27,8 +27,14 @@
             This form can be used for pickup creation.<br />
             It is an example for webdesigners. <br />
             The form is submittable from other websites and domains.<br />
-            The form can be applied as an API call too (reCaptcha must be disabled).<br /><br />
-            Please note the hidden form fields.<br /><br />
+            The form can be applied as an API call too (reCaptcha must be disabled).<br />
+            Webmaster, please note the hidden form fields.<br /><br />
+
+            {% if success %}
+            <div class="alert alert-success" role="alert">The pickup order is registered successfully.</div>
+            {% elseif success is same as(false) %}
+            <div class="alert alert-danger" role="alert">The pickup order is not registered. Please contact us!</div>
+            {% endif %}
 
             {{form_start(form)}}
 

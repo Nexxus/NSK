@@ -30,13 +30,18 @@ namespace AppBundle\Repository;
  */
 class SalesOrderRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findAll()
+    {
+        return $this->findBy(array(), array('id' => 'DESC'));
+    }
+
     /**
      * This function searches in fields: Id, Kvk, Email, Name
      */
     public function findBySearchQuery($query)
     {
         $q = $this->getEntityManager()
-            ->createQuery("SELECT o FROM AppBundle:SalesOrder o WHERE o.orderNr = ?1")
+            ->createQuery("SELECT o FROM AppBundle:SalesOrder o WHERE o.orderNr = ?1 ORDER BY o.id DESC")
             ->setParameter(1, $query);
 
         return $q->getResult();

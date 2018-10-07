@@ -35,6 +35,11 @@ use AppBundle\Entity\ProductOrderRelation;
  */
 class ProductRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findAll()
+    {
+        return $this->findBy(array(), array('id' => 'DESC'));
+    }
+
     /**
      * This function searches in fields: Id, Sku, Name
      */
@@ -43,12 +48,12 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         if (is_numeric($query))
         {
             $q = $this->getEntityManager()
-                ->createQuery("SELECT c FROM AppBundle:Product c WHERE c.id = ?1 OR c.sku = ?1")->setParameter(1, $query);
+                ->createQuery("SELECT c FROM AppBundle:Product c WHERE c.id = ?1 OR c.sku = ?1 ORDER BY c.id DESC")->setParameter(1, $query);
         }
         else
         {
             $q = $this->getEntityManager()
-                ->createQuery("SELECT c FROM AppBundle:Product c WHERE c.name LIKE ?2 OR c.sku = ?1")->setParameter(1, $query)->setParameter(2, '%' . $query . '%');
+                ->createQuery("SELECT c FROM AppBundle:Product c WHERE c.name LIKE ?2 OR c.sku = ?1 ORDER BY c.id DESC")->setParameter(1, $query)->setParameter(2, '%' . $query . '%');
         }
 
         return $q->getResult();
@@ -127,8 +132,8 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
-     * @param int $quantity 
-     * @param string $typeName 
+     * @param int $quantity
+     * @param string $typeName
      * @return Product
      */
     public function generateProductFromQuantity($quantity, $typeName)
@@ -136,7 +141,6 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         $productType = $this->_em->getRepository("AppBundle:ProductType")->findOrCreate($typeName);
 
         $product = new Product();
-        $product->setSku(time());
         $product->setName($typeName);
         $product->setQuantity($quantity);
         $product->setDescription("Created by application");

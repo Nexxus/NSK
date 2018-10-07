@@ -47,7 +47,6 @@ class PickupController extends Controller
         $success = null;
 
         $em = $this->getDoctrine()->getEntityManager();
-        $repo = $em->getRepository('AppBundle:Pickup');
 
         $pickup = new Pickup();
         $order = new PurchaseOrder();
@@ -65,66 +64,83 @@ class PickupController extends Controller
 
         $form->handleRequest($request);
 
-        if ($request->isMethod('POST') && $form->isSubmitted()) // && $this->captchaVerify($request->request->get('g-recaptcha-response')))
+        if ($request->isMethod('POST') && $form->isSubmitted() && $this->captchaVerify($request->request->get('g-recaptcha-response')))
         {
             if ($form->isValid())
             {
-                #region Form data processing
-
-                // Create full order
-
-                $location = $em->getReference("AppBundle:Location", $form->get('locationId')->getData());
-                $pickup->getOrder()->setLocation($location);
-
-                $pickup->getOrder()->setSupplier($em->getRepository('AppBundle:Supplier')->checkExists($pickup->getOrder()->getSupplier()));
-
-                $pickup->getOrder()->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData()));
-
-                // Images
-                $imageNames = $this->splitImagesNames($form->get('imagesNames')->getData());
-                foreach ($imageNames as $imageName)
+                try
                 {
-                    $file = new PickupImageFile();
-                    $file->setUniqueServerFilename(substr($imageName, 0, 13));
-                    $file->setOriginalClientFilename(substr($imageName, 13));
-                    $em->persist($file);
-                    $pickup->addImage($file);
-                }
+                    #region Form data processing
 
-                // Agreement
-                $agreementName = $form->get('agreementName')->getData();
-                if ($agreementName)
-                {
-                    $file = new PickupAgreementFile();
-                    $file->setUniqueServerFilename(substr($agreementName, 0, 13));
-                    $file->setOriginalClientFilename(substr($agreementName, 13));
-                    $em->persist($file);
-                    $pickup->setAgreement($file);
-                }
+                    // Create full order
 
-                // Products
-                $productTypes = array("Computer", "Server", "Phone", "Printer", "Monitor");
-                foreach ($productTypes as $productType)
-                {
-                    $quantity = $form->get('q'.$productType)->getData();
-                    if ($quantity)
+                    $location = $em->getReference("AppBundle:Location", $form->get('locationId')->getData());
+                    $pickup->getOrder()->setLocation($location);
+
+                    $pickup->getOrder()->setSupplier($em->getRepository('AppBundle:Supplier')->checkExists($pickup->getOrder()->getSupplier()));
+
+                    $pickup->getOrder()->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData()));
+
+                    // Images
+                    $imageNames = $this->splitImagesNames($form->get('imagesNames')->getData());
+                    foreach ($imageNames as $imageName)
                     {
-                        $product = $em->getRepository('AppBundle:Product')->generateProductFromQuantity($quantity, $productType);
-                        $product->setLocation($location);
-
-                        $r = new ProductOrderRelation();
-                        $r->setOrder($pickup->getOrder());
-                        $r->setProduct($product);
-                        $em->persist($r);
-                        $pickup->getOrder()->addProductRelation($r);
+                        $file = new PickupImageFile();
+                        $file->setUniqueServerFilename(substr($imageName, 0, 13));
+                        $file->setOriginalClientFilename(substr($imageName, 13));
+                        $em->persist($file);
+                        $pickup->addImage($file);
                     }
+
+                    // Agreement
+                    $agreementName = $form->get('agreementName')->getData();
+                    if ($agreementName)
+                    {
+                        $file = new PickupAgreementFile();
+                        $file->setUniqueServerFilename(substr($agreementName, 0, 13));
+                        $file->setOriginalClientFilename(substr($agreementName, 13));
+                        $em->persist($file);
+                        $pickup->setAgreement($file);
+                    }
+
+                    // Products
+                    $count = 0;
+                    $productTypes = array("Computer", "Server", "Phone", "Printer", "Monitor");
+                    foreach ($productTypes as $productType)
+                    {
+                        $quantity = $form->get('q'.$productType)->getData();
+                        if ($quantity)
+                        {
+                            $product = $em->getRepository('AppBundle:Product')->generateProductFromQuantity($quantity, $productType);
+                            $product->setLocation($location);
+                            $product->setSku(time() + $count);
+                            $r = new ProductOrderRelation();
+                            $r->setOrder($pickup->getOrder());
+                            $r->setProduct($product);
+                            $em->persist($r);
+                            $pickup->getOrder()->addProductRelation($r);
+                            $count++;
+                        }
+                    }
+
+                    #endregion
+
+                    $em->flush();
+
+                    if (!$pickup->getOrder()->getOrderNr())
+                    {
+                        $orderNr = $em->getRepository('AppBundle:PurchaseOrder')->generateOrderNr($pickup->getOrder());
+                        $pickup->getOrder()->setOrderNr($orderNr);
+                        $em->flush();
+                    }
+
+                    $success = true;
                 }
-
-                #endregion
-
-                $em->flush();
-
-                $success = true;
+                catch (\Exception $ex)
+                {
+                    throw $ex;
+                    $success = false;
+                }
             }
             else
             {

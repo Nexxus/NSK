@@ -29,9 +29,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-/**
- * @Route("/upload")
- */
 class UploadifiveController extends Controller
 {
     private $checkToken = false;
@@ -41,7 +38,7 @@ class UploadifiveController extends Controller
     private $allowedExtensions = array('jpg', 'jpeg', 'gif', 'png', 'pdf', 'doc', 'docx');
 
     /**
-     * @Route("/", name="uploadifive")
+     * @Route("/upload", name="uploadifive")
      * @Method("POST")
      */
     public function uploadAction(Request $request)
@@ -81,7 +78,7 @@ class UploadifiveController extends Controller
     }
 
     /**
-     * @Route("/", name="uploadifive_checkexists")
+     * @Route("/uploadexists", name="uploadifive_checkexists")
      * @Method("POST")
      */
     public function checkexistsAction(Request $request)
@@ -98,6 +95,18 @@ class UploadifiveController extends Controller
         } else {
             return new Response("0");
         }
+    }
+
+    /**
+     * @Route("/download/{id}", name="download")
+     * @Method("GET")
+     */
+    public function downloadAction($id)
+    {
+        /** @var \AppBundle\Entity\AFile */
+        $file = $this->getDoctrine()->getEntityManager()->find(\AppBundle\Entity\AFile::class, $id);
+
+        return $this->file($this->getFullUploadFolder() . $file->getUniqueServerFilename(), $file->getOriginalClientFilename());
     }
 
     private function isImage($tempFile) {

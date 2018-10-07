@@ -24,6 +24,11 @@ namespace AppBundle\Repository;
 
 class CustomerRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findAll()
+    {
+        return $this->findBy(array(), array('id' => 'DESC'));
+    }
+
     /**
      * This function searches in fields: Id, Kvk, Email, Name
      */
@@ -32,12 +37,12 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
         if (is_numeric($query))
         {
             $q = $this->getEntityManager()
-                ->createQuery("SELECT c FROM AppBundle:Customer c WHERE c.id = ?1 OR c.kvkNr = ?1 OR c.name LIKE ?2");
+                ->createQuery("SELECT c FROM AppBundle:Customer c WHERE c.id = ?1 OR c.kvkNr = ?1 OR c.name LIKE ?2 ORDER BY c.id DESC");
         }
         else
         {
             $q = $this->getEntityManager()
-                ->createQuery("SELECT c FROM AppBundle:Customer c WHERE c.email = ?1 OR c.name LIKE ?2");
+                ->createQuery("SELECT c FROM AppBundle:Customer c WHERE c.email = ?1 OR c.name LIKE ?2 ORDER BY c.id DESC");
         }
 
         $q = $q

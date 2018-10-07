@@ -50,6 +50,16 @@ abstract class AFile
     private $originalClientFilename;
 
     /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=false)

@@ -115,7 +115,7 @@ class PurchaseOrderController extends Controller
                 {
                     if (!$order->getOrderNr())
                     {
-                        $order->setOrderNr($order->getOrderDate()->format("Y") . sprintf('%06d', $order->getId()));
+                        $order->setOrderNr($repo->generateOrderNr($order));
                         $em->flush();
                     }
 

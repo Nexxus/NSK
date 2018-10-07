@@ -22,6 +22,8 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\PurchaseOrder;
+
 /**
  * ProductRepository
  *
@@ -30,15 +32,27 @@ namespace AppBundle\Repository;
  */
 class PurchaseOrderRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findAll()
+    {
+        return $this->findBy(array(), array('id' => 'DESC'));
+    }
+
     /**
      * This function searches in fields: Id, Kvk, Email, Name
      */
     public function findBySearchQuery($query)
     {
         $q = $this->getEntityManager()
-            ->createQuery("SELECT o FROM AppBundle:PurchaseOrder o WHERE o.orderNr = ?1")
+            ->createQuery("SELECT o FROM AppBundle:PurchaseOrder o WHERE o.orderNr = ?1 ORDER BY o.id DESC")
             ->setParameter(1, $query);
 
         return $q->getResult();
+    }
+
+    public function generateOrderNr(PurchaseOrder $order)
+    {
+        $orderNr = $order->getOrderDate()->format("Y") . sprintf('%06d', $order->getId());
+        $order->setOrderNr($orderNr);
+        return $orderNr;
     }
 }
