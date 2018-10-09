@@ -5,6 +5,10 @@ namespace AppBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use AppBundle\Entity\Attribute;
+use AppBundle\Helper\AttributeOptionTransformer;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class AttributeForm extends AbstractType
 {
@@ -13,7 +17,26 @@ class AttributeForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('attr_code')->add('name')->add('price')->add('type')->add('productTypes');
+        /** @var Attribute */
+        $attribute = $builder->getData();
+
+        $builder->add('attr_code')->add('name')->add('price')->add('productTypes')->add('type', ChoiceType::class, [
+                    'choices' => [
+                        'Text' => $attribute::TYPE_TEXT,
+                        'Selectbox' => $attribute::TYPE_SELECT,
+                        'File' => $attribute::TYPE_FILE,
+                        'Product' => $attribute::TYPE_PRODUCT
+                    ]
+                ]);
+
+        if ($attribute->getType() == Attribute::TYPE_SELECT)
+        {
+            $builder->add('options', TextType::class, array(
+                        'required' => false, 'label' => 'Options (comma sep)'));
+
+            $builder->get('options')->addModelTransformer(new AttributeOptionTransformer($attribute));
+        }
+
     }/**
      * {@inheritdoc}
      */
