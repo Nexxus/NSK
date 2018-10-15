@@ -74,10 +74,7 @@ class PurchaseOrderController extends Controller
             $order = $repo->find($id);
         }
 
-        $location = $this->get('security.token_storage')->getToken()->getUser()->getLocation();
-        $order->setLocation($location);
-
-        $form = $this->createForm(PurchaseOrderForm::class, $order);
+        $form = $this->createForm(PurchaseOrderForm::class, $order, array('user' => $this->getUser()));
 
         $form->handleRequest($request);
 
@@ -95,6 +92,7 @@ class PurchaseOrderController extends Controller
                 /** @var Supplier */
                 $newSupplier = $form->get('newSupplier')->getData();
                 $newSupplier->addPurchaseOrder($order);
+                $newSupplier->setLocation($order->getLocation());
                 $em->persist($newSupplier);
                 $order->setSupplier($newSupplier);
             }

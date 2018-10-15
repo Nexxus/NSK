@@ -74,7 +74,7 @@ class LocationController extends Controller
     public function newAction(Request $request)
     {
         $location = new Location();
-        $form = $this->createForm('AppBundle\Form\LocationType', $location);
+        $form = $this->createForm('AppBundle\Form\LocationForm', $location);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -116,7 +116,7 @@ class LocationController extends Controller
     public function editAction(Request $request, Location $location)
     {
         $deleteForm = $this->createDeleteForm($location);
-        $editForm = $this->createForm('AppBundle\Form\LocationType', $location);
+        $editForm = $this->createForm('AppBundle\Form\LocationForm', $location);
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {

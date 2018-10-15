@@ -41,6 +41,9 @@ class PurchaseOrderForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        /** @var \AppBundle\Entity\User */
+        $user = $options['user'];
+
         $builder
             ->add('orderNr', TextType::class, [
                 'attr'=> ['placeholder' => 'Keep empty for autogeneration', 'class' => 'focus'],
@@ -55,10 +58,11 @@ class PurchaseOrderForm extends AbstractType
                 'class' => 'AppBundle:Supplier',
                 'choice_label' => 'name',
                 'label' => 'Select',
-                'required' => false
+                'required' => false,
             ])
             ->add('newSupplier', SupplierForm::class, [
-                'mapped' => false
+                'mapped' => false,
+                'user' => $user
             ])
             ->add('newOrExistingSupplier', ChoiceType::class, [
                 'label' => false,
@@ -84,6 +88,16 @@ class PurchaseOrderForm extends AbstractType
                 ]
             ]);
 
+        if ($user->hasRole("ROLE_MANAGER") || $user->hasRole("ROLE_ADMIN"))
+        {
+            $builder->add('location',  EntityType::class, [
+                    'class' => 'AppBundle:Location',
+                    'choice_label' => 'name',
+                    'required' => true,
+                    'data' => $user->getLocation()
+                ]);
+        }
+
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -92,7 +106,9 @@ class PurchaseOrderForm extends AbstractType
             'data_class' => PurchaseOrder::class,
             'csrf_protection' => true,
             'csrf_field_name' => '_token',
-            'csrf_token_id'   => 'porder'
+            'csrf_token_id'   => 'porder',
         ));
+
+        $resolver->setRequired(array('user'));
     }
 }

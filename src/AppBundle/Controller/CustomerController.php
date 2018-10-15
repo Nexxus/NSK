@@ -85,7 +85,7 @@ class CustomerController extends Controller
             $customer = $em->getRepository('AppBundle:Customer')->find($id);
         }
 
-        $form = $this->createForm(CustomerForm::class, $customer);
+        $form = $this->createForm(CustomerForm::class, $customer, array('user' => $this->getUser()));
 
         $form->handleRequest($request);
 

@@ -86,7 +86,7 @@ class SupplierController extends Controller
             $supplier = $em->getRepository('AppBundle:Supplier')->find($id);
         }
 
-        $form = $this->createForm(SupplierForm::class, $supplier);
+        $form = $this->createForm(SupplierForm::class, $supplier, array('user' => $this->getUser()));
 
         $form->handleRequest($request);
 

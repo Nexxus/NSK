@@ -38,11 +38,13 @@ class OnRequestListener
     {
         if($this->tokenStorage->getToken())
         {
-            $user = $this->tokenStorage->getToken()->getUser();
+            $s = $this->tokenStorage;
+            $t = $s->getToken();
+            $user = $t->getUser();
 
             if(is_a($user, \AppBundle\Entity\User::class) && $user->getLocation()
-               && !in_array('ROLE_ADMIN', $user->getRoles())
-               && !in_array('ROLE_COPIA', $user->getRoles()))
+               && !in_array('ROLE_SUPER_ADMIN', $user->getRoles())
+               && !in_array('ROLE_MANAGER', $user->getRoles()))
             {
                 $filter = $this->em->getFilters()->enable('location');
                 $filter->setParameter('locationId', $user->getLocation()->getId());

@@ -29,13 +29,29 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use AppBundle\Entity\Customer;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class CustomerForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name', TextType::class)
+            ->add('name', TextType::class);
+
+        /** @var \AppBundle\Entity\User */
+        $user = $options['user'];
+
+        if ($user->hasRole("ROLE_MANAGER") || $user->hasRole("ROLE_ADMIN"))
+        {
+            $builder->add('location',  EntityType::class, [
+                    'class' => 'AppBundle:Location',
+                    'choice_label' => 'name',
+                    'required' => true,
+                    'data' => $user->getLocation()
+                ]);
+        }
+
+        $builder
             ->add('kvkNr', TextType::class, ['required' => false])
             ->add('representative', TextType::class, ['required' => false])
             ->add('email', EmailType::class)
@@ -65,7 +81,9 @@ class CustomerForm extends AbstractType
             'data_class' => Customer::class,
             'csrf_protection' => true,
             'csrf_field_name' => '_token',
-            'csrf_token_id'   => 'customer'
+            'csrf_token_id'   => 'customer',
         ));
+
+        $resolver->setRequired(array('user'));
     }
 }

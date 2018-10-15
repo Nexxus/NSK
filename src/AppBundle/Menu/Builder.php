@@ -61,7 +61,7 @@ class Builder implements ContainerAwareInterface
 
         $menu->setChildrenAttribute('class', 'nav navbar-nav navbar-right');
 
-        if($role->isGranted('ROLE_ADMIN')) {
+        if($role->isGranted('ROLE_SUPER_ADMIN')) {
             $menu->addChild('Admin', array('route' => 'admin_index'));
         }
 

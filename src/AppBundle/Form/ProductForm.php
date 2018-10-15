@@ -61,10 +61,6 @@ class ProductForm extends AbstractType
                 'class' => 'AppBundle:ProductType',
                 'choice_label' => 'name',
             ])
-            ->add('location',  EntityType::class, [
-                'class' => 'AppBundle:Location',
-                'choice_label' => 'name'
-            ])
             ->add('status',  EntityType::class, [
                 'class' => 'AppBundle:ProductStatus',
                 'choice_label' => 'name',
@@ -81,6 +77,19 @@ class ProductForm extends AbstractType
                     'class' => 'btn-success',
                 ]
             ]);
+
+        /** @var \AppBundle\Entity\User */
+        $user = $options['user'];
+
+        if ($user->hasRole("ROLE_MANAGER") || $user->hasRole("ROLE_ADMIN"))
+        {
+            $builder->add('location',  EntityType::class, [
+                    'class' => 'AppBundle:Location',
+                    'choice_label' => 'name',
+                    'required' => true,
+                    'data' => $user->getLocation()
+                ]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -89,7 +98,9 @@ class ProductForm extends AbstractType
             'data_class' => Product::class,
             'csrf_protection' => true,
             'csrf_field_name' => '_token',
-            'csrf_token_id'   => 'customer'
+            'csrf_token_id'   => 'customer',
         ));
+
+        $resolver->setRequired(array('user'));
     }
 }

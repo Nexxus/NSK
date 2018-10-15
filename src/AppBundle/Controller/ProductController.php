@@ -118,7 +118,7 @@ class ProductController extends Controller
 
         $repo->generateAttributeRelations($product);
 
-        $form = $this->createForm(ProductForm::class, $product);
+        $form = $this->createForm(ProductForm::class, $product, array('user' => $this->getUser()));
 
         $form->handleRequest($request);
 

@@ -37,6 +37,9 @@
 
                     {{ form_row(form.orderDate) }} 
                     {{ form_row(form.status) }} 
+                    {% if is_granted('ROLE_MANAGER') %}
+                    {{ form_row(form.location) }} 
+                    {% endif %}
                 </div>
             </div>
 
