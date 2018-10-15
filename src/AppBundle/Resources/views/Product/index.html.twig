@@ -24,6 +24,7 @@
                 <th{% if products.isSorted('sku') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(products, 'SKU', 'sku') }}</th>
                 <th{% if products.isSorted('name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(products, 'Name', 'name') }}</th>
                 <th{% if products.isSorted('type.name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(products, 'Type', 'type.name') }}</th>
+                <th{% if products.isSorted('location.name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(products, 'Location', 'location.name') }}</th>
                 <th>Quantity</th>
                 <th>Price</th>
                 <th width="1%"></th>
@@ -38,6 +39,7 @@
                 <td>{{ product.sku }}</td>
                 <td>{{ product.name }}</td>
                 <td>{{ product.type.name }}</td>
+                <td>{{ product.location.name|default("") }}</td>
                 <td>{{ product.quantity }}</td>
                 <td>{{ product.price }}</td>
                 <td nowrap>
