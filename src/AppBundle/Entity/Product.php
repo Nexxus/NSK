@@ -172,6 +172,8 @@ class Product
      */
     private $owner;
 
+    #region database getters and setters
+
     /**
      * Get id
      *
@@ -534,4 +536,6 @@ class Product
     {
         return $this->updatedAt->format('d-m-Y H:i');
     }
+
+    #endregion
 }

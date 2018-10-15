@@ -24,7 +24,7 @@
                 <td><a href="{{ path('admin_attribute_show', { 'id': attribute.id }) }}">{{ attribute.id }}</a></td>
                 <td>{{ attribute.name }}</td>
                 <td>{{ attribute.attrcode }}</td>
-                <td>{{ attribute.price }}</td>
+                <td>&euro; {{ attribute.price|number_format(2, ',', '.') }}</td>
                 
                 <td>{{ attribute.type }}</td>
                 <td>

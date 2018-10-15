@@ -22,6 +22,8 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\SalesOrder;
+
 /**
  * ProductRepository
  *
@@ -45,5 +47,12 @@ class SalesOrderRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter(1, $query);
 
         return $q->getResult();
+    }
+
+    public function generateOrderNr(SalesOrder $order)
+    {
+        $orderNr = $order->getOrderDate()->format("Y") . sprintf('%06d', $order->getId());
+        $order->setOrderNr($orderNr);
+        return $orderNr;
     }
 }

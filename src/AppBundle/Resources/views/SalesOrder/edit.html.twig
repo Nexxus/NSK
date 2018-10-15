@@ -1,0 +1,157 @@
+{% extends "::base.html.twig" %}
+
+{% block body %}
+    
+    <h1 style="margin-bottom: 30px">{% trans %}Sales Order{% endtrans %}</h1>
+
+    {% if success %}
+    <div class="alert alert-success" role="alert">The order is saved successfully.</div>
+    {% elseif success is same as(false) %}
+    <div class="alert alert-danger" role="alert">The order could not be saved. Please check details below.</div>
+    {% endif %}
+
+    {{ form_start(form) }}
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Order details{% endtrans %}
+                </div>
+                <div class="panel-body">
+                    {% if order.orderNr %} 
+                    <div class="form-group">
+                        {{ form_label(form.orderNr) }} 
+                        <div class="col-sm-9">
+                            <div class="input-group">
+                                {{ form_widget(form.orderNr) }}
+                                <span class="input-group-btn">
+                                    <a class="btn btn-default" href="{{ path('barcode_single', { 'barcode': order.orderNr }) }}" target="_blank"><span class="glyphicon glyphicon-barcode" aria-label="Barcode"></span></a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    {{ form_row(form.orderNr) }}
+                    {% endif %}
+
+                    {{ form_row(form.orderDate) }} 
+                    {{ form_row(form.status) }} 
+                    {% if is_granted('ROLE_MANAGER') %}
+                    {{ form_row(form.location) }} 
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Customer{% endtrans %}
+                </div>
+                <div class="panel-body">
+                    {{ form_row(form.newOrExistingCustomer) }} 
+                    <div id="existingCustomer">
+                        {{ form_row(form.customer) }} 
+                    </div>
+                    <div id="newCustomer">
+                        {{ form_row(form.newCustomer.name) }} 
+                        {{ form_row(form.newCustomer.kvkNr) }} 
+                        {{ form_row(form.newCustomer.representative) }} 
+                        {{ form_row(form.newCustomer.email) }} 
+                        {{ form_row(form.newCustomer.phone) }} 
+                        {{ form_row(form.newCustomer.street) }} 
+                        {{ form_row(form.newCustomer.streetExtra) }} 
+                        {{ form_row(form.newCustomer.city) }} 
+                        {{ form_row(form.newCustomer.zip) }} 
+                        {{ form_row(form.newCustomer.state) }} 
+                        {{ form_row(form.newCustomer.country) }} 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+            
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Products{% endtrans %}
+        </div>
+        {% if ( order.id > 0) %}
+        <div id="productList"></div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-6">
+                    {{ form_row(form.newProduct) }}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="panel-body">Please save order first...</div>
+        {% endif %}
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-body text-center">
+            {{ form_widget(form.save) }}
+        </div>
+    </div>
+    
+    {{ form_widget(form._token) }}            
+    {{ form_end(form, {'render_rest': false}) }}
+
+ {% endblock %}
+ 
+ {% block javascripts %}
+     <script>
+
+         /* New or existing customer */
+
+         newOrExistingCustomer();
+
+         $('input[name="sales_order_form[newOrExistingCustomer]"]').change(function () {
+             newOrExistingCustomer();
+         });
+
+         function newOrExistingCustomer() {
+             var val = $('input[name="sales_order_form[newOrExistingCustomer]"]:checked').val()
+
+             if (val == 'new') {
+                 $('div#newCustomer').show();
+                 $('div#existingCustomer').hide();
+             }
+             else {
+                 $('div#newCustomer').hide();
+                 $('div#existingCustomer').show();
+             }
+         }
+
+         $('[required]').prop('required', function () {
+             return $(this).is(':visible');
+         });
+
+         /* Product list */
+
+         {% if ( order.id > 0) %}
+
+         loadProducts();
+
+         function loadProducts() {
+             $("#productList").load('{{ path('product_list', { 'orderId': order.id }) }}');
+         }
+
+         {% endif %}
+
+         /* New product */
+
+         $('select[name="sales_order_form[newProduct]"]').change(function () {
+             var val = $(this).val();
+             if (val) {
+                 $("#productList").load('{{ path('product_list', { 'orderId': order.id }) }}/' + val, function () {
+                     $('select[name="sales_order_form[newProduct]"] option[value="' + val + '"]').remove();
+                 });
+                 
+             }
+         });
+
+     </script>
+ {% endblock %}

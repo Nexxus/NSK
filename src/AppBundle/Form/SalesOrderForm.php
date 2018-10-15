@@ -31,10 +31,11 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use JMS\Serializer\Annotation\VirtualProperty;
 
-use AppBundle\Entity\PurchaseOrder;
+use AppBundle\Entity\SalesOrder;
 
-class PurchaseOrderForm extends AbstractType
+class SalesOrderForm extends AbstractType
 {
     /**
      * {@inheritdoc}
@@ -54,17 +55,17 @@ class PurchaseOrderForm extends AbstractType
                 'class' => 'AppBundle:OrderStatus',
                 'choice_label' => 'name'
             ])
-            ->add('supplier', EntityType::class, [
-                'class' => 'AppBundle:Supplier',
+            ->add('customer', EntityType::class, [
+                'class' => 'AppBundle:Customer',
                 'choice_label' => 'name',
                 'label' => 'Select',
                 'required' => false,
             ])
-            ->add('newSupplier', SupplierForm::class, [
+            ->add('newCustomer', CustomerForm::class, [
                 'mapped' => false,
                 'user' => $user
             ])
-            ->add('newOrExistingSupplier', ChoiceType::class, [
+            ->add('newOrExistingCustomer', ChoiceType::class, [
                 'label' => false,
                 'mapped' => false,
                 'expanded' => true,
@@ -78,8 +79,16 @@ class PurchaseOrderForm extends AbstractType
             ->add('newProduct',  EntityType::class, [
                 'required' => false,
                 'mapped' => false,
-                'class' => 'AppBundle:ProductType',
+                'class' => 'AppBundle:Product',
                 'choice_label' => 'name',
+                'query_builder' => function (EntityRepository $er) {
+                    $qb = $er->createQueryBuilder('p');
+                    $qb->leftJoin('p.orderRelations', 'r');
+                    $qb->leftJoin('r.order', 'o', \Doctrine\ORM\Query\Expr\Join::WITH, 'o INSTANCE OF AppBundle:SalesOrder')
+                        ->having('COUNT(o.id) = 0')
+                        ->groupBy('p.id');
+                    return $qb;
+                }
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Save Changes',
@@ -103,10 +112,10 @@ class PurchaseOrderForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => PurchaseOrder::class,
+            'data_class' => SalesOrder::class,
             'csrf_protection' => true,
             'csrf_field_name' => '_token',
-            'csrf_token_id'   => 'porder',
+            'csrf_token_id'   => 'sorder',
         ));
 
         $resolver->setRequired(array('user'));

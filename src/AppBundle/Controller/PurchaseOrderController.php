@@ -78,6 +78,11 @@ class PurchaseOrderController extends Controller
 
         $form->handleRequest($request);
 
+        if (!$order->getLocation())
+        {
+            $order->setLocation($this->get('security.token_storage')->getToken()->getUser()->getLocation());
+        }
+
         if ($form->isSubmitted())
         {
             if ($form->get('newOrExistingSupplier')->getData() == 'existing')

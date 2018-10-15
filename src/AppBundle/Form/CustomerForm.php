@@ -55,6 +55,8 @@ class CustomerForm extends AbstractType
             ->add('kvkNr', TextType::class, ['required' => false])
             ->add('representative', TextType::class, ['required' => false])
             ->add('email', EmailType::class)
+            ->add('phone', TextType::class, ['required' => true])
+            ->add('phone2', TextType::class, ['required' => false])
             ->add('street', TextType::class)
             ->add('streetExtra', TextType::class, ['required' => false, 'label' => 'Street2'])
             ->add('city', TextType::class)

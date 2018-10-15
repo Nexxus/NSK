@@ -19,7 +19,7 @@
             </tr>
             <tr>
                 <th>Price</th>
-                <td>{{ attribute.price }}</td>
+                <td>&euro; {{ attribute.price|number_format(2, ',', '.') }}</td>
             </tr>
             <tr>
                 <th>Type</th>
