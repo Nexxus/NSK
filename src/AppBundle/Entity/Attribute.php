@@ -286,6 +286,9 @@ class Attribute
      */
     public function addOption(AttributeOption $option)
     {
+        if ($this->getType() != self::TYPE_SELECT)
+            throw new \Exception("Options is only available if attribute is of select type.");
+
         $this->options[] = $option;
 
         return $this;
@@ -298,6 +301,9 @@ class Attribute
      */
     public function removeOption(AttributeOption $option)
     {
+        if ($this->getType() != self::TYPE_SELECT)
+            throw new \Exception("Options is only available if attribute is of select type.");
+
         $this->options->removeElement($option);
     }
 
@@ -308,6 +314,9 @@ class Attribute
      */
     public function getOptions()
     {
+        if ($this->getType() != self::TYPE_SELECT)
+            throw new \Exception("Options is only available if attribute is of select type.");
+
         return $this->options;
     }
 

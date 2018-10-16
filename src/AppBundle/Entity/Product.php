@@ -151,13 +151,6 @@ class Product
     private $orderRelations;
 
     /**
-     * @var ArrayCollection|ProductImageFile[]
-     *
-     * @ORM\OneToMany(targetEntity="ProductImageFile", mappedBy="product", fetch="EAGER")
-     */
-    private $images;
-
-    /**
      * @var ArrayCollection|Service[] Services that are applied to this Product
      *
      * @ORM\OneToMany(targetEntity="Service", mappedBy="product", fetch="LAZY")
@@ -172,7 +165,23 @@ class Product
      */
     private $owner;
 
+    /**
+     * @var ArrayCollection|ProductAttributeFile[]
+     *
+     * @ORM\OneToMany(targetEntity="ProductAttributeFile", mappedBy="product", fetch="EAGER")
+     */
+    private $files;
+
     #region database getters and setters
+
+    /**
+     * Returns all files of all attributes. Files can be attached to products thru its attributes.
+     * @return ProductAttributeFile[]|ArrayCollection
+     */
+    public function getFiles()
+    {
+        return $this->files;
+    }
 
     /**
      * Get id
@@ -474,23 +483,6 @@ class Product
     public function getOrderRelations()
     {
         return $this->orderRelations;
-    }
-
-    public function addImage(ProductImageFile $image)
-    {
-        $this->images[] = $image;
-
-        return $this;
-    }
-
-    public function removeImage(ProductImageFile $image)
-    {
-        $this->images->removeElement($image);
-    }
-
-    public function getImages()
-    {
-        return $this->images;
     }
 
     /**

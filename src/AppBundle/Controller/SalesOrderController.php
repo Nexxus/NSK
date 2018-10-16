@@ -39,7 +39,7 @@ class SalesOrderController extends Controller
         }
         else
         {
-            $orders = $repo->findAll();
+            $orders = $repo->findUnsold();
         }
 
         $paginator = $this->get('knp_paginator');

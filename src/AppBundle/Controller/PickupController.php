@@ -82,12 +82,12 @@ class PickupController extends Controller
                     $pickup->getOrder()->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData()));
 
                     // Images
-                    $imageNames = $this->splitImagesNames($form->get('imagesNames')->getData());
-                    foreach ($imageNames as $imageName)
+                    $imageNames = UploadifiveController::splitFilenames($form->get('imagesNames')->getData());
+                    foreach ($imageNames as $k => $v)
                     {
                         $file = new PickupImageFile();
-                        $file->setUniqueServerFilename(substr($imageName, 0, 13));
-                        $file->setOriginalClientFilename(substr($imageName, 13));
+                        $file->setUniqueServerFilename($k);
+                        $file->setOriginalClientFilename($v);
                         $em->persist($file);
                         $pickup->addImage($file);
                     }
@@ -169,13 +169,5 @@ class PickupController extends Controller
         $data = json_decode($response);
 
         return $data->success;
-    }
-
-    private function splitImagesNames($imageNamesString)
-    {
-        $imageNames = explode(",", $imageNamesString);
-        $imageNames = array_filter($imageNames); // remove empty
-        $imageNames = array_unique($imageNames);
-        return $imageNames;
     }
 }

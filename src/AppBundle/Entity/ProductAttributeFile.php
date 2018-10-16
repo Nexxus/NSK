@@ -25,11 +25,35 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /** @ORM\Entity */
-class ProductImageFile extends AFile
+class ProductAttributeFile extends AFile
 {
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Product", inversedBy="images", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Product", inversedBy="files", fetch="EAGER")
      * @ORM\JoinColumn(name="product_id", referencedColumnName="id")
      */
     private $product;
+
+    /**
+     * Set product
+     *
+     * @param Product $product
+     *
+     * @return ProductAttributeFile
+     */
+    public function setProduct(Product $product)
+    {
+        $this->product = $product;
+
+        return $this;
+    }
+
+    /**
+     * Get product
+     *
+     * @return Product
+     */
+    public function getProduct()
+    {
+        return $this->product;
+    }
 }

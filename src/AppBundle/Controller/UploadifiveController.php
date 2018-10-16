@@ -69,6 +69,8 @@ class UploadifiveController extends Controller
         {
             $serverFilename = uniqid();
             $file->move($this->getFullUploadFolder(), $serverFilename);
+
+            // return both unique server file name (of 13 characters) and original client name
             return new Response($serverFilename . $file->getClientOriginalName());
         }
         else
@@ -128,5 +130,21 @@ class UploadifiveController extends Controller
             $this->get('kernel')->getRootDir() . DIRECTORY_SEPARATOR .
             '..' . DIRECTORY_SEPARATOR .
             $this->uploadFolder . DIRECTORY_SEPARATOR;
+    }
+
+    public static function splitFilenames($filenamesString)
+    {
+        $filenames = explode(",", $filenamesString);
+        $filenames = array_filter($filenames); // remove empty
+        $filenames = array_unique($filenames);
+        $filenames = array_map('trim', $filenames);
+
+        $associativeFilenames = array();
+        foreach ($filenames as $filename)
+        {
+            $associativeFilenames[substr($filename, 0, 13)] = substr($filename, 13);
+        }
+
+        return $associativeFilenames;
     }
 }

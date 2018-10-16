@@ -162,4 +162,23 @@ class ProductAttributeRelation
     public function __toString(){
         return $this->getValue();
     }
+
+    /**
+     * Get files of product and attribute
+     *
+     * @return \Doctrine\Common\Collections\Collection|ProductAttributeFile[]
+     */
+    public function getFiles()
+    {
+        if ($this->attribute->getType() != Attribute::TYPE_FILE)
+            throw new \Exception("Attribute must be of type File.");
+
+        $fileIds = explode(",", $this->value);
+        $fileIds = array_map('intval', $fileIds);
+
+        return $this->getProduct()->getFiles()
+            ->filter(function ($file) use ($fileIds) {
+                         return in_array($file->getId(), $fileIds);
+                     });
+    }
 }

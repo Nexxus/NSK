@@ -90,6 +90,23 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         return $result;
     }
 
+    /*
+     * This query is also written in SalesOrderForm 
+     */
+    public function findUnsold()
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder()
+            ->from("AppBundle:Product", "p")
+            ->select('p')
+            ->leftJoin('p.orderRelations', 'r')
+            ->leftJoin('r.order', 'o', \Doctrine\ORM\Query\Expr\Join::WITH, 'o INSTANCE OF AppBundle:SalesOrder')
+            ->having('COUNT(o.id) = 0')
+            ->groupBy('p.id')
+            ->orderBy('p.id DESC');
+
+        return $qb->getQuery()->getResult();
+    }
+
     public function generateAttributeRelations(Product $product)
     {
         // get all possible attributes for this product type

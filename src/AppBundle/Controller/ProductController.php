@@ -27,6 +27,8 @@ use AppBundle\Entity\ProductType;
 use AppBundle\Entity\ProductOrderRelation;
 use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Entity\AOrder;
+use AppBundle\Entity\ProductAttributeFile;
+use AppBundle\Entity\ProductAttributeRelation;
 use AppBundle\Form\ProductForm;
 use AppBundle\Form\IndexSearchForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -136,9 +138,35 @@ class ProductController extends Controller
 
         if ($form->isSubmitted() && $form->isValid())
         {
+            // Generate Sku if necessary
             if (!$product->getSku())
             {
                 $product->setSku(time());
+            }
+
+            // Files
+            foreach ($form->get('attributeRelations') as $attributeRelationForm)
+            {
+                if ($attributeRelationForm->has('valueFiles'))
+                {
+                    /** @var ProductAttributeRelation */
+                    $r = $attributeRelationForm->getData();
+                    
+                    $fileNames = UploadifiveController::splitFilenames($attributeRelationForm->get('value')->getData());
+
+                    foreach ($fileNames as $k => $v)
+                    {
+                        $file = new ProductAttributeFile();
+                        $file->setUniqueServerFilename($k);
+                        $file->setOriginalClientFilename($v);
+                        $file->setProduct($product);
+                        $em->persist($file);
+                        $em->flush($file);
+
+                        $val = $r->getValue() ? $r->getValue() . "," . $file->getId() : $file->getId();
+                        $r->setValue($val);
+                    }
+                }
             }
 
             $em->persist($product);

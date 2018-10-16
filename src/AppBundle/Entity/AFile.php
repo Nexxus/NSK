@@ -29,7 +29,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="afile")
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"pr" = "ProductImageFile", "pi" = "PickupImageFile", "pa" = "PickupAgreementFile" })
+ * @ORM\DiscriminatorMap({"pr" = "ProductAttributeFile", "pi" = "PickupImageFile", "pa" = "PickupAgreementFile" })
  */
 abstract class AFile
 {

@@ -59,10 +59,16 @@
                         {{ formRelation.vars.data.attribute.name }}
                     </div>
                     <div class="col-md-5">
-                        {% if formRelation.vars.data.attribute.type == 3 %}
-                        {{ form_widget(formRelation.valueProduct) }}
+                        {% if formRelation.vars.data.attribute.type == 2 %}
+                            {% for file in formRelation.vars.data.files %}
+                                <p>> <a href="{{ path("download", { 'id': file.id }) }}" target="_blank">{{ file.originalClientFilename }}</a></p>
+                            {% endfor %}
+                            {{ form_widget(formRelation.value, { 'attr': {'class': 'file-name'}}) }}
+                            {{ form_widget(formRelation.valueFiles, { 'attr': {'class': 'file-input'}}) }}
+                        {% elseif formRelation.vars.data.attribute.type == 3 %}
+                            {{ form_widget(formRelation.valueProduct) }}
                         {% else %}
-                        {{ form_widget(formRelation.value) }}
+                            {{ form_widget(formRelation.value) }}
                         {% endif %}
                     </div>
                 </div>
@@ -79,8 +85,10 @@
 
 </div>
 
-{{ form_end(form) }}
+{{ form_widget(form._token) }}
+{{ form_end(form, {'render_rest': false}) }}
 
+<script src="{{ asset('js/jquery.uploadifive.min.js') }}"></script>
 <script>
 
     $('#modalEditor .close-modal').click(function () {
@@ -91,6 +99,22 @@
         else
         {
             location.reload();
+        }
+    });
+
+    $('input.file-input').uploadifive({
+		'checkScript': '{{ path('uploadifive_checkexists') }}',
+		'formData': {},
+		'uploadScript': '{{ path('uploadifive') }}',
+        'multi': true,
+        'onUploadComplete': function (file, data) {
+            if (data.substring(0, 5) == 'Error') {
+            	alert(data)
+            }
+            else {
+                var fileNameElement = $(this).closest("div.uploadifive-button").siblings("input.file-name");
+                fileNameElement.val(fileNameElement.val() + ',' + data);
+            }
         }
     });
 
