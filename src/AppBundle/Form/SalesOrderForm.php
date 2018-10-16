@@ -53,7 +53,10 @@ class SalesOrderForm extends AbstractType
             ->add('orderDate', DateType::class)
             ->add('status', EntityType::class, [
                 'class' => 'AppBundle:OrderStatus',
-                'choice_label' => 'name'
+                'choice_label' => 'name',
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('os')->where('os.isSale = true');
+                }
             ])
             ->add('customer', EntityType::class, [
                 'class' => 'AppBundle:Customer',

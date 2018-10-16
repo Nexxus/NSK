@@ -55,7 +55,19 @@ class OrderStatus
      */
     private $name;
 
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean")
+     */
+    private $isSale;
 
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean")
+     */
+    private $isPurchase;
 
     /**
      * Get id
@@ -113,5 +125,43 @@ class OrderStatus
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @param bool $isSale
+     * @return OrderStatus
+     */
+    public function setIsSale($isSale)
+    {
+        $this->isSale = $isSale;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsSale()
+    {
+        return $this->isSale;
+    }
+
+    /**
+     * @param bool $isPurchase
+     * @return OrderStatus
+     */
+    public function setIsPurchase($isPurchase)
+    {
+        $this->isPurchase = $isPurchase;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsPurchase()
+    {
+        return $this->isPurchase;
     }
 }
