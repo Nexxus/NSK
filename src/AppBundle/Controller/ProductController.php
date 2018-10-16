@@ -101,8 +101,9 @@ class ProductController extends Controller
     /**
      * @Route("/new/{purchaseOrderId}/{productTypeId}", name="product_new")
      * @Route("/edit/{id}/{success}", name="product_edit")
+     * @Route("/editsub/{refId}/{id}", name="product_subedit")
      */
-    public function editAction(Request $request, $id = 0, $purchaseOrderId = 0, $productTypeId = 0, $success = null)
+    public function editAction(Request $request, $id = 0, $purchaseOrderId = 0, $productTypeId = 0, $success = null, $refId = null)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -151,7 +152,7 @@ class ProductController extends Controller
                 {
                     /** @var ProductAttributeRelation */
                     $r = $attributeRelationForm->getData();
-                    
+
                     $fileNames = UploadifiveController::splitFilenames($attributeRelationForm->get('value')->getData());
 
                     foreach ($fileNames as $k => $v)
@@ -192,6 +193,7 @@ class ProductController extends Controller
                 'form' => $form->createView(),
                 'formAction' => $request->getRequestUri(),
                 'success' => $success,
+                'refId' => $refId,
             ));
     }
 

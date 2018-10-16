@@ -61,12 +61,22 @@
                     <div class="col-md-5">
                         {% if formRelation.vars.data.attribute.type == 2 %}
                             {% for file in formRelation.vars.data.files %}
-                                <p>> <a href="{{ path("download", { 'id': file.id }) }}" target="_blank">{{ file.originalClientFilename }}</a></p>
+                                <div style="margin: 5px">
+                                    > <a href="{{ path("download", { 'id': file.id }) }}" target="_blank">{{ file.originalClientFilename }}</a>
+                                    {% if file.originalClientFilename|slice(-3)|lower == "jpg" or file.originalClientFilename|slice(-3)|lower == "png" or file.originalClientFilename|slice(-3)|lower == "gif" %}
+                                        :<br /><img src="{{ path("download", { 'id': file.id }) }}" style="margin-left: 30px; height:100px; max-width:100px; width: expression(this.width > 100 ? 100: true);" />
+                                    {% endif %}
+                                </div>
                             {% endfor %}
                             {{ form_widget(formRelation.value, { 'attr': {'class': 'file-name'}}) }}
                             {{ form_widget(formRelation.valueFiles, { 'attr': {'class': 'file-input'}}) }}
                         {% elseif formRelation.vars.data.attribute.type == 3 %}
-                            {{ form_widget(formRelation.valueProduct) }}
+                            <div class="input-group">
+                                {{ form_widget(formRelation.valueProduct) }}
+                                <span class="input-group-btn">
+                                    <a href="#" class="btn btn-success btn-subedit"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
+                                </span>
+                            </div>
                         {% else %}
                             {{ form_widget(formRelation.value) }}
                         {% endif %}
@@ -81,6 +91,9 @@
     <div class="text-center">
         {{ form_widget(form.save) }}
         <button type="button" class="btn btn-default close-modal">Close</button>
+        {% if (refId) %}
+        <a class="btn btn-default btn-refedit" href="{{ path('product_edit', { 'id': refId }) }}">Back</a>
+        {% endif %}
     </div>
 
 </div>
@@ -99,6 +112,20 @@
         else
         {
             location.reload();
+        }
+    });
+
+    $('.btn-refedit').click(function (e) {
+        e.preventDefault();
+        $("#modalEditor .modal-content").load($(this).attr('href'));
+    });
+
+        $('.btn-subedit').click(function (e) {
+        e.preventDefault();
+        var subProductId = $(this).closest(".input-group").find("select").val();
+        console.log(subProductId);
+        if (subProductId > 0) {
+            $("#modalEditor .modal-content").load('{{ path('product_subedit', { 'refId': product.id }) }}/' + subProductId);
         }
     });
 
