@@ -33,6 +33,7 @@ use AppBundle\Form\ProductForm;
 use AppBundle\Form\IndexSearchForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Form\FormError;
 
@@ -208,5 +209,38 @@ class ProductController extends Controller
         $em->flush();
 
         return $this->redirectToRoute('product_index');
+    }
+
+    /**
+     * @Route("/deletefile", name="product_file_delete")
+     */
+    public function deleteFileAction(Request $request)
+    {
+        $fileId = $request->request->get('fileId');
+        $attributeId = $request->request->get('attributeId');
+
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var ProductAttributeFile */
+        $file = $em->find(ProductAttributeFile::class, $fileId);
+
+        /** @var ProductAttributeRelation */
+        $relation = $em->find(ProductAttributeRelation::class, array("product" => $file->getProduct(), "attribute" => $attributeId));
+        $val = $relation->getValue();
+        $val = str_replace(" ", "", $val);
+        $vals = explode(",", $val);
+
+        // remove file id from relation value
+        if (($key = array_search($fileId, $vals)) !== false) {
+            unset($vals[$key]);
+        }
+
+        $relation->setValue(implode(",", $vals));
+
+        $em->persist($relation);
+        $em->remove($file);
+        $em->flush();
+
+        return new Response();
     }
 }

@@ -109,6 +109,11 @@ a.list-group-item-success.active {
     padding-left: 15px
 }
 
+.panel-body-small .row, .panel-body-small .row, .panel-body-small .col-xs-10, .panel-body-small .col-xs-2 {
+    padding: 0px;
+    margin: 0px;
+}
+
 .panel-dashboardsearch #form_submit {
     width: 100%;
 }
@@ -123,5 +128,20 @@ a.list-group-item-success.active {
 
 .pagination > li.active > span {
     background-color: #15007c;
+}
+
+.panel-filecontainer {
+    height: 100px;
+}
+
+.panel-filecontainer img {
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 80%;
+}
+
+.col-filecontainer {
+    padding-right: 0px;
 }
 
