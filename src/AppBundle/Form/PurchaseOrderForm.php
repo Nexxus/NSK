@@ -91,7 +91,7 @@ class PurchaseOrderForm extends AbstractType
                 ]
             ]);
 
-        if ($user->hasRole("ROLE_MANAGER") || $user->hasRole("ROLE_ADMIN"))
+        if ($user->hasRole("ROLE_MANAGER") || $user->hasRole("ROLE_ADMIN") || $user->hasRole("ROLE_SUPER_ADMIN"))
         {
             $builder->add('location',  EntityType::class, [
                     'class' => 'AppBundle:Location',

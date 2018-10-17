@@ -65,10 +65,6 @@ doctrine:
         auto_generate_proxy_classes: "%kernel.debug%"
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true
-        filters:
-            location:
-                class:   AppBundle\Filter\LocationFilter
-                enabled: false
         dql:
             string_functions:
                 SOUNDEX: AppBundle\Helper\SoundexFunction

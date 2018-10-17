@@ -55,9 +55,10 @@ class UserForm extends AbstractType
             ))
             ->add('role', ChoiceType::class, ['mapped' => false,
                 'choices' => [
-                    'Admin' => 'ROLE_SUPER_ADMIN',
+                    'Superadmin' => 'ROLE_SUPER_ADMIN',
+                    'Admin' => 'ROLE_ADMIN',
                     'Manager' => 'ROLE_MANAGER',
-                    'User' => 'ROLE_USER'
+                    'Local' => 'ROLE_LOCAL'
                 ]])
             ->add('save', SubmitType::class, ['label' => 'Save']);
     }

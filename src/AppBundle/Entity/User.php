@@ -72,7 +72,7 @@ class User extends BaseUser
      * @var Location
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Location", inversedBy="users")
-     * @ORM\JoinColumn(name="location", referencedColumnName="id")
+     * @ORM\JoinColumn(name="location_id", referencedColumnName="id")
      */
     private $location;
 

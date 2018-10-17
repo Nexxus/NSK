@@ -24,6 +24,7 @@ namespace AppBundle\Repository;
 
 use AppBundle\Entity\AOrder;
 use AppBundle\Entity\Product;
+use AppBundle\Entity\User;
 use AppBundle\Entity\ProductAttributeRelation;
 use AppBundle\Entity\ProductOrderRelation;
 
@@ -38,6 +39,14 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
     public function findAll()
     {
         return $this->findBy(array(), array('id' => 'DESC'));
+    }
+
+    public function findMine(User $user)
+    {
+        if ($user->hasRole("ROLE_LOCAL"))
+            return $this->findBy(array("location" => $user->getLocation()), array('id' => 'DESC'));
+        else
+            return $this->findBy(array(), array('id' => 'DESC'));
     }
 
     /**
@@ -91,9 +100,9 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /*
-     * This query is also written in SalesOrderForm 
+     * This query is also written in SalesOrderForm
      */
-    public function findUnsold()
+    public function findUnsold(User $user)
     {
         $qb = $this->getEntityManager()->createQueryBuilder()
             ->from("AppBundle:Product", "p")
@@ -102,7 +111,10 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
             ->leftJoin('r.order', 'o', \Doctrine\ORM\Query\Expr\Join::WITH, 'o INSTANCE OF AppBundle:SalesOrder')
             ->having('COUNT(o.id) = 0')
             ->groupBy('p.id')
-            ->orderBy('p.id DESC');
+            ->orderBy('p.id', 'DESC');
+
+        if ($user->hasRole("ROLE_LOCAL"))
+            $qb->andWhere("p.location = ?1")->setParameter(1, $user->getLocation());
 
         return $qb->getQuery()->getResult();
     }

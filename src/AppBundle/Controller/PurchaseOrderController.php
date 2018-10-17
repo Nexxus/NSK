@@ -41,7 +41,7 @@ class PurchaseOrderController extends Controller
         }
         else
         {
-            $orders = $repo->findAll();
+            $orders = $repo->findMine($this->getUser());
         }
 
         $paginator = $this->get('knp_paginator');

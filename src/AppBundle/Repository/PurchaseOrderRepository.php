@@ -23,6 +23,7 @@
 namespace AppBundle\Repository;
 
 use AppBundle\Entity\PurchaseOrder;
+use AppBundle\Entity\User;
 
 /**
  * ProductRepository
@@ -35,6 +36,14 @@ class PurchaseOrderRepository extends \Doctrine\ORM\EntityRepository
     public function findAll()
     {
         return $this->findBy(array(), array('id' => 'DESC'));
+    }
+
+    public function findMine(User $user)
+    {
+        if ($user->hasRole("ROLE_LOCAL"))
+            return $this->findBy(array("location" => $user->getLocation()), array('id' => 'DESC'));
+        else
+            return $this->findBy(array(), array('id' => 'DESC'));
     }
 
     /**

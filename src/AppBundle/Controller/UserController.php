@@ -99,6 +99,9 @@ class UserController extends Controller
                 $encoded = $encoder->encodePassword($user, $user->getPassword());
                 $user->setPassword($encoded);
 
+                $role = $form->get('role')->getData();
+                $user->setRoles([$role]);
+
                 $em->persist($user);
                 $em->flush($user);
 

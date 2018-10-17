@@ -62,7 +62,7 @@ class ProductController extends Controller
         }
         else
         {
-            $products = $repo->findAll();
+            $products = $repo->findUnsold($this->getUser());
         }
 
         $paginator = $this->get('knp_paginator');
