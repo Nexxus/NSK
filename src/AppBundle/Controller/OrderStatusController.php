@@ -91,8 +91,8 @@ class OrderStatusController extends Controller
                         'mapped' => false
                     ));
         }
-        $form->add('isSale', CheckboxType::class);
-        $form->add('isPurchase', CheckboxType::class);
+        $form->add('isSale', CheckboxType::class, ['required' => false]);
+        $form->add('isPurchase', CheckboxType::class, ['required' => false]);
         $form->add('save', SubmitType::class, array('label' => 'Create Status'));
         $form = $form->getForm();
 
@@ -150,8 +150,8 @@ class OrderStatusController extends Controller
         $form = $this->createFormBuilder($status)
                 ->add('pindex')
                 ->add('name')
-                ->add('isSale', CheckboxType::class)
-                ->add('isPurchase', CheckboxType::class)
+                ->add('isSale', CheckboxType::class, ['required' => false])
+                ->add('isPurchase', CheckboxType::class, ['required' => false])
                 ->add('save', SubmitType::class,
                     array('label' => 'Edit Status')
                 );

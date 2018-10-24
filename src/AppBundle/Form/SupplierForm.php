@@ -41,7 +41,7 @@ class SupplierForm extends AbstractType
         /** @var \AppBundle\Entity\User */
         $user = $options['user'];
 
-        if ($user->hasRole("ROLE_MANAGER") || $user->hasRole("ROLE_ADMIN") || $user->hasRole("ROLE_SUPER_ADMIN"))
+        if ($user && ($user->hasRole("ROLE_MANAGER") || $user->hasRole("ROLE_ADMIN") || $user->hasRole("ROLE_SUPER_ADMIN")))
         {
             $builder->add('location',  EntityType::class, [
                     'class' => 'AppBundle:Location',
@@ -86,8 +86,7 @@ class SupplierForm extends AbstractType
             'csrf_protection' => true,
             'csrf_field_name' => '_token',
             'csrf_token_id'   => 'Supplier',
+            'user'   => null,
         ));
-
-        $resolver->setRequired(array('user'));
     }
 }
