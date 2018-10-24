@@ -36,6 +36,9 @@
         
         </tbody>
     </table>
+    <div class="navigation">
+        {{ knp_pagination_render(attributes) }}
+    </div>
     {% if count == 0 %}
         <h4>{% trans %}No records found{% endtrans %}</h4>
     {% endif %}
