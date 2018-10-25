@@ -48,11 +48,9 @@ class ProductForm extends AbstractType
                 'attr'=> ['placeholder' => 'Keep empty for autogeneration', 'class' => 'focus']
             ])
             ->add('name', TextType::class)
-            ->add('quantity', IntegerType::class, [
-                'required' => false
-            ])
             ->add('price', MoneyType::class, [
-                'required' => false
+                'required' => false,
+                'label' => 'Standard'
             ])
             ->add('description', TextType::class, [
                 'required' => false
@@ -86,8 +84,7 @@ class ProductForm extends AbstractType
             $builder->add('location',  EntityType::class, [
                     'class' => 'AppBundle:Location',
                     'choice_label' => 'name',
-                    'required' => true,
-                    'data' => $user->getLocation()
+                    'required' => true
                 ]);
         }
     }

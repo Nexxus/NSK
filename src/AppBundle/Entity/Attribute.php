@@ -69,11 +69,11 @@ class Attribute
     private $name;
 
     /**
-     * @var int Sales price per unit (to multiply by quantity)
+     * @var int Standard sales price, in eurocents, to use if type is open text field
      *
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $price = 0;
+    private $price;
 
     /**
      * @var int Use constants
@@ -162,27 +162,37 @@ class Attribute
     }
 
     /**
-     * Set price
+     * Set standard sales price, in euros (float), to use if type is open text field
      *
-     * @param integer $price
+     * @param float $price
      *
      * @return Attribute
      */
     public function setPrice($price)
     {
-        $this->price = $price;
+        if ($this->type == $this::TYPE_PRODUCT)
+            throw new \Exception("Price should be registered in product details.");
+        elseif ($this->type == $this::TYPE_SELECT)
+            throw new \Exception("Price should be registered per selectable option.");
+
+        $this->price = $price * 100;
 
         return $this;
     }
 
     /**
-     * Get price
+     * Get standard sales price, in euros (float), to use if type is open text field
      *
-     * @return integer
+     * @return float
      */
     public function getPrice()
     {
-        return $this->price;
+        if ($this->type == $this::TYPE_PRODUCT)
+            throw new \Exception("Price should be registered in product details.");
+        elseif ($this->type == $this::TYPE_SELECT)
+            throw new \Exception("Price should be registered per selectable option.");
+
+        return floatval($this->price) / 100;
     }
 
     /**

@@ -46,8 +46,7 @@ class CustomerForm extends AbstractType
             $builder->add('location',  EntityType::class, [
                     'class' => 'AppBundle:Location',
                     'choice_label' => 'name',
-                    'required' => true,
-                    'data' => $user->getLocation()
+                    'required' => true
                 ]);
         }
 

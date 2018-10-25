@@ -28,6 +28,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -50,6 +52,9 @@ class PurchaseOrderForm extends AbstractType
                 'required' => false
             ])
             ->add('orderDate', DateType::class)
+            ->add('transport', MoneyType::class, ['required' => false])
+            ->add('discount', MoneyType::class, ['required' => false])
+            ->add('isGift', CheckboxType::class, ['required' => false])
             ->add('status', EntityType::class, [
                 'class' => 'AppBundle:OrderStatus',
                 'choice_label' => 'name',
@@ -96,8 +101,7 @@ class PurchaseOrderForm extends AbstractType
             $builder->add('location',  EntityType::class, [
                     'class' => 'AppBundle:Location',
                     'choice_label' => 'name',
-                    'required' => false,
-                    'data' => $user->getLocation()
+                    'required' => false
                 ]);
         }
 

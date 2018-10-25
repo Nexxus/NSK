@@ -34,8 +34,10 @@
             {% endif %}
                   
             {{ form_row(form.name) }} 
-            {{ form_row(form.quantity) }} 
-            {{ form_row(form.price) }} 
+            {{ form_row(form.price) }}
+            <div class="row form-display">
+                <div class="col-sm-9 col-md-offset-3"><b>Total price of attributes: </b>&euro; {{ product.getTotalStandardPriceOfAttributes()|number_format(2, ',', '.') }}</div>
+            </div>
         </div>
         <div class="col-md-6">
             {{ form_row(form.description) }} 
@@ -55,10 +57,10 @@
             {% for formRelation in form.attributeRelations %}
 
                 <div class="row" style="margin-bottom: 2px">
-                    <div class="col-md-3 col-md-offset-2">
+                    <div class="col-md-3 col-md-offset-1">
                         {{ formRelation.vars.data.attribute.name }}
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-md-6">
                         {% if formRelation.vars.data.attribute.type == 2 %}
                             <div class="row">
                             {% for file in formRelation.vars.data.files %}
@@ -85,11 +87,17 @@
                             {{ form_widget(formRelation.value, { 'attr': {'class': 'file-name'}}) }}
                             {{ form_widget(formRelation.valueFiles, { 'attr': {'class': 'file-input'}}) }}
                         {% elseif formRelation.vars.data.attribute.type == 3 %}
-                            <div class="input-group">
-                                {{ form_widget(formRelation.valueProduct) }}
-                                <span class="input-group-btn">
-                                    <a href="#" class="btn btn-success btn-subedit"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
-                                </span>
+                            <div class="form-group">
+                                <div class="col-sm-3">{{ form_widget(formRelation.quantity) }}</div>
+                                <div class="col-sm-1" style="padding: 8px 0 0 0">X</div>
+                                <div class="col-sm-8">
+                                    <div class="input-group">
+                                        {{ form_widget(formRelation.valueProduct) }}
+                                        <span class="input-group-btn">
+                                            <a href="#" class="btn btn-success btn-subedit"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         {% else %}
                             {{ form_widget(formRelation.value) }}

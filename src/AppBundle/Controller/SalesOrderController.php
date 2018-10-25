@@ -72,7 +72,7 @@ class SalesOrderController extends Controller
             $order = $repo->find($id);
         }
 
-        $form = $this->createForm(SalesOrderForm::class, $order, array('user' => $this->getUser()));
+        $form = $this->createForm(SalesOrderForm::class, $order, array('user' => $this->getUser(), 'stock' =>  $em->getRepository('AppBundle:Product')->findStock($this->getUser())));
 
         $form->handleRequest($request);
 

@@ -27,6 +27,7 @@ use AppBundle\Entity\Product;
 use AppBundle\Entity\User;
 use AppBundle\Entity\ProductAttributeRelation;
 use AppBundle\Entity\ProductOrderRelation;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * ProductRepository
@@ -99,27 +100,19 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         return $result;
     }
 
-    /*
-     * This query is also written in SalesOrderForm
-     */
-    public function findUnsold(User $user)
+    public function findStock(User $user)
     {
-        $qb = $this->getEntityManager()->createQueryBuilder()
-            ->from("AppBundle:Product", "p")
-            ->select('p')
-            ->leftJoin('p.orderRelations', 'r')
-            ->leftJoin('r.order', 'o', \Doctrine\ORM\Query\Expr\Join::WITH, 'o INSTANCE OF AppBundle:SalesOrder')
-            ->having('COUNT(o.id) = 0')
-            ->groupBy('p.id')
-            ->orderBy('p.id', 'DESC');
+        $products = $this->findMine($user);
 
-        if ($user->hasRole("ROLE_LOCAL"))
-            $qb->andWhere("p.location = ?1")->setParameter(1, $user->getLocation());
+        $products = (new ArrayCollection($products))->filter(
+            function(Product $product) {
+                return $product->getQuantityInStock() > 0;
+            })->toArray();
 
-        return $qb->getQuery()->getResult();
+        return $products;
     }
 
-    public function generateAttributeRelations(Product $product)
+    public function generateProductAttributeRelations(Product $product)
     {
         // get all possible attributes for this product type
         $allAttributes = $product->getType()->getAttributes();
@@ -143,7 +136,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         }
     }
 
-    public function generateOrderRelation(Product $product, AOrder $order)
+    public function generateProductOrderRelation(Product $product, AOrder $order)
     {
         $exists = $product->getOrderRelations()->exists(function($key, $r) use ($order) {
             /** @var ProductOrderRelation $r */
@@ -155,27 +148,9 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
             $r = new ProductOrderRelation();
             $r->setOrder($order);
             $r->setProduct($product);
+            $r->setQuantity(1);
             $this->_em->persist($r);
             $product->addOrderRelation($r);
         }
-    }
-
-    /**
-     * @param int $quantity
-     * @param string $typeName
-     * @return Product
-     */
-    public function generateProductFromQuantity($quantity, $typeName)
-    {
-        $productType = $this->_em->getRepository("AppBundle:ProductType")->findOrCreate($typeName);
-
-        $product = new Product();
-        $product->setName($typeName);
-        $product->setQuantity($quantity);
-        $product->setDescription("Created by application");
-        $product->setType($productType);
-        $this->_em->persist($product);
-
-        return $product;
     }
 }

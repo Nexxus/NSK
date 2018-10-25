@@ -51,6 +51,20 @@ class ProductOrderRelation
     private $order;
 
     /**
+     * @var int Actual quantity of this product in this order
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $quantity;
+
+    /**
+     * @var int Actual price of this product in this order, in eurocents, per unit
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $price;
+
+    /**
      * Set product
      *
      * @param Product $product
@@ -96,5 +110,53 @@ class ProductOrderRelation
     public function getOrder()
     {
         return $this->order;
+    }
+
+    /**
+     * Set actual quantity of this product in this order
+     *
+     * @param integer $quantity
+     *
+     * @return ProductOrderRelation
+     */
+    public function setQuantity($quantity)
+    {
+        $this->quantity = $quantity;
+
+        return $this;
+    }
+
+    /**
+     * Get actual quantity of this product in this order
+     *
+     * @return integer
+     */
+    public function getQuantity()
+    {
+        return $this->quantity ? $this->quantity : 1;
+    }
+
+    /**
+     * Set actual price of this product in this order, in euros (float), per unit
+     *
+     * @param float $price
+     *
+     * @return ProductOrderRelation
+     */
+    public function setPrice($price)
+    {
+        $this->price = $price * 100;
+
+        return $this;
+    }
+
+    /**
+     * Get actual price of this product in this order, in euros (float), per unit
+     *
+     * @return float
+     */
+    public function getPrice()
+    {
+        return floatval($this->price) / 100;
     }
 }

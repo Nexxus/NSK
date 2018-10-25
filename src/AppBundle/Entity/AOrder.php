@@ -88,6 +88,27 @@ abstract class AOrder
     protected $location;
 
     /**
+     * @var int Discount price, in eurocents
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $discount;
+
+    /**
+     * @var int Price for transport, in eurocents
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $transport;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isGift;
+
+    /**
      * Get id
      *
      * @return integer
@@ -95,6 +116,73 @@ abstract class AOrder
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @param bool $isGift
+     * @return AOrder
+     */
+    public function setIsGift($isGift)
+    {
+        $this->isGift = $isGift;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsGift()
+    {
+        return $this->isGift;
+    }
+
+    /**
+     * Set discount price, in eurocents, positive number
+     *
+     * @param integer $discount
+     *
+     * @return AOrder
+     */
+    public function setDiscount($discount)
+    {
+        $this->discount = abs($discount);
+
+        return $this;
+    }
+
+    /**
+     * Get discount price, in eurocents, positive number
+     *
+     * @return integer
+     */
+    public function getDiscount()
+    {
+        return abs($this->discount);
+    }
+
+    /**
+     * Set price for transport, in eurocents
+     *
+     * @param integer $transport
+     *
+     * @return AOrder
+     */
+    public function setTransport($transport)
+    {
+        $this->transport = $transport;
+
+        return $this;
+    }
+
+    /**
+     * Get price for transport, in eurocents
+     *
+     * @return integer
+     */
+    public function getTransport()
+    {
+        return $this->transport;
     }
 
     /**
@@ -214,4 +302,31 @@ abstract class AOrder
         return $this->location;
     }
 
+    /**
+     * Total actual price of this order
+     * Standard prices are NOT involved, only order prices
+     *
+     * @return integer
+     */
+    public function calculateTotalPrice()
+    {
+        $price = 0;
+
+        if ($this->getIsGift() == true)
+            return $price;
+
+        foreach ($this->getProductRelations() as $r)
+        {
+            /** @var $r ProductOrderRelation */
+            $price += $r->getPrice() * $r->getQuantity();
+        }
+
+        if ($this->getDiscount() > 0)
+            $price -= $this->getDiscount();
+
+        if ($this->getTransport() > 0)
+            $price += $this->getTransport();
+
+        return $price;
+    }
 }

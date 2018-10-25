@@ -39,9 +39,11 @@ class Product
 {
     public function __construct() {
         $this->attributeRelations = new ArrayCollection();
+        $this->attributedRelations = new ArrayCollection();
         $this->orderRelations = new ArrayCollection();
         $this->services = new ArrayCollection();
         $this->images = new ArrayCollection();
+        $this->files = new ArrayCollection();
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
     }
@@ -71,13 +73,6 @@ class Product
     private $sku;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(type="integer")
-     */
-    private $quantity;
-
-    /**
      * @var string
      *
      * @ORM\Column(type="string", length=255)
@@ -100,7 +95,7 @@ class Product
     private $description;
 
     /**
-     * @var int Price for sale, in eurocents
+     * @var int Standard sales price, in eurocents, per unit
      *
      * @ORM\Column(type="integer", nullable=true)
      */
@@ -144,6 +139,16 @@ class Product
     private $attributeRelations;
 
     /**
+     * Collection of relations to attributes in which this product was an attributed product
+     * KEEP THIS PROPERTY PRIVATE
+     *
+     * @var ArrayCollection|ProductAttributeRelation[]
+     *
+     * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="valueProduct", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
+     */
+    private $attributedRelations;
+
+    /**
      * @var ArrayCollection|ProductOrderRelation[]
      *
      * @ORM\OneToMany(targetEntity="ProductOrderRelation", mappedBy="product", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
@@ -172,7 +177,7 @@ class Product
      */
     private $files;
 
-    #region database getters and setters
+    #region Db getters and setters
 
     /**
      * Returns all files of all attributes. Files can be attached to products thru its attributes.
@@ -191,30 +196,6 @@ class Product
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set quantity
-     *
-     * @param integer $quantity
-     *
-     * @return ProductOrderRelation
-     */
-    public function setQuantity($quantity)
-    {
-        $this->quantity = $quantity;
-
-        return $this;
-    }
-
-    /**
-     * Get quantity
-     *
-     * @return integer
-     */
-    public function getQuantity()
-    {
-        return $this->quantity;
     }
 
     /**
@@ -290,27 +271,27 @@ class Product
     }
 
     /**
-     * Set price
+     * Set standard sales price, in euros (float), per unit
      *
-     * @param integer $price
+     * @param float $price
      *
      * @return Product
      */
     public function setPrice($price)
     {
-        $this->price = $price;
+        $this->price = $price * 100;
 
         return $this;
     }
 
     /**
-     * Get price
+     * Get standard sales price, in euros (float), per unit
      *
-     * @return integer
+     * @return float
      */
     public function getPrice()
     {
-        return $this->price;
+        return floatval($this->price) / 100;
     }
 
     /**
@@ -530,4 +511,91 @@ class Product
     }
 
     #endregion
+
+    #region Quantity calculators
+
+    /**
+     * Get quantity
+     *
+     * @param bool $substractAttributedProducts
+     * @return integer
+     */
+    public function getQuantityInStock($substractAttributedProducts = true)
+    {
+        $in = $this->getQuantityPurchased();
+
+        $out = $this->getQuantitySold();
+
+        if ($substractAttributedProducts)
+            $out += $this->getQuantityAttributed();
+
+        return $in - $out;
+    }
+
+    public function getQuantityPurchased()
+    {
+        $purchase = $this->getOrderRelations()->filter(
+            function(ProductOrderRelation $r) {
+                return is_a($r->getOrder(), PurchaseOrder::class);
+            })->first();
+
+        return $purchase ? $purchase->getQuantity() : 0;
+    }
+
+    public function getQuantitySold()
+    {
+        $sold = 0;
+
+        foreach ($this->getOrderRelations() as $r)
+        {
+            if (is_a($r->getOrder(), SalesOrder::class))
+            {
+                $sold += $r->getQuantity();
+            }
+        }
+
+        return $sold;
+    }
+
+    public function getQuantityAttributed()
+    {
+        $attributed = 0;
+
+        foreach ($this->attributedRelations as $r)
+        {
+            $attributed += $r->getQuantity();
+        }
+
+        return $attributed;
+    }
+
+    /**
+     * @return PurchaseOrder
+     */
+    public function getPurchaseOrder()
+    {
+        return $this->getOrderRelations()->filter(
+            function($r) {
+                /** @var $r ProductOrderRelation */
+                return is_a($r->getOrder(), PurchaseOrder::class);
+            })->first()->getOrder();
+    }
+
+    #endregion
+
+    /**
+     * Standard prices multiplied by Quantities of (selected) attributes and/or attributed products
+     * @return double
+     */
+    public function getTotalStandardPriceOfAttributes()
+    {
+        $price = 0;
+
+        foreach ($this->getAttributeRelations() as $r)
+        {
+            $price += $r->getTotalStandardPrice();
+        }
+
+        return $price;
+    }
 }

@@ -32,6 +32,7 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use AppBundle\Entity\ProductAttributeRelation;
 use AppBundle\Entity\Attribute;
 use AppBundle\Entity\AttributeOption;
@@ -54,38 +55,42 @@ class ProductAttributeRelationForm extends AbstractType
 
             // loading proper attribute type
             if ($relation->getAttribute())
-            switch ($relation->getAttribute()->getType()) {
-                case Attribute::TYPE_FILE:
-                    $form->add('valueFiles', FileType::class, ['mapped' => false, 'required' => false, 'label' => 'Attachment'])
-                         ->add('value', HiddenType::class, ['mapped' => false, 'required' => false]);
-                    break;
-                case Attribute::TYPE_PRODUCT:
-                    $form->add('valueProduct', EntityType::class, [
-                        'query_builder' => function (\Doctrine\ORM\EntityRepository $er) {
-                            return $er->createQueryBuilder('p')
-                                ->join("p.type", "t")
-                                ->where('t.isAttribute = true')
-                                ->orderBy('p.sku', 'ASC');
-                        },
-                       'class' => 'AppBundle:Product',
-                       'choice_label' => 'name',
-                       'required' => false,
-                       'label' => 'Part'
-                    ]);
-                    break;
-                case Attribute::TYPE_SELECT:
-                    $form->add('value', ChoiceType::class, [
-                       'choices' => $this->getAttributeOptions($relation->getAttribute()),
-                       'required' => false,
-                       'label' => 'Select'
-                    ]);
-                    break;
-                case Attribute::TYPE_TEXT:
-                    $form->add('value', TextType::class, [
-                        'label' => 'Description',
-                        'required' => false,
-                    ]);
-                    break;
+            {
+                switch ($relation->getAttribute()->getType())
+                {
+                    case Attribute::TYPE_FILE:
+                        $form->add('valueFiles', FileType::class, ['mapped' => false, 'required' => false, 'label' => 'Attachment'])
+                             ->add('value', HiddenType::class, ['mapped' => false, 'required' => false]);
+                        break;
+                    case Attribute::TYPE_PRODUCT:
+                        $form->add('valueProduct', EntityType::class, [
+                            'query_builder' => function (\Doctrine\ORM\EntityRepository $er) {
+                                return $er->createQueryBuilder('p')
+                                    ->join("p.type", "t")
+                                    ->where('t.isAttribute = true')
+                                    ->orderBy('p.sku', 'ASC');
+                            },
+                           'class' => 'AppBundle:Product',
+                           'choice_label' => 'name',
+                           'required' => false,
+                           'label' => 'Part'
+                        ]);
+                        $form->add('quantity', IntegerType::class);
+                        break;
+                    case Attribute::TYPE_SELECT:
+                        $form->add('value', ChoiceType::class, [
+                           'choices' => $this->getAttributeOptions($relation->getAttribute()),
+                           'required' => false,
+                           'label' => 'Select'
+                        ]);
+                        break;
+                    case Attribute::TYPE_TEXT:
+                        $form->add('value', TextType::class, [
+                            'label' => 'Description',
+                            'required' => false,
+                        ]);
+                        break;
+                }
             }
         });
     }

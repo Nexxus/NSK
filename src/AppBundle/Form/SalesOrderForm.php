@@ -28,6 +28,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -51,6 +53,9 @@ class SalesOrderForm extends AbstractType
                 'required' => false
             ])
             ->add('orderDate', DateType::class)
+            ->add('transport', MoneyType::class, ['required' => false])
+            ->add('discount', MoneyType::class, ['required' => false])
+            ->add('isGift', CheckboxType::class, ['required' => false])
             ->add('status', EntityType::class, [
                 'class' => 'AppBundle:OrderStatus',
                 'choice_label' => 'name',
@@ -84,14 +89,7 @@ class SalesOrderForm extends AbstractType
                 'mapped' => false,
                 'class' => 'AppBundle:Product',
                 'choice_label' => 'name',
-                'query_builder' => function (EntityRepository $er) {
-                    $qb = $er->createQueryBuilder('p');
-                    $qb->leftJoin('p.orderRelations', 'r');
-                    $qb->leftJoin('r.order', 'o', \Doctrine\ORM\Query\Expr\Join::WITH, 'o INSTANCE OF AppBundle:SalesOrder')
-                        ->having('COUNT(o.id) = 0')
-                        ->groupBy('p.id');
-                    return $qb;
-                }
+                'choices' => $options['stock']
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Save Changes',
@@ -105,8 +103,7 @@ class SalesOrderForm extends AbstractType
             $builder->add('location',  EntityType::class, [
                     'class' => 'AppBundle:Location',
                     'choice_label' => 'name',
-                    'required' => false,
-                    'data' => $user->getLocation()
+                    'required' => false
                 ]);
         }
 
@@ -121,6 +118,6 @@ class SalesOrderForm extends AbstractType
             'csrf_token_id'   => 'sorder',
         ));
 
-        $resolver->setRequired(array('user'));
+        $resolver->setRequired(array('user', 'stock'));
     }
 }

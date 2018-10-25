@@ -23,6 +23,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Pickup;
+use AppBundle\Entity\Product;
 use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Entity\Supplier;
 use AppBundle\Entity\PickupImageFile;
@@ -51,6 +52,7 @@ class PickupController extends Controller
         $pickup = new Pickup();
         $order = new PurchaseOrder();
         $order->setOrderDate(new \DateTime());
+        $order->setIsGift(true);
         $supplier = new Supplier();
 
         $em->persist($pickup);
@@ -111,14 +113,22 @@ class PickupController extends Controller
                         $quantity = $form->get('q'.$productType)->getData();
                         if ($quantity)
                         {
-                            $product = $em->getRepository('AppBundle:Product')->generateProductFromQuantity($quantity, $productType);
+                            $product = new Product();
+                            $product->setName($productType);
+                            $product->setDescription("Created by application");
+                            $product->setType($em->getRepository("AppBundle:ProductType")->findOrCreate($productType));
                             $product->setLocation($location);
                             $product->setSku(time() + $count);
+                            $em->persist($product);
+
                             $r = new ProductOrderRelation();
                             $r->setOrder($pickup->getOrder());
                             $r->setProduct($product);
+                            $r->setQuantity($quantity);
                             $em->persist($r);
+
                             $pickup->getOrder()->addProductRelation($r);
+
                             $count++;
                         }
                     }

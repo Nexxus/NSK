@@ -40,7 +40,7 @@ class ProductAttributeRelation
     /**
      * @var Product If attribute type is product, this field contains a product which has property isAttribute=true and that is/becomes attribute of containing product.
      *
-     * @ORM\ManyToOne(targetEntity="Product")
+     * @ORM\ManyToOne(targetEntity="Product", inversedBy="attributedRelations")
      * @ORM\JoinColumn(name="value_product_id", referencedColumnName="id", nullable=true)
      */
     private $valueProduct;
@@ -62,6 +62,15 @@ class ProductAttributeRelation
      * @ORM\JoinColumn(name="attribute_id", referencedColumnName="id", nullable=false)
      */
     private $attribute;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $quantity;
+
+    #region db getters and setters
 
     /**
      * Set value
@@ -180,5 +189,77 @@ class ProductAttributeRelation
             ->filter(function ($file) use ($fileIds) {
                          return in_array($file->getId(), $fileIds);
                      });
+    }
+
+    /**
+     * Set quantity of attributed products (issue #87)
+     *
+     * @param integer $quantity
+     *
+     * @return ProductAttributeRelation
+     */
+    public function setQuantity($quantity)
+    {
+        if ($this->getAttribute()->getType() != Attribute::TYPE_PRODUCT)
+            throw new \Exception("Quantity can only be set when it is an attributed product");
+
+        $this->quantity = $quantity;
+
+        return $this;
+    }
+
+    /**
+     * Get quantity of attributed products (issue #87)
+     *
+     * @return integer
+     */
+    public function getQuantity()
+    {
+        if ($this->getAttribute()->getType() != Attribute::TYPE_PRODUCT || !$this->quantity)
+            return 1;
+
+        return $this->quantity;
+    }
+
+    #endregion
+
+    /**
+     * @return AttributeOption
+     */
+    public function getSelectedOption()
+    {
+        if ($this->getAttribute()->getType() != Attribute::TYPE_SELECT)
+            throw new \Exception("The attribute is not selectable.");
+
+        return $this->getAttribute()->getOptions()->filter(
+            function (AttributeOption $o)  {
+                $o->getName() == $this->getValue();
+            })->first();
+    }
+
+    /**
+     * Standard price multiplied by Quantity of (selected) attribute or attributed product
+     * @return double
+     */
+    public function getTotalStandardPrice()
+    {
+        $price = 0;
+
+        switch ($this->getAttribute()->getType())
+        {
+            case Attribute::TYPE_SELECT:
+                $option = $this->getSelectedOption();
+                $price = $option ? $option->getPrice() : 0;
+                break;
+            case Attribute::TYPE_PRODUCT:
+                $product = $this->getValueProduct();
+                $price = $product ? $product->getPrice() : 0;
+                break;
+            default:
+                $price = $this->getAttribute()->getPrice();
+                break;
+        }
+
+        return $price * $this->getQuantity();
     }
 }

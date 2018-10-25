@@ -47,6 +47,21 @@
         <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
+                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Pricing{% endtrans %}
+                </div>
+                <div class="panel-body">
+                    <div class="row" style="margin-bottom: 20px;">
+                        <div class="col-sm-3 text-right"><h4>Total</h4></div>
+                        <div class="col-sm-9"><h4>&euro; {{ order.calculateTotalPrice()|number_format(2, ',', '.') }}</h4></div>
+                    </div>
+                    {{ form_row(form.transport) }}
+                    {{ form_row(form.discount) }} 
+                    {{ form_row(form.isGift) }} 
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
                     <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Customer{% endtrans %}
                 </div>
                 <div class="panel-body">
@@ -131,15 +146,13 @@
 
          /* Product list */
 
-         {% if ( order.id > 0) %}
+         {% if (order.id > 0) %}
 
          loadProducts();
 
          function loadProducts() {
              $("#productList").load('{{ path('product_list', { 'orderId': order.id }) }}');
          }
-
-         {% endif %}
 
          /* New product */
 
@@ -149,9 +162,11 @@
                  $("#productList").load('{{ path('product_list', { 'orderId': order.id }) }}/' + val, function () {
                      $('select[name="sales_order_form[newProduct]"] option[value="' + val + '"]').remove();
                  });
-                 
+
              }
          });
+
+        {% endif %}
 
      </script>
  {% endblock %}

@@ -145,3 +145,6 @@ a.list-group-item-success.active {
     padding-right: 0px;
 }
 
+.row.form-display {
+    margin-bottom: 20px;
+}

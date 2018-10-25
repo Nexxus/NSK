@@ -41,6 +41,12 @@ class SalesOrder extends AOrder
     private $customer;
 
     /**
+     * @ORM\OneToOne(targetEntity="PurchaseOrder", inversedBy="salesOrder")
+     * @ORM\JoinColumn(name="purchaseOrder_id", referencedColumnName="id")
+     */
+    private $purchaseOrder;
+
+    /**
      * @return SalesOrder
      */
     public function setCustomer(Customer $customer)
@@ -56,5 +62,27 @@ class SalesOrder extends AOrder
     public function getCustomer()
     {
         return $this->customer;
+    }
+
+    /**
+     * When sales is before purchase, this property should be set
+     *
+     * @return SalesOrder
+     */
+    public function setPurchaseOrder(PurchaseOrder $purchaseOrder)
+    {
+        $this->purchaseOrder = $purchaseOrder;
+
+        return $this;
+    }
+
+    /**
+     * When sales is before purchase
+     *
+     * @return PurchaseOrder
+     */
+    public function getPurchaseOrder()
+    {
+        return $this->purchaseOrder;
     }
 }

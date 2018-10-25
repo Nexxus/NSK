@@ -51,6 +51,13 @@ class AttributeOption
     private $name;
 
     /**
+     * @var int Standard sales price, in eurocents
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $price;
+
+    /**
      * @var Attribute
      *
      * @ORM\ManyToOne(targetEntity="Attribute", inversedBy="options", fetch="EAGER")
@@ -114,5 +121,29 @@ class AttributeOption
     public function getAttribute()
     {
         return $this->attribute;
+    }
+
+    /**
+     * Set standard sales price, in euros (float)
+     *
+     * @param float $price
+     *
+     * @return AttributeOption
+     */
+    public function setPrice($price)
+    {
+        $this->price = $price * 100;
+
+        return $this;
+    }
+
+    /**
+     * Get standard sales price, in euros (float)
+     *
+     * @return float
+     */
+    public function getPrice()
+    {
+        return floatval($this->price) / 100;
     }
 }

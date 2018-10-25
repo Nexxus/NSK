@@ -62,7 +62,7 @@ class ProductController extends Controller
         }
         else
         {
-            $products = $repo->findUnsold($this->getUser());
+            $products = $repo->findStock($this->getUser());
         }
 
         $paginator = $this->get('knp_paginator');
@@ -114,7 +114,6 @@ class ProductController extends Controller
         if ($id == 0)
         {
             $product = new Product();
-            $product->setQuantity(1);
         }
         else
         {
@@ -129,10 +128,10 @@ class ProductController extends Controller
 
         if ($purchaseOrderId > 0)
         {
-            $repo->generateOrderRelation($product, $em->find(PurchaseOrder::class, $purchaseOrderId));
+            $repo->generateProductOrderRelation($product, $em->find(PurchaseOrder::class, $purchaseOrderId));
         }
 
-        $repo->generateAttributeRelations($product);
+        $repo->generateProductAttributeRelations($product);
 
         $form = $this->createForm(ProductForm::class, $product, array('user' => $this->getUser()));
 
