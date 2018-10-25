@@ -138,7 +138,7 @@ abstract class AOrder
     }
 
     /**
-     * Set discount price, in eurocents, positive number
+     * Set discount price, in euros (float), positive number
      *
      * @param integer $discount
      *
@@ -146,23 +146,23 @@ abstract class AOrder
      */
     public function setDiscount($discount)
     {
-        $this->discount = abs($discount);
+        $this->discount = abs($discount) * 100;
 
         return $this;
     }
 
     /**
-     * Get discount price, in eurocents, positive number
+     * Get discount price, in euros (float), positive number
      *
      * @return integer
      */
     public function getDiscount()
     {
-        return abs($this->discount);
+        return floatval(abs($this->discount)) / 100;
     }
 
     /**
-     * Set price for transport, in eurocents
+     * Set price for transport, in euros (float)
      *
      * @param integer $transport
      *
@@ -170,19 +170,19 @@ abstract class AOrder
      */
     public function setTransport($transport)
     {
-        $this->transport = $transport;
+        $this->transport = $transport * 100;
 
         return $this;
     }
 
     /**
-     * Get price for transport, in eurocents
+     * Get price for transport, in euros (float)
      *
      * @return integer
      */
     public function getTransport()
     {
-        return $this->transport;
+        return floatval($this->transport ?? 0) / 100;
     }
 
     /**

@@ -30,6 +30,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -90,6 +91,9 @@ class SalesOrderForm extends AbstractType
                 'class' => 'AppBundle:Product',
                 'choice_label' => 'name',
                 'choices' => $options['stock']
+            ])
+            ->add('productRelations', CollectionType::class, [
+                'entry_type' => ProductOrderRelationForm::class
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Save Changes',

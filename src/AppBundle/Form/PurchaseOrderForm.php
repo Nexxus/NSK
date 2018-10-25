@@ -30,6 +30,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -88,6 +89,9 @@ class PurchaseOrderForm extends AbstractType
                 'mapped' => false,
                 'class' => 'AppBundle:ProductType',
                 'choice_label' => 'name',
+            ])
+            ->add('productRelations', CollectionType::class, [
+                'entry_type' => ProductOrderRelationForm::class
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Save Changes',

@@ -92,11 +92,55 @@
             <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Products{% endtrans %}
         </div>
         {% if ( order.id > 0) %}
-        <div id="productList"></div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>SKU</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Stock</th>
+                    <th>Standard<br />price p.u.</th>
+                    <th width="15%">This sale<br />price p.u.</th>
+                    <th width="10%">This sale<br />quantity</th>
+                    <th width="1%"></th>
+                </tr>
+                <tr>
+                </tr>
+            </thead>
+            <tbody>
+            {% for formRelation in form.productRelations %}
+            {% set product = formRelation.vars.data.product %}
+                <tr>
+                    <td>{{ product.id }}</td>
+                    <td>{{ product.sku }}</td>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.type.name }}</td>
+                    <td>{{ product.getQuantityInStock() }}</td>
+                    <td>&euro; {{ product.price|number_format(2, ',', '.') }}</td>
+                    <td>{{ form_widget(formRelation.price) }}</td>
+                    <td>{{ form_widget(formRelation.quantity) }}</td>
+                    <td nowrap>
+                        <a class="btn btn-danger" href="{{ path('salesorder_delete_relation', { 'id': order.id, 'productId': product.id }) }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="99">
+                        <h4>{% trans %}No products{% endtrans %}</h4>
+                    </td>
+                </tr>
+            {% endfor %}
+        
+            </tbody>
+        </table>
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-6">
                     {{ form_row(form.newProduct) }}
+                </div>
+                <div class="col-sm-6 text-right">
+                    <i>Products can be edited or fully deleted from stock in <a href="{{ path('product_index') }}">stock index</a></i>
                 </div>
             </div>
         </div>
@@ -143,30 +187,6 @@
          $('[required]').prop('required', function () {
              return $(this).is(':visible');
          });
-
-         /* Product list */
-
-         {% if (order.id > 0) %}
-
-         loadProducts();
-
-         function loadProducts() {
-             $("#productList").load('{{ path('product_list', { 'orderId': order.id }) }}');
-         }
-
-         /* New product */
-
-         $('select[name="sales_order_form[newProduct]"]').change(function () {
-             var val = $(this).val();
-             if (val) {
-                 $("#productList").load('{{ path('product_list', { 'orderId': order.id }) }}/' + val, function () {
-                     $('select[name="sales_order_form[newProduct]"] option[value="' + val + '"]').remove();
-                 });
-
-             }
-         });
-
-        {% endif %}
 
      </script>
  {% endblock %}

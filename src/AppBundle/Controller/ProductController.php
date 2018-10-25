@@ -75,31 +75,6 @@ class ProductController extends Controller
     }
 
     /**
-     * @Route("/list/{orderId}/{newProductId}", name="product_list")
-     */
-    public function listAction(Request $request, $orderId, $newProductId = null)
-    {
-        $em = $this->getDoctrine()->getEntityManager();
-
-        /** @var AOrder */
-        $order = $em->find(AOrder::class, $orderId);
-
-        if ($newProductId)
-        {
-            $r = new ProductOrderRelation();
-            $r->setProduct($em->getReference(Product::class, $newProductId));
-            $r->setOrder($order);
-            $order->addProductRelation($r);
-            $em->persist($r);
-            $em->flush();
-        }
-
-        return $this->render('AppBundle:Product:list.ajax.twig', array(
-            'productRelations' => $order->getProductRelations()
-            ));
-    }
-
-    /**
      * @Route("/new/{purchaseOrderId}/{productTypeId}", name="product_new")
      * @Route("/edit/{id}/{success}", name="product_edit")
      * @Route("/editsub/{refId}/{id}", name="product_subedit")

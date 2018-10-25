@@ -6,13 +6,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\Customer;
+use AppBundle\Entity\Product;
+use AppBundle\Entity\ProductOrderRelation;
 use AppBundle\Form\IndexSearchForm;
 use AppBundle\Form\SalesOrderForm;
 use Symfony\Component\Form\FormError;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Route("/salesorder")
@@ -61,6 +62,9 @@ class SalesOrderController extends Controller
         /** @var \AppBundle\Repository\SalesOrderRepository */
         $repo = $em->getRepository('AppBundle:SalesOrder');
 
+        /** @var ArrayCollection */
+        $stock = $em->getRepository('AppBundle:Product')->findStock($this->getUser());
+
         if ($id == 0)
         {
             $order = new SalesOrder();
@@ -70,9 +74,21 @@ class SalesOrderController extends Controller
         {
             /** @var SalesOrder */
             $order = $repo->find($id);
+
+            // cannot add product to sales order twice
+            $stock = $stock->filter(
+                function (Product $product) use ($order) {
+                    /** @var SalesOrder $order */
+                    foreach ($order->getProductRelations() as $r)
+                    {
+                        if ($r->getProduct() == $product)
+                            return false;
+                    }
+                    return true;
+                });
         }
 
-        $form = $this->createForm(SalesOrderForm::class, $order, array('user' => $this->getUser(), 'stock' =>  $em->getRepository('AppBundle:Product')->findStock($this->getUser())));
+        $form = $this->createForm(SalesOrderForm::class, $order, array('user' => $this->getUser(), 'stock' => $stock));
 
         $form->handleRequest($request);
 
@@ -114,6 +130,19 @@ class SalesOrderController extends Controller
 
                 if ($success !== false)
                 {
+                    $newProduct = $form->get('newProduct')->getData();
+                    if ($newProduct)
+                    {
+                        $r = new ProductOrderRelation();
+                        $r->setProduct($newProduct);
+                        $r->setOrder($order);
+                        $r->setPrice($newProduct->getPrice());
+                        $r->setQuantity(1);
+                        $order->addProductRelation($r);
+                        $em->persist($r);
+                        $em->flush();
+                    }
+
                     if (!$order->getOrderNr())
                     {
                         $order->setOrderNr($repo->generateOrderNr($order));
@@ -143,11 +172,24 @@ class SalesOrderController extends Controller
     public function deleteAction($id)
     {
         $em = $this->getDoctrine()->getManager();
-        $order = $em->getRepository('AppBundle:SalesOrder')->find($id);
+        $order = $em->find(SalesOrder::class, $id);
         $em->remove($order);
         $em->flush();
 
         return $this->redirectToRoute('salesorder_index');
+    }
+
+    /**
+     * @Route("/deleterelation/{id}/{productId}", name="salesorder_delete_relation")
+     */
+    public function deleteRelationAction($id, $productId)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $relation = $em->getRepository('AppBundle:ProductOrderRelation')->findOneBy(array('order' => $id, 'product' => $productId));
+        $em->remove($relation);
+        $em->flush();
+
+        return $this->redirectToRoute('salesorder_edit', ['id' => $id, 'success' => true]);
     }
 
     /**

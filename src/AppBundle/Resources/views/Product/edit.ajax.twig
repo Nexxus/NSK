@@ -129,14 +129,7 @@
 <script>
 
     $('#modalEditor .close-modal').click(function () {
-        if (typeof loadProducts === "function") {
-            $("#modalEditor").modal('hide');
-            loadProducts();
-        }
-        else
-        {
-            location.reload();
-        }
+        location.reload();
     });
 
     $('.btn-refedit').click(function (e) {
