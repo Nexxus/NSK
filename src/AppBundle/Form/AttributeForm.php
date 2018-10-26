@@ -20,7 +20,7 @@ class AttributeForm extends AbstractType
         /** @var Attribute */
         $attribute = $builder->getData();
 
-        $builder->add('attr_code')->add('name')->add('price')->add('productTypes')->add('type', ChoiceType::class, [
+        $builder->add('attr_code')->add('name')->add('productTypes')->add('type', ChoiceType::class, [
                     'choices' => [
                         'Text' => $attribute::TYPE_TEXT,
                         'Selectbox' => $attribute::TYPE_SELECT,
@@ -35,6 +35,10 @@ class AttributeForm extends AbstractType
                         'required' => false, 'label' => 'Options (comma sep)'));
 
             $builder->get('options')->addModelTransformer(new AttributeOptionTransformer($attribute));
+        }
+        else if ($attribute->getType() != Attribute::TYPE_PRODUCT)
+        {
+            $builder->add('price');
         }
 
     }/**

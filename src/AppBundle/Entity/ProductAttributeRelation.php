@@ -253,13 +253,13 @@ class ProductAttributeRelation
                 break;
             case Attribute::TYPE_PRODUCT:
                 $product = $this->getValueProduct();
-                $price = $product ? $product->getPrice() : 0;
+                $price = $product ? $product->getPrice() * $this->getQuantity() : 0;
                 break;
             default:
                 $price = $this->getAttribute()->getPrice();
                 break;
         }
 
-        return $price * $this->getQuantity();
+        return $price;
     }
 }

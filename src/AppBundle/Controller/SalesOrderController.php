@@ -62,30 +62,17 @@ class SalesOrderController extends Controller
         /** @var \AppBundle\Repository\SalesOrderRepository */
         $repo = $em->getRepository('AppBundle:SalesOrder');
 
-        /** @var ArrayCollection */
-        $stock = $em->getRepository('AppBundle:Product')->findStock($this->getUser());
-
         if ($id == 0)
         {
             $order = new SalesOrder();
             $order->setOrderDate(new \DateTime());
+            $stock = $em->getRepository('AppBundle:Product')->findStock($this->getUser());
         }
         else
         {
             /** @var SalesOrder */
             $order = $repo->find($id);
-
-            // cannot add product to sales order twice
-            $stock = $stock->filter(
-                function (Product $product) use ($order) {
-                    /** @var SalesOrder $order */
-                    foreach ($order->getProductRelations() as $r)
-                    {
-                        if ($r->getProduct() == $product)
-                            return false;
-                    }
-                    return true;
-                });
+            $stock = $em->getRepository('AppBundle:Product')->findStockAndNotYetInOrder($this->getUser(), $order);
         }
 
         $form = $this->createForm(SalesOrderForm::class, $order, array('user' => $this->getUser(), 'stock' => $stock));

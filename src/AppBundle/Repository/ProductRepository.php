@@ -25,6 +25,7 @@ namespace AppBundle\Repository;
 use AppBundle\Entity\AOrder;
 use AppBundle\Entity\Product;
 use AppBundle\Entity\User;
+use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\ProductAttributeRelation;
 use AppBundle\Entity\ProductOrderRelation;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -107,6 +108,25 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         $products = (new ArrayCollection($products))->filter(
             function(Product $product) {
                 return $product->getQuantityInStock() > 0;
+            });
+
+        return $products;
+    }
+
+    public function findStockAndNotYetInOrder(User $user, SalesOrder $order)
+    {
+        $products = $this->findStock($user);
+
+        // cannot add product to sales order twice
+        $products = $products->filter(
+            function (Product $product) use ($order) {
+                /** @var SalesOrder $order */
+                foreach ($order->getProductRelations() as $r)
+                {
+                    if ($r->getProduct() == $product)
+                        return false;
+                }
+                return true;
             });
 
         return $products;
