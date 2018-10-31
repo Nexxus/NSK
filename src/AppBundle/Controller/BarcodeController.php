@@ -28,7 +28,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
 
-class BarcodeController extends Controller
+class BarcodeController extends APdfController
 {
     /**
      * @Route("barcode/single/{barcode}", name="barcode_single")
@@ -41,7 +41,7 @@ class BarcodeController extends Controller
 
         $mPdfConfiguration = ['', [54,25] ,'9','',3,'3',1,'','0','0','P'];
 
-        return new Response($this->getPdf($html, $mPdfConfiguration));
+        return $this->getPdfResponse("Nexxus Barcode", $html, $mPdfConfiguration);
     }
 
     /**
@@ -60,7 +60,7 @@ class BarcodeController extends Controller
 
         $mPdfConfiguration = ['', [54,25] ,'9','',3,'3',1,'','0','0','P']; // or ['', [54,25] ,'0','',0,0,0,0,0,0,'P']
 
-        return new Response($this->getPdf($html, $mPdfConfiguration));
+        return $this->getPdfResponse("Nexxus Barcode", $html, $mPdfConfiguration);
     }
 
     /**
@@ -72,41 +72,10 @@ class BarcodeController extends Controller
             'barcodes' => $barcodes
             ));
 
-        return new Response($this->getPdf($html));
+        return $this->getPdfResponse("Nexxus Barcode", $html);
     }
 
-    /** @param string|array $html One page or array of pages */
-    private function getPdf($html, array $mPdfConfiguration = array())
-    {
-        define("_MPDF_TEMP_PATH", $this->get('kernel')->getRootDir() . '/../var/mpdf/');
-        define("_MPDF_TTFONTDATAPATH", $this->get('kernel')->getRootDir() . '/../var/mpdf/fonts/');
 
-        /** @var \TFox\MpdfPortBundle\Service\MpdfService */
-        $mpdfService = $this->get('tfox.mpdfport');
-
-        if (count($mPdfConfiguration) > 0)
-            $mpdfService->setAddDefaultConstructorArgs(false);
-
-        /** @var \mPDF */
-        $mpdf = $mpdfService->getMpdf($mPdfConfiguration);
-
-        $mpdf->setTitle("Nexxus Barcode");
-
-        if (is_array($html))
-        {
-            foreach ($html as $page)
-            {
-                $mpdf->AddPage();
-                $mpdf->writeHTML($page);
-            }
-        }
-        else
-        {
-            $mpdf->writeHTML($html);
-        }
-
-        return new Response($mpdf->Output());
-    }
 
     /*
      * $mpdf->AddPage(); to generate multiple stickers

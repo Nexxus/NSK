@@ -61,7 +61,7 @@
                         {{ formRelation.vars.data.attribute.name }}
                     </div>
                     <div class="col-md-6">
-                        {% if formRelation.vars.data.attribute.type == 2 %}
+                        {% if formRelation.vars.data.attribute.type == 2 %}{# Files #}
                             <div class="row">
                             {% for file in formRelation.vars.data.files %}
                                 <div class="col-md-4 col-filecontainer" id="col-file-{{ file.id }}">
@@ -86,7 +86,7 @@
                             </div>
                             {{ form_widget(formRelation.value, { 'attr': {'class': 'file-name'}}) }}
                             {{ form_widget(formRelation.valueFiles, { 'attr': {'class': 'file-input'}}) }}
-                        {% elseif formRelation.vars.data.attribute.type == 3 %}
+                        {% elseif formRelation.vars.data.attribute.type == 3 %}{# Product #}
                             <div class="form-group">
                                 <div class="col-sm-3">{{ form_widget(formRelation.quantity) }}</div>
                                 <div class="col-sm-1" style="padding: 8px 0 0 0">X</div>
@@ -114,6 +114,7 @@
 
     <div class="text-center">
         {{ form_widget(form.save) }}
+        <a class="btn btn-default" href="{{ path('product_print', { 'id': product.id }) }}">Print</a>
         <button type="button" class="btn btn-default close-modal">Close</button>
         {% if (refId) %}
         <a class="btn btn-default btn-refedit" href="{{ path('product_edit', { 'id': refId }) }}">Back</a>

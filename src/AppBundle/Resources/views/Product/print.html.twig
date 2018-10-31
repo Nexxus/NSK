@@ -1,0 +1,84 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta http-equiv="Window-target" content="_blank">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Nexxus price tag</title>
+        <style>
+            body {
+                font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 9pt;
+            }
+
+            div {
+                padding: 4px;
+                text-align: center;
+                width: 100%;
+            }
+
+            div.attributes {
+                height: 70%;
+                width: 100%;
+            }
+
+            div.title {
+                background-color: #000;
+                color: #fff;
+                text-transform: uppercase;
+                font-size: 14pt;
+            }
+
+            div.price {
+                color: #ff0000;
+                font-weight: bold;
+                font-size: 24pt;
+            }
+
+            table {
+                width: 100%;
+                margin-bottom: 10px;
+                height: 100%;
+            }
+
+            td {
+                padding: 4px;
+            }
+
+            td.even {
+                background-color: #eef;
+            }
+        </style>
+    </head>
+    <body>
+        
+        <div class="title">Test</div>
+        <div class="attributes">
+            <table>
+                {% for attributeRelation in product.attributeRelations %}
+                {% if attributeRelation.attribute.type != 2 %}
+                <tr>
+                    <td class="{{ cycle(['', 'even'], loop.index0) }}">{{ attributeRelation.attribute.name }}</td>
+                    <td class="{{ cycle(['', 'even'], loop.index0) }}"><b>
+                        {% if attributeRelation.attribute.type == 3 %}{# Product #}
+                            {{ attributeRelation.quantity }}x {{ attributeRelation.valueProduct.name }}
+                        {% else %}
+                            {{ attributeRelation.value }}
+                        {% endif %}
+                   </b></td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </table>
+        </div>
+        <div class="price">
+            &euro; {{ product.price|number_format(2, ',', '.') }}
+        </div>
+        <div>
+            <barcode code="{{ product.sku }}" type="C39" />
+        </div>
+        <div>
+            <b>*&nbsp;{{ product.sku }}&nbsp;*</b>
+        </div>
+    </body>
+</html>

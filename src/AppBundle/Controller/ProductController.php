@@ -40,7 +40,7 @@ use Symfony\Component\Form\FormError;
 /**
  * @Route("/product")
  */
-class ProductController extends Controller
+class ProductController extends APdfController
 {
     /**
      * @Route("/", name="product_index")
@@ -170,6 +170,20 @@ class ProductController extends Controller
                 'success' => $success,
                 'refId' => $refId,
             ));
+    }
+
+    /**
+     * @Route("/print/{id}", name="product_print")
+     */
+    public function printAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $product = $em->getRepository('AppBundle:Product')->find($id);
+
+        $html = $this->render('AppBundle:Product:print.html.twig', array('product' => $product));
+        $mPdfConfiguration = ['', 'A6' ,'','',0,0,0,0,0,0,'P'];
+
+        return $this->getPdfResponse("Nexxus price tag", $html, $mPdfConfiguration);
     }
 
     /**
