@@ -114,7 +114,9 @@
 
     <div class="text-center">
         {{ form_widget(form.save) }}
-        <a class="btn btn-default" href="{{ path('product_print', { 'id': product.id }) }}">Print</a>
+        {% if (product.id > 0) %}
+        <a class="btn btn-default" href="{{ path('product_print', { 'id': product.id }) }}" target="_blank">Print</a>
+        {% endif %}
         <button type="button" class="btn btn-default close-modal">Close</button>
         {% if (refId) %}
         <a class="btn btn-default btn-refedit" href="{{ path('product_edit', { 'id': refId }) }}">Back</a>

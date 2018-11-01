@@ -21,6 +21,7 @@
  */
 
 namespace AppBundle\Repository;
+use AppBundle\Entity\Customer;
 use AppBundle\Entity\User;
 
 class CustomerRepository extends \Doctrine\ORM\EntityRepository
@@ -59,5 +60,29 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter(2, '%' . $query . '%');
 
         return $q->getResult();
+    }
+
+    /**
+     * @param Customer $newCustomer
+     * @return Customer
+     */
+    public function checkExists(Customer $newCustomer)
+    {
+        $q = $this->getEntityManager()
+            ->createQuery("SELECT c FROM AppBundle:Customer c WHERE SOUNDEX(c.name) like SOUNDEX(:name) or REPLACE(c.phone, '-', '') = :phone OR REPLACE(c.phone2, '-', '') = :phone OR c.email = :email")
+            ->setParameter("name", $newCustomer->getName())
+            ->setParameter("phone", $newCustomer->getPhone())
+            ->setParameter("email", $newCustomer->getEmail());
+
+        $result = $q->getResult();
+
+        if (count($result) == 1)
+        {
+            return $result[0];
+        }
+        else
+        {
+            return $newCustomer;
+        }
     }
 }

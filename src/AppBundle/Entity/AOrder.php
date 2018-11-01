@@ -58,6 +58,13 @@ abstract class AOrder
     protected $orderNr;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string", nullable=true)
+     */
+    protected $remarks;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(type="datetime")
@@ -207,6 +214,31 @@ abstract class AOrder
     public function getOrderNr()
     {
         return $this->orderNr;
+    }
+
+
+    /**
+     * Set remarks
+     *
+     * @param string $remarks
+     *
+     * @return AOrder
+     */
+    public function setRemarks($remarks)
+    {
+        $this->remarks = $remarks;
+
+        return $this;
+    }
+
+    /**
+     * Get remarks
+     *
+     * @return string
+     */
+    public function getRemarks()
+    {
+        return $this->remarks;
     }
 
     public function getOrderDate()

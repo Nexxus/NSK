@@ -40,8 +40,29 @@
                     {% if is_granted('ROLE_MANAGER') %}
                     {{ form_row(form.location) }} 
                     {% endif %}
+                    {{ form_row(form.remarks) }} 
+                    {% if ( order.id == 0) %}
+                    {{ form_row(form.backorder) }} 
+                    {% endif %}
                 </div>
             </div>
+
+            {% if (order.backingPurchaseOrder) %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Back order{% endtrans %}
+                </div>
+                <div class="panel-body">
+                    This is a back order. 
+                    The products were not in stock at moment of sales. 
+                    When this sales order was made, the system made a <a href="{{ path('purchaseorder_edit', { 'id': order.backingPurchaseOrder.id }) }}">purchase order</a> too.
+                    To check if products are arrived, please check stock column below. 
+                    If it is below zero, it is still in back order. 
+                    If stock is zero (or higher), the product is in stock and the quantity is assigned to this sales order.
+                </div>
+            </div>
+            {% endif %}
+
         </div>
 
         <div class="col-md-6">
@@ -137,7 +158,11 @@
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-6">
+                    {% if ( order.backingPurchaseOrder) %}
                     {{ form_row(form.newProduct) }}
+                    {% else %}
+                    {{ form_row(form.addProduct) }}
+                    {% endif %}
                 </div>
                 <div class="col-sm-6 text-right">
                     <i>Products can be edited or fully deleted from stock in <a href="{{ path('product_index') }}">stock index</a></i>
@@ -187,6 +212,21 @@
          $('[required]').prop('required', function () {
              return $(this).is(':visible');
          });
+
+         {% if (order.backingPurchaseOrder) %}
+
+         /* New product (Backorder) */
+
+         $('select[name="sales_order_form[newProduct]"]').change(function () {
+             if ($(this).val()) {
+                 $("#modalEditor .modal-content").load('{{ path('product_new', { 'purchaseOrderId': order.backingPurchaseOrder.id, 'backingSalesOrderId': order.id }) }}/' + $(this).val(), function () {
+                     focusBarcodeInput();
+                 });
+                 $("#modalEditor").modal('show');
+             }
+         });
+
+         {% endif %}
 
      </script>
  {% endblock %}

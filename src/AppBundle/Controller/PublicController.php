@@ -25,21 +25,24 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Pickup;
 use AppBundle\Entity\Product;
 use AppBundle\Entity\PurchaseOrder;
+use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\Supplier;
+use AppBundle\Entity\Customer;
 use AppBundle\Entity\PickupImageFile;
 use AppBundle\Entity\PickupAgreementFile;
 use AppBundle\Entity\ProductOrderRelation;
 use AppBundle\Form\PickupForm;
+use AppBundle\Form\PublicOrderForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\Form\FormError;
 
-class PickupController extends Controller
+class PublicController extends Controller
 {
     /**
-     * @Route("/pickup", name="pickup")
+     * @Route("/public/pickup", name="pickup")
      * @Route("/ophaaldienst", name="ophaaldienst")
      * @Method({"GET", "POST"})
      */
@@ -81,7 +84,7 @@ class PickupController extends Controller
 
                     $pickup->getOrder()->setSupplier($em->getRepository('AppBundle:Supplier')->checkExists($pickup->getOrder()->getSupplier()));
 
-                    $pickup->getOrder()->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData()));
+                    $pickup->getOrder()->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), true, false));
 
                     // Images
                     $imageNames = UploadifiveController::splitFilenames($form->get('imagesNames')->getData());
@@ -148,7 +151,6 @@ class PickupController extends Controller
                 }
                 catch (\Exception $ex)
                 {
-                    throw $ex;
                     $success = false;
                 }
             }
@@ -158,7 +160,78 @@ class PickupController extends Controller
             }
         }
 
-        return $this->render('AppBundle:Pickup:pickup.html.twig', array(
+        return $this->render('AppBundle:Public:pickup.html.twig', array(
+                'form' => $form->createView(),
+                'success' => $success,
+            ));
+    }
+
+    /**
+     * @Route("/public/order", name="public_order")
+     * @Route("/leergeld-bestelling", name="leergeld_bestelling")
+     * @Method({"GET", "POST"})
+     */
+    public function orderAction(Request $request)
+    {
+        $success = null;
+
+        $em = $this->getDoctrine()->getEntityManager();
+
+        $order = new SalesOrder();
+        $order->setOrderDate(new \DateTime());
+        $order->setIsGift(false);
+        $customer = new Customer();
+
+        $em->persist($order);
+        $em->persist($customer);
+
+        $order->setCustomer($customer);
+
+        $form = $this->createForm(PublicOrderForm::class, $order);
+
+        $form->handleRequest($request);
+
+        if ($request->isMethod('POST') && $form->isSubmitted() && $this->captchaVerify($request->request->get('g-recaptcha-response')))
+        {
+            if ($form->isValid())
+            {
+                try
+                {
+                    $location = $em->getReference("AppBundle:Location", $form->get('locationId')->getData());
+                    $order->setLocation($location);
+
+                    $order->setCustomer($em->getRepository('AppBundle:Customer')->checkExists($order->getCustomer()));
+                    $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), false, true));
+
+                    $qComputer = $form->get('qComputer')->getData();
+                    $qLaptop = $form->get('qLaptop')->getData();
+                    $qElite = $form->get('qLaptopElitebook820')->getData();
+
+                    $order->setRemarks(sprintf("Computers: %s, Laptops: %s, Laptop Elitebook 820: %s", $qComputer, $qLaptop, $qElite));
+
+                    $em->flush();
+
+                    if (!$order->getOrderNr())
+                    {
+                        $orderNr = $em->getRepository('AppBundle:SalesOrder')->generateOrderNr($order);
+                        $order->setOrderNr($orderNr);
+                        $em->flush();
+                    }
+
+                    $success = true;
+                }
+                catch (\Exception $ex)
+                {
+                    $success = false;
+                }
+            }
+            else
+            {
+                $success = false;
+            }
+        }
+
+        return $this->render('AppBundle:Public:order.html.twig', array(
                 'form' => $form->createView(),
                 'success' => $success,
             ));

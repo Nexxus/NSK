@@ -41,10 +41,10 @@ class SalesOrder extends AOrder
     private $customer;
 
     /**
-     * @ORM\OneToOne(targetEntity="PurchaseOrder", inversedBy="salesOrder")
-     * @ORM\JoinColumn(name="purchaseOrder_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="PurchaseOrder")
+     * @ORM\JoinColumn(name="backingPurchaseOrder_id", referencedColumnName="id", nullable=true)
      */
-    private $purchaseOrder;
+    private $backingPurchaseOrder;
 
     /**
      * @return SalesOrder
@@ -69,9 +69,9 @@ class SalesOrder extends AOrder
      *
      * @return SalesOrder
      */
-    public function setPurchaseOrder(PurchaseOrder $purchaseOrder)
+    public function setBackingPurchaseOrder(PurchaseOrder $backingPurchaseOrder)
     {
-        $this->purchaseOrder = $purchaseOrder;
+        $this->backingPurchaseOrder = $backingPurchaseOrder;
 
         return $this;
     }
@@ -81,8 +81,8 @@ class SalesOrder extends AOrder
      *
      * @return PurchaseOrder
      */
-    public function getPurchaseOrder()
+    public function getBackingPurchaseOrder()
     {
-        return $this->purchaseOrder;
+        return $this->backingPurchaseOrder;
     }
 }

@@ -83,7 +83,6 @@ class SupplierRepository extends \Doctrine\ORM\EntityRepository
 
         $result = $q->getResult();
 
-
         if (count($result) == 1)
         {
             return $result[0];

@@ -53,6 +53,7 @@ class PurchaseOrderForm extends AbstractType
                 'required' => false
             ])
             ->add('orderDate', DateType::class)
+            ->add('remarks', TextType::class, ['required' => false])
             ->add('transport', MoneyType::class, ['required' => false])
             ->add('discount', MoneyType::class, ['required' => false])
             ->add('isGift', CheckboxType::class, ['required' => false])

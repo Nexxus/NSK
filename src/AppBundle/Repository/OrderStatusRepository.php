@@ -28,9 +28,11 @@ class OrderStatusRepository extends \Doctrine\ORM\EntityRepository
 {
     /**
      * @param string $name
+     * @param bool $isPurchase
+     * @param bool $isSale
      * @return OrderStatus
      */
-    public function findOrCreate($name)
+    public function findOrCreate($name, $isPurchase, $isSale)
     {
         $orderStatus = $this->findOneBy(array("name" => $name));
 
@@ -38,6 +40,8 @@ class OrderStatusRepository extends \Doctrine\ORM\EntityRepository
         {
             $orderStatus = new OrderStatus();
             $orderStatus->setName($name);
+            $orderStatus->setIsSale($isSale);
+            $orderStatus->setIsPurchase($isPurchase);
             $this->_em->persist($orderStatus);
         }
 

@@ -156,7 +156,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         }
     }
 
-    public function generateProductOrderRelation(Product $product, AOrder $order)
+    public function generateProductOrderRelation(Product $product, AOrder $order, $quantity = 1)
     {
         $exists = $product->getOrderRelations()->exists(function($key, $r) use ($order) {
             /** @var ProductOrderRelation $r */
@@ -168,7 +168,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
             $r = new ProductOrderRelation();
             $r->setOrder($order);
             $r->setProduct($product);
-            $r->setQuantity(1);
+            $r->setQuantity($quantity);
             $this->_em->persist($r);
             $product->addOrderRelation($r);
         }

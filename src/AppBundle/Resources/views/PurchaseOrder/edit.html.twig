@@ -40,6 +40,7 @@
                     {% if is_granted('ROLE_MANAGER') %}
                     {{ form_row(form.location) }} 
                     {% endif %}
+                    {{ form_row(form.remarks) }} 
                 </div>
             </div>
 
@@ -243,13 +244,13 @@
              return $(this).is(':visible');
          });
 
-         {% if ( order.id > 0) %}
+        {% if ( order.id > 0) %}
 
          /* New product */
 
          $('select[name="purchase_order_form[newProduct]"]').change(function () {
              if ($(this).val()) {
-                 $("#modalEditor .modal-content").load('{{ path('product_new', { 'purchaseOrderId': order.id }) }}/' + $(this).val(), function () {
+                 $("#modalEditor .modal-content").load('{{ path('product_new', { 'purchaseOrderId': order.id }) }}/0/' + $(this).val(), function () {
                      focusBarcodeInput();
                  });
                  $("#modalEditor").modal('show');

@@ -8,7 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\Customer;
-use AppBundle\Entity\Product;
+use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Entity\ProductOrderRelation;
 use AppBundle\Form\IndexSearchForm;
 use AppBundle\Form\SalesOrderForm;
@@ -117,22 +117,41 @@ class SalesOrderController extends Controller
 
                 if ($success !== false)
                 {
-                    $newProduct = $form->get('newProduct')->getData();
-                    if ($newProduct)
+                    $purchase = null;
+
+                    if ($form->get('backorder')->getData()) // new sales order being backorder
+                    {
+                        $purchase = new PurchaseOrder();
+                        $purchase->setLocation($order->getLocation());
+                        $purchase->setRemarks("Created by backorder");
+                        $purchase->setOrderDate(new \DateTime());
+                        $em->persist($purchase);
+                        $order->setBackingPurchaseOrder($purchase);
+
+
+                    }
+                    else if ($addProduct = $form->get('addProduct')->getData()) // existing sales order not being backorder
                     {
                         $r = new ProductOrderRelation();
-                        $r->setProduct($newProduct);
+                        $r->setProduct($addProduct);
                         $r->setOrder($order);
-                        $r->setPrice($newProduct->getPrice());
+                        $r->setPrice($addProduct->getPrice());
                         $r->setQuantity(1);
                         $order->addProductRelation($r);
                         $em->persist($r);
-                        $em->flush();
                     }
+
+                    $em->flush();
 
                     if (!$order->getOrderNr())
                     {
                         $order->setOrderNr($repo->generateOrderNr($order));
+
+                        if ($purchase)
+                        {
+                            $purchase->setOrderNr($em->getRepository('AppBundle:PurchaseOrder')->generateOrderNr($purchase));
+                        }
+
                         $em->flush();
                     }
 

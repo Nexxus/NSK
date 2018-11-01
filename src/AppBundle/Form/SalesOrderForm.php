@@ -34,7 +34,6 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use JMS\Serializer\Annotation\VirtualProperty;
 
 use AppBundle\Entity\SalesOrder;
 
@@ -48,15 +47,20 @@ class SalesOrderForm extends AbstractType
         /** @var \AppBundle\Entity\User */
         $user = $options['user'];
 
+        /** @var SalesOrder */
+        $order = $builder->getData();
+
         $builder
             ->add('orderNr', TextType::class, [
                 'attr'=> ['placeholder' => 'Keep empty for autogeneration', 'class' => 'focus'],
                 'required' => false
             ])
+            ->add('remarks', TextType::class, ['required' => false])
             ->add('orderDate', DateType::class)
             ->add('transport', MoneyType::class, ['required' => false])
             ->add('discount', MoneyType::class, ['required' => false])
             ->add('isGift', CheckboxType::class, ['required' => false])
+            ->add('backorder', CheckboxType::class, ['required' => false, 'mapped' => false, 'label' => 'Backorder: This creates empty purchase order too'])
             ->add('status', EntityType::class, [
                 'class' => 'AppBundle:OrderStatus',
                 'choice_label' => 'name',
@@ -85,13 +89,6 @@ class SalesOrderForm extends AbstractType
                     'New' => 'new',
                 ]
             ])
-            ->add('newProduct',  EntityType::class, [
-                'required' => false,
-                'mapped' => false,
-                'class' => 'AppBundle:Product',
-                'choice_label' => 'name',
-                'choices' => $options['stock']
-            ])
             ->add('productRelations', CollectionType::class, [
                 'entry_type' => ProductOrderRelationForm::class
             ])
@@ -101,6 +98,26 @@ class SalesOrderForm extends AbstractType
                     'class' => 'btn-success',
                 ]
             ]);
+
+        if ($order->getBackingPurchaseOrder())
+        {
+            $builder->add('newProduct',  EntityType::class, [
+                'required' => false,
+                'mapped' => false,
+                'class' => 'AppBundle:ProductType',
+                'choice_label' => 'name',
+            ]);
+        }
+        else
+        {
+            $builder->add('addProduct',  EntityType::class, [
+                'required' => false,
+                'mapped' => false,
+                'class' => 'AppBundle:Product',
+                'choice_label' => 'name',
+                'choices' => $options['stock']
+            ]);
+        }
 
         if ($user->hasRole("ROLE_MANAGER") || $user->hasRole("ROLE_ADMIN") || $user->hasRole("ROLE_SUPER_ADMIN"))
         {

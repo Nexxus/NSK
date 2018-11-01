@@ -60,9 +60,9 @@
                 <tr>
                     <td class="{{ cycle(['', 'even'], loop.index0) }}">{{ attributeRelation.attribute.name }}</td>
                     <td class="{{ cycle(['', 'even'], loop.index0) }}"><b>
-                        {% if attributeRelation.attribute.type == 3 %}{# Product #}
+                        {% if attributeRelation.attribute.type == 3 and attributeRelation.valueProduct  %}
                             {{ attributeRelation.quantity }}x {{ attributeRelation.valueProduct.name }}
-                        {% else %}
+                        {% elseif attributeRelation.attribute.type != 3 %}
                             {{ attributeRelation.value }}
                         {% endif %}
                    </b></td>

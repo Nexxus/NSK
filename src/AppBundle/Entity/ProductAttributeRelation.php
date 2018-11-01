@@ -215,7 +215,7 @@ class ProductAttributeRelation
      */
     public function getQuantity()
     {
-        if ($this->getAttribute()->getType() != Attribute::TYPE_PRODUCT || !$this->quantity)
+        if ($this->getAttribute()->getType() != Attribute::TYPE_PRODUCT || $this->quantity === null)
             return 1;
 
         return $this->quantity;

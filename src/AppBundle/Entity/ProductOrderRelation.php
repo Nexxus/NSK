@@ -133,7 +133,7 @@ class ProductOrderRelation
      */
     public function getQuantity()
     {
-        return $this->quantity ? $this->quantity : 1;
+        return $this->quantity !== null ? $this->quantity : 1;
     }
 
     /**

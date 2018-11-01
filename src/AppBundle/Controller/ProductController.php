@@ -26,7 +26,7 @@ use AppBundle\Entity\Product;
 use AppBundle\Entity\ProductType;
 use AppBundle\Entity\ProductOrderRelation;
 use AppBundle\Entity\PurchaseOrder;
-use AppBundle\Entity\AOrder;
+use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\ProductAttributeFile;
 use AppBundle\Entity\ProductAttributeRelation;
 use AppBundle\Form\ProductForm;
@@ -75,11 +75,11 @@ class ProductController extends APdfController
     }
 
     /**
-     * @Route("/new/{purchaseOrderId}/{productTypeId}", name="product_new")
+     * @Route("/new/{purchaseOrderId}/{backingSalesOrderId}/{productTypeId}", name="product_new")
      * @Route("/edit/{id}/{success}", name="product_edit")
      * @Route("/editsub/{refId}/{id}", name="product_subedit")
      */
-    public function editAction(Request $request, $id = 0, $purchaseOrderId = 0, $productTypeId = 0, $success = null, $refId = null)
+    public function editAction(Request $request, $id = 0, $purchaseOrderId = 0, $backingSalesOrderId = 0, $productTypeId = 0, $success = null, $refId = null)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -101,7 +101,13 @@ class ProductController extends APdfController
             $product->setType($em->getReference(ProductType::class, $productTypeId));
         }
 
-        if ($purchaseOrderId > 0)
+
+        if ($backingSalesOrderId > 0 && $purchaseOrderId > 0)
+        {
+            $repo->generateProductOrderRelation($product, $em->find(SalesOrder::class, $backingSalesOrderId));
+            $repo->generateProductOrderRelation($product, $em->find(PurchaseOrder::class, $purchaseOrderId), 0);
+        }
+        elseif ($purchaseOrderId > 0)
         {
             $repo->generateProductOrderRelation($product, $em->find(PurchaseOrder::class, $purchaseOrderId));
         }
