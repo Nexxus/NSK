@@ -29,6 +29,10 @@ a {
     margin-bottom: 8px;
 }
 
+.checkbox {
+    padding-bottom: 10px;
+}
+
 .btn, .form-control, .input-group-addon {
     padding: 5px 10px;
     height: 35px;

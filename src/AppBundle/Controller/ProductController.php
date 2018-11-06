@@ -198,8 +198,7 @@ class ProductController extends APdfController
     public function deleteAction($id)
     {
         $em = $this->getDoctrine()->getManager();
-        $product = $em->getRepository('AppBundle:Product')->find($id);
-        $em->remove($product);
+        $em->remove($em->getReference(Product::class, $id));
         $em->flush();
 
         return $this->redirectToRoute('product_index');

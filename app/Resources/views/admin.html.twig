@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block admin %}
+
+<ul class="nav nav-tabs" style="margin-bottom: 20px">
+    <li role="presentation" {{ 'user' in app.request.get('_route') ? " class='active'" : "" }}>
+        <a href="{{ path('admin_user_index') }}">
+            <span class="glyphicon glyphicon-user" aria-hidden="true" style="margin-right: 10px"></span>
+            {% trans %}Users{% endtrans %}
+        </a>
+    </li>
+    <li role="presentation" {{ 'location' in app.request.get('_route') ? " class='active'" : "" }}>
+        <a href="{{ path('admin_location_index') }}">
+            <span class="glyphicon glyphicon-globe" aria-hidden="true" style="margin-right: 10px"></span>
+            {% trans %}Locations{% endtrans %}
+        </a>
+    </li>
+    <li role="presentation" {{ 'producttype' in app.request.get('_route') ? " class='active'" : "" }}>
+        <a href="{{ path('producttype_index') }}">
+            <span class="glyphicon glyphicon-folder-open" aria-hidden="true" style="margin-right: 10px"></span>
+            Product types
+        </a>
+    </li>
+    <li role="presentation" {{ 'attribute' in app.request.get('_route') ? " class='active'" : "" }}>
+        <a href="{{ path('admin_attribute_index') }}">
+            <span class="glyphicon glyphicon-tags" aria-hidden="true" style="margin-right: 10px"></span>
+            Attributes
+        </a>
+    </li>
+    <li role="presentation" {{ 'productstatus' in app.request.get('_route') ? " class='active'" : "" }}>
+        <a href="{{ path('productstatus_index') }} ">
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true" style="margin-right: 10px"></span>
+            {% trans %}Product statuses{% endtrans %}
+        </a>
+    </li>
+    <li role="presentation" {{ 'orderstatus' in app.request.get('_route') ? " class='active'" : "" }}>
+        <a href="{{ path('orderstatus_index') }} ">
+            <span class="glyphicon glyphicon-ok-sign" aria-hidden="true" style="margin-right: 10px"></span>
+            {% trans %}Order statuses{% endtrans %}
+        </a>
+    </li>
+    <li role="presentation" {{ 'task' in app.request.get('_route') ? " class='active'" : "" }}>
+        <a href="{{ path('admin_task_index') }} ">
+            <span class="glyphicon glyphicon-edit" aria-hidden="true" style="margin-right: 10px"></span>
+            {% trans %}Tasks{% endtrans %}
+        </a>
+    </li>
+</ul>
+ 
+ 
+
+
+
+    
+{% endblock %}
+    
+
+{% block body %}
+{% endblock %}

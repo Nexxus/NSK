@@ -1,0 +1,18 @@
+{% extends 'admin.html.twig' %}
+
+{% block body %}
+
+    <div class="row" style="margin-bottom: 20px">
+        <div class="col-sm-9">
+            <h1>Task edit</h1>
+        </div>
+        <div class="col-sm-3" style="padding-top: 15px">
+            <a href="{{ path('admin_task_index') }}" class="btn btn-default pull-right" role="button">{% trans %}Back to the list{% endtrans %}</a><br>
+        </div>
+    </div>
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+
+{% endblock %}

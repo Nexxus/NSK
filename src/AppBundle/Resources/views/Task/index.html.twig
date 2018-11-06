@@ -1,0 +1,51 @@
+{% extends 'admin.html.twig' %}
+
+{% block body %}
+
+    <h1>Task list</h1>
+
+    {{ form_start(form) }}
+    <div class="row" style="margin-bottom: 20px">
+        <div class="col-sm-7">
+            {{ form_widget(form.query, {'attr': {'placeholder': 'Zoeken op deel van naam of omschrijving'} }) }}
+        </div>
+        <div class="col-sm-2">
+            {{ form_widget(form.submit) }}
+        </div>
+        <div class="col-sm-3">
+            <a href="{{ path('admin_task_edit', { 'id': 0 }) }}" class="btn btn-primary pull-right" role="button">Create new task</a>
+        </div>
+    </div>
+    {{ form_end(form) }}
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th{% if tasks.isSorted('id') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(tasks, 'Id', 'id') }}</th>
+                <th{% if tasks.isSorted('name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(tasks, 'Name', 'name') }}</th>
+                <th width="1%"></th>
+            </tr>
+        </thead>
+        {% for t in tasks %}
+        <tr>
+            <td>{{ t.id }}</td>
+            <td>{{ t.name }}</td>
+            <td nowrap>
+                <a class="btn btn-success" href="{{ path('admin_task_edit', {'id': t.id}) }}">Edit</a>
+                <a class="btn btn-danger" href="{{ path('admin_task_delete', { 'id': t.id }) }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
+            </td>
+        </tr>
+        {% else %}
+            <tr>
+                <td colspan="99">
+                    <h4>{% trans %}No records found{% endtrans %}</h4>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <div class="navigation">
+        {{ knp_pagination_render(tasks) }}
+    </div>
+{% endblock %}
+    

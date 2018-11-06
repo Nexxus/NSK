@@ -43,68 +43,55 @@ class UserController extends Controller
      * @Route("/", name="admin_user_index")
      * @Method({"GET"})
      */
-    public function viewUserAction()
+    public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
 
-        $userQuery = $em->getRepository("AppBundle:User")->findAll();
+        $users = $em->getRepository("AppBundle:User")->findAll();
 
         return $this->render('AppBundle:User:index.html.twig',
-                ['users' => $userQuery]);
+                ['users' => $users]);
     }
 
     /**
      * @Route("/edit/{id}", name="admin_user_edit")
      * @Method({"GET", "POST"})
      */
-    public function editUserAction(Request $request, User $user) {
+    public function editUserAction(Request $request, $id) {
 
         $em = $this->getDoctrine()->getManager();
 
+        if ($id == 0)
+        {
+            $user = new User();
+            $user->setEnabled(true);
+        }
+        else
+        {
+            $user = $em->getRepository('AppBundle:User')->find($id);
+        }
+
         $form = $this->createForm(UserForm::class, $user);
+
         $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid()) {
+        if($form->isSubmitted() && $form->isValid())
+        {
+            if ($form->get('plainPassword')->getData())
+            {
+                $encoder = $this->container->get('security.password_encoder');
+                $encoded = $encoder->encodePassword($user, $user->getPassword());
+                $user->setPassword($encoded);
+            }
+
             $role = $form->get('role')->getData();
             $user->setRoles([$role]);
 
             $em->persist($user);
-            $em->flush($user);
 
-            return $this->redirectToRoute('admin_user_index');
-        }
-
-        return $this->render('AppBundle:User:edit.html.twig',
-                ['form' => $form->createView()]);
-    }
-
-    /**
-     * @Route("/user/new", name="admin_user_new")
-     * @Method({"GET", "POST"})
-     */
-    public function newUserAction(Request $request) {
-
-        $user = new User();
-        $user->setEnabled(true);
-
-        $em = $this->getDoctrine()->getManager();
-
-        $form = $this->createForm(UserNewForm::class, $user);
-        $form->handleRequest($request);
-
-        if($form->isSubmitted() && $form->isValid()) {
-
-            try {
-                $encoder = $this->container->get('security.password_encoder');
-                $encoded = $encoder->encodePassword($user, $user->getPassword());
-                $user->setPassword($encoded);
-
-                $role = $form->get('role')->getData();
-                $user->setRoles([$role]);
-
-                $em->persist($user);
+            try
+            {
                 $em->flush($user);
-
                 return $this->redirectToRoute('admin_user_index');
             }
             catch (UniqueConstraintViolationException $e) {
@@ -112,7 +99,19 @@ class UserController extends Controller
             }
         }
 
-        return $this->render('AppBundle:User:new.html.twig',
+        return $this->render('AppBundle:User:edit.html.twig',
                 ['form' => $form->createView()]);
+    }
+
+    /**
+     * @Route("/delete/{id}", name="admin_user_delete")
+     */
+    public function deleteAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($em->getReference(User::class, $id));
+        $em->flush();
+
+        return $this->redirectToRoute('admin_user_index');
     }
 }

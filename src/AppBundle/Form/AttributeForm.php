@@ -6,9 +6,14 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use AppBundle\Entity\Attribute;
+use AppBundle\Entity\ProductType;
 use AppBundle\Helper\AttributeOptionTransformer;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 class AttributeForm extends AbstractType
 {
@@ -20,44 +25,53 @@ class AttributeForm extends AbstractType
         /** @var Attribute */
         $attribute = $builder->getData();
 
-        $builder->add('attr_code')->add('name')->add('productTypes')->add('type', ChoiceType::class, [
+        $builder
+            ->add('attr_code')
+            ->add('name')
+            ->add('productTypes', EntityType::class, array(
+                    'label' => 'Products',
+                    'required' => false,
+                    'multiple' => true,
+                    'expanded' => false,
+                    'class' => ProductType::class,
+                    'choice_label' => 'name',
+                    'attr' => ['class' => 'multiselect']));
+
+        if (!$attribute->getId())
+        {
+            $builder->add('type', ChoiceType::class, array(
                     'choices' => [
                         'Text' => $attribute::TYPE_TEXT,
-                        'Selectbox' => $attribute::TYPE_SELECT,
+                        'Select' => $attribute::TYPE_SELECT,
                         'File' => $attribute::TYPE_FILE,
                         'Product' => $attribute::TYPE_PRODUCT
-                    ]
-                ]);
-
-        if ($attribute->getType() == Attribute::TYPE_SELECT)
-        {
-            $builder->add('options', TextType::class, array(
-                        'required' => false, 'label' => 'Options (comma sep)'));
-
-            $builder->get('options')->addModelTransformer(new AttributeOptionTransformer($attribute));
+                ]));
         }
-        else if ($attribute->getType() != Attribute::TYPE_PRODUCT)
+        elseif ($attribute->getType() == Attribute::TYPE_SELECT)
         {
-            $builder->add('price');
+            $builder->add('options', CollectionType::class, [
+                'entry_type' => AttributeOptionForm::class,
+                'entry_options' => ['label' => false]
+            ]);
+        }
+        elseif ($attribute->getType() != Attribute::TYPE_PRODUCT)
+        {
+            $builder->add('price', MoneyType::class);
         }
 
-    }/**
-     * {@inheritdoc}
-     */
-    public function configureOptions(OptionsResolver $resolver)
-    {
-        $resolver->setDefaults(array(
-            'data_class' => 'AppBundle\Entity\Attribute'
-        ));
+        $builder->add('save', SubmitType::class, ['attr' => ['class' => 'btn-success btn-120']]);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getBlockPrefix()
+    public function configureOptions(OptionsResolver $resolver)
     {
-        return 'trackbundle_attribute';
+        $resolver->setDefaults(array(
+            'data_class' => Attribute::class,
+            'csrf_protection' => true,
+            'csrf_field_name' => '_token',
+            'csrf_token_id'   => 'attribute',
+        ));
     }
-
-
 }

@@ -1,0 +1,64 @@
+{% extends 'admin.html.twig' %}
+
+{% block body %}
+
+    <div class="row" style="margin-bottom: 20px">
+        <div class="col-sm-9">
+            <h1>Product type edit</h1>
+        </div>
+        <div class="col-sm-3" style="padding-top: 15px">
+            <a href="{{ path('producttype_index') }}" class="btn btn-default pull-right" role="button">{% trans %}Back to the list{% endtrans %}</a><br>
+        </div>
+    </div>
+
+    {{ form_start(form) }}
+
+    {{ form_row(form.name) }}
+    {{ form_row(form.comment) }}
+    {{ form_row(form.pindex) }}
+
+    <div class="form-group">
+        {{ form_label(form.tasks) }}
+        <div class="col-sm-4">
+            {{ form_widget(form.tasks) }}
+        </div>
+        <div class="col-sm-1">
+            <button type="button" class="btn btn-default btn-add">Add</button>
+        </div>
+        <div class="col-sm-5" style="display: none;">
+            {{ form_widget(form.newTask) }}
+        </div>
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.attributes) }}
+        <div class="col-sm-4">
+            {{ form_widget(form.attributes) }}
+        </div>
+        <div class="col-sm-1">
+            <button type="button" class="btn btn-default btn-add">Add</button>
+        </div>
+        <div class="col-sm-3" style="display: none;">
+            {{ form_widget(form.newAttribute) }}
+        </div>
+        <div class="col-sm-2" style="display: none;">
+            {{ form_widget(form.newAttributeType) }}
+        </div>
+    </div>
+
+    {{ form_row(form.isAttribute) }}
+    {{ form_row(form.save) }}
+    {{ form_end(form) }}
+
+{% endblock %}
+
+{% block javascripts %}
+     <script>
+
+         $('.btn-add').click(function () {
+             $(this).closest("div").hide();
+             $(this).closest("div").siblings("div").show();
+         });
+
+     </script>
+ {% endblock %}

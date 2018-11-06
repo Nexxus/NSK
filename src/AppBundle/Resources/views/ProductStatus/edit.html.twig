@@ -1,21 +1,18 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin.html.twig' %}
 
 {% block body %}
-    <h2>{% trans %}Create New Status{% endtrans %}</h2>
-    <table>
+
+    <div class="row" style="margin-bottom: 20px">
+        <div class="col-sm-9">
+            <h1>Product status edit</h1>
+        </div>
+        <div class="col-sm-3" style="padding-top: 15px">
+            <a href="{{ path('productstatus_index') }}" class="btn btn-default pull-right" role="button">{% trans %}Back to the list{% endtrans %}</a><br>
+        </div>
+    </div>
+
     {{ form_start(form) }}
-    <input type="hidden" name="form[test]" value="Testvalue">
-    <tr>
-        <td>Status Name</td>
-        <td>{{ form_widget(form.name) }}</td>
-    </tr>
-    <tr>
-        <td>Index Placement</td>
-        <td>{{ form_widget(form.pindex) }}</td>
-    <tr>
-        <td>&nbsp;</td>     
-        <td>{{ form_widget(form.save) }}</td>
-    </tr>
-    </table>
+    {{ form_widget(form) }}
     {{ form_end(form) }}
+
 {% endblock %}

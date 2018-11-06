@@ -1,21 +1,18 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin.html.twig' %}
 
 {% block body %}
-    <h1>Attribute edit</h1>
 
-    {{ form_start(edit_form) }}
-        {{ form_widget(edit_form) }}
-        <input type="submit" value="Edit" />
-    {{ form_end(edit_form) }}
+    <div class="row" style="margin-bottom: 20px">
+        <div class="col-sm-9">
+            <h1>Attribute edit</h1>
+        </div>
+        <div class="col-sm-3" style="padding-top: 15px">
+            <a href="{{ path('admin_attribute_index') }}" class="btn btn-default pull-right" role="button">{% trans %}Back to the list{% endtrans %}</a><br>
+        </div>
+    </div>
 
-    <ul>
-        <li>
-            <a href="{{ path('admin_attribute_index') }}">Back to the list</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+
 {% endblock %}

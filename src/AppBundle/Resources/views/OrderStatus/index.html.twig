@@ -1,37 +1,44 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin.html.twig' %}
 
 {% block body %}
-    <h1>{% trans %}Status List{% endtrans %}</h1>
-    <h4><a href="{{ path('status_create') }}">{% trans %}Create a new Status{% endtrans %}</a></h4>
+
+    <div class="row" style="margin-bottom: 20px">
+        <div class="col-sm-9">
+            <h1>Order status list</h1>
+        </div>
+        <div class="col-sm-3" style="padding-top: 15px">
+            <a href="{{ path('orderstatus_edit', { 'id': 0 }) }}" class="btn btn-primary pull-right" role="button">Create new status</a>
+        </div>
+    </div>
+
     <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Sale</th>
+                <th>Purchase</th>
+                <th>Sort</th>
+                <th width="1%"></th>
+            </tr>
+        </thead>
+    {% for s in orderStatuses %}
         <tr>
-            <th>Index</th>
-            <th>{% trans %}Name{% endtrans %}</th>
-            <th>&nbsp;</th>
-        </tr>
-    {% for a in orderstatus %}
-        <tr>
-            <td>{{ a.pindex }}</td>
-            <td>{{ a.name }}</td>
-            <td>
-                <a href="{{ path("status_edit", {id: a.id}) }}">
-                    <button type="button" class="btn btn-default">
-                        {% trans %}Edit{% endtrans %}
-                    </button>
-                </a>
-                {% if a.order_count == 0 %}
-                <a href="{{ path("status_delete", {id: a.id, pindex: a.pindex}) }}">
-                    <button type="button" class="btn btn-danger" href="#">
-                        {% trans %}Delete{% endtrans %}
-                    </button>
-                </a>
-                {% else %}
-                    <button type="button" class="btn">
-                    {% trans %}Status is in use{% endtrans %}
-                    </button>
-                {% endif %}
+            <td>{{ s.id }}</td>
+            <td>{{ s.name }}</td>
+            <td>{{ s.isSale ? "Yes" : "" }}</td>
+            <td>{{ s.isPurchase ? "Yes" : "" }}</td>
+            <td>{{ s.pindex }}</td>
+            <td nowrap>
+                <a class="btn btn-success" href="{{ path('orderstatus_edit', {'id': s.id}) }}">Edit</a>
             </td>
         </tr>
+        {% else %}
+            <tr>
+                <td colspan="99">
+                    <h4>{% trans %}No records found{% endtrans %}</h4>
+                </td>
+            </tr>
     {% endfor %}
-    </table>
 {% endblock %}
+    

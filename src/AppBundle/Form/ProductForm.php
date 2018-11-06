@@ -70,10 +70,7 @@ class ProductForm extends AbstractType
                 'label' => 'Attributes',
             ])
             ->add('save', SubmitType::class, [
-                'label' => 'Save Changes',
-                'attr' => [
-                    'class' => 'btn-success',
-                ]
+                'attr' => ['class' => 'btn-success btn-120']
             ]);
 
         /** @var \AppBundle\Entity\User */

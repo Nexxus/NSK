@@ -93,10 +93,7 @@ class SalesOrderForm extends AbstractType
                 'entry_type' => ProductOrderRelationForm::class
             ])
             ->add('save', SubmitType::class, [
-                'label' => 'Save Changes',
-                'attr' => [
-                    'class' => 'btn-success',
-                ]
+                'attr' => ['class' => 'btn-success btn-120']
             ]);
 
         if ($order->getBackingPurchaseOrder())

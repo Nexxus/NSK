@@ -17,42 +17,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek â€“ info@copiatek.nl â€“ Postbus 547 2501 CM Den Haag
  */
 
-namespace AppBundle\Form;
+namespace AppBundle\Repository;
 
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-
-class LocationForm extends AbstractType
+class AttributeRepository extends \Doctrine\ORM\EntityRepository
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function findAll()
     {
-        $builder->add('name')        ;
+        return $this->findBy(array(), array('id' => 'DESC'));
     }
 
     /**
-     * {@inheritdoc}
+     * This function searches in fields: Code, Name
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function findBySearchQuery($query)
     {
-        $resolver->setDefaults(array(
-            'data_class' => 'AppBundle\Entity\Location'
-        ));
+        $q = $this->getEntityManager()
+                ->createQuery("SELECT a FROM AppBundle:Attribute a WHERE a.attr_code = ?1 OR a.name LIKE ?2 ORDER BY a.id DESC")
+                ->setParameter(1, $query)
+                ->setParameter(2, '%' . $query . '%');
+
+        return $q->getResult();
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getBlockPrefix()
-    {
-        return 'trackbundle_location';
-    }
-
-
 }

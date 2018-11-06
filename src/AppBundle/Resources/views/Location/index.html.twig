@@ -1,47 +1,42 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin.html.twig' %}
 
 {% block body %}
-    <h1>Locations</h1>
+
+    <div class="row" style="margin-bottom: 20px">
+        <div class="col-sm-9">
+            <h1>Location list</h1>
+        </div>
+        <div class="col-sm-3" style="padding-top: 15px">
+            <a href="{{ path('admin_location_edit', { 'id': 0 }) }}" class="btn btn-primary pull-right" role="button">Create new location</a>
+        </div>
+    </div>
 
     <table class="table table-striped">
         <thead>
             <tr>
                 <th>Id</th>
                 <th>Name</th>
-                <th>Actions</th>
+                <th width="1%"></th>
             </tr>
         </thead>
-        <tbody>
-        {% for a in locations %}
+        {% for l in locations %}
+        <tr>
+            <td>{{ l.id }}</td>
+            <td>{{ l.name }}</td>
+            <td nowrap>
+                <a class="btn btn-success" href="{{ path('admin_location_edit', {'id': l.id}) }}">Edit</a>
+                {% if l.products|length == 0 and l.orders|length == 0 and l.companies|length == 0 and l.users|length == 0 %}
+                <a class="btn btn-danger" href="{{ path('admin_location_delete', { 'id': l.id }) }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
             <tr>
-                <td><a href="{{ path('admin_location_show', { 'id': a.id }) }}">{{ a.id }}</a></td>
-                <td>{{ a.name }}</td>
-                <td>
-                    <a href="{{ path('admin_location_edit', { 'id': a.id }) }}">
-                        <button type="button" class="btn btn-success">
-                            Edit
-                        </button>
-                    </a>
-                    {% if a.product_count == 0 %}
-                    <a href="{{ path('admin_location_delete', { 'id': a.id }) }}">
-                        <button type="button" class="btn btn-danger" href="#">
-                            {% trans %}Delete{% endtrans %}
-                        </button>
-                    </a>
-                    {% else %}
-                        <button type="button" class="btn">
-                        {% trans %}Location is in use{% endtrans %}
-                        </button>
-                    {% endif %}
+                <td colspan="99">
+                    <h4>{% trans %}No records found{% endtrans %}</h4>
                 </td>
             </tr>
         {% endfor %}
-        </tbody>
     </table>
-
-    <ul>
-        <li>
-            <a href="{{ path('admin_location_new') }}">Create a new location</a>
-        </li>
-    </ul>
 {% endblock %}
+    

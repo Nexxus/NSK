@@ -7,6 +7,8 @@
         <title>{% block title %}Nexxus{% endblock %}</title>
         
         <link href="{{ asset('bootstrap/stylesheet/bootstrap.css') }}" rel="stylesheet"/>
+        <link href="{{ asset('stylesheet/bootstrap-multiselect.css') }}" rel="stylesheet">
+        <link href="{{ asset('stylesheet/bootstrap-combobox.css') }}" rel="stylesheet">
         <link href="{{ asset('stylesheet/uploadifive.css') }}" rel="stylesheet"/>  
         <link href="{{ asset('stylesheet/override_style.css') }}" rel="stylesheet"/>  
         <!-- <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" /> -->
@@ -42,12 +44,16 @@
         {% endblock %}
 
         <div class="container">
+            {% block admin %}
+            {% endblock %}
             {% block body %}
             {% endblock %}
         </div>
 
         <script src="{{ asset('bootstrap/js/jquery.min.js') }}"></script>
         <script src="{{ asset('bootstrap/js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('js/bootstrap-combobox.js') }}"></script>
+        <script src="{{ asset('js/bootstrap-multiselect.js') }}"></script>
         <script src="{{ asset('js/jquery.uploadifive.min.js') }}"></script>
         <script src="{{ asset('js/ajax-form.js') }}"></script>
         <script src="{{ asset('js/scripts.js') }}"></script>

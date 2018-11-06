@@ -70,12 +70,7 @@ class SupplierForm extends AbstractType
             ->add('country2', TextType::class, ['required' => false, 'label' => 'Country'])
             ->add('isPartner', CheckboxType::class, ['required' => false, 'label' => 'This supplier should be rewarded as partner'])
             ->add('isOwner', CheckboxType::class, ['required' => false, 'label' => 'This supplier should be rewarded as owner'])
-            ->add('save', SubmitType::class, [
-                'label' => 'Save Changes',
-                'attr' => [
-                    'class' => 'btn-success',
-                ]
-            ]);
+            ->add('save', SubmitType::class, ['attr' => ['class' => 'btn-success btn-120']]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

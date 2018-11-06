@@ -17,7 +17,7 @@
     </div>
     {{ form_end(form) }}
 
-    <table class="table table-bordered">
+    <table class="table table-striped">
         <thead>
             <tr>
                 <th{% if orders.isSorted('orderNr') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Order nr', 'orderNr') }}</th>

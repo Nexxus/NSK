@@ -20,23 +20,24 @@
  * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
  */
 
-namespace AppBundle\Controller;
+namespace AppBundle\Repository;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-
-/**
-* @Route("/admin")
-*/
-class AdminController extends Controller
+class TaskRepository extends \Doctrine\ORM\EntityRepository
 {
-    /**
-     * @Route("/", name="admin_index")
-
-     */
-    public function indexAction()
+    public function findAll()
     {
-        return $this->render('admin.html.twig');
+        return $this->findBy(array(), array('id' => 'DESC'));
+    }
+
+    /**
+     * This function searches in fields: Name, Description
+     */
+    public function findBySearchQuery($query)
+    {
+        $q = $this->getEntityManager()
+                ->createQuery("SELECT t FROM AppBundle:Task t WHERE t.name LIKE ?1 OR t.description LIKE ?1 ORDER BY t.id DESC")
+                ->setParameter(1, '%' . $query . '%');
+
+        return $q->getResult();
     }
 }

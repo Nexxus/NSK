@@ -1,29 +1,18 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin.html.twig' %}
 
 {% block body %}
-    <h1>Location Edit</h1>
-    
-    {{ form_start(edit_form) }}
-    <table class="table table-striped">
-        
-        <tr>
-            <th>Name</th>
-            <td>
-                {{ form_widget(edit_form.name) }}
-            </td>
-        </tr>
-        <tr>   
-            <td>&nbsp;</td>
-            <td>
-                <input type="submit" value="Edit" />
-            </td>
-        </tr>
-    {{ form_end(edit_form) }}
-    </table>
-    <a href="{{ path('admin_location_index') }}">Back to the list</a>
-    <br><br>
-        {{ form_start(delete_form) }}
-            <input type="submit" value="Delete">
-        {{ form_end(delete_form) }}
-    
+
+    <div class="row" style="margin-bottom: 20px">
+        <div class="col-sm-9">
+            <h1>Location edit</h1>
+        </div>
+        <div class="col-sm-3" style="padding-top: 15px">
+            <a href="{{ path('admin_location_index') }}" class="btn btn-default pull-right" role="button">{% trans %}Back to the list{% endtrans %}</a><br>
+        </div>
+    </div>
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+
 {% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'admin.html.twig' %}
+
+{% block body %}
+
+    <div class="row" style="margin-bottom: 20px">
+        <div class="col-sm-9">
+            <h1>Product type list</h1>
+        </div>
+        <div class="col-sm-3" style="padding-top: 15px">
+            <a href="{{ path('producttype_edit', { 'id': 0 }) }}" class="btn btn-primary pull-right" role="button">Create new type</a>
+        </div>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Sort</th>
+                <th width="1%"></th>
+            </tr>
+        </thead>
+    {% for t in productTypes %}
+        <tr>
+            <td>{{ t.id }}</td>
+            <td>{{ t.name }}</td>
+            <td>{{ t.pindex }}</td>
+            <td nowrap>
+                <a class="btn btn-success" href="{{ path('producttype_edit', {'id': t.id}) }}">Edit</a>
+                {% if t.products|length == 0 %}
+                <a class="btn btn-danger" href="{{ path('producttype_delete', { 'id': t.id }) }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+            <tr>
+                <td colspan="99">
+                    <h4>{% trans %}No records found{% endtrans %}</h4>
+                </td>
+            </tr>
+         {% endfor %}
+    </table>
+{% endblock %}
+    

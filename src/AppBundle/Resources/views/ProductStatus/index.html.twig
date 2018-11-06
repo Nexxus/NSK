@@ -1,37 +1,40 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin.html.twig' %}
 
 {% block body %}
-    <h1>{% trans %}Status List{% endtrans %}</h1>
-    <h4><a href="{{ path('pstatus_create') }}">{% trans %}Create a new Status{% endtrans %}</a></h4>
+
+    <div class="row" style="margin-bottom: 20px">
+        <div class="col-sm-9">
+            <h1>Product status list</h1>
+        </div>
+        <div class="col-sm-3" style="padding-top: 15px">
+            <a href="{{ path('productstatus_edit', { 'id': 0 }) }}" class="btn btn-primary pull-right" role="button">Create new status</a>
+        </div>
+    </div>
+
     <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Sort</th>
+                <th width="1%"></th>
+            </tr>
+        </thead>
+    {% for s in productStatuses %}
         <tr>
-            <th>Index</th>
-            <th>{% trans %}Name{% endtrans %}</th>
-            <th>&nbsp;</th>
-        </tr>
-    {% for a in productstatus %}
-        <tr>
-            <td>{{ a.pindex }}</td>
-            <td>{{ a.name }}</td>
-            <td>
-                <a href="{{ path("pstatus_edit", {id: a.id}) }}">
-                    <button type="button" class="btn btn-default">
-                        {% trans %}Edit{% endtrans %}
-                    </button>
-                </a>
-                {% if a.product_count == 0 %}
-                <a href="{{ path("pstatus_delete", {id: a.id, pindex: a.pindex}) }}">
-                    <button type="button" class="btn btn-danger" href="#">
-                        {% trans %}Delete{% endtrans %}
-                    </button>
-                </a>
-                {% else %}
-                    <button type="button" class="btn">
-                    {% trans %}Status is in use{% endtrans %}
-                    </button>
-                {% endif %}
+            <td>{{ s.id }}</td>
+            <td>{{ s.name }}</td>
+            <td>{{ s.pindex }}</td>
+            <td nowrap>
+                <a class="btn btn-success" href="{{ path('productstatus_edit', {'id': s.id}) }}">Edit</a>
             </td>
         </tr>
+        {% else %}
+            <tr>
+                <td colspan="99">
+                    <h4>{% trans %}No records found{% endtrans %}</h4>
+                </td>
+            </tr>
     {% endfor %}
-    </table>
 {% endblock %}
+    

@@ -25,18 +25,12 @@ namespace AppBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Doctrine\ORM\EntityManagerInterface;
-
 use AppBundle\Entity\ProductType;
-use AppBundle\Entity\ProductTypeAttribute;
 use AppBundle\Entity\Attribute;
+use AppBundle\Entity\Task;
+use AppBundle\Form\ProductTypeForm;
 
 /**
  * @Route("admin/type")
@@ -50,165 +44,65 @@ class ProductTypeController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        $products = $em->createQuery(
-                    "SELECT pt.id, pt.name, pt.pindex, COUNT(p.id) AS productcount FROM AppBundle:ProductType pt
-                        LEFT JOIN AppBundle:Product p WITH p.type=pt.id
-                        GROUP BY pt.id")
-                ->getResult();
 
-        return $this->render('AppBundle:Type:index.html.twig',
-                array('products' => $products));
-    }
+        $productTypes = $em->getRepository("AppBundle:ProductType")->findBy(array(), array('pindex' => 'ASC'));
 
-    /**
-     * @Route("/create", name="producttype_new")
-     */
-    public function createAction(Request $request)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $query = $em->createQuery(
-                "SELECT COUNT(pt.id) "
-                . "FROM AppBundle:ProductType pt")
-                ->getResult();
-
-        $index = $query[0][1]+1;
-
-        $producttype = new ProductType();
-        $producttype->setPindex($index);
-
-        $form = $this->createFormBuilder($producttype)
-                    ->add('name', TextType::class)
-                    ->add('pindex', IntegerType::class)
-                                ->add('isAttribute',  CheckboxType::class, [
-                            'label' => 'Products of this type can be an attribute (a part) of another product',
-                            'required' => false
-                        ])
-                    ->add('comment', TextType::class, array('required' => false))
-                    ->add('save', SubmitType::class, array('label' => 'Create Type'))
-                    ->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted()) {
-            $producttype = $form->getData();
-
-            $em->persist($producttype);
-            $em->flush();
-
-            return $this->redirectToRoute('producttype_index', ["order" => "Product Type has been saved."]);
-        }
-        else
-        {
-            return $this->render('AppBundle:Type:new.html.twig', array(
-                'form' => $form->createView(),
-            ));
-        }
-    }
-
-    /**
-     * @Route("/show/{id}", name="producttype_show")
-     * @Method("GET")
-     */
-    public function showAction($id)
-    {
-        $em = $this->getDoctrine();
-
-        // get product
-        $producttype = $em->getRepository('AppBundle:ProductType')
-                ->find($id);
-
-        // get all attributes with correct order
-        $query = $em->getRepository('AppBundle:Attribute')
-                ->createQueryBuilder('a')
-                ->orderBy('a.id', 'ASC')
-                ->getQuery();
-
-        $attributes = $query->getResult();
-
-        return $this->render('AppBundle:Type:show.html.twig', array(
-            'producttype' => $producttype,
-            'attributes' => $attributes,
-        ));
+        return $this->render('AppBundle:ProductType:index.html.twig',
+                array('productTypes' => $productTypes));
     }
 
     /**
      * @Route("/edit/{id}", name="producttype_edit")
      * @Method({"GET", "POST"})
      */
-    public function editAction(ProductType $producttype, Request $request)
+    public function editAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
 
-        // build basic form
-        $editForm = $this->createFormBuilder($producttype)
-                ->add('name', TextType::class)
-                ->add('isAttribute',  CheckboxType::class, [
-                            'label' => 'Products of this type can be an attribute (a part) of another product',
-                            'required' => false
-                        ])
-                ->add('save', SubmitType::class)
-                ->getForm();
-        $editForm->handleRequest($request);
-
-        // get all attributes
-        $attributes = $em->getRepository('AppBundle:Attribute')->findAll();
-
-        $choices = [];
-        foreach($attributes as $attr) {
-            $choices[$attr->getName()] = $attr->getId();
+        if ($id == 0)
+        {
+            $productType = new ProductType();
+        }
+        else
+        {
+            /** @var ProductType */
+            $productType = $em->getRepository('AppBundle:ProductType')->find($id);
         }
 
-        $attrForm = $this->createFormBuilder()
-                ->add('attribute', ChoiceType::class, [
-                    'choices' => $choices
-                ])
-                ->add('save', SubmitType::class)
-                ->getForm();
-        $attrForm->handleRequest($request);
+        $form = $this->createForm(ProductTypeForm::class, $productType);
 
-        // product edited
-        if($editForm->isSubmitted() && $editForm->isValid()) {
-            $em->persist($producttype);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid())
+        {
+            if ($newTaskName = $form->get('newTask')->getData())
+            {
+                $newTask = new Task();
+                $newTask->setName($newTaskName);
+                $em->persist($newTask);
+                $productType->addTask($newTask);
+            }
+
+            if ($newAttributeName = $form->get('newAttribute')->getData())
+            {
+                $newAttributeType = $form->get('newAttributeType')->getData();
+                $newAttribute = new Attribute();
+                $newAttribute->setName($newAttributeName);
+                $newAttribute->setAttrCode("");
+                $newAttribute->setType($newAttributeType ? $newAttributeType : Attribute::TYPE_TEXT);
+                $em->persist($newAttribute);
+                $productType->addAttribute($newAttribute);
+            }
+
+            $em->persist($productType);
             $em->flush();
 
             return $this->redirectToRoute('producttype_index');
         }
 
-        // attribute added
-        if($attrForm->isSubmitted()) {
-            $attr = $attrForm->getData();
-
-            $this->addAttributeToOneType($producttype->getId(), $attr['attribute']);
-        }
-
-        // create attr name list (not quite done)
-        /*
-        $attrList = [];
-        foreach($attributes as $attr) {
-            $attrList[$attr->getName()] = $attr->getId();
-        }
-
-        // foreach type attribute, show dropdown option
-        foreach($typeattributes as $tAttr) {
-            $editForm = $editForm->add('attribute_'.$tAttr->getId(), ChoiceType::class,[
-                'choices'   => $attrList,
-                'mapped'    => false,
-                ]
-            );
-        }*/
-
-        // put attributes in array
-        $attributeCollection = $producttype->getAttributes();
-        $attrList = [];
-        for($i=0;$i<$attributeCollection->count();$i++) {
-           $attrList[] = $attributeCollection->get($i);
-        }
-
-        return $this->render('AppBundle:Type:edit.html.twig', array(
-            'form' => $editForm->createView(),
-            'producttype' => $producttype,
-            'attrform' => $attrForm->createView(),
-            'attrlist' => $attrList,
+        return $this->render('AppBundle:ProductType:edit.html.twig', array(
+            'productType' => $productType,
+            'form' => $form->createView()
         ));
     }
 
@@ -221,57 +115,9 @@ class ProductTypeController extends Controller
     public function deleteAction($id)
     {
         $em = $this->getDoctrine()->getManager();
-
-        // check if any products have the type
-        $producttype = $em->getRepository('AppBundle:ProductType')
-                ->find($id);
-
-        // delete the type
-        $em->remove($producttype);
+        $em->remove($em->getReference(ProductType::class, $id));
         $em->flush();
 
         return $this->redirectToRoute('producttype_index');
-    }
-    /**
-     * Bind attribute to a product type.
-     *
-     * @param type $typeid
-     * @param type $attrid
-     */
-    public function addAttributeToOneType($typeid, $attrid)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        $producttype = $em->getRepository('AppBundle:ProductType')
-                ->find($typeid);
-
-        $attribute = $em->getRepository('AppBundle:Attribute')
-                ->find($attrid);
-
-        $producttype->addAttribute($attribute);
-        $em->persist($producttype);
-        $em->flush();
-    }
-
-    /**
-     * Delete producttype, make sure no products are assigned to it
-     *
-     * @Route("/removeAttribute/{type}/{attr}", name="producttype_removeAttribute")
-     * @Method("GET")
-     */
-    public function removeAttributeOfType(ProductType $type, Attribute $attr)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        $producttype = $em->getRepository('AppBundle:ProductType')
-                ->find($type);
-
-        $producttype->removeAttribute($attr);
-        $em->persist($producttype);
-        $em->flush();
-
-        return $this->redirectToRoute('producttype_edit', [
-            'id' => $type->getId()
-        ]);
     }
 }

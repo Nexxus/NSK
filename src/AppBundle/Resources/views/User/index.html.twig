@@ -1,17 +1,23 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin.html.twig' %}
 
 {% block body %}
-    <h1>{% trans %}User List{% endtrans %}</h1>
     
-    <a href="{{ path('admin_user_new')}}"><h4>{% trans %}Create new User{% endtrans %}</h4></a>
+    <div class="row" style="margin-bottom: 20px">
+        <div class="col-sm-9">
+            <h1>User list</h1>
+        </div>
+        <div class="col-sm-3" style="padding-top: 15px">
+            <a href="{{ path('admin_user_edit', { 'id': 0 }) }}" class="btn btn-primary pull-right" role="button">Create new user</a>
+        </div>
+    </div>
     
     <table class="table table-striped">
         <tr>
-            <th>#</th>
+            <th>Id</th>
             <th>Username</th>
             <th>Email</th>
             <th>Role</th>
-            <th>&nbsp;</th>
+            <th width="1%"></th>
         </tr>
         {% for u in users %}
             <tr>
@@ -19,17 +25,17 @@
                 <td>{{ u.username }}</td>
                 <td>{{ u.email }}</td>
                 <td>
-                    {{ u.roles[0] }}
+                    {{ u.roles[0]|slice(5)|capitalize }}
                 </td>
-                <td>
-                    <a href="{{ path('admin_user_edit', {'id': u.id}) }}">
-                    <button class="btn" name="editUser" >
-                        Edit
-                    </button></a>
-                    {#<a href="{{ path('admin_user_delete', {'id': u.id}) }}">
-                    <button class="btn" name="deleteUser" >
-                        Edit
-                    </button></a>#}
+                <td nowrap>
+                    <a class="btn btn-success" href="{{ path('admin_user_edit', {'id': u.id}) }}">Edit</a>
+                    <a class="btn btn-danger" href="{{ path('admin_user_delete', { 'id': u.id }) }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
+                </td>
+            </tr>
+          {% else %}
+            <tr>
+                <td colspan="99">
+                    <h4>{% trans %}No records found{% endtrans %}</h4>
                 </td>
             </tr>
         {% endfor %}

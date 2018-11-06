@@ -68,12 +68,7 @@ class CustomerForm extends AbstractType
             ->add('zip2', TextType::class, ['required' => false, 'label' => 'Zip'])
             ->add('state2', TextType::class, ['required' => false, 'label' => 'State'])
             ->add('country2', TextType::class, ['required' => false, 'label' => 'Country'])
-            ->add('save', SubmitType::class, [
-                'label' => 'Save Changes',
-                'attr' => [
-                    'class' => 'btn-success',
-                ]
-            ]);
+            ->add('save', SubmitType::class, ['attr' => ['class' => 'btn-success btn-120']]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

@@ -1,42 +1,67 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin.html.twig' %}
 
 {% block body %}
-    <h1>Attributes list</h1>
+    <h1>Attribute list</h1>
 
-    <h4><a href="{{ path('admin_attribute_new') }}">Create a new attribute</a></h4>
-    
-    <table class="table table-bordered">
+    {{ form_start(form) }}
+    <div class="row" style="margin-bottom: 20px">
+        <div class="col-sm-7">
+            {{ form_widget(form.query, {'attr': {'placeholder': 'Zoeken op code of (deel van) naam'} }) }}
+        </div>
+        <div class="col-sm-2">
+            {{ form_widget(form.submit) }}
+        </div>
+        <div class="col-sm-3">
+            <a href="{{ path('admin_attribute_edit', { 'id': 0 }) }}" class="btn btn-primary pull-right" role="button">Create new attribute</a>
+        </div>
+    </div>
+    {{ form_end(form) }}
+
+    <table class="table table-striped">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Attribute Code</th>
-                <th>Type</th>
-                <th>Actions</th>
+                <th{% if attributes.isSorted('id') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(attributes, 'Id', 'id') }}</th>
+                <th{% if attributes.isSorted('name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(attributes, 'Name', 'name') }}</th>
+                <th{% if attributes.isSorted('attr_code') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(attributes, 'Code', 'attr_code') }}</th>
+                <th{% if attributes.isSorted('type') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(attributes, 'Type', 'type') }}</th>
+                <th width="1%"></th>
             </tr>
         </thead>
         <tbody>
-        {% set count = 0 %}
         {% for attribute in attributes %}
-            {% set count = count+1 %}
             <tr>
-                <td><a href="{{ path('admin_attribute_show', { 'id': attribute.id }) }}">{{ attribute.id }}</a></td>
+                <td>{{ attribute.id }}</td>
                 <td>{{ attribute.name }}</td>
                 <td>{{ attribute.attrcode }}</td>
-                <td>{{ attribute.type }}</td>
                 <td>
-                    <a class="btn btn-default" href="{{ path('admin_attribute_show', { 'id': attribute.id }) }}">Show</a>
-                    {#<a class="btn btn-success" href="{{ path('admin_attribute_edit', { 'id': attribute.id }) }}">Edit</a>#}
+                    {% if attribute.type == 3 %}
+                        Product
+                    {% elseif attribute.type == 2 %}
+                        File
+                    {% elseif attribute.type == 1 %}
+                        Select
+                    {% else %}
+                        Text
+                    {% endif %}
+                </td>
+                <td nowrap>
+                    <a class="btn btn-success" href="{{ path('admin_attribute_edit', { 'id': attribute.id }) }}">Edit</a>
+                    {% if attribute.productRelations|length == 0 %}
+                    <a class="btn btn-danger" href="{{ path('admin_attribute_delete', { 'id': attribute.id }) }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="99">
+                    <h4>{% trans %}No records found{% endtrans %}</h4>
                 </td>
             </tr>
         {% endfor %}
-        
         </tbody>
     </table>
+
     <div class="navigation">
         {{ knp_pagination_render(attributes) }}
     </div>
-    {% if count == 0 %}
-        <h4>{% trans %}No records found{% endtrans %}</h4>
-    {% endif %}
 {% endblock %}

@@ -32,6 +32,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class UserForm extends AbstractType
@@ -44,7 +45,7 @@ class UserForm extends AbstractType
             ->add('lastname', TextType::class, ['required' => false])
             ->add('email', EmailType::class)
             ->add('plainPassword', RepeatedType::class, array(
-                'required' => false,
+                'required' => true, // see below
                 'type' => PasswordType::class,
                 'first_options'  => array('label' => 'New password'),
                 'second_options' => array('label' => 'Repeat password'),
@@ -55,12 +56,21 @@ class UserForm extends AbstractType
             ))
             ->add('role', ChoiceType::class, ['mapped' => false,
                 'choices' => [
-                    'Superadmin' => 'ROLE_SUPER_ADMIN',
+                    'Super_admin' => 'ROLE_SUPER_ADMIN',
                     'Admin' => 'ROLE_ADMIN',
                     'Manager' => 'ROLE_MANAGER',
                     'Local' => 'ROLE_LOCAL'
                 ]])
-            ->add('save', SubmitType::class, ['label' => 'Save']);
+            ->add('enabled', CheckboxType::class, ['required' => false])
+            ->add('save', SubmitType::class, ['attr' => ['class' => 'btn-success btn-120']]);
+
+        /** @var User */
+        $user = $builder->getData();
+
+        if ($user->getId() > 0)
+        {
+            $builder->get("plainPassword")->setRequired(false);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver)

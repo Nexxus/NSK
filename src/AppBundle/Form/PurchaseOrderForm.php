@@ -95,10 +95,7 @@ class PurchaseOrderForm extends AbstractType
                 'entry_type' => ProductOrderRelationForm::class
             ])
             ->add('save', SubmitType::class, [
-                'label' => 'Save Changes',
-                'attr' => [
-                    'class' => 'btn-success',
-                ]
+                'attr' => ['class' => 'btn-success btn-120']
             ]);
 
         if ($user->hasRole("ROLE_MANAGER") || $user->hasRole("ROLE_ADMIN") || $user->hasRole("ROLE_SUPER_ADMIN"))

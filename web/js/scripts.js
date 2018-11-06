@@ -1,7 +1,15 @@
 ﻿
-/* focusBarcodeInput */
 
 $(document).ready(function () {
+
+    $('.combobox').combobox();
+
+    $('.multiselect').multiselect({
+        maxHeight: 200,
+        buttonWidth: '100%',
+        buttonClass: 'btn'
+    });
+
     focusBarcodeInput();
 });
 
