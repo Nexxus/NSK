@@ -1,7 +1,7 @@
 Nexxus Stock Keeping
 ==========
 
-A Symfony project created on March 7, 2017, 11:08 am.
+A Symfony3 project created on March 7, 2017, 11:08 am.
 
 This project is for keeping track of objects.
 
