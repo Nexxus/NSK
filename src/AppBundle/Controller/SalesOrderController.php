@@ -125,6 +125,7 @@ class SalesOrderController extends Controller
                         $purchase->setLocation($order->getLocation());
                         $purchase->setRemarks("Created by backorder");
                         $purchase->setOrderDate(new \DateTime());
+                        $purchase->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate("Backorder", true, false));
                         $em->persist($purchase);
                         $order->setBackingPurchaseOrder($purchase);
 

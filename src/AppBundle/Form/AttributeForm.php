@@ -49,10 +49,12 @@ class AttributeForm extends AbstractType
         }
         elseif ($attribute->getType() == Attribute::TYPE_SELECT)
         {
-            $builder->add('options', CollectionType::class, [
-                'entry_type' => AttributeOptionForm::class,
-                'entry_options' => ['label' => false]
-            ]);
+            $builder
+                ->add('options', CollectionType::class, [
+                    'entry_type' => AttributeOptionForm::class,
+                    'entry_options' => ['label' => false]
+                ])
+                ->add('newOption', TextType::class, ['mapped' => false, 'required' => false]);
         }
         elseif ($attribute->getType() != Attribute::TYPE_PRODUCT)
         {

@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Attribute;
+use AppBundle\Entity\AttributeOption;
 use AppBundle\Form\AttributeForm;
 use AppBundle\Form\IndexSearchForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -65,6 +66,7 @@ class AttributeController extends Controller
         }
         else
         {
+            /** @var Attribute */
             $attribute = $em->getRepository('AppBundle:Attribute')->find($id);
         }
 
@@ -74,6 +76,15 @@ class AttributeController extends Controller
 
         if ($form->isSubmitted() && $form->isValid())
         {
+            if ($form->has('newOption') && $newOptionName = $form->get('newOption')->getData())
+            {
+                $newOption = new AttributeOption();
+                $newOption->setName($newOptionName);
+                $newOption->setAttribute($attribute);
+                $em->persist($newOption);
+                $attribute->addOption($newOption);
+            }
+
             $em->persist($attribute);
             $em->flush();
 

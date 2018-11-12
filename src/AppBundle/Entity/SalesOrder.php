@@ -47,6 +47,11 @@ class SalesOrder extends AOrder
     private $backingPurchaseOrder;
 
     /**
+     * @ORM\OneToOne(targetEntity="Repair", mappedBy="order")
+     */
+    private $repair;
+
+    /**
      * @return SalesOrder
      */
     public function setCustomer(Customer $customer)
@@ -84,5 +89,23 @@ class SalesOrder extends AOrder
     public function getBackingPurchaseOrder()
     {
         return $this->backingPurchaseOrder;
+    }
+
+    /**
+     * @return SalesOrder
+     */
+    public function setRepair(Repair $repair)
+    {
+        $this->repair = $repair;
+
+        return $this;
+    }
+
+    /**
+     * @return Repair
+     */
+    public function getRepair()
+    {
+        return $this->repair;
     }
 }

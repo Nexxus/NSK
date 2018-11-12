@@ -28,7 +28,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * Pickup
  *
- * @ORM\Entity(repositoryClass="AppBundle\Repository\PickupRepository")
+ * @ORM\Entity
  * @ORM\Table(name="pickup")
  */
 class Pickup
