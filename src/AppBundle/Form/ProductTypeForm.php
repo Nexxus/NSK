@@ -22,6 +22,9 @@ class ProductTypeForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        /** @var ProductType */
+        $productType = $builder->getData();
+
         $builder
             ->add('name', TextType::class, array('required' => true))
             ->add('comment', TextType::class, array('required' => false))
@@ -35,7 +38,6 @@ class ProductTypeForm extends AbstractType
                     'choice_label' => 'name',
                     'attr' => ['class' => 'multiselect']))
             ->add('attributes', EntityType::class, array(
-                    'label' => 'Possible attributes',
                     'required' => false,
                     'multiple' => true,
                     'expanded' => false,
@@ -51,7 +53,7 @@ class ProductTypeForm extends AbstractType
                         'File' => Attribute::TYPE_FILE,
                         'Product' => Attribute::TYPE_PRODUCT
                 ]))
-            ->add('isAttribute', CheckboxType::class, array('required' => false, 'label' => 'Products of this type can be an attribute of other product'))
+            ->add('isAttribute', CheckboxType::class, array('required' => false, 'label' => '"' . $productType->getName() . '" can be a part. If checked, products of this type can be an attribute of other product.'))
             ->add('save', SubmitType::class, ['attr' => ['class' => 'btn-success btn-120']]);
 
 

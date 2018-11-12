@@ -102,6 +102,13 @@ class Product
     private $price;
 
     /**
+     * @var int Written off part of stock
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $quantityWrittenOff;
+
+    /**
      * @var Location
      *
      * @ORM\ManyToOne(targetEntity="Location", inversedBy="products", fetch="EAGER")
@@ -515,19 +522,21 @@ class Product
     #region Quantity calculators
 
     /**
-     * Get quantity
-     *
-     * @param bool $substractAttributedProducts
+     * @param bool $withRepairs
      * @return integer
      */
-    public function getQuantityInStock($substractAttributedProducts = true)
+    public function getQuantityInStock($withRepairs)
     {
         $in = $this->getQuantityPurchased();
 
+        if ($withRepairs)
+            $in += $this->getQuantityRepairing();
+
         $out = $this->getQuantitySold();
 
-        if ($substractAttributedProducts)
-            $out += $this->getQuantityAttributed();
+        $out += $this->getQuantityWrittenOff();
+
+        $out += $this->getQuantityAttributed();
 
         return $in - $out;
     }
@@ -542,13 +551,28 @@ class Product
         return $purchase ? $purchase->getQuantity() : 0;
     }
 
+    public function getQuantityRepairing()
+    {
+        $repairing = 0;
+
+        foreach ($this->getOrderRelations() as $r)
+        {
+            if (is_a($r->getOrder(), SalesOrder::class) && $r->getOrder()->getRepair()) // to do: and is not done
+            {
+                $repairing += $r->getQuantity();
+            }
+        }
+
+        return $repairing;
+    }
+
     public function getQuantitySold()
     {
         $sold = 0;
 
         foreach ($this->getOrderRelations() as $r)
         {
-            if (is_a($r->getOrder(), SalesOrder::class))
+            if (is_a($r->getOrder(), SalesOrder::class) && $r->getOrder()->getRepair() == null)
             {
                 $sold += $r->getQuantity();
             }
@@ -579,6 +603,24 @@ class Product
                 /** @var $r ProductOrderRelation */
                 return is_a($r->getOrder(), PurchaseOrder::class);
             })->first()->getOrder();
+    }
+
+    /**
+     * @param integer $quantity
+     */
+    public function setQuantityWrittenOff($quantityWrittenOff)
+    {
+        $this->quantityWrittenOff = $quantityWrittenOff;
+
+        return $this;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getQuantityWrittenOff()
+    {
+        return $this->quantityWrittenOff !== null ? $this->quantityWrittenOff : 0;
     }
 
     #endregion

@@ -86,6 +86,7 @@ class AttributeController extends Controller
             }
 
             $em->persist($attribute);
+
             $em->flush();
 
             return $this->redirectToRoute('admin_attribute_index');

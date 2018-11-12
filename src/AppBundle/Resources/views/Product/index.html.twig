@@ -20,16 +20,17 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th{% if products.isSorted('id') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(products, 'Id', 'id') }}</th>
                 <th{% if products.isSorted('sku') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(products, 'SKU', 'sku') }}</th>
                 <th{% if products.isSorted('name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(products, 'Name', 'name') }}</th>
                 <th{% if products.isSorted('type.name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(products, 'Type', 'type.name') }}</th>
                 <th{% if products.isSorted('location.name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(products, 'Location', 'location.name') }}</th>
-                <th>Purch</th>
-                <th>Sold</th>
-                <th>Used</th>
-                <th>Stock</th>
-                <th>Price</th>
+                <th width="5%">Purch</th>
+                <th width="5%">Repair</th>
+                <th width="5%">Sold</th>
+                <th width="5%">Used</th>
+                <th width="5%">Off</th>
+                <th width="5%">Stock</th>
+                <th width="10%">Price</th>
                 <th width="1%"></th>
             </tr>
             <tr>
@@ -38,15 +39,16 @@
         <tbody>
         {% for product in products %}
             <tr>
-                <td>{{ product.id }}</td>
                 <td>{{ product.sku }}</td>
                 <td>{{ product.name }}</td>
                 <td>{{ product.type.name }}</td>
                 <td>{{ product.location.name|default("") }}</td>
                 <td>{{ product.getQuantityPurchased() }}</td>
+                <td>{{ product.getQuantityRepairing() }}</td>
                 <td>{{ product.getQuantitySold() }}</td>
                 <td>{{ product.getQuantityAttributed() }}</td>
-                <td>{{ product.getQuantityInStock() }}</td>
+                <td>{{ product.getQuantityWrittenOff() }}</td>
+                <td>{{ product.getQuantityInStock(true) }}</td>
                 <td>&euro; {{ product.price|number_format(2, ',', '.') }}</td>
                 <td nowrap>
                     <a class="btn btn-success" href="{{ path('product_edit', { 'id': product.id }) }}" data-toggle="modal" data-target="#modalEditor"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>

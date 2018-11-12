@@ -81,7 +81,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         {
             /** @var Product $product */
             $result["product-".$product->getId()] = sprintf("Product '%s' with SKU %s, in quantity %s, at location %s",
-                $product->getName(), $product->getSku(), $product->getQuantity(), $product->getLocation()->getName());
+                $product->getName(), $product->getSku(), $product->getQuantityInStock(true), $product->getLocation()->getName());
         }
 
         foreach ($this->_em->getRepository(\AppBundle\Entity\SalesOrder::class)->findBySearchQuery($query) as $salesOrder)
@@ -107,7 +107,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
 
         $products = (new ArrayCollection($products))->filter(
             function(Product $product) {
-                return $product->getQuantityInStock() != 0;
+                return $product->getQuantityInStock(true) != 0;
             });
 
         return $products;

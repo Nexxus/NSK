@@ -85,9 +85,17 @@ class Attribute
     /**
      * @var ArrayCollection|ProductType[] Which product types can use this attribute
      *
-     * @ORM\ManyToMany(targetEntity="ProductType", mappedBy="attributes", fetch="LAZY")
+     * @ORM\ManyToMany(targetEntity="ProductType", mappedBy="attributes")
      */
     private $productTypes;
+
+    /**
+     * @var ProductType If attribute type is Product, this property filters the possible products
+     *
+     * @ORM\OneToOne(targetEntity="ProductType")
+     * @ORM\JoinColumn(name="product_type_filter_id", referencedColumnName="id")
+     */
+    private $productTypeFilter;
 
     /**
      * @var ArrayCollection|ProductAttributeRelation[] Which products have this attribute
@@ -127,6 +135,7 @@ class Attribute
         return $this;
     }
 
+
     /**
      * Get attrCode
      *
@@ -135,6 +144,37 @@ class Attribute
     public function getAttrCode()
     {
         return $this->attr_code;
+    }
+
+    /**
+     * Set productTypeFilter
+     *
+     * @param string $attrCode
+     *
+     * @return Attribute
+     */
+    public function setProductTypeFilter(ProductType $productType)
+    {
+        if ($this->type != $this::TYPE_PRODUCT)
+            throw new \Exception("ProductTypeFilter can only be set when Attribute is of type Product.");
+
+        $this->productTypeFilter = $productType;
+
+        return $this;
+    }
+
+
+    /**
+     * Get productTypeFilter
+     *
+     * @return ProductType
+     */
+    public function getProductTypeFilter()
+    {
+        if ($this->type != $this::TYPE_PRODUCT)
+            throw new \Exception("ProductTypeFilter can only exist when Attribute is of type Product.");
+
+        return $this->productTypeFilter;
     }
 
     /**
@@ -229,7 +269,7 @@ class Attribute
     public function addProductType(ProductType $productType)
     {
         $this->productTypes[] = $productType;
-
+        $productType->addAttribute($this);
         return $this;
     }
 
@@ -241,6 +281,7 @@ class Attribute
     public function removeProductType(ProductType $productType)
     {
         $this->productTypes->removeElement($productType);
+        $productType->removeAttribute($this);
     }
 
     /**

@@ -64,11 +64,28 @@ class ProductAttributeRelationForm extends AbstractType
                         break;
                     case Attribute::TYPE_PRODUCT:
                         $form->add('valueProduct', EntityType::class, [
-                            'query_builder' => function (\Doctrine\ORM\EntityRepository $er) {
-                                return $er->createQueryBuilder('p')
-                                    ->join("p.type", "t")
-                                    ->where('t.isAttribute = true')
+                            'query_builder' => function (\Doctrine\ORM\EntityRepository $er) use ($relation)
+                             {
+                                /** @var ProductAttributeRelation $relation */
+                                if ($pt = $relation->getAttribute()->getProductTypeFilter())
+                                {
+                                    $qb = $er->createQueryBuilder('p')
+                                        ->where("p.type = :pt2")
+                                        ->setParameter("pt2", $pt);
+                                }
+                                else
+                                {
+                                    $qb = $er->createQueryBuilder('p')
+                                        ->join("p.type", "t")
+                                        ->where('t.isAttribute = true');
+                                }
+
+                                $qb = $qb->andWhere("p.quantityInStock > 0")
+                                    ->andWhere("p.type <> :pt" )
+                                    ->setParameter("pt", $relation->getProduct()->getType())
                                     ->orderBy('p.sku', 'ASC');
+
+                                return $qb;
                             },
                            'class' => 'AppBundle:Product',
                            'choice_label' => 'name',

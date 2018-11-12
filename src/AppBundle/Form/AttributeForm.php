@@ -14,6 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Doctrine\ORM\EntityRepository;
 
 class AttributeForm extends AbstractType
 {
@@ -29,12 +30,13 @@ class AttributeForm extends AbstractType
             ->add('attr_code')
             ->add('name')
             ->add('productTypes', EntityType::class, array(
-                    'label' => 'Products',
+                    'label' => 'Product types having this attribute',
                     'required' => false,
                     'multiple' => true,
                     'expanded' => false,
                     'class' => ProductType::class,
                     'choice_label' => 'name',
+                    'by_reference' => false,
                     'attr' => ['class' => 'multiselect']));
 
         if (!$attribute->getId())
@@ -56,7 +58,20 @@ class AttributeForm extends AbstractType
                 ])
                 ->add('newOption', TextType::class, ['mapped' => false, 'required' => false]);
         }
-        elseif ($attribute->getType() != Attribute::TYPE_PRODUCT)
+        elseif ($attribute->getType() == Attribute::TYPE_PRODUCT)
+        {
+            $builder->add('productTypeFilter', EntityType::class, array(
+                    'label' => 'Type of attributed product',
+                    'required' => false,
+                    'multiple' => false,
+                    'expanded' => false,
+                    'class' => ProductType::class,
+                    'choice_label' => 'name',
+                    'query_builder' => function (EntityRepository $er) {
+                        return $er->createQueryBuilder('pt')->where("pt.isAttribute = true");
+                    }));
+        }
+        else
         {
             $builder->add('price', MoneyType::class);
         }
