@@ -233,7 +233,7 @@ class ProductAttributeRelation
 
         return $this->getAttribute()->getOptions()->filter(
             function (AttributeOption $o)  {
-                $o->getName() == $this->getValue();
+                return $o->getId() == $this->getValue();
             })->first();
     }
 
@@ -256,7 +256,7 @@ class ProductAttributeRelation
                 $price = $product ? $product->getPrice() * $this->getQuantity() : 0;
                 break;
             default:
-                $price = $this->getAttribute()->getPrice();
+                $price = $this->getValue() ? $this->getAttribute()->getPrice() : 0;
                 break;
         }
 

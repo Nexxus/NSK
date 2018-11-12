@@ -1,4 +1,4 @@
-<html>
+﻿<html>
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -52,15 +52,17 @@
     </head>
     <body>
         
-        <div class="title">Test</div>
+        <div class="title">{{ product.name }}</div>
         <div class="attributes">
             <table>
                 {% for attributeRelation in product.attributeRelations %}
-                {% if attributeRelation.attribute.type != 2 %}
+                {% if attributeRelation.attribute.type != 2 and attributeRelation.value is not empty %}
                 <tr>
                     <td class="{{ cycle(['', 'even'], loop.index0) }}">{{ attributeRelation.attribute.name }}</td>
                     <td class="{{ cycle(['', 'even'], loop.index0) }}"><b>
-                        {% if attributeRelation.attribute.type == 3 and attributeRelation.valueProduct  %}
+                        {% if attributeRelation.attribute.type == 1 %}
+                            {{ attributeRelation.selectedOption.name|default("") }}
+                        {% elseif attributeRelation.attribute.type == 3 and attributeRelation.valueProduct  %}
                             {{ attributeRelation.quantity }}x {{ attributeRelation.valueProduct.name }}
                         {% elseif attributeRelation.attribute.type != 3 %}
                             {{ attributeRelation.value }}

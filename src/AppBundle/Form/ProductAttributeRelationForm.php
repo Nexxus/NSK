@@ -80,8 +80,7 @@ class ProductAttributeRelationForm extends AbstractType
                                         ->where('t.isAttribute = true');
                                 }
 
-                                $qb = $qb->andWhere("p.quantityInStock > 0")
-                                    ->andWhere("p.type <> :pt" )
+                                $qb = $qb->andWhere("p.type <> :pt" )
                                     ->setParameter("pt", $relation->getProduct()->getType())
                                     ->orderBy('p.sku', 'ASC');
 
