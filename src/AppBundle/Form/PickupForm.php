@@ -64,6 +64,25 @@ class PickupForm extends AbstractType
             ->add('qPhone', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Phones'])
             ->add('qPrinter', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Printers'])
             ->add('qMonitor', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Monitors'])
+            
+            ->add('qLaptop', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Laptop'])
+            
+            ->add('qToetsenbord', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Toetsenborden'])
+            
+            ->add('qMuis', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Muizen'])
+            
+            ->add('qOplader', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Opladers'])
+            
+            ->add('qKabel', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Kabels'])
+            
+            ->add('qCamera', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Camera\'s'])
+            
+            ->add('qRouter', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Routers'])
+            
+            ->add('qSwitches', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Switches'])
+            
+            ->add('qAPC', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'APC\'s'])
+
             ->add('imagesInput', FileType::class, ['mapped' => false, 'required' => false, 'label' => 'Images'])
             ->add('agreementInput', FileType::class, ['mapped' => false, 'required' => false, 'label' => 'Processing Agreement'])
 
