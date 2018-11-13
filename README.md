@@ -1,13 +1,109 @@
-=======
-Nexxus Stock Keeping
-==========
+# Nexxus Stock Keeping
 
-A Symfony3 project created on March 7, 2017, 11:08 am.
+Nexxus stock keeping is a webapplication made for purchase, sale and keeping of any stock. The application is built upon most popular technologies, such as PHP 7, Symfony 3, MySQL, jQuery and Bootstrap 3. This repository holds version 2 of Nexxus, which is made open source under the terms of the GNU General Public License (GNU GPLv3).
 
-This project is for keeping track of objects.
+## Background
 
-It started when I was manager in a thrift store and I wanted to sell used computers. There was no way to keep track of the computers and to know in what state they were in. Since we operated multiple stores, I also needed to keep track of the computers at several locations and which ones were sold.
+My name is Roland de Bakker and I am owner of Copiatek. Copiatek recycles used computer hardware and uses Nexxus for its own daily workflow. It started when I was manager in a thrift store and I wanted to sell used computers. There was no way to keep track of the computers and to know in what state they were in. Since we operated multiple stores, I also needed to keep track of the computers at several locations and which ones were sold.
 
-The software evolved and it became possible to also keep track of other objects besides computers. Also a billing part was introduced so we could use it as a point of sales. Since we picked up objects through the country, I needed a way to keep track of logistics and distribution.
+The software evolved and it became possible to also keep track of other objects besides computers. Also a billing part was introduced so we could use it as a point of sales. Since we picked up objects through the country, I needed a way to keep track of logistics and distribution. Most of the whishes have been implemented, however it was build on a shady foundation. Last year we decided to start developing from the ground up. This repository tracks the development of the second version of Nexxus Stock Keeping.
 
-Most of the whishes have been implemented, however it was build on a shady foundation. Last year the Lead Developer, Ben aka Nebbii, decided to start developing from the ground up. Nexxus is version 2.0 and is build on Symfony.
+## Requirements
+
+The following technologies should be present in order to install and use Nexxus.
+
+- Web server like Apache on Linux
+- PHP 7 with regular extensions
+- MySQL 5.6
+- Composer (dependency manager for PHP)
+- Git
+
+## Installation
+
+In order to install Nexxus, you need to open a Windows command prompt, Linux terminal or SSH connection (like with Putty). Some steps below might require more user rights, ie. when you get permission denied errors. In that case prepend the command with the _sudo_ command. 
+
+If this manual is too brief for you, more than enough information can be found on the internet, as these steps are very regular for a Symfony 3 application.
+
+For installation follow these steps:
+
+### 1. Choose the right place to install
+
+In the terminal, go to the right place where you would like to install Nexxus. Typically this is one directory above the _public_html_ or _wwwroot_ folder. **Never install Nexxus inside the public web folder!** Like 90% of the source code of a webapplication like this is not in the public web folder. Step 3 of this installation manual will make a certain part of the application available for public.
+
+### 2. Download the repository
+
+To clone the source code, run:
+```
+git clone https://github.com/Nexxus/NSK.git nexxus
+```
+This will download all source code and place it in a newly created folder named _nexxus_. Go to the new folder when download is finished:
+```
+cd nexxus
+```
+All next steps will happen in this new folder.
+
+Make sure the application can modify the _var_ folder:
+```
+chmod -R 777 var
+```
+If you do not wish to commit changes back to this repository, you can remove the Git folder:
+```
+rm -rf .git/
+```
+If you are installing an production environment, remove app_dev.php:
+```
+rm web/app_dev.php
+```
+Now you have your clean clone of Nexxus.
+
+### 3. Move some files to the public web folder.
+
+If you need a production web server like Apache, the public web folder is at a designated location, in which you (fortunally) did not install Nexxus. To make Nexxus publically accessable, move the web folder of the installation to the public web folder of your server. The public web folder is typically named _public_html_ or _wwwroot_. This is an example how it can be achieved:
+```
+mkdir ../public_html/nsk
+move web/ ../public_html/nsk
+```
+Don't copy this line literally, but apply it to the situation of your web server. In this example, Nexxus will be available on URL http://www.yourdomain.com/nsk
+
+Secondly, make sure the application root can find the source code from its new location. Open _app.dev_ in a text editor and change lines 6 and 7 like so:
+```
+$loader = require __DIR__.'/../../nsk/app/autoload.php';
+include_once __DIR__.'/../../nsk/var/bootstrap.php.cache';
+```
+
+### 4. Install dependencies
+
+Nexxus depends on other PHP packages. To install these, run:
+```
+composer install
+```
+This will take a while...
+
+After installation, some parameters will be asked. You can enter thru most of them. The database does not need to exist yet, but the database user does need to exist. For _database_user_ and _database_password_ you need to enter the appropiate values. For the _secret_ enter a random value of your liking.
+
+### 5. Install the database
+
+To create a database with all needed tables, run:
+```
+php bin/console doctrine:database:create
+php bin/console doctrine:schema:create
+```
+
+### 6. Create the first user
+
+To get you started, make the first user in the terminal
+```
+php bin/console fos:user:create superadmin superadmin@whatever.com p@ssw0rd
+php bin/console fos:user:promote superadmin ROLE_SUPERADMIN
+php bin/console fos:user:promote superadmin ROLE_ADMIN
+```
+Don't copy these line literally, but apply it to your likings. Take care of choosing a good password.
+
+Now you can login and create other users in the Admin section.
+
+### 8. Use Nexxus
+
+Congratulations, Nexxus is now ready for use. To start with, go to the Admin section and configure all meta data: Users, Locations, Product types, Attributes, Product statuses, Order statuses, Tasks. Without  this meta data the application will not behave as desired.
+
+
+
