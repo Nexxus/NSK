@@ -58,12 +58,23 @@ class PickupForm extends AbstractType
             ])
             ->add('description', TextareaType::class, ['required' => false])
 
-            // Then the unmapped fields: quantities and files
+            // Product Types
             ->add('qComputer', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Computers'])
             ->add('qServer', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Servers'])
             ->add('qPhone', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Phones'])
             ->add('qPrinter', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Printers'])
             ->add('qMonitor', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Monitors'])
+            ->add('qLaptop', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Laptop'])
+            ->add('qToetsenbord', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Toetsenborden'])
+            ->add('qMuis', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Muizen'])
+            ->add('qOplader', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Opladers'])
+            ->add('qKabel', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Kabels'])
+            ->add('qCamera', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Camera\'s'])
+            ->add('qRouter', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Routers'])
+            ->add('qSwitches', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Switches'])
+            ->add('qAPC', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'APC\'s'])
+            ->add('qPSU', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'PSU\'s'])
+
             ->add('imagesInput', FileType::class, ['mapped' => false, 'required' => false, 'label' => 'Images'])
             ->add('agreementInput', FileType::class, ['mapped' => false, 'required' => false, 'label' => 'Processing Agreement'])
 

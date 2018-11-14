@@ -110,7 +110,7 @@ class PublicController extends Controller
 
                     // Products
                     $count = 0;
-                    $productTypes = array("Computer", "Server", "Phone", "Printer", "Monitor");
+                    $productTypes = array("Computer", "Server", "Phone", "Printer", "Monitor","Laptop","Toetsenbord","Muis","Oplader","Kabel","Camera","Switches","APC","PSU");
                     foreach ($productTypes as $productType)
                     {
                         $quantity = $form->get('q'.$productType)->getData();
