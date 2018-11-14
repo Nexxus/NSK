@@ -59,7 +59,7 @@ class PickupForm extends AbstractType
             ->add('description', TextareaType::class, ['required' => false])
 
             // Then the unmapped fields: quantities and files
-            ->add('qComputer', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Computers'])
+            ->add('qComputer', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Computers', 'attr' => ['class' => 'input-sm']])
             ->add('qServer', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Servers'])
             ->add('qPhone', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Phones'])
             ->add('qPrinter', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Printers'])
