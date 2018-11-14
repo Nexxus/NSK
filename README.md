@@ -42,15 +42,15 @@ cd nexxus
 ```
 All next steps will happen in this new folder.
 
-Make sure the application can modify the _var_ folder:
+When using Linux, make sure the application can modify the _var_ folder:
 ```
 chmod -R 777 var
 ```
-If you do not wish to commit changes back to this repository, you can remove the Git folder:
+If you do not wish to commit changes back to this repository, you can remove the Git folder. In Linux:
 ```
 rm -rf .git/
 ```
-If you are installing an production environment, remove app_dev.php:
+If you are installing an production environment, remove app_dev.php. In Linux:
 ```
 rm web/app_dev.php
 ```
