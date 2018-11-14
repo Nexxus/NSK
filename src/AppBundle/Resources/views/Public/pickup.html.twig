@@ -46,10 +46,37 @@
                     <div class="col-sm-6">
                         {{ form_row(form.supplier.street) }} 
                         {{ form_row(form.supplier.streetExtra) }} 
-                        {{ form_row(form.supplier.city) }} 
-                        {{ form_row(form.supplier.zip) }} 
-                        {{ form_row(form.supplier.state) }} 
-                        {{ form_row(form.supplier.country) }} 
+
+                        <table class="table table-responsive">
+                          <tr>
+                            <td>
+                                {{ form_label(form.supplier.zip) }}
+                            </td>
+                            <td>
+                                {{ form_widget(form.supplier.zip) }}
+                            </td>
+                            <td>
+                                {{ form_label(form.supplier.city) }}
+                            </td>
+                            <td>
+                                {{ form_widget(form.supplier.city) }}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                                {{ form_label(form.supplier.state) }}
+                            </td>
+                            <td>
+                                {{ form_widget(form.supplier.state) }}
+                            </td>
+                            <td>
+                                {{ form_label(form.supplier.country) }}
+                            </td>
+                            <td>
+                                {{ form_widget(form.supplier.country) }}
+                            </td>
+                          </tr>
+                        </table> 
                     </div>
                 </div>
             </div>
@@ -59,13 +86,9 @@
                     <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}About the materials{% endtrans %}
                 </div>
                 <div class="panel-body">
-                    {{ form_row(form.pickupDate) }} 
-                    {{ form_row(form.description) }} 
-                    {{ form_row(form.dataDestruction) }} 
-                     <hr />
                     <div class="row">
                         <div class="col-md-3 col-md-offset-3">
-                            {{ form_row(form.qComputer) }}
+                            {{ form_row(form.qLaptop) }}
                         </div>
                         <div class="col-md-3">
                             {{ form_row(form.qServer) }}
@@ -76,10 +99,10 @@
                     </div>
                     <div class="row">
                         <div class="col-md-3 col-md-offset-3">
-                            {{ form_row(form.qPrinter) }}
+                            {{ form_row(form.qComputer) }}
                         </div>
                         <div class="col-md-3">
-                            {{ form_row(form.qLaptop) }}
+                            {{ form_row(form.qPrinter) }}
                         </div>
                         <div class="col-md-3"></div>
                     </div>
@@ -122,6 +145,10 @@
                         <div class="col-md-3"></div>
                         <div class="col-md-3"></div>
                     </div>
+                    <hr />
+                        {{ form_row(form.pickupDate) }} 
+                        {{ form_row(form.description) }} 
+                        {{ form_row(form.dataDestruction) }} 
                     <hr />
                     {{ form_row(form.imagesInput) }} 
                     {{ form_row(form.agreementInput) }} 
