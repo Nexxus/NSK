@@ -65,6 +65,8 @@ move web/ ../public_html/nsk
 ```
 Don't copy this line literally, but apply it to the situation of your web server. In this example, Nexxus will be available on URL http://www.yourdomain.com/nsk
 
+Finally, in _composer.jsn_ you can should the value for field _symfony-web-dir_.
+
 Secondly, make sure the application root can find the source code from its new location. Open _app.dev_ in a text editor and change lines 6 and 7 like so:
 ```
 $loader = require __DIR__.'/../../nsk/app/autoload.php';
@@ -101,7 +103,7 @@ Don't copy these line literally, but apply it to your likings. Take care of choo
 
 Now you can login and create other users in the Admin section.
 
-### 8. Use Nexxus
+### 7. Use Nexxus
 
 Congratulations, Nexxus is now ready for use. To start with, go to the Admin section and configure all meta data: Users, Locations, Product types, Attributes, Product statuses, Order statuses, Tasks. Without  this meta data the application will not behave as desired.
 

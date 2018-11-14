@@ -1,5 +1,5 @@
 {
-    "name": "ben/copiproto1",
+    "name": "Nexxus/NSK",
     "license": "proprietary",
     "type": "project",
     "autoload": {
@@ -59,7 +59,7 @@
         "symfony-app-dir": "app",
         "symfony-bin-dir": "bin",
         "symfony-var-dir": "var",
-        "symfony-web-dir": "public_html",
+        "symfony-web-dir": "web",
         "symfony-tests-dir": "tests",
         "symfony-assets-install": "relative",
         "incenteev-parameters": {
