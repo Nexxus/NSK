@@ -82,6 +82,7 @@ class PickupForm extends AbstractType
             ->add('qSwitches', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Switches'])
             
             ->add('qAPC', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'APC\'s'])
+            ->add('qPSU', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'PSU\'s'])
 
             ->add('imagesInput', FileType::class, ['mapped' => false, 'required' => false, 'label' => 'Images'])
             ->add('agreementInput', FileType::class, ['mapped' => false, 'required' => false, 'label' => 'Processing Agreement'])
