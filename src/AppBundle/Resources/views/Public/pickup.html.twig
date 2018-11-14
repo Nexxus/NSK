@@ -74,14 +74,32 @@
                     <div class="col-sm-6">
                         {{ form_row(form.supplier.street) }} 
                         {{ form_row(form.supplier.streetExtra) }} 
-                        <div class="row">
-                            <div class="col-sm-6">
-                                {{ form_row(form.supplier.zip) }} 
-                                {{ form_row(form.supplier.state) }} 
+                        <div class="form-group">
+                            <div class="col-sm-3">
+                                {{ form_label(form.supplier.zip) }} 
                             </div>
-                            <div class="col-sm-6">
-                                {{ form_row(form.supplier.city) }} 
-                                {{ form_row(form.supplier.country) }} 
+                            <div class="col-sm-3">
+                                {{ form_widget(form.supplier.zip) }} 
+                            </div>
+                            <div class="col-sm-3">
+                                {{ form_label(form.supplier.state) }} 
+                            </div>
+                            <div class="col-sm-3">
+                                {{ form_widget(form.supplier.state) }} 
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-3">
+                                {{ form_label(form.supplier.city) }} 
+                            </div>
+                            <div class="col-sm-3">
+                                {{ form_widget(form.supplier.city) }} 
+                            </div>
+                            <div class="col-sm-3">
+                                {{ form_label(form.supplier.country) }} 
+                            </div>
+                            <div class="col-sm-3">
+                                {{ form_widget(form.supplier.country) }} 
                             </div>
                         </div>
                     </div>
@@ -95,29 +113,134 @@
                 <div class="panel-body">
                   <div class="container">
                     <div class="col-sm-2 col-sm-offset-1">
-                        {{ form_row(form.qLaptop) }}
-                        {{ form_row(form.qComputer) }}
-                        {{ form_row(form.qServer) }}
+                        <div class="form-group">
+                            <div class="col-sm-6">
+                                {{ form_label(form.qLaptop) }}
+                            </div>
+                            <div class="col-sm-6">
+                                {{ form_widget(form.qLaptop) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-6">
+                                {{ form_label(form.qComputer) }}
+                            </div>
+                            <div class="col-sm-6">
+                                {{ form_widget(form.qComputer) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-6">
+                                {{ form_label(form.qServer) }}
+                            </div>
+                            <div class="col-sm-6">
+                                {{ form_widget(form.qServer) }}
+                            </div>
+                        </div>
                     </div>
                     <div class="col-sm-2">
-                        {{ form_row(form.qToetsenbord) }}
-                        {{ form_row(form.qMuis) }}
-                        {{ form_row(form.qKabel) }}
+                        <div class="form-group">
+                            <div class="col-sm-6">
+                                {{ form_label(form.qToetsenbord) }}
+                            </div>
+                            <div class="col-sm-6">
+                                {{ form_widget(form.qToetsenbord) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-6">
+                                {{ form_label(form.qMuis) }}
+                            </div>
+                            <div class="col-sm-6">
+                                {{ form_widget(form.qMuis) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-6">
+                                {{ form_label(form.qKabel) }}
+                            </div>
+                            <div class="col-sm-6">
+                                {{ form_widget(form.qKabel) }}
+                            </div>
+                        </div>
                     </div>
                     <div class="col-sm-2">
-                        {{ form_row(form.qMonitor) }}
-                        {{ form_row(form.qPhone) }}
-                        {{ form_row(form.qCamera) }}
+                        <div class="form-group">
+                            <div class="col-sm-6">
+                                {{ form_label(form.qMonitor) }}
+                            </div>
+                            <div class="col-sm-6">
+                                {{ form_widget(form.qMonitor) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-6">
+                                {{ form_label(form.qPhone) }}
+                            </div>
+                            <div class="col-sm-6">
+                                {{ form_widget(form.qPhone) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-6">
+                                {{ form_label(form.qCamera) }}
+                            </div>
+                            <div class="col-sm-6">
+                                {{ form_widget(form.qCamera) }}
+                            </div>
+                        </div>
                     </div>
                     <div class="col-sm-2">
-                        {{ form_row(form.qPrinter) }}
-                        {{ form_row(form.qRouter) }}
-                        {{ form_row(form.qSwitches) }}
+                        <div class="form-group">
+                            <div class="col-sm-6">
+                                {{ form_label(form.qPrinter) }}
+                            </div>
+                            <div class="col-sm-6">
+                                {{ form_widget(form.qPrinter) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-6">
+                                {{ form_label(form.qRouter) }}
+                            </div>
+                            <div class="col-sm-6">
+                                {{ form_widget(form.qRouter) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-6">
+                                {{ form_label(form.qSwitches) }}
+                            </div>
+                            <div class="col-sm-6">
+                                {{ form_widget(form.qSwitches) }}
+                            </div>
+                        </div>
                     </div>
                     <div class="col-sm-2">
-                        {{ form_row(form.qOplader) }}
-                        {{ form_row(form.qAPC) }}
-                        {{ form_row(form.qPSU) }}
+                        <div class="form-group">
+                            <div class="col-sm-6">
+                                {{ form_label(form.qOplader) }}
+                            </div>
+                            <div class="col-sm-6">
+                                {{ form_widget(form.qOplader) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-6">
+                                {{ form_label(form.qAPC) }}
+                            </div>
+                            <div class="col-sm-6">
+                                {{ form_widget(form.qAPC) }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-6">
+                                {{ form_label(form.qPSU) }}
+                            </div>
+                            <div class="col-sm-6">
+                                {{ form_widget(form.qPSU) }}
+                            </div>
+                        </div>
                     </div>
                   </div>
                     
