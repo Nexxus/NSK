@@ -4,7 +4,7 @@ Nexxus stock keeping is a webapplication made for purchase, sale and keeping of 
 
 ## Background
 
-My name is Roland de Bakker and I am owner of Copiatek. Copiatek recycles used computer hardware and uses Nexxus for its own daily workflow. It started when I was manager in a thrift store and I wanted to sell used computers. There was no way to keep track of the computers and to know in what state they were in. Since we operated multiple stores, I also needed to keep track of the computers at several locations and which ones were sold.
+My name is Ronald de Bakker and I am owner of Copiatek. Copiatek refurbishes and recycles used computer hardware and uses Nexxus for its own daily workflow. It started when I was manager in a thrift store and I wanted to sell used computers. There was no way to keep track of the computers and to know in what state they were in. Since we operated multiple stores, I also needed to keep track of the computers at several locations and which ones were sold.
 
 The software evolved and it became possible to also keep track of other objects besides computers. Also a billing part was introduced so we could use it as a point of sales. Since we picked up objects through the country, I needed a way to keep track of logistics and distribution. Most of the whishes have been implemented, however it was build on a shady foundation. Last year we decided to start developing from the ground up. This repository tracks the development of the second version of Nexxus Stock Keeping.
 
@@ -58,7 +58,7 @@ Now you have your clean clone of Nexxus.
 
 ### 3. Move some files to the public web folder.
 
-If you need a production web server like Apache, the public web folder is at a designated location, in which you (fortunally) did not install Nexxus. To make Nexxus publically accessable, move the web folder of the installation to the public web folder of your server. The public web folder is typically named _public_html_ or _wwwroot_. This is an example how it can be achieved:
+If you need a production web server like Apache, the public web folder is at a designated location, in which you (fortunally) did not install Nexxus. To make Nexxus publically accessible, move the web folder of the installation to the public web folder of your server. The public web folder is typically named _public_html_ or _wwwroot_. This is an example how it can be achieved:
 ```
 mkdir ../public_html/nsk
 move web/ ../public_html/nsk
