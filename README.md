@@ -1,6 +1,6 @@
 # Nexxus Stock Keeping
 
-Nexxus stock keeping is a webapplication made for purchase, sale and keeping of any stock. The application is built upon most popular technologies, such as PHP 7, Symfony 3, MySQL, jQuery and Bootstrap 3. This repository holds version 2 of Nexxus, which is made open source under the terms of the GNU General Public License (GNU GPLv3). 
+Nexxus stock keeping is a webapplication made for purchase, sale and keeping of any stock. The application is built upon most popular technologies, such as PHP 7, Symfony 3, MySQL, jQuery and Bootstrap 3. This repository holds version 2 of Nexxus, which is made open source under the terms of the GNU General Public License (GNU GPLv3).
 
 ## Background
 
