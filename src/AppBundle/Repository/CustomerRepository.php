@@ -42,24 +42,29 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
     /**
      * This function searches in fields: Id, Kvk, Email, Name
      */
-    public function findBySearchQuery($query)
+    public function findBySearchQuery(\AppBundle\Helper\IndexSearchContainer $search)
     {
-        if (is_numeric($query))
+        $qb = $this->getEntityManager()->createQueryBuilder()
+            ->from("AppBundle:Customer", "o")->select("o")->orderBy("o.id", "DESC");
+
+        if ($search->query)
         {
-            $q = $this->getEntityManager()
-                ->createQuery("SELECT c FROM AppBundle:Customer c WHERE c.id = ?1 OR c.kvkNr = ?1 OR c.name LIKE ?2 ORDER BY c.id DESC");
-        }
-        else
-        {
-            $q = $this->getEntityManager()
-                ->createQuery("SELECT c FROM AppBundle:Customer c WHERE c.email = ?1 OR c.name LIKE ?2 ORDER BY c.id DESC");
+            if (is_numeric($search->query))
+            {
+                $qb = $qb->andWhere("o.id = :query OR o.kvkNr = :query OR o.name LIKE :queryLike");
+            }
+            else
+            {
+                $qb = $qb->andWhere("o.email = :query OR o.name LIKE :queryLike");
+            }
+
+            $qb = $qb->setParameter("query", $search->query)->setParameter("queryLike", '%'.$search->query.'%');
         }
 
-        $q = $q
-            ->setParameter(1, $query)
-            ->setParameter(2, '%' . $query . '%');
+        if ($search->location)
+            $qb = $qb->andWhere("o.location = :location")->setParameter("location", $search->location);
 
-        return $q->getResult();
+        return $qb->getQuery()->getResult();
     }
 
     /**
@@ -68,21 +73,39 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
      */
     public function checkExists(Customer $newCustomer)
     {
+        // First: strict comparision, loose result count
+
         $q = $this->getEntityManager()
-            ->createQuery("SELECT c FROM AppBundle:Customer c WHERE SOUNDEX(c.name) like SOUNDEX(:name) or REPLACE(c.phone, '-', '') = :phone OR REPLACE(c.phone2, '-', '') = :phone OR c.email = :email")
+            ->createQuery("SELECT c FROM AppBundle:Customer c WHERE c.name = :name OR c.email = :email")
             ->setParameter("name", $newCustomer->getName())
-            ->setParameter("phone", $newCustomer->getPhone())
             ->setParameter("email", $newCustomer->getEmail());
 
         $result = $q->getResult();
 
-        if (count($result) == 1)
+        if (count($result) > 0)
         {
             return $result[0];
         }
         else
         {
-            return $newCustomer;
+            // Second: loose comparision, strict result count
+
+            $q = $this->getEntityManager()
+                ->createQuery("SELECT c FROM AppBundle:Customer c WHERE SOUNDEX(c.name) like SOUNDEX(:name) or REPLACE(c.phone, '-', '') = :phone OR REPLACE(c.phone2, '-', '') = :phone OR c.email = :email")
+                ->setParameter("name", $newCustomer->getName())
+                ->setParameter("phone", str_replace($newCustomer->getPhone(), "-", ""))
+                ->setParameter("email", $newCustomer->getEmail());
+
+            $result = $q->getResult();
+
+            if (count($result) == 1)
+            {
+                return $result[0];
+            }
+            else
+            {
+                return $newCustomer;
+            }
         }
     }
 }

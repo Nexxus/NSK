@@ -7,11 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\Supplier;
-use AppBundle\Entity\Address;
 use AppBundle\Entity\PurchaseOrder;
-use AppBundle\Entity\Location;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use AppBundle\Form\IndexSearchForm;
 use AppBundle\Form\PurchaseOrderForm;
 use Symfony\Component\Form\FormError;
@@ -30,14 +26,17 @@ class PurchaseOrderController extends Controller
 
         $orders = array();
 
-        $form = $this->createForm(IndexSearchForm::class, array());
+        $container = new \AppBundle\Helper\IndexSearchContainer();
+        $container->user = $this->getUser();
+        $container->className = PurchaseOrder::class;
+
+        $form = $this->createForm(IndexSearchForm::class, $container);
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid())
+        if ($form->isSubmitted() && $form->isValid() && $container->isSearchable())
         {
-            $data = $form->getData();
-            $orders = $repo->findBySearchQuery($data['query']);
+            $orders = $repo->findBySearchQuery($container);
         }
         else
         {

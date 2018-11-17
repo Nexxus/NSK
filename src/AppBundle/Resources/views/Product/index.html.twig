@@ -5,10 +5,16 @@
 
     {{ form_start(form) }}
     <div class="row" style="margin-bottom: 20px">
-        <div class="col-sm-7">
+        <div class="col-sm-4">
             {{ form_widget(form.query, {'attr': {'placeholder': 'Zoeken op Id, Sku of (deel van) naam'} }) }}
         </div>
         <div class="col-sm-2">
+            {{ form_widget(form.status) }}
+        </div>
+        <div class="col-sm-2">
+            {{ form_widget(form.location) }}
+        </div>
+        <div class="col-sm-1">
             {{ form_widget(form.submit) }}
         </div>
         <div class="col-sm-3">
@@ -24,13 +30,14 @@
                 <th{% if products.isSorted('name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(products, 'Name', 'name') }}</th>
                 <th{% if products.isSorted('type.name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(products, 'Type', 'type.name') }}</th>
                 <th{% if products.isSorted('location.name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(products, 'Location', 'location.name') }}</th>
+                <th width="10%">Price</th>
                 <th width="5%">Purch</th>
                 <th width="5%">Repair</th>
                 <th width="5%">Sold</th>
                 <th width="5%">Used</th>
+                <th width="5%">Hold</th>
                 <th width="5%">Off</th>
                 <th width="5%">Stock</th>
-                <th width="10%">Price</th>
                 <th width="1%"></th>
             </tr>
             <tr>
@@ -43,13 +50,14 @@
                 <td>{{ product.name }}</td>
                 <td>{{ product.type.name }}</td>
                 <td>{{ product.location.name|default("") }}</td>
+                <td>&euro; {{ product.price|number_format(2, ',', '.') }}</td>
                 <td>{{ product.getQuantityPurchased() }}</td>
                 <td>{{ product.getQuantityRepairing() }}</td>
                 <td>{{ product.getQuantitySold() }}</td>
                 <td>{{ product.getQuantityAttributed() }}</td>
+                <td>{{ product.getQuantityOnHold() }}</td>
                 <td>{{ product.getQuantityWrittenOff() }}</td>
                 <td>{{ product.getQuantityInStock(true) }}</td>
-                <td>&euro; {{ product.price|number_format(2, ',', '.') }}</td>
                 <td nowrap>
                     <a class="btn btn-success" href="{{ path('product_edit', { 'id': product.id }) }}" data-toggle="modal" data-target="#modalEditor"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
                     <a class="btn btn-danger" href="{{ path('product_delete', { 'id': product.id }) }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>

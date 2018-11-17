@@ -28,16 +28,32 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Doctrine\ORM\EntityRepository;
+use AppBundle\Helper\IndexSearchContainer;
 
 class IndexSearchForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        /** @var IndexSearchContainer */
+        $container = $builder->getData();
+
         $builder->setMethod('GET')
-            ->add('query', TextType::class, ['label' => false, 'trim' => true, 'attr' => ['class' => 'focus']])
+            ->add('query', TextType::class, ['label' => false, 'required' => false, 'trim' => true, 'attr' => ['class' => 'focus']])
             ->add('submit', SubmitType::class, ['label' => 'Search']);
 
-        if ($options['withRadioButtons'])
+        if ($container && $container->user && ($container->user->hasRole("ROLE_MANAGER") || $container->user->hasRole("ROLE_ADMIN") || $container->user->hasRole("ROLE_SUPER_ADMIN")))
+        {
+            $builder->add('location',  EntityType::class, [
+                    'class' => 'AppBundle:Location',
+                    'choice_label' => 'name',
+                    'placeholder' => 'All locations',
+                    'required' => false
+                ]);
+        }
+
+        if ($container === null || $container->className === null) // Dashboard
         {
             $builder->add('type', ChoiceType::class, [
                 'label' => false,
@@ -51,17 +67,40 @@ class IndexSearchForm extends AbstractType
                     'Verkooporders' => 'salesorder',
                     'Klanten' => 'customer',
                     'Leveranciers' => 'supplier'
-                    //'Locaties' => 'location'
                 ]]);
         }
-    }
-
-    public function configureOptions(OptionsResolver $resolver)
-    {
-        $resolver->setDefaults(array(
-            //'allow_extra_fields' => true, // when request comes from dashboard
-            'withRadioButtons' => false,
-            'csrf_protection' => false
-        ));
+        elseif ($container->className == \AppBundle\Entity\Product::class)
+        {
+            $builder->add('status',  EntityType::class, [
+                'class' => 'AppBundle:ProductStatus',
+                'choice_label' => 'name',
+                'placeholder' => 'All statuses',
+                'required' => false
+            ]);
+        }
+        elseif ($container->className == \AppBundle\Entity\SalesOrder::class)
+        {
+            $builder->add('status', EntityType::class, [
+                'class' => 'AppBundle:OrderStatus',
+                'choice_label' => 'name',
+                'placeholder' => 'All statuses',
+                'required' => false,
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('os')->where('os.isSale = true');
+                }
+            ]);
+        }
+        elseif ($container->className == \AppBundle\Entity\PurchaseOrder::class)
+        {
+            $builder->add('status', EntityType::class, [
+                'class' => 'AppBundle:OrderStatus',
+                'choice_label' => 'name',
+                'placeholder' => 'All statuses',
+                'required' => false,
+                'query_builder' => function (EntityRepository $er) {
+                    return $er->createQueryBuilder('os')->where('os.isPurchase = true');
+                }
+            ]);
+        }
     }
 }

@@ -43,22 +43,22 @@ class DashboardController extends Controller
     {
         $result = null;
 
-        $form = $this->createForm(IndexSearchForm::class, array(), array('withRadioButtons' => true));
+        $container = new \AppBundle\Helper\IndexSearchContainer();
+
+        $form = $this->createForm(IndexSearchForm::class, $container);
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid() && $container->isSearchable()) {
 
-            $data = $form->getData();
-
-            if ($data['type'] == 'barcode')
+            if ($container->type == 'barcode')
             {
                 $repo = $this->getDoctrine()->getRepository('AppBundle:Product');
-                $result = $repo->findByBarcodeSearchQuery($data['query']);
+                $result = $repo->findByBarcodeSearchQuery($container);
             }
             else
             {
-                return $this->redirectToRoute($data['type'] . '_index', ['index_search_form[query]' => $data['query'] ]);
+                return $this->redirectToRoute($container->type . '_index', ['index_search_form[query]' => $container->query ]);
             }
         }
 

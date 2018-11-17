@@ -109,6 +109,13 @@ class Product
     private $quantityWrittenOff;
 
     /**
+     * @var int Part of stock on hold
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $quantityOnHold;
+
+    /**
      * @var Location
      *
      * @ORM\ManyToOne(targetEntity="Location", inversedBy="products", fetch="EAGER")
@@ -528,14 +535,12 @@ class Product
     public function getQuantityInStock($withRepairs)
     {
         $in = $this->getQuantityPurchased();
-
         if ($withRepairs)
             $in += $this->getQuantityRepairing();
 
         $out = $this->getQuantitySold();
-
         $out += $this->getQuantityWrittenOff();
-
+        $out += $this->getQuantityOnHold();
         $out += $this->getQuantityAttributed();
 
         return $in - $out;
@@ -606,7 +611,7 @@ class Product
     }
 
     /**
-     * @param integer $quantity
+     * @param integer $quantityWrittenOff
      */
     public function setQuantityWrittenOff($quantityWrittenOff)
     {
@@ -621,6 +626,24 @@ class Product
     public function getQuantityWrittenOff()
     {
         return $this->quantityWrittenOff !== null ? $this->quantityWrittenOff : 0;
+    }
+
+    /**
+     * @param integer $quantityOnHold
+     */
+    public function setQuantityOnHold($quantityOnHold)
+    {
+        $this->quantityOnHold = $quantityOnHold;
+
+        return $this;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getQuantityOnHold()
+    {
+        return $this->quantityOnHold !== null ? $this->quantityOnHold : 0;
     }
 
     #endregion

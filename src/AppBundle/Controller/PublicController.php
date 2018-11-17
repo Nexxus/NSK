@@ -24,6 +24,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Pickup;
 use AppBundle\Entity\Product;
+use AppBundle\Entity\ProductType;
 use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\Supplier;
@@ -32,12 +33,11 @@ use AppBundle\Entity\PickupImageFile;
 use AppBundle\Entity\PickupAgreementFile;
 use AppBundle\Entity\ProductOrderRelation;
 use AppBundle\Form\PickupForm;
-use AppBundle\Form\PublicOrderForm;
+use AppBundle\Form\PublicSalesOrderForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\Form\FormError;
 
 class PublicController extends Controller
 {
@@ -52,6 +52,8 @@ class PublicController extends Controller
 
         $em = $this->getDoctrine()->getEntityManager();
 
+        $allProductTypes = $em->getRepository(ProductType::class)->findAll();
+
         $pickup = new Pickup();
         $order = new PurchaseOrder();
         $order->setOrderDate(new \DateTime());
@@ -65,7 +67,7 @@ class PublicController extends Controller
         $order->setSupplier($supplier);
         $pickup->setOrder($order);
 
-        $form = $this->createForm(PickupForm::class, $pickup);
+        $form = $this->createForm(PickupForm::class, $pickup, array('productTypes' => $allProductTypes));
 
         $form->handleRequest($request);
 
@@ -110,16 +112,16 @@ class PublicController extends Controller
 
                     // Products
                     $count = 0;
-                    $productTypes = array("Computer", "Server", "Phone", "Printer", "Monitor","Laptop","Toetsenbord","Muis","Oplader","Kabel","Camera","Switches","APC","PSU");
-                    foreach ($productTypes as $productType)
+                    foreach ($allProductTypes as $productType)
                     {
-                        $quantity = $form->get('q'.$productType)->getData();
+                        $productTypeName = $productType->getName();
+                        $quantity = $form->get('q'.$productTypeName)->getData();
                         if ($quantity)
                         {
                             $product = new Product();
-                            $product->setName($productType);
+                            $product->setName($productTypeName);
                             $product->setDescription("Created by application");
-                            $product->setType($em->getRepository("AppBundle:ProductType")->findOrCreate($productType));
+                            $product->setType($productType);
                             $product->setLocation($location);
                             $product->setSku(time() + $count);
                             $em->persist($product);
@@ -167,11 +169,11 @@ class PublicController extends Controller
     }
 
     /**
-     * @Route("/public/order", name="public_order")
+     * @Route("/public/salesorder", name="public_salesorder")
      * @Route("/leergeld-bestelling", name="leergeld_bestelling")
      * @Method({"GET", "POST"})
      */
-    public function orderAction(Request $request)
+    public function salesOrderAction(Request $request)
     {
         $success = null;
 
@@ -187,7 +189,7 @@ class PublicController extends Controller
 
         $order->setCustomer($customer);
 
-        $form = $this->createForm(PublicOrderForm::class, $order);
+        $form = $this->createForm(PublicSalesOrderForm::class, $order);
 
         $form->handleRequest($request);
 
@@ -203,11 +205,21 @@ class PublicController extends Controller
                     $order->setCustomer($em->getRepository('AppBundle:Customer')->checkExists($order->getCustomer()));
                     $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), false, true));
 
-                    $qComputer = $form->get('qComputer')->getData();
-                    $qLaptop = $form->get('qLaptop')->getData();
-                    $qElite = $form->get('qLaptopElitebook820')->getData();
+                    $remarks = "";
+                    foreach ($request->request->all()["public_sales_order_form"] as $fld => $q)
+                    {
+                        if (substr($fld, 0, 1) == "q" && $q)
+                        {
+                            $remarks .= ", " . substr($fld, 1). ": " . $q;
+                        }
+                    }
 
-                    $order->setRemarks(sprintf("Computers: %s, Laptops: %s, Laptop Elitebook 820: %s", $qComputer, $qLaptop, $qElite));
+                    if (strlen($remarks) > 2)
+                        $remarks = substr($remarks, 2);
+                    else
+                        $remarks = "No quantities entered...";
+
+                    $order->setRemarks($remarks);
 
                     $em->flush();
 
@@ -230,11 +242,15 @@ class PublicController extends Controller
                 $success = false;
             }
         }
+    }
 
-        return $this->render('AppBundle:Public:order.html.twig', array(
-                'form' => $form->createView(),
-                'success' => $success,
-            ));
+     /**
+     * @Route("/public/salesorderhtml", name="public_salesorder_html")
+     * @Method({"GET"})
+     */
+    public function salesOrderHtmlAction(Request $request)
+    {
+        return $this->render('AppBundle:Public:salesorderbyapi.html.twig');
     }
 
     private function captchaVerify($recaptcha)
