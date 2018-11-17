@@ -29,7 +29,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\Form\FormError;
 
 /**
  * @Route("/customer")
@@ -45,14 +44,17 @@ class CustomerController extends Controller
 
         $customers = array();
 
-        $form = $this->createForm(IndexSearchForm::class, array());
+        $container = new \AppBundle\Helper\IndexSearchContainer();
+        $container->user = $this->getUser();
+        $container->className = Customer::class;
+
+        $form = $this->createForm(IndexSearchForm::class, $container);
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid() && $form['query']->getData())
+        if ($form->isSubmitted() && $form->isValid() && $container->isSearchable())
         {
-            $data = $form->getData();
-            $customers = $repo->findBySearchQuery($data['query']);
+            $customers = $repo->findBySearchQuery($container);
         }
         else
         {

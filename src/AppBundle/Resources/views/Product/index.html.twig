@@ -5,10 +5,16 @@
 
     {{ form_start(form) }}
     <div class="row" style="margin-bottom: 20px">
-        <div class="col-sm-7">
+        <div class="col-sm-4">
             {{ form_widget(form.query, {'attr': {'placeholder': 'Zoeken op Id, Sku of (deel van) naam'} }) }}
         </div>
         <div class="col-sm-2">
+            {{ form_widget(form.status) }}
+        </div>
+        <div class="col-sm-2">
+            {{ form_widget(form.location) }}
+        </div>
+        <div class="col-sm-1">
             {{ form_widget(form.submit) }}
         </div>
         <div class="col-sm-3">

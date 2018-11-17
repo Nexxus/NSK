@@ -46,16 +46,21 @@ class PurchaseOrderRepository extends \Doctrine\ORM\EntityRepository
             return $this->findBy(array(), array('id' => 'DESC'));
     }
 
-    /**
-     * This function searches in fields: Id, Kvk, Email, Name
-     */
-    public function findBySearchQuery($query)
+    public function findBySearchQuery(\AppBundle\Helper\IndexSearchContainer $search)
     {
-        $q = $this->getEntityManager()
-            ->createQuery("SELECT o FROM AppBundle:PurchaseOrder o WHERE o.orderNr = ?1 ORDER BY o.id DESC")
-            ->setParameter(1, $query);
+        $qb = $this->getEntityManager()->createQueryBuilder()
+            ->from("AppBundle:PurchaseOrder", "o")->select("o")->orderBy("o.id", "DESC");
 
-        return $q->getResult();
+        if ($search->query)
+            $qb = $qb->andWhere("o.orderNr = :query")->setParameter("query", $search->query);
+
+        if ($search->location)
+            $qb = $qb->andWhere("o.location = :location")->setParameter("location", $search->location);
+
+        if ($search->status)
+            $qb = $qb->andWhere("o.status = :status")->setParameter("status", $search->status);
+
+        return $qb->getQuery()->getResult();
     }
 
     public function generateOrderNr(PurchaseOrder $order)

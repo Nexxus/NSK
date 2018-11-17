@@ -45,14 +45,17 @@ class SupplierController extends Controller
 
         $suppliers = array();
 
-        $form = $this->createForm(IndexSearchForm::class, array());
+        $container = new \AppBundle\Helper\IndexSearchContainer();
+        $container->user = $this->getUser();
+        $container->className = Supplier::class;
+
+        $form = $this->createForm(IndexSearchForm::class, $container);
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid() && $form['query']->getData())
+        if ($form->isSubmitted() && $form->isValid() && $container->isSearchable())
         {
-            $data = $form->getData();
-            $suppliers = $repo->findBySearchQuery($data['query']);
+            $suppliers = $repo->findBySearchQuery($container);
         }
         else
         {

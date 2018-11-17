@@ -29,14 +29,17 @@ class SalesOrderController extends Controller
 
         $orders = array();
 
-        $form = $this->createForm(IndexSearchForm::class, array());
+        $container = new \AppBundle\Helper\IndexSearchContainer();
+        $container->user = $this->getUser();
+        $container->className = SalesOrder::class;
+
+        $form = $this->createForm(IndexSearchForm::class, $container);
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid() && $form['query']->getData())
+        if ($form->isSubmitted() && $form->isValid() && $container->isSearchable())
         {
-            $data = $form->getData();
-            $orders = $repo->findBySearchQuery($data['query']);
+            $orders = $repo->findBySearchQuery($container);
         }
         else
         {

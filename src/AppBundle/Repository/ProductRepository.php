@@ -54,44 +54,56 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
     /**
      * This function searches in fields: Id, Sku, Name
      */
-    public function findBySearchQuery($query)
+    public function findBySearchQuery(\AppBundle\Helper\IndexSearchContainer $search)
     {
-        if (is_numeric($query))
+        $qb = $this->getEntityManager()->createQueryBuilder()
+            ->from("AppBundle:Product", "o")->select("o")->orderBy("o.id", "DESC");
+
+        if ($search->query)
         {
-            $q = $this->getEntityManager()
-                ->createQuery("SELECT c FROM AppBundle:Product c WHERE c.id = ?1 OR c.sku = ?1 ORDER BY c.id DESC")->setParameter(1, $query);
-        }
-        else
-        {
-            $q = $this->getEntityManager()
-                ->createQuery("SELECT c FROM AppBundle:Product c WHERE c.name LIKE ?2 OR c.sku = ?1 ORDER BY c.id DESC")->setParameter(1, $query)->setParameter(2, '%' . $query . '%');
+            if (is_numeric($search->query))
+            {
+                $qb = $qb->andWhere("o.id = :query OR o.sku = :query");
+            }
+            else
+            {
+                $qb = $qb->andWhere("o.name LIKE :queryLike OR o.sku = :query")->setParameter("queryLike", '%'.$search->query.'%');
+            }
+
+            $qb = $qb->setParameter("query", $search->query);
         }
 
-        return $q->getResult();
+        if ($search->location)
+            $qb = $qb->andWhere("o.location = :location")->setParameter("location", $search->location);
+
+        if ($search->status)
+            $qb = $qb->andWhere("o.status = :status")->setParameter("status", $search->status);
+
+        return $qb->getQuery()->getResult();
     }
 
     /**
      * This function searches in fields: Sku (of products) and orderNr (of orders)
      */
-    public function findByBarcodeSearchQuery($query)
+    public function findByBarcodeSearchQuery(\AppBundle\Helper\IndexSearchContainer $search)
     {
         $result = array();
 
-        foreach ($this->findBySearchQuery($query) as $product)
+        foreach ($this->findBySearchQuery($search) as $product)
         {
             /** @var Product $product */
             $result["product-".$product->getId()] = sprintf("Product '%s' with SKU %s, in quantity %s, at location %s",
                 $product->getName(), $product->getSku(), $product->getQuantityInStock(true), $product->getLocation()->getName());
         }
 
-        foreach ($this->_em->getRepository(\AppBundle\Entity\SalesOrder::class)->findBySearchQuery($query) as $salesOrder)
+        foreach ($this->_em->getRepository(\AppBundle\Entity\SalesOrder::class)->findBySearchQuery($search) as $salesOrder)
         {
             /** @var \AppBundle\Entity\SalesOrder $salesOrder */
             $result["salesorder-".$salesOrder->getId()] = sprintf("Sales order with nr %s, dated %s, to customer %s, at location %s",
                 $salesOrder->getOrderNr(), $salesOrder->getOrderDate()->format("M j, Y"), $salesOrder->getCustomer()->getName(), $salesOrder->getLocation()->getName());
         }
 
-        foreach ($this->_em->getRepository(\AppBundle\Entity\PurchaseOrder::class)->findBySearchQuery($query) as $purchaseOrder)
+        foreach ($this->_em->getRepository(\AppBundle\Entity\PurchaseOrder::class)->findBySearchQuery($search) as $purchaseOrder)
         {
             /** @var \AppBundle\Entity\PurchaseOrder $purchaseOrder */
             $result["purchaseorder-".$purchaseOrder->getId()] = sprintf("Purchase order with nr %s, dated %s, from supplier %s, at location %s",
