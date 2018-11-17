@@ -68,21 +68,39 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
      */
     public function checkExists(Customer $newCustomer)
     {
+        // First: strict comparision, loose result count
+
         $q = $this->getEntityManager()
-            ->createQuery("SELECT c FROM AppBundle:Customer c WHERE SOUNDEX(c.name) like SOUNDEX(:name) or REPLACE(c.phone, '-', '') = :phone OR REPLACE(c.phone2, '-', '') = :phone OR c.email = :email")
+            ->createQuery("SELECT c FROM AppBundle:Customer c WHERE c.name = :name OR c.email = :email")
             ->setParameter("name", $newCustomer->getName())
-            ->setParameter("phone", $newCustomer->getPhone())
             ->setParameter("email", $newCustomer->getEmail());
 
         $result = $q->getResult();
 
-        if (count($result) == 1)
+        if (count($result) > 0)
         {
             return $result[0];
         }
         else
         {
-            return $newCustomer;
+            // Second: loose comparision, strict result count
+
+            $q = $this->getEntityManager()
+                ->createQuery("SELECT c FROM AppBundle:Customer c WHERE SOUNDEX(c.name) like SOUNDEX(:name) or REPLACE(c.phone, '-', '') = :phone OR REPLACE(c.phone2, '-', '') = :phone OR c.email = :email")
+                ->setParameter("name", $newCustomer->getName())
+                ->setParameter("phone", str_replace($newCustomer->getPhone(), "-", ""))
+                ->setParameter("email", $newCustomer->getEmail());
+
+            $result = $q->getResult();
+
+            if (count($result) == 1)
+            {
+                return $result[0];
+            }
+            else
+            {
+                return $newCustomer;
+            }
         }
     }
 }

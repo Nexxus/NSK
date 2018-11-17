@@ -75,21 +75,39 @@ class SupplierRepository extends \Doctrine\ORM\EntityRepository
      */
     public function checkExists(Supplier $newSupplier)
     {
+        // First: strict comparision, loose result count
+
         $q = $this->getEntityManager()
-            ->createQuery("SELECT s FROM AppBundle:Supplier s WHERE SOUNDEX(s.name) like SOUNDEX(:name) or REPLACE(s.phone, '-', '') = :phone OR REPLACE(s.phone2, '-', '') = :phone OR s.email = :email")
+            ->createQuery("SELECT s FROM AppBundle:Supplier s WHERE s.name = :name OR s.email = :email")
             ->setParameter("name", $newSupplier->getName())
-            ->setParameter("phone", $newSupplier->getPhone())
             ->setParameter("email", $newSupplier->getEmail());
 
         $result = $q->getResult();
 
-        if (count($result) == 1)
+        if (count($result) > 0)
         {
             return $result[0];
         }
         else
         {
-            return $newSupplier;
+            // Second: loose comparision, strict result count
+
+            $q = $this->getEntityManager()
+                ->createQuery("SELECT s FROM AppBundle:Supplier s WHERE SOUNDEX(s.name) like SOUNDEX(:name) or REPLACE(s.phone, '-', '') = :phone OR REPLACE(s.phone2, '-', '') = :phone OR s.email = :email")
+                ->setParameter("name", $newSupplier->getName())
+                ->setParameter("phone", str_replace($newSupplier->getPhone(), "-", ""))
+                ->setParameter("email", $newSupplier->getEmail());
+
+            $result = $q->getResult();
+
+            if (count($result) == 1)
+            {
+                return $result[0];
+            }
+            else
+            {
+                return $newSupplier;
+            }
         }
     }
 }
