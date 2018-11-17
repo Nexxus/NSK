@@ -1,6 +1,6 @@
 # Nexxus Stock Keeping
 
-Nexxus stock keeping is a webapplication made for purchase, sale and keeping of any stock. The application is built upon most popular technologies, such as PHP 7, Symfony 3, MySQL, jQuery and Bootstrap 3. This repository holds version 2 of Nexxus, which is made open source under the terms of the GNU General Public License (GNU GPLv3). 
+Nexxus stock keeping is a webapplication made for purchase, sale and keeping of any stock. The application is built upon most popular technologies, such as PHP, Symfony, MySQL, jQuery and Bootstrap. This repository holds version 2 of Nexxus, which is made open source under the terms of the GNU General Public License (GNU GPLv3). 
 
 ## Background
 
@@ -13,10 +13,12 @@ The software evolved and it became possible to also keep track of other objects 
 The following technologies should be present in order to install and use Nexxus.
 
 - Web server like Apache on Linux
-- PHP 7 with regular extensions
+- PHP 7.0 with regular extensions
 - MySQL 5.6
 - Composer (dependency manager for PHP)
 - Git
+
+Nexxus is tested with these versions. Higher versions of PHP could give undesirable results.
 
 ## Installation
 
@@ -61,7 +63,7 @@ Now you have your clean clone of Nexxus.
 If you need a production web server like Apache, the public web folder is at a designated location, in which you (fortunally) did not install Nexxus. To make Nexxus publically accessible, move the web folder of the installation to the public web folder of your server. The public web folder is typically named _public_html_ or _wwwroot_. This is an example how it can be achieved:
 ```
 mkdir ../public_html/nsk
-move web/ ../public_html/nsk
+mv web/* web/.* ../public_html/nsk/
 ```
 Don't copy this line literally, but apply it to the situation of your web server. In this example, Nexxus will be available on URL http://www.yourdomain.com/nsk
 
