@@ -33,7 +33,7 @@ use AppBundle\Entity\PickupImageFile;
 use AppBundle\Entity\PickupAgreementFile;
 use AppBundle\Entity\ProductOrderRelation;
 use AppBundle\Form\PickupForm;
-use AppBundle\Form\PublicOrderForm;
+use AppBundle\Form\PublicSalesOrderForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -169,11 +169,11 @@ class PublicController extends Controller
     }
 
     /**
-     * @Route("/public/order", name="public_order")
+     * @Route("/public/salesorder", name="public_salesorder")
      * @Route("/leergeld-bestelling", name="leergeld_bestelling")
      * @Method({"GET", "POST"})
      */
-    public function orderAction(Request $request)
+    public function salesOrderAction(Request $request)
     {
         $success = null;
 
@@ -189,7 +189,7 @@ class PublicController extends Controller
 
         $order->setCustomer($customer);
 
-        $form = $this->createForm(PublicOrderForm::class, $order);
+        $form = $this->createForm(PublicSalesOrderForm::class, $order);
 
         $form->handleRequest($request);
 
@@ -205,11 +205,21 @@ class PublicController extends Controller
                     $order->setCustomer($em->getRepository('AppBundle:Customer')->checkExists($order->getCustomer()));
                     $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), false, true));
 
-                    $qComputer = $form->get('qComputer')->getData();
-                    $qLaptop = $form->get('qLaptop')->getData();
-                    $qElite = $form->get('qLaptopElitebook820')->getData();
+                    $remarks = "";
+                    foreach ($request->request->all()["public_sales_order_form"] as $fld => $q)
+                    {
+                        if (substr($fld, 0, 1) == "q" && $q)
+                        {
+                            $remarks .= ", " . substr($fld, 1). ": " . $q;
+                        }
+                    }
 
-                    $order->setRemarks(sprintf("Computers: %s, Laptops: %s, Laptop Elitebook 820: %s", $qComputer, $qLaptop, $qElite));
+                    if (strlen($remarks) > 2)
+                        $remarks = substr($remarks, 2);
+                    else
+                        $remarks = "No quantities entered...";
+
+                    $order->setRemarks($remarks);
 
                     $em->flush();
 
@@ -233,7 +243,7 @@ class PublicController extends Controller
             }
         }
 
-        return $this->render('AppBundle:Public:order.html.twig', array(
+        return $this->render('AppBundle:Public:salesorder.html.twig', array(
                 'form' => $form->createView(),
                 'success' => $success,
             ));

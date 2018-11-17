@@ -111,6 +111,7 @@
                     <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}About the materials{% endtrans %}
                 </div>
                 <div class="panel-body">
+                    <!-- Only known product types are allowed. Not all product types are allowed. -->
                     {% for q in form if q.vars.name starts with 'q' %}
                     {{ form_row(q) }} 
                     {% endfor %}
