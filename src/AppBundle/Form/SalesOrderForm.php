@@ -112,7 +112,8 @@ class SalesOrderForm extends AbstractType
                 'mapped' => false,
                 'class' => 'AppBundle:Product',
                 'choice_label' => 'name',
-                'choices' => $options['stock']
+                'choices' => $options['stock'],
+                'attr' => ['class' => 'combobox']
             ]);
         }
 
