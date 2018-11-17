@@ -24,6 +24,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Pickup;
 use AppBundle\Entity\Product;
+use AppBundle\Entity\ProductType;
 use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\Supplier;
@@ -37,7 +38,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\Form\FormError;
 
 class PublicController extends Controller
 {
@@ -52,6 +52,8 @@ class PublicController extends Controller
 
         $em = $this->getDoctrine()->getEntityManager();
 
+        $allProductTypes = $em->getRepository(ProductType::class)->findAll();
+
         $pickup = new Pickup();
         $order = new PurchaseOrder();
         $order->setOrderDate(new \DateTime());
@@ -65,7 +67,7 @@ class PublicController extends Controller
         $order->setSupplier($supplier);
         $pickup->setOrder($order);
 
-        $form = $this->createForm(PickupForm::class, $pickup);
+        $form = $this->createForm(PickupForm::class, $pickup, array('productTypes' => $allProductTypes));
 
         $form->handleRequest($request);
 
@@ -110,16 +112,16 @@ class PublicController extends Controller
 
                     // Products
                     $count = 0;
-                    $productTypes = array("Computer", "Server", "Phone", "Printer", "Monitor","Laptop","Toetsenbord","Muis","Oplader","Kabel","Camera","Switches","APC","PSU");
-                    foreach ($productTypes as $productType)
+                    foreach ($allProductTypes as $productType)
                     {
-                        $quantity = $form->get('q'.$productType)->getData();
+                        $productTypeName = $productType->getName();
+                        $quantity = $form->get('q'.$productTypeName)->getData();
                         if ($quantity)
                         {
                             $product = new Product();
-                            $product->setName($productType);
+                            $product->setName($productTypeName);
                             $product->setDescription("Created by application");
-                            $product->setType($em->getRepository("AppBundle:ProductType")->findOrCreate($productType));
+                            $product->setType($productType);
                             $product->setLocation($location);
                             $product->setSku(time() + $count);
                             $em->persist($product);
