@@ -55,7 +55,7 @@ class ProductController extends APdfController
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid())
+        if ($form->isSubmitted() && $form->isValid() && $form['query']->getData())
         {
             $data = $form->getData();
             $products = $repo->findBySearchQuery($data['query']);

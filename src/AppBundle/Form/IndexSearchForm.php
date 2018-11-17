@@ -34,7 +34,7 @@ class IndexSearchForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->setMethod('GET')
-            ->add('query', TextType::class, ['label' => false, 'trim' => true, 'attr' => ['class' => 'focus']])
+            ->add('query', TextType::class, ['label' => false, 'required' => false, 'trim' => true, 'attr' => ['class' => 'focus']])
             ->add('submit', SubmitType::class, ['label' => 'Search']);
 
         if ($options['withRadioButtons'])

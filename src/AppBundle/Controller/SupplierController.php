@@ -49,7 +49,7 @@ class SupplierController extends Controller
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid())
+        if ($form->isSubmitted() && $form->isValid() && $form['query']->getData())
         {
             $data = $form->getData();
             $suppliers = $repo->findBySearchQuery($data['query']);

@@ -94,7 +94,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         foreach ($this->_em->getRepository(\AppBundle\Entity\PurchaseOrder::class)->findBySearchQuery($query) as $purchaseOrder)
         {
             /** @var \AppBundle\Entity\PurchaseOrder $purchaseOrder */
-            $result["salesorder-".$purchaseOrder->getId()] = sprintf("Purchase order with nr %s, dated %s, from supplier %s, at location %s",
+            $result["purchaseorder-".$purchaseOrder->getId()] = sprintf("Purchase order with nr %s, dated %s, from supplier %s, at location %s",
                 $purchaseOrder->getOrderNr(), $purchaseOrder->getOrderDate()->format("M j, Y"), $purchaseOrder->getSupplier()->getName(), $purchaseOrder->getLocation()->getName());
         }
 
