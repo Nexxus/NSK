@@ -12,9 +12,9 @@ The software evolved and it became possible to also keep track of other objects 
 
 The following technologies should be present in order to install and use Nexxus.
 
-- Web server like Apache on Linux
-- PHP 7.0 with regular extensions
-- MySQL 5.6
+- Web server like Apache on Linux (Tested with Apache 2.4.7 and Ubuntu Linux 14.04.4)
+- PHP 7 with regular extensions (tested with 7.0.32)
+- MySQL 5.6 (Tested with 5.6.33-0ubuntu0.14.04.1)
 - Composer (dependency manager for PHP)
 - Git
 
@@ -38,7 +38,7 @@ To clone the source code, run:
 ```
 git clone https://github.com/Nexxus/NSK.git nexxus
 ```
-This will download all source code and place it in a newly created folder named _nexxus_. Go to the new folder when download is finished:
+This will download all source code and place it in a newly created folder named _nexxus_. Go to the new folder when the download has finished:
 ```
 cd nexxus
 ```
@@ -60,14 +60,14 @@ Now you have your clean clone of Nexxus.
 
 ### 3. Move some files to the public web folder.
 
-If you need a production web server like Apache, the public web folder is at a designated location, in which you (fortunally) did not install Nexxus. To make Nexxus publically accessible, move the web folder of the installation to the public web folder of your server. The public web folder is typically named _public_html_ or _wwwroot_. This is an example how it can be achieved:
+If you need a production web server like Apache, the public web folder is at a designated location, in which you (fortunately) did not install Nexxus. To make Nexxus publically accessible, move the web folder of the installation to the public web folder of your server. The public web folder is typically named _public_html_ or _wwwroot_. This is an example how it can be achieved:
 ```
 mkdir ../public_html/nsk
-mv web/* web/.* ../public_html/nsk/
+mv web/* web/.* ../public_html/nsk
 ```
 Don't copy this line literally, but apply it to the situation of your web server. In this example, Nexxus will be available on URL http://www.yourdomain.com/nsk
 
-Finally, in _composer.jsn_ you can should the value for field _symfony-web-dir_.
+Finally, in _composer.jsn_ you should add the value for field _symfony-web-dir_.
 
 Secondly, make sure the application root can find the source code from its new location. Open _app.dev_ in a text editor and change lines 6 and 7 like so:
 ```
@@ -101,7 +101,7 @@ php bin/console fos:user:create superadmin superadmin@whatever.com p@ssw0rd
 php bin/console fos:user:promote superadmin ROLE_SUPERADMIN
 php bin/console fos:user:promote superadmin ROLE_ADMIN
 ```
-Don't copy these line literally, but apply it to your likings. Take care of choosing a good password.
+Don't copy these line literally, but change the name, email and password to your likings. Take care of choosing a good password.
 
 Now you can login and create other users in the Admin section.
 
