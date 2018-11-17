@@ -242,11 +242,15 @@ class PublicController extends Controller
                 $success = false;
             }
         }
+    }
 
-        return $this->render('AppBundle:Public:salesorder.html.twig', array(
-                'form' => $form->createView(),
-                'success' => $success,
-            ));
+     /**
+     * @Route("/public/salesorderhtml", name="public_salesorder_html")
+     * @Method({"GET"})
+     */
+    public function salesOrderHtmlAction(Request $request)
+    {
+        return $this->render('AppBundle:Public:salesorderbyapi.html.twig');
     }
 
     private function captchaVerify($recaptcha)
