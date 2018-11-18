@@ -18,44 +18,44 @@
 
         <table>
             <tr>
-                <td>Name</td>
+                <td>Name *</td>
                 <td><input type="text" name="customer_name" required="required" /></td>
             </tr>
             <tr>
                 <td>Representative</td>
-                <td><input type="text" name="customer_representative" required="required" /></td>
+                <td><input type="text" name="customer_representative" /></td>
             </tr>
             <tr>
-                <td>Email</td>
+                <td>Email *</td>
                 <td><input type="email" name="customer_email" required="required" /></td>
             </tr>
             <tr>
                 <td>Phone</td>
-                <td><input type="text" name="customer_phone" required="required" /></td>
+                <td><input type="text" name="customer_phone" /></td>
             </tr>
             <tr>
                 <td>Street</td>
-                <td><input type="text" name="customer_street" required="required" /></td>
+                <td><input type="text" name="customer_street" /></td>
             </tr>
             <tr>
                 <td>Street2</td>
-                <td><input type="text" name="customer_street2" required="required" /></td>
+                <td><input type="text" name="customer_street2" /></td>
             </tr>
             <tr>
                 <td>City</td>
-                <td><input type="email" name="customer_city" required="required" /></td>
+                <td><input type="text" name="customer_city" /></td>
             </tr>
             <tr>
                 <td>Zip</td>
-                <td><input type="email" name="customer_zip" required="required" /></td>
+                <td><input type="text" name="customer_zip" /></td>
             </tr>
             <tr>
                 <td>State</td>
-                <td><input type="email" name="customer_state" required="required" /></td>
+                <td><input type="text" name="customer_state" /></td>
             </tr>
             <tr>
                 <td>Country</td>
-                <td><input type="email" name="customer_country" required="required" /></td>
+                <td><input type="text" name="customer_country" /></td>
             </tr>
         </table>
 
@@ -97,6 +97,30 @@
     </script>
     <script>
 
+    $("#orderform").submit(function (e) {
+
+        e.preventDefault(); 
+
+        var postData = {
+            qComputers: $('[name=qComputer]').val(),
+        }
+
+        $.ajax({
+            type: "POST",
+            url: 'http://192.168.0.12/nexxus/web/app_dev.php/public/api/salesorder?XDEBUG_SESSION_START=4B9B301B',
+            data: postData
+        })
+        .done(function (response) {
+            console.log(response);
+            // Here you should make a confirmation in the UI
+        })
+        .fail(function (xhr, err) {
+            console.log(xhr.responseText);
+            // Here you should give an error in the UI    
+        });
+
+       
+    });
 
     </script>
 </body>

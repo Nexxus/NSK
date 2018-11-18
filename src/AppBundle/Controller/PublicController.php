@@ -36,6 +36,7 @@ use AppBundle\Form\PickupForm;
 use AppBundle\Form\PublicSalesOrderForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
@@ -242,15 +243,59 @@ class PublicController extends Controller
                 $success = false;
             }
         }
+
+             return $this->render('AppBundle:Public:salesorder.html.twig', array(
+                'form' => $form->createView(),
+                'success' => $success,
+            ));
     }
 
      /**
-     * @Route("/public/salesorderhtml", name="public_salesorder_html")
+     * @Route("/public/salesorderexample")
      * @Method({"GET"})
      */
     public function salesOrderHtmlAction(Request $request)
     {
-        return $this->render('AppBundle:Public:salesorderbyapi.html.twig');
+        return $this->render('AppBundle:Public:salesorderexample.html.twig');
+    }
+
+    /**
+     * @Route("/public/api/salesorder")
+     * @Method({"POST"})
+     */
+    public function postSalesOrderAction(Request $request)
+    {
+        try {
+
+            $em = $this->getDoctrine()->getEntityManager();
+
+            $order = new SalesOrder();
+            $order->setOrderDate(new \DateTime());
+            $order->setIsGift(false);
+            $customer = new Customer();
+
+            $em->persist($order);
+            $em->persist($customer);
+
+            $order->setCustomer($customer);
+
+            $form = $this->createForm(PublicSalesOrderForm::class, $order, ['csrf_protection' => false]);
+            $parameters = $request->request->all();
+            $form->submit($parameters);
+
+            if ($form->isValid())
+            {
+                return new Response("Sales order added successfully", Response::HTTP_OK);
+            }
+            else {
+                return new Response($form->getErrors()->current()->getMessage(), Response::HTTP_NOT_ACCEPTABLE);
+            }
+        }
+        catch (InvalidFormException $exception) {
+
+            return $exception->getForm();
+
+        }
     }
 
     private function captchaVerify($recaptcha)
