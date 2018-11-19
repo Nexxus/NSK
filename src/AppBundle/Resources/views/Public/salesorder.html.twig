@@ -1,84 +1,150 @@
 ﻿<!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Nexxus order form</title>
-        
-        <link href="{{ asset('bootstrap/stylesheet/bootstrap.css') }}" rel="stylesheet"/>
-        <link href="{{ asset('stylesheet/override_style.css') }}" rel="stylesheet"/>  
-        <!-- <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" /> -->
-        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-    </head>
-    <body>
-        <div class="container">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nexxus order form</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
 
-            <h1>Welcome to the Nexxus order form</h1>
-            This form can be used for sales order creation.<br />
-            It is an example for webdesigners. <br />
-            The form is submittable from other websites and domains.<br />
-            The form can be applied as an API call too (reCaptcha must be disabled).<br />
-            Webmaster, please note the hidden form fields.<br /><br />
+    This form can be used for sales order creation.<br />
+    It is an example for webdesigners. <br />
+    Webmaster, please note the hidden form fields as well as the jQuery AJAX POST code.<br /><br />
 
-            {% if success %}
-            <div class="alert alert-success" role="alert">The order is registered successfully.</div>
-            {% elseif success is same as(false) %}
-            <div class="alert alert-danger" role="alert">The order is not registered. Please contact us!</div>
-            {% endif %}
+    <form id="orderform">
 
-            {{form_start(form)}}
+        <u>Your details</u>
 
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Your details{% endtrans %}
-                </div>
-                <div class="panel-body">
-                    {{ form_row(form.customer.name) }} 
-                    {{ form_row(form.customer.representative) }} 
-                    {{ form_row(form.customer.email) }} 
-                    {{ form_row(form.customer.phone) }} 
-                    {{ form_row(form.customer.street) }} 
-                    {{ form_row(form.customer.streetExtra) }} 
-                    {{ form_row(form.customer.city) }} 
-                    {{ form_row(form.customer.zip) }} 
-                    {{ form_row(form.customer.state) }} 
-                    {{ form_row(form.customer.country) }} 
-                </div>
-            </div>
+        <table>
+            <tr>
+                <td>Name *</td>
+                <td><input type="text" name="customer_name" required="required" /></td>
+            </tr>
+            <tr>
+                <td>Representative</td>
+                <td><input type="text" name="customer_representative" /></td>
+            </tr>
+            <tr>
+                <td>Email *</td>
+                <td><input type="email" name="customer_email" required="required" /></td>
+            </tr>
+            <tr>
+                <td>Phone</td>
+                <td><input type="text" name="customer_phone" /></td>
+            </tr>
+            <tr>
+                <td>Street</td>
+                <td><input type="text" name="customer_street" /></td>
+            </tr>
+            <tr>
+                <td>Street2</td>
+                <td><input type="text" name="customer_street2" /></td>
+            </tr>
+            <tr>
+                <td>City</td>
+                <td><input type="text" name="customer_city" /></td>
+            </tr>
+            <tr>
+                <td>Zip</td>
+                <td><input type="text" name="customer_zip" /></td>
+            </tr>
+            <tr>
+                <td>State</td>
+                <td><input type="text" name="customer_state" /></td>
+            </tr>
+            <tr>
+                <td>Country</td>
+                <td><input type="text" name="customer_country" /></td>
+            </tr>
+        </table>
 
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Aantal eenheden
-                </div>
-                <div class="panel-body">
-                    <!-- All product descriptions are allowed. Make sure the input name starts with "q" like in this example. -->
-                    {% for q in form if q.vars.name starts with 'q' %}
-                    {{ form_row(q) }} 
-                    {% endfor %}
-                </div>
-            </div>
+        <u>Aantal eenheden</u>
 
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="g-recaptcha" data-sitekey="6LdyzXMUAAAAAD_c780y1hElRPgST2XMzAfCJefH"></div>
-                        </div>
-                        <div class="col-md-4">
-                            {{ form_widget(form.save) }}
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- All product descriptions are allowed. Make sure the input name starts with "q" like in this example. -->
 
-            {{ form_widget(form.locationId) }}
-            {{ form_widget(form.orderStatusName) }}
-            {{ form_end(form, {'render_rest': false}) }}
-        </div>
+        <table>
+            <tr>
+                <td>Computers</td>
+                <td><input type="number" name="qComputer" /></td>
+            </tr>                        
+            <tr>                         
+                <td>Laptops basis</td>   
+                <td><input type="number" name="qLaptopBasis" /></td>
+            </tr>                        
+            <tr>                         
+                <td>Laptops geavanceerd</td>           
+                <td><input type="number" name="qLaptopAdvanced" /></td>
+            </tr>                        
+            <tr>                         
+                <td>Laptops nieuw</td>           
+                <td><input type="number" name="qLaptopNew" /></td>
+            </tr>
+        </table>
 
-        <script src="{{ asset('bootstrap/js/jquery.min.js') }}"></script>
-        <script src="{{ asset('bootstrap/js/bootstrap.min.js') }}"></script>
-    </body>
+        <div class="g-recaptcha" data-sitekey="6LdyzXMUAAAAAD_c780y1hElRPgST2XMzAfCJefH"></div>
+
+        <button type="submit">Send</button>
+
+    </form>
+
+    <div id="errorContainer" style="color: red"></div>
+
+    <!-- jQuery library is required -->
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous">
+    </script>
+    <script>
+
+        /* 
+         * The jQuery code below submits your custom form to Nexxus.
+         * When declaring the postData variable, it maps your form fields to the array format as Nexxus will expect it.
+         */
+
+        $("#orderform").submit(function (e) {
+
+            var postData = {
+                customer: {
+                    name : $('[name=customer_name]').val(),
+                    representative : $('[name=customer_representative]').val(),
+                    email : $('[name=customer_email]').val(),
+                    phone : $('[name=customer_phone]').val(),
+                    street : $('[name=customer_street]').val(),
+                    street2 : $('[name=customer_street2]').val(),
+                    city : $('[name=customer_city]').val(),
+                    zip : $('[name=customer_zip]').val(),
+                    state : $('[name=customer_state]').val(),
+                    country : $('[name=customer_country]').val()
+                },
+                qComputers: $('[name=qComputer]').val(),
+                qLaptopBasis: $('[name=qLaptopBasis]').val(),
+                qLaptopAdvanced: $('[name=qLaptopAdvanced]').val(),
+                qLaptopNew: $('[name=qLaptopNew]').val(),
+                locationId: 1,
+                orderStatusName: "Products to assign",
+                'g-recaptcha-response': $('[name=g-recaptcha-response]').val()
+            }
+
+            $.ajax({
+                type: "POST",
+                url: '{{ app.request.uri|replace({"/public/salesorder": "/public/salesorder/post"}) }}',
+                data: postData
+            })
+            .done(function (response) {
+                $("#errorContainer").text(response);
+            })
+            .fail(function (xhr, err) {
+                $("#errorContainer").text((xhr.responseText));   
+            });
+
+            e.preventDefault(); 
+            e.stopPropagation();
+            return false;
+        });
+
+    </script>
+</body>
 </html>
