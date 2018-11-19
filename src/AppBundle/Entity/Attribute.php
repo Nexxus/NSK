@@ -92,7 +92,7 @@ class Attribute
     /**
      * @var ProductType If attribute type is Product, this property filters the possible products
      *
-     * @ORM\OneToOne(targetEntity="ProductType")
+     * @ORM\ManyToOne(targetEntity="ProductType")
      * @ORM\JoinColumn(name="product_type_filter_id", referencedColumnName="id")
      */
     private $productTypeFilter;

@@ -60,7 +60,8 @@ class PublicSalesOrderForm extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => SalesOrder::class,
-            'csrf_protection' => false
+            'csrf_protection' => false,
+            'allow_extra_fields' => true
         ));
     }
 }

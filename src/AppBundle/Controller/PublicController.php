@@ -36,6 +36,7 @@ use AppBundle\Form\PickupForm;
 use AppBundle\Form\PublicSalesOrderForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
@@ -169,30 +170,22 @@ class PublicController extends Controller
     }
 
     /**
-     * @Route("/public/salesorder", name="public_salesorder")
      * @Route("/leergeld-bestelling", name="leergeld_bestelling")
      * @Method({"GET", "POST"})
      */
-    public function salesOrderAction(Request $request)
+    public function salesOrderOldAction(Request $request)
     {
         $success = null;
-
         $em = $this->getDoctrine()->getEntityManager();
-
         $order = new SalesOrder();
         $order->setOrderDate(new \DateTime());
         $order->setIsGift(false);
         $customer = new Customer();
-
         $em->persist($order);
         $em->persist($customer);
-
         $order->setCustomer($customer);
-
         $form = $this->createForm(PublicSalesOrderForm::class, $order);
-
         $form->handleRequest($request);
-
         if ($request->isMethod('POST') && $form->isSubmitted() && $this->captchaVerify($request->request->get('g-recaptcha-response')))
         {
             if ($form->isValid())
@@ -201,10 +194,8 @@ class PublicController extends Controller
                 {
                     $location = $em->getReference("AppBundle:Location", $form->get('locationId')->getData());
                     $order->setLocation($location);
-
                     $order->setCustomer($em->getRepository('AppBundle:Customer')->checkExists($order->getCustomer()));
                     $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), false, true));
-
                     $remarks = "";
                     foreach ($request->request->all()["public_sales_order_form"] as $fld => $q)
                     {
@@ -213,23 +204,18 @@ class PublicController extends Controller
                             $remarks .= ", " . substr($fld, 1). ": " . $q;
                         }
                     }
-
                     if (strlen($remarks) > 2)
                         $remarks = substr($remarks, 2);
                     else
                         $remarks = "No quantities entered...";
-
                     $order->setRemarks($remarks);
-
                     $em->flush();
-
                     if (!$order->getOrderNr())
                     {
                         $orderNr = $em->getRepository('AppBundle:SalesOrder')->generateOrderNr($order);
                         $order->setOrderNr($orderNr);
                         $em->flush();
                     }
-
                     $success = true;
                 }
                 catch (\Exception $ex)
@@ -242,15 +228,104 @@ class PublicController extends Controller
                 $success = false;
             }
         }
+
+        return $this->render('AppBundle:Public:salesorder_old.html.twig', array(
+                'form' => $form->createView(),
+                'success' => $success,
+            ));
     }
 
-     /**
-     * @Route("/public/salesorderhtml", name="public_salesorder_html")
+    /**
+     * @Route("/public/salesorder")
      * @Method({"GET"})
      */
-    public function salesOrderHtmlAction(Request $request)
+    public function salesOrderAction(Request $request)
     {
-        return $this->render('AppBundle:Public:salesorderbyapi.html.twig');
+        return $this->render('AppBundle:Public:salesorder.html.twig');
+    }
+
+    /**
+     * @Route("/public/salesorder/post")
+     * @Method({"POST"})
+     */
+    public function postSalesOrderAction(Request $request)
+    {
+        try
+        {
+            if (!$this->captchaVerify($request->request->get('g-recaptcha-response')))
+            {
+                return new Response("reCaptcha is not valid", Response::HTTP_NOT_ACCEPTABLE);
+            }
+
+            $em = $this->getDoctrine()->getEntityManager();
+
+            $order = new SalesOrder();
+            $order->setOrderDate(new \DateTime());
+            $order->setIsGift(false);
+            $customer = new Customer();
+
+            $em->persist($order);
+            $em->persist($customer);
+
+            $order->setCustomer($customer);
+
+            $form = $this->createForm(PublicSalesOrderForm::class, $order);
+
+            //$form->handleRequest($request); goes by submit as seen below
+            $parameters = $request->request->all();
+            $form->submit($parameters);
+
+            if (!$order->getCustomer()->getName() || !$order->getCustomer()->getEmail())
+            {
+                return new Response("Customer name and email are required fields", Response::HTTP_NOT_ACCEPTABLE);
+            }
+
+            if (!$form->isValid())
+            {
+                return new Response($form->getErrors()->current()->getMessage(), Response::HTTP_NOT_ACCEPTABLE);
+            }
+
+            $location = $em->getReference("AppBundle:Location", $form->get('locationId')->getData());
+            $order->setLocation($location);
+
+            $order->setCustomer($em->getRepository('AppBundle:Customer')->checkExists($order->getCustomer()));
+            $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), false, true));
+
+            $remarks = "";
+            foreach ($parameters as $fld => $q)
+            {
+                if (substr($fld, 0, 1) == "q" && $q)
+                {
+                    $remarks .= ", " . substr($fld, 1). ": " . $q;
+                }
+            }
+
+            if (strlen($remarks) > 2)
+                $remarks = substr($remarks, 2);
+            else
+                return new Response("No quantities entered", Response::HTTP_NOT_ACCEPTABLE);
+
+            $order->setRemarks($remarks);
+
+            $em->flush();
+
+            if (!$order->getOrderNr())
+            {
+                $orderNr = $em->getRepository('AppBundle:SalesOrder')->generateOrderNr($order);
+                $order->setOrderNr($orderNr);
+                $em->flush();
+            }
+
+            return new Response("Sales order added successfully", Response::HTTP_OK);
+        }
+        catch (InvalidFormException $exception)
+        {
+            return $exception->getForm();
+        }
+        catch (\Exception $exception)
+        {
+            return new Response($exception->getMessage(), 500);
+        }
     }
 
     private function captchaVerify($recaptcha)
