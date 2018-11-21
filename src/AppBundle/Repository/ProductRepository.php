@@ -117,7 +117,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
     {
         $products = $this->findMine($user);
 
-        $products = (new ArrayCollection($products))->filter(
+        $products = array_filter($products, 
             function(Product $product) {
                 return $product->getQuantityInStock(true) != 0;
             });
