@@ -31,10 +31,11 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UploadifiveController extends Controller
 {
+    use UploadControllerTrait;
+
     private $checkToken = false;
     private $mustBeImage = false;
     private $uniqueServerFilename = true;
-    private $uploadFolder = '/var/uploads';
     private $allowedExtensions = array('jpg', 'jpeg', 'gif', 'png', 'pdf', 'doc', 'docx');
 
     /**
@@ -109,27 +110,6 @@ class UploadifiveController extends Controller
         $file = $this->getDoctrine()->getEntityManager()->find(\AppBundle\Entity\AFile::class, $id);
 
         return $this->file($this->getFullUploadFolder() . $file->getUniqueServerFilename(), $file->getOriginalClientFilename());
-    }
-
-    private function isImage($tempFile) {
-
-        // Get the size of the image
-        $size = getimagesize($tempFile);
-
-        if (isset($size) && $size[0] && $size[1] && $size[0] *  $size[1] > 0) {
-            return true;
-        } else {
-            return false;
-        }
-
-    }
-
-    private function getFullUploadFolder()
-    {
-        return
-            $this->get('kernel')->getRootDir() . DIRECTORY_SEPARATOR .
-            '..' . DIRECTORY_SEPARATOR .
-            $this->uploadFolder . DIRECTORY_SEPARATOR;
     }
 
     public static function splitFilenames($filenamesString)

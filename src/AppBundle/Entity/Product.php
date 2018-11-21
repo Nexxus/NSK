@@ -23,6 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\Supplier;
 
@@ -147,7 +148,6 @@ class Product
 
     /**
      * @var ArrayCollection|ProductAttributeRelation[]
-     *
      * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="product", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
      */
     private $attributeRelations;
@@ -157,22 +157,22 @@ class Product
      * KEEP THIS PROPERTY PRIVATE
      *
      * @var ArrayCollection|ProductAttributeRelation[]
-     *
      * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="valueProduct", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
+     * @JMS\Exclude
      */
     private $attributedRelations;
 
     /**
      * @var ArrayCollection|ProductOrderRelation[]
-     *
      * @ORM\OneToMany(targetEntity="ProductOrderRelation", mappedBy="product", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
+     * @JMS\Exclude
      */
     private $orderRelations;
 
     /**
      * @var ArrayCollection|Service[] Services that are applied to this Product
-     *
      * @ORM\OneToMany(targetEntity="Service", mappedBy="product", fetch="LAZY")
+     * @JMS\Exclude()
      */
     private $services;
 

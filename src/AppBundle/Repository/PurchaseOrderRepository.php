@@ -46,6 +46,22 @@ class PurchaseOrderRepository extends \Doctrine\ORM\EntityRepository
             return $this->findBy(array(), array('id' => 'DESC'));
     }
 
+    public function findMineByStatus(User $user, $statusId)
+    {
+        if ($user->hasRole("ROLE_LOCAL"))
+            return $this->findBy(array("location" => $user->getLocation(), "status" => $statusId), array('id' => 'DESC'));
+        else
+            return $this->findBy(array("status" => $statusId), array('id' => 'DESC'));
+    }
+
+    public function findMineById(User $user, $id)
+    {
+        if ($user->hasRole("ROLE_LOCAL"))
+            return $this->findOneBy(array("location" => $user->getLocation(), "id" => $id), array('id' => 'DESC'));
+        else
+            return $this->findOneBy(array("id" => $id), array('id' => 'DESC'));
+    }
+
     public function findBySearchQuery(\AppBundle\Helper\IndexSearchContainer $search)
     {
         $qb = $this->getEntityManager()->createQueryBuilder()

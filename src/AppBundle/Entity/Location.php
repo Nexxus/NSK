@@ -23,6 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\AOrder;
 use AppBundle\Entity\ACompany;
@@ -36,6 +37,7 @@ use AppBundle\Entity\Product;
  *
  * @ORM\Table(name="location")
  * @ORM\Entity
+ * @JMS\ExclusionPolicy("all")
  */
 class Location
 {
@@ -48,23 +50,22 @@ class Location
 
     /**
      * @var int
-     *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @JMS\Expose
      */
     private $id;
 
     /**
      * @var string
-     *
      * @ORM\Column(name="name", type="string", length=255, unique=true)
+     * @JMS\Expose
      */
     private $name;
 
     /**
      * @var ArrayCollection|Product[]
-     *
      * @ORM\OneToMany(targetEntity="Product", mappedBy="location", fetch="LAZY")
      */
     private $products;

@@ -23,6 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * ProductOrderRelation
@@ -38,6 +39,7 @@ class ProductOrderRelation
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity="Product", inversedBy="orderRelations", fetch="EAGER")
      * @ORM\JoinColumn(name="product_id", referencedColumnName="id", nullable=false)
+     * @JMS\MaxDepth(1)
      */
     private $product;
 

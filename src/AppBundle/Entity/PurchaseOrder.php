@@ -24,12 +24,13 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation as JMS;
 use AppBundle\Entity\Supplier;
 
 /**
  * PurchaseOrder
  *
- * @ORM\Entity(repositoryClass="AppBundle\Repository\PurchaseOrderRepository")
+  * @ORM\Entity(repositoryClass="AppBundle\Repository\PurchaseOrderRepository")
  */
 class PurchaseOrder extends AOrder
 {
@@ -39,6 +40,7 @@ class PurchaseOrder extends AOrder
      * @Assert\Valid
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Supplier", fetch="EAGER")
      * @ORM\JoinColumn(name="supplier_id", referencedColumnName="id")
+     * @JMS\MaxDepth(depth=1)
      */
     private $supplier;
 
