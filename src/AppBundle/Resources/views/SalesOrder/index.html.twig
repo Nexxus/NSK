@@ -12,7 +12,9 @@
             {{ form_widget(form.status) }}
         </div>
         <div class="col-sm-2">
+            {% if form.location is defined %}
             {{ form_widget(form.location) }}
+            {% endif %}
         </div>
         <div class="col-sm-1">
             {{ form_widget(form.submit) }}

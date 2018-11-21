@@ -23,6 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
@@ -84,23 +85,23 @@ class Attribute
 
     /**
      * @var ArrayCollection|ProductType[] Which product types can use this attribute
-     *
      * @ORM\ManyToMany(targetEntity="ProductType", mappedBy="attributes")
+     * @JMS\Exclude()
      */
     private $productTypes;
 
     /**
      * @var ProductType If attribute type is Product, this property filters the possible products
-     *
      * @ORM\ManyToOne(targetEntity="ProductType")
      * @ORM\JoinColumn(name="product_type_filter_id", referencedColumnName="id")
+     * @JMS\Exclude()
      */
     private $productTypeFilter;
 
     /**
      * @var ArrayCollection|ProductAttributeRelation[] Which products have this attribute
-     *
      * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="attribute", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
+     * @JMS\Exclude()
      */
     private $productRelations;
 

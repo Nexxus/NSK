@@ -23,6 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\Supplier;
 
@@ -102,20 +103,6 @@ class Product
     private $price;
 
     /**
-     * @var int Written off part of stock
-     *
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $quantityWrittenOff;
-
-    /**
-     * @var int Part of stock on hold
-     *
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $quantityOnHold;
-
-    /**
      * @var Location
      *
      * @ORM\ManyToOne(targetEntity="Location", inversedBy="products", fetch="EAGER")
@@ -147,7 +134,6 @@ class Product
 
     /**
      * @var ArrayCollection|ProductAttributeRelation[]
-     *
      * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="product", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
      */
     private $attributeRelations;
@@ -157,22 +143,22 @@ class Product
      * KEEP THIS PROPERTY PRIVATE
      *
      * @var ArrayCollection|ProductAttributeRelation[]
-     *
      * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="valueProduct", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
+     * @JMS\Exclude
      */
     private $attributedRelations;
 
     /**
      * @var ArrayCollection|ProductOrderRelation[]
-     *
      * @ORM\OneToMany(targetEntity="ProductOrderRelation", mappedBy="product", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
+     * @JMS\Exclude
      */
     private $orderRelations;
 
     /**
      * @var ArrayCollection|Service[] Services that are applied to this Product
-     *
      * @ORM\OneToMany(targetEntity="Service", mappedBy="product", fetch="LAZY")
+     * @JMS\Exclude()
      */
     private $services;
 
@@ -539,8 +525,6 @@ class Product
             $in += $this->getQuantityRepairing();
 
         $out = $this->getQuantitySold();
-        $out += $this->getQuantityWrittenOff();
-        $out += $this->getQuantityOnHold();
         $out += $this->getQuantityAttributed();
 
         return $in - $out;
@@ -608,42 +592,6 @@ class Product
                 /** @var $r ProductOrderRelation */
                 return is_a($r->getOrder(), PurchaseOrder::class);
             })->first()->getOrder();
-    }
-
-    /**
-     * @param integer $quantityWrittenOff
-     */
-    public function setQuantityWrittenOff($quantityWrittenOff)
-    {
-        $this->quantityWrittenOff = $quantityWrittenOff;
-
-        return $this;
-    }
-
-    /**
-     * @return integer
-     */
-    public function getQuantityWrittenOff()
-    {
-        return $this->quantityWrittenOff !== null ? $this->quantityWrittenOff : 0;
-    }
-
-    /**
-     * @param integer $quantityOnHold
-     */
-    public function setQuantityOnHold($quantityOnHold)
-    {
-        $this->quantityOnHold = $quantityOnHold;
-
-        return $this;
-    }
-
-    /**
-     * @return integer
-     */
-    public function getQuantityOnHold()
-    {
-        return $this->quantityOnHold !== null ? $this->quantityOnHold : 0;
     }
 
     #endregion

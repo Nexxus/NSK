@@ -34,12 +34,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Form\FormError;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 /**
  * @Route("/product")
  */
-class ProductController extends APdfController
+class ProductController extends Controller
 {
+    use PdfControllerTrait;
+
     /**
      * @Route("/", name="product_index")
      */

@@ -30,31 +30,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="order_status")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\OrderStatusRepository")
  */
-class OrderStatus
+class OrderStatus extends AStatus
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="pindex", type="integer", nullable=true)
-     */
-    private $pindex;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="name", type="string", length=255)
-     */
-    private $name;
-
     /**
      * @var bool
      *
@@ -68,64 +45,6 @@ class OrderStatus
      * @ORM\Column(type="boolean")
      */
     private $isPurchase;
-
-    /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * Set pindex
-     *
-     * @param integer $pindex
-     *
-     * @return OrderStatus
-     */
-    public function setPindex($pindex)
-    {
-        $this->pindex = $pindex;
-
-        return $this;
-    }
-
-    /**
-     * Get pindex
-     *
-     * @return integer
-     */
-    public function getPindex()
-    {
-        return $this->pindex;
-    }
-
-    /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return OrderStatus
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
 
     /**
      * @param bool $isSale

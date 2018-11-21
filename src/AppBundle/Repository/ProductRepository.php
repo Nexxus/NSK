@@ -117,7 +117,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
     {
         $products = $this->findMine($user);
 
-        $products = (new ArrayCollection($products))->filter(
+        $products = array_filter($products,
             function(Product $product) {
                 return $product->getQuantityInStock(true) != 0;
             });
@@ -130,7 +130,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         $products = $this->findStock($user);
 
         // cannot add product to sales order twice
-        $products = $products->filter(
+        $products = array_filter($products,
             function (Product $product) use ($order) {
                 /** @var SalesOrder $order */
                 foreach ($order->getProductRelations() as $r)

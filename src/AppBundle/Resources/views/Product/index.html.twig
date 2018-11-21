@@ -12,7 +12,9 @@
             {{ form_widget(form.status) }}
         </div>
         <div class="col-sm-2">
+            {% if form.location is defined %}
             {{ form_widget(form.location) }}
+            {% endif %}
         </div>
         <div class="col-sm-1">
             {{ form_widget(form.submit) }}
@@ -35,8 +37,6 @@
                 <th width="5%">Repair</th>
                 <th width="5%">Sold</th>
                 <th width="5%">Used</th>
-                <th width="5%">Hold</th>
-                <th width="5%">Off</th>
                 <th width="5%">Stock</th>
                 <th width="1%"></th>
             </tr>
@@ -55,8 +55,6 @@
                 <td>{{ product.getQuantityRepairing() }}</td>
                 <td>{{ product.getQuantitySold() }}</td>
                 <td>{{ product.getQuantityAttributed() }}</td>
-                <td>{{ product.getQuantityOnHold() }}</td>
-                <td>{{ product.getQuantityWrittenOff() }}</td>
                 <td>{{ product.getQuantityInStock(true) }}</td>
                 <td nowrap>
                     <a class="btn btn-success" href="{{ path('product_edit', { 'id': product.id }) }}" data-toggle="modal" data-target="#modalEditor"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
