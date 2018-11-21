@@ -26,6 +26,7 @@ use AppBundle\Entity\ProductStatus;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -68,12 +69,14 @@ class ProductStatusController extends Controller
         $form = $this->createFormBuilder($status)
                 ->add('pindex', IntegerType::class)
                 ->add('name')
-                ->add('save', SubmitType::class, array('attr' => ['class' => 'btn-success btn-120']))
+                ->add('isStock', CheckboxType::class, ['required' => false])
+                ->add('isStockSaleable', CheckboxType::class, ['required' => false])
+               ->add('save', SubmitType::class, array('attr' => ['class' => 'btn-success btn-120']))
             ->getForm();
 
         $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid()) 
+        if($form->isSubmitted() && $form->isValid())
         {
             $em->persist($status);
             $em->flush();
