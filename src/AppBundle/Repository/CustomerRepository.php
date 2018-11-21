@@ -84,6 +84,8 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
 
         if (count($result) > 0)
         {
+            $this->_em->detach($newCustomer);
+            $newCustomer = null;
             return $result[0];
         }
         else
@@ -100,10 +102,13 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
 
             if (count($result) == 1)
             {
+                $this->_em->detach($newCustomer);
+                $newCustomer = null;
                 return $result[0];
             }
             else
             {
+                $this->_em->persist($newCustomer);
                 return $newCustomer;
             }
         }

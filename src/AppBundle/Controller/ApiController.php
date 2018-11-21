@@ -78,12 +78,12 @@ class ApiController extends FOSRestController
         /** @var Product */
         $product = $em->find(Product::class, $productId);
 
-        $repo->generateProductAttributeRelations($product);
-
         if ($product === null)
         {
             return new View("No product found", Response::HTTP_NO_CONTENT);
         }
+
+        $repo->generateProductAttributeRelations($product);
 
         $relation = $product->getAttributeRelations()->filter(function (ProductAttributeRelation $r) use ($attributeId) {
             return $r->getAttribute()->getId() == $attributeId && $r->getAttribute()->getType() == Attribute::TYPE_FILE;
