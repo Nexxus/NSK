@@ -42,7 +42,7 @@ class Builder implements ContainerAwareInterface
         $menu->addChild('Home', array('route' => 'home'));
 
         // add user menu items
-        if($role->isGranted('ROLE_USER')) {
+        if($role->isGranted('ROLE_LOCAL')) {
             $menu->addChild('Voorraad', array('route' => 'product_index'));
             $menu->addChild('Inkoop', array('route' => 'purchaseorder_index'));
             $menu->addChild('Verkoop', array('route' => 'salesorder_index'));
@@ -61,11 +61,11 @@ class Builder implements ContainerAwareInterface
 
         $menu->setChildrenAttribute('class', 'nav navbar-nav navbar-right');
 
-        if($role->isGranted('ROLE_ADMIN')) {
+        if($role->isGranted('ROLE_SUPER_ADMIN')) {
             $menu->addChild('Admin', array('route' => 'admin_index'));
         }
 
-        if($role->isGranted('ROLE_USER'))
+        if($role->isGranted('ROLE_LOCAL'))
         {
             $menu->addChild('Help', array('route' => 'underconstruction'));
             $menu->addChild('Logout', array('route' => 'fos_user_security_logout'));
