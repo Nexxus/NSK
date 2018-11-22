@@ -98,7 +98,7 @@ php bin/console doctrine:schema:create
 To get you started, make the first user in the terminal
 ```
 php bin/console fos:user:create superadmin superadmin@whatever.com p@ssw0rd
-php bin/console fos:user:promote superadmin ROLE_SUPERADMIN
+php bin/console fos:user:promote superadmin ROLE_SUPER_ADMIN
 ```
 Don't copy these line literally, but change the name, email and password to your likings. Take care of choosing a good password.
 

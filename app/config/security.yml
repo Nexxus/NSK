@@ -49,5 +49,5 @@ security:
         - { path: ^/ophaaldienst, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/leergeld-bestelling, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
-        - { path: ^/admin/, role: ROLE_SUPERADMIN }
+        - { path: ^/admin/, role: ROLE_SUPER_ADMIN }
         - { path: ^/, role: ROLE_LOCAL }
