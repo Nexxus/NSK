@@ -43,7 +43,7 @@ class IndexSearchForm extends AbstractType
             ->add('query', TextType::class, ['label' => false, 'required' => false, 'trim' => true, 'attr' => ['class' => 'focus']])
             ->add('submit', SubmitType::class, ['label' => 'Search']);
 
-        if ($user && !$user->hasRole("ROLE_LOCAL"))
+        if ($container->user && !$container->user->hasRole("ROLE_LOCAL"))
         {
             $builder->add('location',  EntityType::class, [
                     'class' => 'AppBundle:Location',
