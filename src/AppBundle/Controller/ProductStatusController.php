@@ -67,10 +67,10 @@ class ProductStatusController extends Controller
         }
 
         $form = $this->createFormBuilder($status)
-                ->add('pindex', IntegerType::class)
+                ->add('pindex', IntegerType::class, ['required' => false])
                 ->add('name')
                 ->add('isStock', CheckboxType::class, ['required' => false])
-                ->add('isStockSaleable', CheckboxType::class, ['required' => false])
+                ->add('isSaleable', CheckboxType::class, ['required' => false])
                ->add('save', SubmitType::class, array('attr' => ['class' => 'btn-success btn-120']))
             ->getForm();
 

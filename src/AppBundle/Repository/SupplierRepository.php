@@ -92,6 +92,8 @@ class SupplierRepository extends \Doctrine\ORM\EntityRepository
 
         if (count($result) > 0)
         {
+            $this->_em->detach($newSupplier);
+            $newSupplier = null;
             return $result[0];
         }
         else
@@ -108,6 +110,8 @@ class SupplierRepository extends \Doctrine\ORM\EntityRepository
 
             if (count($result) == 1)
             {
+                $this->_em->detach($newSupplier);
+                $newSupplier = null;
                 return $result[0];
             }
             else

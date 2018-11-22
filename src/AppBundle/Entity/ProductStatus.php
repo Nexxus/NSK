@@ -32,5 +32,54 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ProductStatus extends AStatus
 {
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    protected $isStock;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    protected $isSaleable;
+
+    /**
+     * @param bool $isStock
+     */
+    public function setIsStock($isStock)
+    {
+        $this->isStock = $isStock;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsStock()
+    {
+        return $this->isStock ?? true;
+    }
+
+    /**
+     * @param bool $isSaleable
+     */
+    public function setIsSaleable($isSaleable)
+    {
+        $this->isSaleable = $isSaleable;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsSaleable()
+    {
+        return $this->isSaleable ?? true;
+    }
 
 }

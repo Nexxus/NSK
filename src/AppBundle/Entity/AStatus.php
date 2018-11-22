@@ -54,20 +54,6 @@ abstract class AStatus
     protected $name;
 
     /**
-     * @var bool
-     *
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    protected $isStock;
-
-    /**
-     * @var bool
-     *
-     * @ORM\Column(type="boolean", nullable=true)
-     */
-    protected $isStockSaleable;
-
-    /**
      * Get id
      *
      * @return integer
@@ -119,65 +105,5 @@ abstract class AStatus
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * @param bool $isStock
-     */
-    public function setIsStock($isStock)
-    {
-        $this->isStock = $isStock;
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getIsStock()
-    {
-        if ($this->isStock === null)
-        {
-            if (get_class($this) == \AppBundle\Entity\OrderStatus::class && !$this->getIsPurchase())
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        return $this->isStock;
-    }
-
-    /**
-     * @param bool $isStockSaleable
-     */
-    public function setIsStockSaleable($isStockSaleable)
-    {
-        $this->isStockSaleable = $isStockSaleable;
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getIsStockSaleable()
-    {
-        if ($this->isStockSaleable === null)
-        {
-            if (get_class($this) == \AppBundle\Entity\OrderStatus::class && !$this->getIsPurchase())
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        return $this->isStockSaleable;
     }
 }
