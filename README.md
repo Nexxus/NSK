@@ -71,8 +71,8 @@ Finally, in _composer.json_ you should add the value for field _symfony-web-dir_
 
 Secondly, make sure the application root can find the source code from its new location. Open _app.php_ in a text editor and change lines 6 and 7 like so:
 ```
-$loader = require __DIR__.'/../../nsk/app/autoload.php';
-include_once __DIR__.'/../../nsk/var/bootstrap.php.cache';
+$loader = require __DIR__.'/../../nexxus/app/autoload.php';
+include_once __DIR__.'/../../nexxus/var/bootstrap.php.cache';
 ```
 
 ### 4. Install dependencies
