@@ -2,7 +2,6 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: services.yml }
-    - { resource: "@AppBundle/Resources/config/services.yml" }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
@@ -83,9 +82,56 @@ fos_user:
     firewall_name: main
     user_class: AppBundle\Entity\User
     from_email:
-        address: ben.wolthuis@copiatek.nl
+        address: info@copiatek.nl
         sender_name: Copiatek
 
 knp_paginator:
     template:
         pagination: KnpPaginatorBundle:Pagination:twitter_bootstrap_v3_pagination.html.twig
+
+# Nelmio CORS Configuration
+nelmio_cors:
+    defaults:
+        allow_credentials: false
+        allow_origin: ['*']
+        allow_headers: ['*']
+        allow_methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+        max_age: 3600
+        hosts: []
+        origin_regex: false
+ 
+# FOSRest Configuration
+fos_rest:
+    zone:
+        - { path: ^/api/* }
+    body_listener: true
+    format_listener:
+        rules:
+            - { path: '^/', priorities: ['json'], fallback_format: json, prefer_extension: false }
+    param_fetcher_listener: true
+    view:
+        view_response_listener: 'force'
+        formats:
+            json: true
+
+lexik_jwt_authentication:
+    private_key_path: '%kernel.root_dir%/../var/jwt/private.pem' # required for token creation
+    public_key_path:  '%kernel.root_dir%/../var/jwt/public.pem'  # required for token verification
+    pass_phrase:      'notenlaan' # required for token creation, usage of an environment variable is recommended
+    token_ttl:        3600
+    token_extractors:
+        # look for a token as Authorization Header
+        authorization_header:
+            enabled: true
+            prefix:  Bearer
+            name:    Authorization
+
+        # check token in a cookie
+        cookie:
+            enabled: false
+            name:    BEARER
+            
+        # check token in query string parameter
+        query_parameter:
+            enabled: true
+            name:    bearer

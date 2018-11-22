@@ -24,24 +24,25 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Product;
 use AppBundle\Entity\ProductType;
-use AppBundle\Entity\ProductOrderRelation;
 use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\ProductAttributeFile;
 use AppBundle\Entity\ProductAttributeRelation;
 use AppBundle\Form\ProductForm;
 use AppBundle\Form\IndexSearchForm;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Form\FormError;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 /**
  * @Route("/product")
  */
-class ProductController extends APdfController
+class ProductController extends Controller
 {
+    use PdfControllerTrait;
+
     /**
      * @Route("/", name="product_index")
      */
@@ -51,14 +52,17 @@ class ProductController extends APdfController
 
         $products = array();
 
-        $form = $this->createForm(IndexSearchForm::class, array());
+        $container = new \AppBundle\Helper\IndexSearchContainer();
+        $container->user = $this->getUser();
+        $container->className = Product::class;
+
+        $form = $this->createForm(IndexSearchForm::class, $container);
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid())
+        if ($form->isSubmitted() && $form->isValid() && $container->isSearchable())
         {
-            $data = $form->getData();
-            $products = $repo->findBySearchQuery($data['query']);
+            $products = $repo->findBySearchQuery($container);
         }
         else
         {

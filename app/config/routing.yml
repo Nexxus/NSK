@@ -1,6 +1,7 @@
-track_attribute:
-    resource: "@AppBundle/Controller/AttributeController.php"
-    type:     annotation
+api:
+    resource: "@AppBundle/Controller/ApiController.php"
+    type: rest
+    prefix: /api
 
 app:
     resource: "@AppBundle/Controller/"
@@ -8,3 +9,6 @@ app:
 
 fos_user:
     resource: "@FOSUserBundle//Resources/config/routing/all.xml"
+
+api_login_check:
+    path: /api/login_check

@@ -27,14 +27,16 @@ class AttributeController extends Controller
 
         $attributes = array();
 
-        $form = $this->createForm(IndexSearchForm::class, array());
+        $container = new \AppBundle\Helper\IndexSearchContainer();
+        $container->className = Attribute::class;
+
+        $form = $this->createForm(IndexSearchForm::class, $container);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid())
         {
-            $data = $form->getData();
-            $attributes = $repo->findBySearchQuery($data['query']);
+            $attributes = $repo->findBySearchQuery($container->query);
         }
         else
         {

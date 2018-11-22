@@ -37,7 +37,7 @@
 
                     {{ form_row(form.orderDate) }} 
                     {{ form_row(form.status) }} 
-                    {% if is_granted('ROLE_MANAGER') %}
+                    {% if form.location is defined %}
                     {{ form_row(form.location) }} 
                     {% endif %}
                     {{ form_row(form.remarks) }} 
@@ -212,7 +212,7 @@
          $('[required]').prop('required', function () {
              return $(this).is(':visible');
          });
-
+         
          {% if (order.backingPurchaseOrder) %}
 
          /* New product (Backorder) */
@@ -226,7 +226,17 @@
              }
          });
 
-         {% endif %}
+        {% else %}
+
+        /* Add product: Submit form on select */
+
+        setInterval(function() {
+            if ($('input[name="sales_order_form[addProduct]"]').val()) {
+                $('form[name="sales_order_form"]').submit();
+            }
+        }, 1000);
+
+        {% endif %}
 
      </script>
  {% endblock %}

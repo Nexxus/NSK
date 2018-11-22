@@ -34,15 +34,17 @@
             {% endif %}
                   
             {{ form_row(form.name) }} 
+            {{ form_row(form.description) }} 
             {{ form_row(form.price) }}
             <div class="row form-display">
                 <div class="col-sm-9 col-md-offset-3"><b>Total price of attributes: </b>&euro; {{ product.totalStandardPriceOfAttributes|number_format(2, ',', '.') }}</div>
             </div>
         </div>
         <div class="col-md-6">
-            {{ form_row(form.description) }} 
             {{ form_row(form.type) }} 
+            {% if form.location is defined %}
             {{ form_row(form.location) }} 
+            {% endif %}
             {{ form_row(form.status) }} 
         </div>
     </div>

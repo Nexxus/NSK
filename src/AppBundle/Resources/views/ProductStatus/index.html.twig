@@ -16,6 +16,7 @@
             <tr>
                 <th>Id</th>
                 <th>Name</th>
+                <th>Stock</th>
                 <th>Sort</th>
                 <th width="1%"></th>
             </tr>
@@ -24,6 +25,7 @@
         <tr>
             <td>{{ s.id }}</td>
             <td>{{ s.name }}</td>
+            <td>{{ s.isStock }}</td>
             <td>{{ s.pindex }}</td>
             <td nowrap>
                 <a class="btn btn-success" href="{{ path('productstatus_edit', {'id': s.id}) }}">Edit</a>

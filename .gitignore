@@ -42,3 +42,4 @@ logs/
 *.phpproj
 *.phpproj.user
 /.vs/
+/Properties/

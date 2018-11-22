@@ -34,8 +34,8 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
 use AppBundle\Entity\SalesOrder;
+use AppBundle\Entity\Product;
 
 class SalesOrderForm extends AbstractType
 {
@@ -110,13 +110,16 @@ class SalesOrderForm extends AbstractType
             $builder->add('addProduct',  EntityType::class, [
                 'required' => false,
                 'mapped' => false,
-                'class' => 'AppBundle:Product',
-                'choice_label' => 'name',
-                'choices' => $options['stock']
+                'class' => Product::class,
+                'choice_label' => function(Product $p) {
+                    return $p->getSku() . ' - ' . $p->getName();
+                },
+                'choices' => $options['stock'],
+                'attr' => ['class' => 'combobox']
             ]);
         }
 
-        if ($user->hasRole("ROLE_MANAGER") || $user->hasRole("ROLE_ADMIN") || $user->hasRole("ROLE_SUPER_ADMIN"))
+        if ($user && !$user->hasRole("ROLE_LOCAL"))
         {
             $builder->add('location',  EntityType::class, [
                     'class' => 'AppBundle:Location',

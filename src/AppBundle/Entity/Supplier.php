@@ -23,6 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\Product;
 use AppBundle\Entity\PurchaseOrder;
@@ -56,15 +57,15 @@ class Supplier extends ACompany
 
     /**
      * @var ArrayCollection|Product[] Products that this supplier owns
-     *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Product", mappedBy="owner", fetch="LAZY")
+     * @JMS\Exclude()
      */
     private $products;
 
     /**
      * @var ArrayCollection|PurchaseOrder[] Purchase orders that this supplier supplied
-     *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\PurchaseOrder", mappedBy="supplier", fetch="LAZY")
+     * @JMS\Exclude()
      */
     private $orders;
 

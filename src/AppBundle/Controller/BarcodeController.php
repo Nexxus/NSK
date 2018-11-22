@@ -28,8 +28,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
 
-class BarcodeController extends APdfController
+class BarcodeController extends Controller
 {
+    use PdfControllerTrait;
+
     /**
      * @Route("barcode/single/{barcode}", name="barcode_single")
      */

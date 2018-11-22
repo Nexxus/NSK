@@ -30,88 +30,56 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="product_status")
  * @ORM\Entity
  */
-class ProductStatus
+class ProductStatus extends AStatus
 {
     /**
-     * @var int
+     * @var bool
      *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="boolean", nullable=true)
      */
-    private $id;
+    protected $isStock;
 
     /**
-     * @var int
+     * @var bool
      *
-     * @ORM\Column(name="pindex", type="integer", nullable=true)
+     * @ORM\Column(type="boolean", nullable=true)
      */
-    private $pindex;
+    protected $isSaleable;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="name", type="string", length=255)
+     * @param bool $isStock
      */
-    private $name;
-
-
-
-    /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId()
+    public function setIsStock($isStock)
     {
-        return $this->id;
-    }
-
-    /**
-     * Set pindex
-     *
-     * @param integer $pindex
-     *
-     * @return ProductStatus
-     */
-    public function setPindex($pindex)
-    {
-        $this->pindex = $pindex;
+        $this->isStock = $isStock;
 
         return $this;
     }
 
     /**
-     * Get pindex
-     *
-     * @return integer
+     * @return bool
      */
-    public function getPindex()
+    public function getIsStock()
     {
-        return $this->pindex;
+        return $this->isStock ?? true;
     }
 
     /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return ProductStatus
+     * @param bool $isSaleable
      */
-    public function setName($name)
+    public function setIsSaleable($isSaleable)
     {
-        $this->name = $name;
+        $this->isSaleable = $isSaleable;
 
         return $this;
     }
 
     /**
-     * Get name
-     *
-     * @return string
+     * @return bool
      */
-    public function getName()
+    public function getIsSaleable()
     {
-        return $this->name;
+        return $this->isSaleable ?? true;
     }
+
 }

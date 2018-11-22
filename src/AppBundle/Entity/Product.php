@@ -23,6 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\Supplier;
 
@@ -102,13 +103,6 @@ class Product
     private $price;
 
     /**
-     * @var int Written off part of stock
-     *
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $quantityWrittenOff;
-
-    /**
      * @var Location
      *
      * @ORM\ManyToOne(targetEntity="Location", inversedBy="products", fetch="EAGER")
@@ -140,7 +134,6 @@ class Product
 
     /**
      * @var ArrayCollection|ProductAttributeRelation[]
-     *
      * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="product", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
      */
     private $attributeRelations;
@@ -150,22 +143,22 @@ class Product
      * KEEP THIS PROPERTY PRIVATE
      *
      * @var ArrayCollection|ProductAttributeRelation[]
-     *
      * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="valueProduct", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
+     * @JMS\Exclude
      */
     private $attributedRelations;
 
     /**
      * @var ArrayCollection|ProductOrderRelation[]
-     *
-     * @ORM\OneToMany(targetEntity="ProductOrderRelation", mappedBy="product", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="ProductOrderRelation", mappedBy="product", fetch="EAGER", cascade={"all"}, orphanRemoval=true)
+     * @JMS\Exclude
      */
     private $orderRelations;
 
     /**
      * @var ArrayCollection|Service[] Services that are applied to this Product
-     *
      * @ORM\OneToMany(targetEntity="Service", mappedBy="product", fetch="LAZY")
+     * @JMS\Exclude()
      */
     private $services;
 
@@ -521,106 +514,79 @@ class Product
 
     #region Quantity calculators
 
-    /**
-     * @param bool $withRepairs
-     * @return integer
-     */
-    public function getQuantityInStock($withRepairs)
-    {
-        $in = $this->getQuantityPurchased();
-
-        if ($withRepairs)
-            $in += $this->getQuantityRepairing();
-
-        $out = $this->getQuantitySold();
-
-        $out += $this->getQuantityWrittenOff();
-
-        $out += $this->getQuantityAttributed();
-
-        return $in - $out;
-    }
-
     public function getQuantityPurchased()
     {
-        $purchase = $this->getOrderRelations()->filter(
-            function(ProductOrderRelation $r) {
-                return is_a($r->getOrder(), PurchaseOrder::class);
-            })->first();
-
-        return $purchase ? $purchase->getQuantity() : 0;
-    }
-
-    public function getQuantityRepairing()
-    {
-        $repairing = 0;
+        $q = 0;
 
         foreach ($this->getOrderRelations() as $r)
         {
-            if (is_a($r->getOrder(), SalesOrder::class) && $r->getOrder()->getRepair()) // to do: and is not done
+            /** @var $r ProductOrderRelation */
+            if (is_a($r->getOrder(), PurchaseOrder::class))
             {
-                $repairing += $r->getQuantity();
+                $q += $r->getQuantity();
             }
         }
 
-        return $repairing;
+        return $q;
+    }
+
+    public function getQuantityInStock()
+    {
+        $q = 0;
+        $isStock = $this->getStatus() ? $this->getStatus()->getIsStock() : true;
+
+        foreach ($this->getOrderRelations() as $r)
+        {
+            /** @var $r ProductOrderRelation */
+            if (is_a($r->getOrder(), PurchaseOrder::class) && $isStock)
+            {
+                $q += $r->getQuantity();
+            }
+        }
+
+        return $q - $this->getQuantitySold();
+    }
+
+    public function getQuantityOnHold()
+    {
+        $q = $this->getQuantityInStock() - $this->getQuantitySaleable();
+        return $q > 0 ? $q : 0;
+    }
+
+    public function getQuantitySaleable()
+    {
+        $q = 0;
+        $isStock = $this->getStatus() ? $this->getStatus()->getIsStock() : true;
+        $isSaleable = $this->getStatus() ? $this->getStatus()->getIsSaleable() : true;
+
+        foreach ($this->getOrderRelations() as $r)
+        {
+            /** @var $r ProductOrderRelation */
+            if (is_a($r->getOrder(), PurchaseOrder::class) && $isStock && $isSaleable)
+            {
+                $q += $r->getQuantity();
+            }
+        }
+
+        $q = $q - $this->getQuantitySold();
+        return $q > 0 ? $q : 0;
     }
 
     public function getQuantitySold()
     {
-        $sold = 0;
+        $q = 0;
+        $isSaleable = $this->getStatus() ? $this->getStatus()->getIsSaleable() : true;
 
         foreach ($this->getOrderRelations() as $r)
         {
-            if (is_a($r->getOrder(), SalesOrder::class) && $r->getOrder()->getRepair() == null)
+            /** @var $r ProductOrderRelation */
+            if (is_a($r->getOrder(), SalesOrder::class) && $isSaleable)
             {
-                $sold += $r->getQuantity();
+                $q += $r->getQuantity();
             }
         }
 
-        return $sold;
-    }
-
-    public function getQuantityAttributed()
-    {
-        $attributed = 0;
-
-        foreach ($this->attributedRelations as $r)
-        {
-            $attributed += $r->getQuantity();
-        }
-
-        return $attributed;
-    }
-
-    /**
-     * @return PurchaseOrder
-     */
-    public function getPurchaseOrder()
-    {
-        return $this->getOrderRelations()->filter(
-            function($r) {
-                /** @var $r ProductOrderRelation */
-                return is_a($r->getOrder(), PurchaseOrder::class);
-            })->first()->getOrder();
-    }
-
-    /**
-     * @param integer $quantity
-     */
-    public function setQuantityWrittenOff($quantityWrittenOff)
-    {
-        $this->quantityWrittenOff = $quantityWrittenOff;
-
-        return $this;
-    }
-
-    /**
-     * @return integer
-     */
-    public function getQuantityWrittenOff()
-    {
-        return $this->quantityWrittenOff !== null ? $this->quantityWrittenOff : 0;
+        return $q;
     }
 
     #endregion

@@ -15,4 +15,21 @@
     {{ form_widget(form) }}
     {{ form_end(form) }}
 
+    <div class="panel panel-default">
+    <div class="panel-body">
+        Examples how to use the checkboxes
+        <ul>
+            <li>If this status should be useable for sales orders, check "is Sale".</li>
+            <li>If this status should be useable for purchase orders, check "is Purchase".</li>
+            <li>If this status is used for a purchase order and "is Stock" is checked: products in that order are considered in stock.</li>
+            <li>If this status is used for a sales order and "is Stock" is checked: products in that order are considered to be still in stock.</li>
+            <li>If this status is used for a purchase order and "is Saleable" is checked: products in that order are considered in stock and saleable.</li>
+            <li>If this status is used for a sales order and "is Saleable" is checked: this is impossible and will be ignored, so products in that order are considered out of stock and sold.</li>
+            <li>The "is Stock" property of a product status overrule the properties of the order if it is a purchase order with status having checked "is Stock". Sale order property always overrules the product property.</li>
+            <li>Idem for "is Saleable".</li>
+        </ul>
+
+    </div>
+    </div>
+
 {% endblock %}

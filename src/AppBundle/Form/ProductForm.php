@@ -48,6 +48,7 @@ class ProductForm extends AbstractType
                 'attr'=> ['placeholder' => 'Keep empty for autogeneration', 'class' => 'focus']
             ])
             ->add('name', TextType::class)
+            ->add('name', TextType::class)
             ->add('price', MoneyType::class, [
                 'required' => false,
                 'label' => 'Standard'
@@ -76,7 +77,7 @@ class ProductForm extends AbstractType
         /** @var \AppBundle\Entity\User */
         $user = $options['user'];
 
-        if ($user->hasRole("ROLE_MANAGER") || $user->hasRole("ROLE_ADMIN") || $user->hasRole("ROLE_SUPER_ADMIN"))
+        if ($user && !$user->hasRole("ROLE_LOCAL"))
         {
             $builder->add('location',  EntityType::class, [
                     'class' => 'AppBundle:Location',
