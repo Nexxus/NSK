@@ -48,14 +48,6 @@ When using Linux, make sure the application can modify the _var_ folder:
 ```
 chmod -R 777 var
 ```
-If you do not wish to commit changes back to this repository, you can remove the Git folder. In Linux:
-```
-rm -rf .git/
-```
-If you are installing an production environment, remove app_dev.php. In Linux:
-```
-rm web/app_dev.php
-```
 Now you have your clean clone of Nexxus.
 
 ### 3. Move some files to the public web folder.
@@ -67,12 +59,16 @@ mv web/* web/.* ../public_html/nsk
 ```
 Don't copy this line literally, but apply it to the situation of your web server. In this example, Nexxus will be available on URL http://www.yourdomain.com/nsk
 
-Finally, in _composer.json_ you should add the value for field _symfony-web-dir_.
+In _composer.json_ you should add or change the value for field _symfony-web-dir_.
 
-Secondly, make sure the application root can find the source code from its new location. Open _app.php_ in a text editor and change lines 6 and 7 like so:
+Then make sure the application root can find the source code from its new location. Open _app.php_ in a text editor and change lines 6 and 7 like so:
 ```
 $loader = require __DIR__.'/../../nexxus/app/autoload.php';
 include_once __DIR__.'/../../nexxus/var/bootstrap.php.cache';
+```
+Finally, if you are installing an production environment, remove _app_dev.php_. In Linux:
+```
+rm web/app_dev.php
 ```
 
 ### 4. Install dependencies
