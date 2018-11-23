@@ -115,8 +115,8 @@ fos_rest:
             json: true
 
 lexik_jwt_authentication:
-    private_key_path: '%kernel.root_dir%/../var/jwt/private.pem' # required for token creation
-    public_key_path:  '%kernel.root_dir%/../var/jwt/public.pem'  # required for token verification
+    private_key_path: '%kernel.root_dir%/../app/config/jwt/private.pem' # required for token creation
+    public_key_path:  '%kernel.root_dir%/../app/config/jwt/public.pem'  # required for token verification
     pass_phrase:      'notenlaan' # required for token creation, usage of an environment variable is recommended
     token_ttl:        3600
     token_extractors:
