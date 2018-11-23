@@ -26,6 +26,22 @@
             </div>
         </div>
 
+        <div class="modal fade" tabindex="-1" role="dialog" id="modalConfirm" data-backdrop="static" data-keyboard="false">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Confirm removal</h4>
+                    </div>
+                    <div class="modal-body"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-danger btn-delete-confirmed">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {% block navbar %}
         <nav class="navbar navbar-default navbar-gradient">
           <div class="container-fluid">
