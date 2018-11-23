@@ -24,6 +24,7 @@ namespace AppBundle\Repository;
 
 use AppBundle\Entity\AOrder;
 use AppBundle\Entity\Product;
+use AppBundle\Entity\ProductStatus;
 use AppBundle\Entity\User;
 use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\ProductAttributeRelation;
@@ -184,5 +185,53 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
             $this->_em->persist($r);
             $product->addOrderRelation($r);
         }
+    }
+
+    /**
+     * Separates a quantity of products from an existing Product object bundle
+     * @param Product $product
+     * @param ProductStatus $status
+     * @param int $quantity
+     * @param bool $individualize
+     * @param string $nameSupplement
+     * @return Product The new product
+     */
+    public function splitProduct(Product $product, ProductStatus $status, $quantity, $nameSupplement)
+    {
+        $newProduct = new Product();
+        if ($product->getDescription()) $newProduct->setDescription($product->getDescription());
+        if ($product->getLocation()) $newProduct->setLocation($product->getLocation());
+        $newProduct->setName($product->getName() . " " . trim($nameSupplement));
+        if ($product->getOwner()) $newProduct->setOwner($product->getOwner());
+        if ($product->getPrice() !== null) $newProduct->setPrice($product->getPrice());
+        if ($product->getSku()) $newProduct->setSku($product->getSku());
+        $newProduct->setStatus($status);
+        if ($product->getType()) $newProduct->setType($product->getType());
+        $this->_em->persist($newProduct);
+
+        $purchaseRelation = $product->getPurchaseOrderRelation();
+        $newPurchaseRelation = new ProductOrderRelation();
+        $newPurchaseRelation->setProduct($newProduct);
+        $newPurchaseRelation->setQuantity($quantity);
+        $newPurchaseRelation->setOrder($purchaseRelation->getOrder());
+        if ($purchaseRelation->getPrice()) $newPurchaseRelation->setPrice($purchaseRelation->getPrice());
+        $newProduct->addOrderRelation($purchaseRelation);
+        $this->_em->persist($newPurchaseRelation);
+
+        foreach ($product->getAttributeRelations() as $attributeRelation)
+        {
+            $newAttributeRelation = new ProductAttributeRelation();
+            $newAttributeRelation->setAttribute($attributeRelation->getAttribute());
+            $newAttributeRelation->setProduct($newProduct);
+            if ($attributeRelation->getValueProduct()) $newAttributeRelation->setQuantity(0);
+            if ($attributeRelation->getValue()) $newAttributeRelation->setValue($attributeRelation->getValue());
+            if ($attributeRelation->getValueProduct()) $newAttributeRelation->setValueProduct($attributeRelation->getValueProduct());
+            $newProduct->addAttributeRelation($newAttributeRelation);
+            $this->_em->persist($newAttributeRelation);
+        }
+
+        $purchaseRelation->setQuantity($purchaseRelation->getQuantity() - $quantity);
+
+        return $newProduct;
     }
 }

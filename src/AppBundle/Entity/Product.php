@@ -57,6 +57,8 @@ class Product
         $this->updatedAt= new \DateTime();
     }
 
+    #region Properties
+
     /**
      * @var int
      *
@@ -69,7 +71,7 @@ class Product
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=16, unique=true)
+     * @ORM\Column(type="string", length=16)
      */
     private $sku;
 
@@ -177,7 +179,9 @@ class Product
      */
     private $files;
 
-    #region Db getters and setters
+    #endregion
+
+    #region Getters and setters
 
     /**
      * Returns all files of all attributes. Files can be attached to products thru its attributes.
@@ -516,32 +520,21 @@ class Product
 
     public function getQuantityPurchased()
     {
-        $q = 0;
-
-        foreach ($this->getOrderRelations() as $r)
-        {
-            /** @var $r ProductOrderRelation */
-            if (is_a($r->getOrder(), PurchaseOrder::class))
-            {
-                $q += $r->getQuantity();
-            }
-        }
-
-        return $q;
+        $r = $this->getPurchaseOrderRelation();
+        return $r ? $r->getQuantity() : 0;
     }
 
     public function getQuantityInStock()
     {
-        $q = 0;
         $isStock = $this->getStatus() ? $this->getStatus()->getIsStock() : true;
-
-        foreach ($this->getOrderRelations() as $r)
+        if (!$isStock)
         {
-            /** @var $r ProductOrderRelation */
-            if (is_a($r->getOrder(), PurchaseOrder::class) && $isStock)
-            {
-                $q += $r->getQuantity();
-            }
+            $q = 0;
+        }
+        else
+        {
+            $r = $this->getPurchaseOrderRelation();
+            $q = $r ? $r->getQuantity() : 0;
         }
 
         return $q - $this->getQuantitySold();
@@ -555,21 +548,18 @@ class Product
 
     public function getQuantitySaleable()
     {
-        $q = 0;
-        $isStock = $this->getStatus() ? $this->getStatus()->getIsStock() : true;
         $isSaleable = $this->getStatus() ? $this->getStatus()->getIsSaleable() : true;
-
-        foreach ($this->getOrderRelations() as $r)
+        if (!$isSaleable)
         {
-            /** @var $r ProductOrderRelation */
-            if (is_a($r->getOrder(), PurchaseOrder::class) && $isStock && $isSaleable)
-            {
-                $q += $r->getQuantity();
-            }
+            $q = 0;
+        }
+        else
+        {
+            $r = $this->getPurchaseOrderRelation();
+            $q = $r ? $r->getQuantity() : 0;
         }
 
-        $q = $q - $this->getQuantitySold();
-        return $q > 0 ? $q : 0;
+        return $q - $this->getQuantitySold();
     }
 
     public function getQuantitySold()
@@ -590,6 +580,18 @@ class Product
     }
 
     #endregion
+
+    /**
+     * @return ProductOrderRelation Relation to purchase order
+     */
+    public function getPurchaseOrderRelation()
+    {
+        return $this->getOrderRelations()->filter(
+            function($r) {
+                /** @var $r ProductOrderRelation */
+                return is_a($r->getOrder(), PurchaseOrder::class);
+            })->first();
+    }
 
     /**
      * Standard prices multiplied by Quantities of (selected) attributes and/or attributed products
