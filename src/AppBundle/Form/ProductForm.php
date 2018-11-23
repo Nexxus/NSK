@@ -48,7 +48,6 @@ class ProductForm extends AbstractType
                 'attr'=> ['placeholder' => 'Keep empty for autogeneration', 'class' => 'focus']
             ])
             ->add('name', TextType::class)
-            ->add('name', TextType::class)
             ->add('price', MoneyType::class, [
                 'required' => false,
                 'label' => 'Standard'

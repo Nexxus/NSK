@@ -29,6 +29,7 @@ use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\ProductAttributeFile;
 use AppBundle\Entity\ProductAttributeRelation;
 use AppBundle\Form\ProductForm;
+use AppBundle\Form\ProductSplitForm;
 use AppBundle\Form\IndexSearchForm;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -183,6 +184,68 @@ class ProductController extends Controller
     }
 
     /**
+     * @Route("/split/{id}/{success}", name="product_split")
+     */
+    public function splitAction(Request $request, $id, $success = null)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var \AppBundle\Repository\ProductRepository */
+        $repo = $em->getRepository('AppBundle:Product');
+
+        /** @var Product */
+        $product = $repo->find($id);
+
+        $data = array('quantity' => 1, 'status' => $product->getStatus(), 'individualize' => false);
+        $options = array('max' => $product->getQuantityInStock() - 1);
+
+        $form = $this->createForm(ProductSplitForm::class, $data, $options);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted())
+        {
+            if ($form->isValid())
+            {
+                $data = $form->getData();
+                $quantity = $data['quantity'];
+
+                if ($data['individualize'] && $quantity > 1)
+                {
+                    for ($i = 1; $i <= $quantity; $i++)
+                    {
+                        $repo->splitProduct($product, $data['status'], 1, "(split ".$i.")");
+                    }
+                }
+                else
+                {
+                    $repo->splitProduct($product, $data['status'], $quantity, "(split)");
+                }
+
+                try {
+                    $em->flush();
+                    $success = true;
+                }
+                catch (\Exception $e) {
+                    $form->get('quantity')->addError(new FormError($e->getMessage()));
+                    $success = false;
+                }
+            }
+            else
+            {
+                $success = false;
+            }
+        }
+
+        return $this->render('AppBundle:Product:split.ajax.twig', array(
+                'product' => $product,
+                'form' => $form->createView(),
+                'formAction' => $request->getRequestUri(),
+                'success' => $success
+            ));
+    }
+
+    /**
      * @Route("/print/{id}", name="product_print")
      */
     public function printAction($id)
@@ -235,7 +298,7 @@ class ProductController extends Controller
         $relation->setValue(implode(",", $vals));
 
         $em->persist($relation);
-        $em->remove($file);
+        // $em->remove($file); can be used by other products after split
         $em->flush();
 
         return new Response();
