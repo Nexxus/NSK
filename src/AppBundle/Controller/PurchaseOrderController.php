@@ -17,6 +17,8 @@ use Symfony\Component\Form\FormError;
  */
 class PurchaseOrderController extends Controller
 {
+    use PdfControllerTrait;
+
     /**
      * @Route("/", name="purchaseorder_index")
      */
@@ -149,6 +151,20 @@ class PurchaseOrderController extends Controller
         $em->flush();
 
         return $this->redirectToRoute('purchaseorder_index');
+    }
+
+    /**
+     * @Route("/print/{id}", name="purchaseorder_print")
+     */
+    public function printAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $order = $em->getRepository('AppBundle:PurchaseOrder')->find($id);
+
+        $html = $this->render('AppBundle:PurchaseOrder:print.html.twig', array('order' => $order));
+        $mPdfConfiguration = ['', 'A4' ,'','',10,10,10,10,0,0,'P'];
+
+        return $this->getPdfResponse("Nexxus purchase order", $html, $mPdfConfiguration);
     }
 
     /**

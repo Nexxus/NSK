@@ -142,7 +142,7 @@
                     <td>{{ form_widget(formRelation.price) }}</td>
                     <td>{{ form_widget(formRelation.quantity) }}</td>
                     <td nowrap>
-                        <a class="btn btn-danger" href="{{ path('salesorder_delete_relation', { 'id': order.id, 'productId': product.id }) }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
+                        <a class="btn btn-danger btn-delete" href="{{ path('salesorder_delete_relation', { 'id': order.id, 'productId': product.id }) }}" data-class="product from order" data-name="{{ product.name }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
                     </td>
                 </tr>
             {% else %}

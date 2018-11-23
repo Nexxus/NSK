@@ -61,7 +61,7 @@
                     <a class="btn btn-default" href="{{ path('product_split', { 'id': product.id }) }}" data-toggle="modal" data-target="#modalSplitter" title="Split bundle"><span class="glyphicon glyphicon-flash" aria-label="Split"></span></a>
                     {% endif %}
                     <a class="btn btn-success" href="{{ path('product_edit', { 'id': product.id }) }}" data-toggle="modal" data-target="#modalEditor" title="Edit"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
-                    <a class="btn btn-danger" href="{{ path('product_delete', { 'id': product.id }) }}" title="Delete"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
+                    <a class="btn btn-danger btn-delete" href="{{ path('product_delete', { 'id': product.id }) }}" title="Delete" data-class="product" data-name="{{ product.name }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
                 </td>
             </tr>
         {% else %}

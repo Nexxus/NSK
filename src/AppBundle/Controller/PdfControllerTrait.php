@@ -32,8 +32,8 @@ trait PdfControllerTrait
      */
     private function getPdfResponse($title, $html, array $mPdfConfiguration = array('', 'A4' ,'','',0,0,0,0,0,0,'P'))
     {
-        define("_MPDF_TEMP_PATH", $this->get('kernel')->getRootDir() . '/../var/mpdf/');
-        define("_MPDF_TTFONTDATAPATH", $this->get('kernel')->getRootDir() . '/../var/mpdf/fonts/');
+        define("_MPDF_TEMP_PATH", $this->get('kernel')->getRootDir() . '/../app/config/mpdf/');
+        define("_MPDF_TTFONTDATAPATH", $this->get('kernel')->getRootDir() . '/../app/config/mpdf/fonts/');
 
         /** @var \TFox\MpdfPortBundle\Service\MpdfService */
         $mpdfService = $this->get('tfox.mpdfport');

@@ -29,7 +29,7 @@
                 </td>
                 <td nowrap>
                     <a class="btn btn-success" href="{{ path('admin_user_edit', {'id': u.id}) }}">Edit</a>
-                    <a class="btn btn-danger" href="{{ path('admin_user_delete', { 'id': u.id }) }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
+                    <a class="btn btn-danger btn-delete" href="{{ path('admin_user_delete', { 'id': u.id }) }}" data-class="user" data-name="{{ u.username }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
                 </td>
             </tr>
           {% else %}
