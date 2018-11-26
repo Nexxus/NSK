@@ -46,7 +46,7 @@ class TaskService extends Service
     }
 
     /**
-     * @var Task Repair task that will be or is applied in this Service
+     * @var Task Task that will be or is applied in this Service
      *
      * @ORM\ManyToOne(targetEntity="Task", fetch="EAGER")
      * @ORM\JoinColumn(name="task_id", referencedColumnName="id", nullable=false)

@@ -32,6 +32,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class RepairService extends Service
 {
+
     public function __construct(ProductOrderRelation $productOrderRelation)
     {
         $order = $productOrderRelation->getOrder();
