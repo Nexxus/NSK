@@ -55,18 +55,16 @@ class PublicController extends Controller
 
         $allProductTypes = $em->getRepository(ProductType::class)->findAll();
 
-        $pickup = new Pickup();
         $order = new PurchaseOrder();
         $order->setOrderDate(new \DateTime());
         $order->setIsGift(true);
+        $pickup = new Pickup($order);
         $supplier = new Supplier();
-
-        $em->persist($pickup);
-        $em->persist($order);
-        $em->persist($supplier);
-
         $order->setSupplier($supplier);
-        $pickup->setOrder($order);
+
+        $em->persist($order);
+        $em->persist($pickup);
+        $em->persist($supplier);
 
         $form = $this->createForm(PickupForm::class, $pickup, array('productTypes' => $allProductTypes));
 
@@ -93,22 +91,16 @@ class PublicController extends Controller
                     $imageNames = UploadifiveController::splitFilenames($form->get('imagesNames')->getData());
                     foreach ($imageNames as $k => $v)
                     {
-                        $file = new PickupImageFile();
-                        $file->setUniqueServerFilename($k);
-                        $file->setOriginalClientFilename($v);
+                        $file = new PickupImageFile($pickup, $v, $k);
                         $em->persist($file);
-                        $pickup->addImage($file);
                     }
 
                     // Agreement
                     $agreementName = $form->get('agreementName')->getData();
                     if ($agreementName)
                     {
-                        $file = new PickupAgreementFile();
-                        $file->setUniqueServerFilename(substr($agreementName, 0, 13));
-                        $file->setOriginalClientFilename(substr($agreementName, 13));
+                        $file = new PickupAgreementFile($pickup, substr($agreementName, 13), substr($agreementName, 0, 13));
                         $em->persist($file);
-                        $pickup->setAgreement($file);
                     }
 
                     // Products
@@ -127,13 +119,9 @@ class PublicController extends Controller
                             $product->setSku(time() + $count);
                             $em->persist($product);
 
-                            $r = new ProductOrderRelation();
-                            $r->setOrder($pickup->getOrder());
-                            $r->setProduct($product);
+                            $r = new ProductOrderRelation($product, $pickup->getOrder());
                             $r->setQuantity($quantity);
                             $em->persist($r);
-
-                            $pickup->getOrder()->addProductRelation($r);
 
                             $count++;
                         }

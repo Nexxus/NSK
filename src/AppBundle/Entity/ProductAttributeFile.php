@@ -27,25 +27,16 @@ use Doctrine\ORM\Mapping as ORM;
 /** @ORM\Entity */
 class ProductAttributeFile extends AFile
 {
+    public function __construct(Product $product, $originalClientFilename, $uniqueServerFilename) {
+        $this->product = $product;
+        parent::__construct($originalClientFilename, $uniqueServerFilename);
+    }
+
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Product", inversedBy="files", fetch="EAGER")
      * @ORM\JoinColumn(name="product_id", referencedColumnName="id")
      */
     private $product;
-
-    /**
-     * Set product
-     *
-     * @param Product $product
-     *
-     * @return ProductAttributeFile
-     */
-    public function setProduct(Product $product)
-    {
-        $this->product = $product;
-
-        return $this;
-    }
 
     /**
      * Get product

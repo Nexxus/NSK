@@ -160,11 +160,8 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
 
             if (!$exists)
             {
-                $r = new ProductAttributeRelation();
-                $r->setAttribute($newAttribute);
-                $r->setProduct($product);
+                $r = new ProductAttributeRelation($product, $newAttribute);
                 $this->_em->persist($r);
-                $product->addAttributeRelation($r);
             }
         }
     }
@@ -178,12 +175,9 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
 
         if (!$exists)
         {
-            $r = new ProductOrderRelation();
-            $r->setOrder($order);
-            $r->setProduct($product);
+            $r = new ProductOrderRelation($product, $order);
             $r->setQuantity($quantity);
             $this->_em->persist($r);
-            $product->addOrderRelation($r);
         }
     }
 
@@ -210,23 +204,17 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         $this->_em->persist($newProduct);
 
         $purchaseRelation = $product->getPurchaseOrderRelation();
-        $newPurchaseRelation = new ProductOrderRelation();
-        $newPurchaseRelation->setProduct($newProduct);
+        $newPurchaseRelation = new ProductOrderRelation($newProduct, $purchaseRelation->getOrder());
         $newPurchaseRelation->setQuantity($quantity);
-        $newPurchaseRelation->setOrder($purchaseRelation->getOrder());
         if ($purchaseRelation->getPrice()) $newPurchaseRelation->setPrice($purchaseRelation->getPrice());
-        $newProduct->addOrderRelation($purchaseRelation);
         $this->_em->persist($newPurchaseRelation);
 
         foreach ($product->getAttributeRelations() as $attributeRelation)
         {
-            $newAttributeRelation = new ProductAttributeRelation();
-            $newAttributeRelation->setAttribute($attributeRelation->getAttribute());
-            $newAttributeRelation->setProduct($newProduct);
+            $newAttributeRelation = new ProductAttributeRelation($newProduct, $attributeRelation->getAttribute());
             if ($attributeRelation->getValueProduct()) $newAttributeRelation->setQuantity(0);
             if ($attributeRelation->getValue()) $newAttributeRelation->setValue($attributeRelation->getValue());
             if ($attributeRelation->getValueProduct()) $newAttributeRelation->setValueProduct($attributeRelation->getValueProduct());
-            $newProduct->addAttributeRelation($newAttributeRelation);
             $this->_em->persist($newAttributeRelation);
         }
 

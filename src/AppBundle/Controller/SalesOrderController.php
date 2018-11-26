@@ -136,9 +136,7 @@ class SalesOrderController extends Controller
                     }
                     else if ($addProduct = $form->get('addProduct')->getData()) // existing sales order not being backorder
                     {
-                        $r = new ProductOrderRelation();
-                        $r->setProduct($addProduct);
-                        $r->setOrder($order);
+                        $r = new ProductOrderRelation($addProduct, $order);
                         $r->setPrice($addProduct->getPrice());
                         $r->setQuantity(1);
                         $order->addProductRelation($r);
