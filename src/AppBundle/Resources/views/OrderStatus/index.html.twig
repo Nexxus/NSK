@@ -18,7 +18,6 @@
                 <th>Name</th>
                 <th>Sale</th>
                 <th>Purchase</th>
-                <th>Stock</th>
                 <th>Sort</th>
                 <th width="1%"></th>
             </tr>
@@ -29,7 +28,6 @@
             <td>{{ s.name }}</td>
             <td>{{ s.isSale ? "Yes" : "" }}</td>
             <td>{{ s.isPurchase ? "Yes" : "" }}</td>
-            <td>{{ s.isStock ? "Yes" : "" }}</td>
             <td>{{ s.pindex }}</td>
             <td nowrap>
                 <a class="btn btn-success" href="{{ path('orderstatus_edit', {'id': s.id}) }}">Edit</a>

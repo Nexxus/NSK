@@ -43,3 +43,4 @@ logs/
 *.phpproj.user
 /.vs/
 /Properties/
+web.config

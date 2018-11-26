@@ -32,7 +32,7 @@
             <td>{{ t.name }}</td>
             <td nowrap>
                 <a class="btn btn-success" href="{{ path('admin_task_edit', {'id': t.id}) }}">Edit</a>
-                <a class="btn btn-danger" href="{{ path('admin_task_delete', { 'id': t.id }) }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
+                <a class="btn btn-danger btn-delete" href="{{ path('admin_task_delete', { 'id': t.id }) }}" data-class="task" data-name="{{ t.name }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
             </td>
         </tr>
         {% else %}

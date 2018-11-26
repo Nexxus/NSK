@@ -103,7 +103,7 @@ class ProductAttributeRelation
      *
      * @return ProductAttributeRelation
      */
-    public function setValueProduct(Product $valueProduct = null)
+    public function setValueProduct(Product $valueProduct)
     {
         $this->valueProduct = $valueProduct;
 

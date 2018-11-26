@@ -45,7 +45,7 @@ class PurchaseOrder extends AOrder
     private $supplier;
 
     /**
-     * @ORM\OneToOne(targetEntity="Pickup", mappedBy="order")
+     * @ORM\OneToOne(targetEntity="Pickup", mappedBy="order", cascade={"all"}, orphanRemoval=true)
      */
     private $pickup;
 

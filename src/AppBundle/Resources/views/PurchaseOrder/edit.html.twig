@@ -208,6 +208,9 @@
     <div class="panel panel-default">
         <div class="panel-body text-center">
             {{ form_widget(form.save) }}
+            {% if (order.id > 0) %}
+            <a class="btn btn-default" href="{{ path('purchaseorder_print', { 'id': order.id }) }}" target="_blank">Print</a>
+            {% endif %}
         </div>
     </div>
     
