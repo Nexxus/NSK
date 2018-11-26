@@ -34,6 +34,15 @@ use Doctrine\ORM\Mapping as ORM;
 abstract class AFile
 {
     /**
+     * @param string $originalClientFilename
+     * @param string $uniqueServerFilename
+     */
+    public function __construct($originalClientFilename, $uniqueServerFilename) {
+        $this->originalClientFilename = $originalClientFilename;
+        $this->uniqueServerFilename = $uniqueServerFilename;
+    }
+
+    /**
      * @var int
      *
      * @ORM\Column(name="id", type="integer")
@@ -66,23 +75,9 @@ abstract class AFile
      */
     private $uniqueServerFilename;
 
-    public function setOriginalClientFilename($originalClientFilename)
-    {
-        $this->originalClientFilename = $originalClientFilename;
-
-        return $this;
-    }
-
     public function getOriginalClientFilename()
     {
         return $this->originalClientFilename;
-    }
-
-    public function setUniqueServerFilename($uniqueServerFilename)
-    {
-        $this->uniqueServerFilename = $uniqueServerFilename;
-
-        return $this;
     }
 
     public function getUniqueServerFilename()

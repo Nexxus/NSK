@@ -143,10 +143,7 @@ class ProductController extends Controller
 
                     foreach ($fileNames as $k => $v)
                     {
-                        $file = new ProductAttributeFile();
-                        $file->setUniqueServerFilename($k);
-                        $file->setOriginalClientFilename($v);
-                        $file->setProduct($product);
+                        $file = new ProductAttributeFile($product, $v, $k);
                         $em->persist($file);
                         $em->flush($file);
 

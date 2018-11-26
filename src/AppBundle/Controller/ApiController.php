@@ -105,10 +105,7 @@ class ApiController extends FOSRestController
         $serverFilename = uniqid();
         $file->move($this->getFullUploadFolder(), $serverFilename);
 
-        $attrfile = new ProductAttributeFile();
-        $attrfile->setUniqueServerFilename($serverFilename);
-        $attrfile->setOriginalClientFilename($file->getClientOriginalName());
-        $attrfile->setProduct($product);
+        $attrfile = new ProductAttributeFile($product, $file->getClientOriginalName(), $serverFilename);
         $em->persist($attrfile);
         $em->flush($attrfile);
 

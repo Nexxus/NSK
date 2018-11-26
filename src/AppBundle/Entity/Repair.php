@@ -23,7 +23,6 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Repair
@@ -33,8 +32,8 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class Repair
 {
-    public function __construct() {
-
+    public function __construct(SalesOrder $order) {
+        $this->order = $order;
     }
 
     /**
@@ -81,22 +80,10 @@ class Repair
     private $damage;
 
     /**
-     * @return Repair
-     */
-    public function setOrder(SalesOrder $order)
-    {
-        $this->order = $order;
-
-        return $this;
-    }
-
-    /**
      * @return SalesOrder
      */
     public function getOrder()
     {
         return $this->order;
     }
-
-
 }

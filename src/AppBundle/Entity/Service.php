@@ -25,12 +25,18 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Service
- *
+ * @ORM\Table(name="service")
  * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"r" = "RepairService", "t" = "TaskService"})
  */
-class Service extends Product
+abstract class Service
 {
+    public function __construct(ProductOrderRelation $productOrderRelation) {
+        $this->productOrderRelation = $productOrderRelation;
+    }
+
     const STATUS_NEW = 0;
     const STATUS_TODO = 1;
     const STATUS_HOLD = 2;
@@ -38,27 +44,48 @@ class Service extends Product
     const STATUS_DONE = 4;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
+
+    /**
      * @var int Use constants
      *
      * @ORM\Column(type="integer", nullable=false, options={"default" : 0})
      */
-    private $status = 0;
+    protected $status = 0;
 
     /**
-     * @var Product Product to which this Service is applied to
+     * @var ProductOrderRelation
      *
-     * @ORM\ManyToOne(targetEntity="Product", inversedBy="services", fetch="EAGER")
-     * @ORM\JoinColumn(name="product_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="ProductOrderRelation", inversedBy="services", fetch="EAGER")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="relation_product_id", referencedColumnName="product_id"),
+     *   @ORM\JoinColumn(name="relation_order_id", referencedColumnName="order_id")
+     * })
      */
-    private $product;
+    protected $productOrderRelation;
 
     /**
-     * @var Task Repair task that will be or is applied in this Service
+     * @var string
      *
-     * @ORM\ManyToOne(targetEntity="Task", inversedBy="services", fetch="EAGER")
-     * @ORM\JoinColumn(name="task_id", referencedColumnName="id", nullable=false)
+     * @ORM\Column(type="text", nullable=true)
      */
-    private $task;
+    protected $description;
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
     /**
      * Set status
@@ -84,52 +111,32 @@ class Service extends Product
         return $this->status;
     }
 
-    /**
-     * Set product
-     *
-     * @param Product $product
-     *
-     * @return ProductImage
-     */
-    public function setProduct(Product $product)
+    public function getProductOrderRelation()
     {
-        $this->product = $product;
-
-        return $this;
+        return $this->productOrderRelation;
     }
 
     /**
-     * Get product
+     * Set description
      *
-     * @return Product
-     */
-    public function getProduct()
-    {
-        return $this->product;
-    }
-
-    /**
-     * Set task
-     *
-     * @param Task $task
+     * @param string $description
      *
      * @return Service
      */
-    public function setTask(Task $task)
+    public function setDescription($description)
     {
-        $this->task = $task;
+        $this->description = $description;
 
         return $this;
     }
 
     /**
-     * Get task
+     * Get description
      *
-     * @return Task
+     * @return string
      */
-    public function getTask()
+    public function getDescription()
     {
-        return $this->task;
+        return $this->description;
     }
-
 }

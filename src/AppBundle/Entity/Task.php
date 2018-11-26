@@ -35,7 +35,6 @@ class Task
 {
     public function __construct() {
         $this->productTypes = new ArrayCollection();
-        $this->services = new ArrayCollection();
     }
 
     /**
@@ -67,13 +66,6 @@ class Task
      * @ORM\Column(type="text", nullable=true)
      */
     private $description;
-
-    /**
-     * @var ArrayCollection|Service[] Services that applied this Task
-     *
-     * @ORM\OneToMany(targetEntity="Service", mappedBy="task", fetch="LAZY")
-     */
-    private $services;
 
     /**
      * Get id
@@ -165,39 +157,5 @@ class Task
     public function getProductTypes()
     {
         return $this->productTypes;
-    }
-
-    /**
-     * Add service
-     *
-     * @param Service $service
-     *
-     * @return Task
-     */
-    public function addService(Service $service)
-    {
-        $this->services[] = $service;
-
-        return $this;
-    }
-
-    /**
-     * Remove service
-     *
-     * @param Service $service
-     */
-    public function removeService(Service $service)
-    {
-        $this->services->removeElement($service);
-    }
-
-    /**
-     * Get services
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getServices()
-    {
-        return $this->services;
     }
 }

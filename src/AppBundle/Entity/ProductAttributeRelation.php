@@ -30,6 +30,13 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ProductAttributeRelation
 {
+    public function __construct(Product $product, Attribute $attribute) {
+        $this->product = $product;
+        $this->attribute = $attribute;
+        $product->addAttributeRelation($this);
+        $attribute->addProductRelation($this);
+    }
+
     /**
      * @var string Text, File path or Option text; depends on type of attribute
      *
@@ -121,20 +128,6 @@ class ProductAttributeRelation
     }
 
     /**
-     * Set product
-     *
-     * @param Product $product
-     *
-     * @return ProductAttributeRelation
-     */
-    public function setProduct(Product $product)
-    {
-        $this->product = $product;
-
-        return $this;
-    }
-
-    /**
      * Get product
      *
      * @return Product
@@ -142,20 +135,6 @@ class ProductAttributeRelation
     public function getProduct()
     {
         return $this->product;
-    }
-
-    /**
-     * Set attribute
-     *
-     * @param Attribute $attribute
-     *
-     * @return ProductAttributeRelation
-     */
-    public function setAttribute(Attribute $attribute)
-    {
-        $this->attribute = $attribute;
-
-        return $this;
     }
 
     /**

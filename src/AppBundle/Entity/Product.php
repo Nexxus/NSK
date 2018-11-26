@@ -32,9 +32,6 @@ use AppBundle\Entity\Supplier;
  *
  * @ORM\Table(name="product")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\ProductRepository")
- * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"p" = "Product", "s" = "Service"})
  */
 class Product
 {
@@ -42,7 +39,6 @@ class Product
         $this->attributeRelations = new ArrayCollection();
         $this->attributedRelations = new ArrayCollection();
         $this->orderRelations = new ArrayCollection();
-        $this->services = new ArrayCollection();
         $this->images = new ArrayCollection();
         $this->files = new ArrayCollection();
         $this->createdAt = new \DateTime();
@@ -156,13 +152,6 @@ class Product
      * @JMS\Exclude
      */
     private $orderRelations;
-
-    /**
-     * @var ArrayCollection|Service[] Services that are applied to this Product
-     * @ORM\OneToMany(targetEntity="Service", mappedBy="product", fetch="LAZY")
-     * @JMS\Exclude()
-     */
-    private $services;
 
     /**
      * @var Supplier
@@ -468,40 +457,6 @@ class Product
     public function getOrderRelations()
     {
         return $this->orderRelations;
-    }
-
-    /**
-     * Add service
-     *
-     * @param Service $service
-     *
-     * @return Product
-     */
-    public function addService(Service $service)
-    {
-        $this->services[] = $service;
-
-        return $this;
-    }
-
-    /**
-     * Remove service
-     *
-     * @param Service $service
-     */
-    public function removeService(Service $service)
-    {
-        $this->services->removeElement($service);
-    }
-
-    /**
-     * Get services
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getServices()
-    {
-        return $this->services;
     }
 
     public function getCreatedAt()

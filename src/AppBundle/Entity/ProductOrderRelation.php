@@ -23,7 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation as JMS;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * ProductOrderRelation
@@ -33,18 +33,25 @@ use JMS\Serializer\Annotation as JMS;
  */
 class ProductOrderRelation
 {
+    public function __construct(Product $product, AOrder $order) {
+        $this->product = $product;
+        $this->order = $order;
+        $product->addOrderRelation($this);
+        $order->addProductRelation($this);
+        $this->services = new ArrayCollection();
+    }
+
     /**
      * @var Product
      *
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity="Product", inversedBy="orderRelations", fetch="EAGER")
      * @ORM\JoinColumn(name="product_id", referencedColumnName="id", nullable=false)
-     * @JMS\MaxDepth(1)
      */
     private $product;
 
     /**
-     * @var AOrder
+     * @var AOrder|PurchaseOrder|SalesOrder
      *
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity="AOrder", inversedBy="productRelations", fetch="EAGER")
@@ -67,18 +74,10 @@ class ProductOrderRelation
     private $price;
 
     /**
-     * Set product
-     *
-     * @param Product $product
-     *
-     * @return ProductOrderRelation
+     * @var ArrayCollection|Service[] Services that are applied to this Product
+     * @ORM\OneToMany(targetEntity="Service", mappedBy="product", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
      */
-    public function setProduct(Product $product)
-    {
-        $this->product = $product;
-
-        return $this;
-    }
+    private $services;
 
     /**
      * Get product
@@ -91,23 +90,9 @@ class ProductOrderRelation
     }
 
     /**
-     * Set order
-     *
-     * @param AOrder $order
-     *
-     * @return ProductOrderRelation
-     */
-    public function setOrder(AOrder $order)
-    {
-        $this->order = $order;
-
-        return $this;
-    }
-
-    /**
      * Get order
      *
-     * @return AOrder
+     * @return AOrder|PurchaseOrder|SalesOrder
      */
     public function getOrder()
     {
@@ -160,5 +145,39 @@ class ProductOrderRelation
     public function getPrice()
     {
         return floatval($this->price) / 100;
+    }
+
+    /**
+     * Add service
+     *
+     * @param Service $service
+     *
+     * @return ProductOrderRelation
+     */
+    public function addService(Service $service)
+    {
+        $this->services[] = $service;
+
+        return $this;
+    }
+
+    /**
+     * Remove service
+     *
+     * @param Service $service
+     */
+    public function removeService(Service $service)
+    {
+        $this->services->removeElement($service);
+    }
+
+    /**
+     * Get services
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getServices()
+    {
+        return $this->services;
     }
 }
