@@ -50,12 +50,24 @@ class SalesOrderForm extends AbstractType
         /** @var SalesOrder */
         $order = $builder->getData();
 
-        $builder
-            ->add('orderNr', TextType::class, [
-                'attr'=> ['placeholder' => 'Keep empty for autogeneration', 'class' => 'focus'],
-                'required' => false
-            ])
-            ->add('remarks', TextType::class, ['required' => false])
+        if ($order->getId())
+        {
+            $builder
+                ->add('orderNr', TextType::class, [
+                    'attr'=> ['placeholder' => 'Keep empty for autogeneration'],
+                    'required' => false
+                ]);
+        }
+        else
+        {
+            $builder
+                ->add('orderNr', TextType::class, [
+                    'attr'=> ['placeholder' => 'Keep empty for autogeneration', 'class' => 'focus'],
+                    'required' => false
+                ]);
+        }
+
+        $builder->add('remarks', TextType::class, ['required' => false])
             ->add('orderDate', DateType::class)
             ->add('transport', MoneyType::class, ['required' => false])
             ->add('discount', MoneyType::class, ['required' => false])
@@ -115,7 +127,7 @@ class SalesOrderForm extends AbstractType
                     return $p->getSku() . ' - ' . $p->getName();
                 },
                 'choices' => $options['stock'],
-                'attr' => ['class' => 'combobox']
+                'attr' => ['class' => 'combobox focus']
             ]);
         }
 
@@ -127,7 +139,6 @@ class SalesOrderForm extends AbstractType
                     'required' => false
                 ]);
         }
-
     }
 
     public function configureOptions(OptionsResolver $resolver)
