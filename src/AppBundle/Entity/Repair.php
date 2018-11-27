@@ -34,6 +34,7 @@ class Repair
 {
     public function __construct(SalesOrder $order) {
         $this->order = $order;
+        $order->setRepair($this);
     }
 
     /**

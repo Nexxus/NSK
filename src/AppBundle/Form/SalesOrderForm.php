@@ -72,7 +72,6 @@ class SalesOrderForm extends AbstractType
             ->add('transport', MoneyType::class, ['required' => false])
             ->add('discount', MoneyType::class, ['required' => false])
             ->add('isGift', CheckboxType::class, ['required' => false])
-            ->add('backorder', CheckboxType::class, ['required' => false, 'mapped' => false, 'label' => 'Backorder: This creates empty purchase order too'])
             ->add('status', EntityType::class, [
                 'class' => 'AppBundle:OrderStatus',
                 'choice_label' => 'name',
@@ -108,7 +107,14 @@ class SalesOrderForm extends AbstractType
                 'attr' => ['class' => 'btn-success btn-120']
             ]);
 
-        if ($order->getBackingPurchaseOrder())
+        if (!$order->getId()) // new order
+        {
+            $builder
+                ->add('backorder', CheckboxType::class, ['required' => false, 'mapped' => false, 'label' => 'Back order: This creates empty purchase order too'])
+                ->add('repairorders', CheckboxType::class, ['required' => false, 'mapped' => false, 'label' => 'Repair order: These products are not purchased']);
+        }
+
+        if ($order->getBackingPurchaseOrder() || $order->getRepair())
         {
             $builder->add('newProduct',  EntityType::class, [
                 'required' => false,
