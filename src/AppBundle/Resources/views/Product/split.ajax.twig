@@ -18,14 +18,9 @@
     Enter the desired values for the separated and new product bundle (or set of individual products).
     </p>
 
-    <div class="row">
-        <div class="col-md-12">
-            {{ form_row(form.quantity) }} 
-            {{ form_row(form.status) }} 
-            {{ form_row(form.individualize) }} 
-        </div>
-    </div>
-
+    {{ form_row(form.quantity) }} 
+    {{ form_row(form.status) }} 
+    {{ form_row(form.individualize) }} 
 
     <div class="text-center">
         {{ form_widget(form.split) }}

@@ -30,9 +30,8 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Entity
  */
-class RepairService extends Service
+class RepairService extends AService
 {
-
     public function __construct(ProductOrderRelation $productOrderRelation)
     {
         $order = $productOrderRelation->getOrder();

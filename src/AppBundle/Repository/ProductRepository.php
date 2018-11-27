@@ -26,10 +26,11 @@ use AppBundle\Entity\AOrder;
 use AppBundle\Entity\Product;
 use AppBundle\Entity\ProductStatus;
 use AppBundle\Entity\User;
+use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Entity\SalesOrder;
+use AppBundle\Entity\TaskService;
 use AppBundle\Entity\ProductAttributeRelation;
 use AppBundle\Entity\ProductOrderRelation;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * ProductRepository
@@ -178,6 +179,32 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
             $r = new ProductOrderRelation($product, $order);
             $r->setQuantity($quantity);
             $this->_em->persist($r);
+        }
+    }
+
+    public function generateTaskServices(ProductOrderRelation $productOrderRelation)
+    {
+        $order = $productOrderRelation->getOrder();
+        $orderClass = get_class($order);
+
+        if (!$order || $orderClass != PurchaseOrder::class)
+            throw new \Exception("Tasks can only be added to purchase order.");
+
+        // get all possible tasks for this product type
+        $allTasks = $productOrderRelation->getProduct()->getType()->getTasks();
+
+        // add new tasks to this product relation
+        foreach ($allTasks as $newTask)
+        {
+            $exists = $productOrderRelation->getServices()->exists(function($key, TaskService $s) use ($newTask) {
+                return $s->getTask() == $newTask;
+            });
+
+            if (!$exists)
+            {
+                $s = new TaskService($newTask, $productOrderRelation);
+                $this->_em->persist($s);
+            }
         }
     }
 

@@ -52,8 +52,14 @@ a {
     background-color: #15007c;
 }
 
+.btn-stock {
+    margin-right: 2px;
+    padding: 4px 6px 4px 6px;
+    height: 31px;
+}
+
 .navbar-gradient {
-  background: #006e2e;
+    background: #006e2e;
 }
 .navbar-inverse .badge {
   background-color: #fff;

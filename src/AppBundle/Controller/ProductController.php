@@ -24,12 +24,14 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Product;
 use AppBundle\Entity\ProductType;
+use AppBundle\Entity\ProductOrderRelation;
 use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\ProductAttributeFile;
 use AppBundle\Entity\ProductAttributeRelation;
 use AppBundle\Form\ProductForm;
 use AppBundle\Form\ProductSplitForm;
+use AppBundle\Form\ChecklistForm;
 use AppBundle\Form\IndexSearchForm;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -71,7 +73,7 @@ class ProductController extends Controller
         }
 
         $paginator = $this->get('knp_paginator');
-        $productsPage = $paginator->paginate($products, $request->query->getInt('page', 1), 10);
+        $productsPage = $paginator->paginate($products, $request->query->getInt('page', 1), 20);
 
         return $this->render('AppBundle:Product:index.html.twig', array(
             'products' => $productsPage,
@@ -181,10 +183,12 @@ class ProductController extends Controller
     }
 
     /**
-     * @Route("/split/{id}/{success}", name="product_split")
+     * @Route("/split/{id}", name="product_split")
      */
-    public function splitAction(Request $request, $id, $success = null)
+    public function splitAction(Request $request, $id)
     {
+        $success = null;
+
         $em = $this->getDoctrine()->getManager();
 
         /** @var \AppBundle\Repository\ProductRepository */
@@ -243,6 +247,55 @@ class ProductController extends Controller
     }
 
     /**
+     * @Route("/checklist/{relationId}", name="product_checklist")
+     */
+    public function checklistAction(Request $request, $relationId)
+    {
+        $success = null;
+
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var ProductOrderRelation */
+        $relation = $em->find(ProductOrderRelation::class, $relationId);
+
+        /** @var \AppBundle\Repository\ProductRepository */
+        $repo = $em->getRepository('AppBundle:Product');
+
+        $repo->generateTaskServices($relation);
+
+        $form = $this->createForm(ChecklistForm::class, $relation);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted())
+        {
+            if ($form->isValid())
+            {
+                $em->persist($relation);
+
+                try {
+                    $em->flush();
+                    $success = true;
+                }
+                catch (\Exception $e) {
+                    $success = false;
+                }
+            }
+            else
+            {
+                $success = false;
+            }
+        }
+
+        return $this->render('AppBundle:Product:checklist.ajax.twig', array(
+                'relation' => $relation,
+                'form' => $form->createView(),
+                'formAction' => $request->getRequestUri(),
+                'success' => $success
+            ));
+    }
+
+    /**
      * @Route("/print/{id}", name="product_print")
      */
     public function printAction($id)
@@ -254,6 +307,22 @@ class ProductController extends Controller
         $mPdfConfiguration = ['', 'A6' ,'','',0,0,0,0,0,0,'P'];
 
         return $this->getPdfResponse("Nexxus price tag", $html, $mPdfConfiguration);
+    }
+
+    /**
+     * @Route("/checklistprint/{relationId}", name="product_checklist_print")
+     */
+    public function printChecklistAction(Request $request, $relationId)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var ProductOrderRelation */
+        $relation = $em->find(ProductOrderRelation::class, $relationId);
+
+        $html = $this->render('AppBundle:Product:printchecklist.html.twig', array('relation' => $relation));
+        $mPdfConfiguration = ['', 'A4' ,'','',10,10,10,10,0,0,'P'];
+
+        return $this->getPdfResponse("Checklist", $html, $mPdfConfiguration);
     }
 
     /**

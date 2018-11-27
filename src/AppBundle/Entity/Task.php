@@ -135,7 +135,7 @@ class Task
     public function addProductType(ProductType $productType)
     {
         $this->productTypes[] = $productType;
-
+        $productType->addTask($this);
         return $this;
     }
 
@@ -147,6 +147,7 @@ class Task
     public function removeProductType(ProductType $productType)
     {
         $this->productTypes->removeElement($productType);
+        $productType->removeTask($this);
     }
 
     /**

@@ -42,9 +42,17 @@ class ProductOrderRelation
     }
 
     /**
+     * @var int
+     *
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
      * @var Product
      *
-     * @ORM\Id
      * @ORM\ManyToOne(targetEntity="Product", inversedBy="orderRelations", fetch="EAGER")
      * @ORM\JoinColumn(name="product_id", referencedColumnName="id", nullable=false)
      */
@@ -53,7 +61,6 @@ class ProductOrderRelation
     /**
      * @var AOrder|PurchaseOrder|SalesOrder
      *
-     * @ORM\Id
      * @ORM\ManyToOne(targetEntity="AOrder", inversedBy="productRelations", fetch="EAGER")
      * @ORM\JoinColumn(name="order_id", referencedColumnName="id", nullable=false)
      */
@@ -74,10 +81,19 @@ class ProductOrderRelation
     private $price;
 
     /**
-     * @var ArrayCollection|Service[] Services that are applied to this Product
-     * @ORM\OneToMany(targetEntity="Service", mappedBy="product", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
+     * Services that are applied to this Product
+     * RepairServices in case of SalesOrder
+     * TaskServices in case of PurchaseOrder
+     *
+     * @var ArrayCollection|AService[]
+     * @ORM\OneToMany(targetEntity="AService", mappedBy="productOrderRelation", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
      */
     private $services;
+
+    public function getId()
+    {
+        return $this->id;
+    }
 
     /**
      * Get product
@@ -150,34 +166,32 @@ class ProductOrderRelation
     /**
      * Add service
      *
-     * @param Service $service
+     * @param AService $service
      *
      * @return ProductOrderRelation
      */
-    public function addService(Service $service)
+    public function addService(AService $service)
     {
         $this->services[] = $service;
 
         return $this;
     }
 
-    /**
-     * Remove service
-     *
-     * @param Service $service
-     */
-    public function removeService(Service $service)
+    public function removeService(AService $service)
     {
         $this->services->removeElement($service);
     }
 
-    /**
-     * Get services
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
     public function getServices()
     {
         return $this->services;
+    }
+
+    public function getServicesDone() {
+        $servicesDone = $this->services->filter(function (AService $service) {
+            return $service->getStatus() == AService::STATUS_DONE;
+        });
+
+        return $servicesDone->count() ?? 0;
     }
 }
