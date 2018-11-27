@@ -27,7 +27,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Repair
  *
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\RepairRepository")
  * @ORM\Table(name="repair")
  */
 class Repair
@@ -36,6 +36,10 @@ class Repair
         $this->order = $order;
         $order->setRepair($this);
     }
+
+    const TYPE_PICKUP = 0;
+    const TYPE_DELIVERY = 1;
+    const TYPE_SHIP = 2;
 
     /**
      * @var int
@@ -47,6 +51,8 @@ class Repair
     private $id;
 
     /**
+     *
+     * @var SalesOrder
      * @ORM\OneToOne(targetEntity="SalesOrder", inversedBy="repair")
      * @ORM\JoinColumn(name="order_id", referencedColumnName="id")
      */
@@ -80,11 +86,59 @@ class Repair
      */
     private $damage;
 
-    /**
-     * @return SalesOrder
-     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
     public function getOrder()
     {
         return $this->order;
+    }
+
+    public function setDamage($damage)
+    {
+        $this->damage = $damage;
+
+        return $this;
+    }
+
+    public function getDamage()
+    {
+        return $this->damage;
+    }
+
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    public function getDeliveryDate()
+    {
+        return $this->deliveryDate;
+    }
+
+    public function setDeliveryDate(\DateTime $deliveryDate)
+    {
+        $this->deliveryDate = $deliveryDate;
+        return $this;
+    }
+
+    public function getDeliveryType()
+    {
+        return $this->deliveryType;
+    }
+
+    public function setDeliveryType($deliveryType)
+    {
+        $this->deliveryType = $deliveryType;
+        return $this;
     }
 }

@@ -8,7 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\Repair;
-use AppBundle\Entity\RepairService;
+use AppBundle\Entity\Product;
 use AppBundle\Entity\Customer;
 use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Entity\ProductOrderRelation;
@@ -145,17 +145,15 @@ class SalesOrderController extends Controller
                         if ($repairorder) // new sales order being repair
                         {
                             $repair = new Repair($order);
-
-                            // todo setters
-
+                            $em->getRepository('AppBundle:Repair')->generateBaseServices($repair);
                             $em->persist($repair);
+                            $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate("To repair", false, true));
                         }
                         else if ($addProduct = $form->get('addProduct')->getData()) // existing sales order not being backorder or repair
                         {
                             $r = new ProductOrderRelation($addProduct, $order);
                             $r->setPrice($addProduct->getPrice());
                             $r->setQuantity(1);
-                            $order->addProductRelation($r);
                             $em->persist($r);
                         }
 

@@ -135,7 +135,7 @@
                 <tr>
                     <td>{{ r.product.sku }}</td>
                     <td>{{ r.product.name }}</td>
-                    <td>{{ r.product.type.name }}</td>
+                    <td>{{ r.product.type.name|default("") }}</td>
                     <td>&euro; {{ r.price|number_format(2, ',', '.') }}</td>
                     <td>{{ r.quantity }}</td>
                 </tr>

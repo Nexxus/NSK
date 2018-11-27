@@ -24,19 +24,47 @@ namespace AppBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use AppBundle\Entity\ProductOrderRelation;
 
-
+/**
+ * ProductOrderRelationForm is parented by SalesOrderForm and PurchaseOrderForm
+ */
 class ProductOrderRelationForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
-            ->add('price', MoneyType::class)
-            ->add('quantity', IntegerType::class);
+        /*
+         * Since this form type is used in a collection,
+         * the object is not yet present at the buildForm function call.
+         * Therefor the code can be wrapped in the presetdata event listener.
+         */
+		$builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+
+            $form = $event->getForm();
+
+            /** @var ProductOrderRelation */
+            $productOrderRelation = $event->getData();
+
+            $form
+                ->add('price', MoneyType::class)
+                ->add('quantity', IntegerType::class);
+
+            if ($productOrderRelation->getOrder() && $productOrderRelation->getOrder()->getRepair())
+            {
+                $form
+                    ->add('services', CollectionType::class, [
+                    'entry_type' => RepairServiceForm::class,
+                    'entry_options' => ['label' => false],
+                    'label' => false,
+                ]);
+            }
+        });
     }
 
     public function configureOptions(OptionsResolver $resolver)

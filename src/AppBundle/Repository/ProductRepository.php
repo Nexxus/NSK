@@ -148,6 +148,9 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
 
     public function generateProductAttributeRelations(Product $product)
     {
+        if (!$product->getType())
+            return;
+
         // get all possible attributes for this product type
         $allAttributes = $product->getType()->getAttributes();
 
@@ -184,6 +187,9 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
 
     public function generateTaskServices(ProductOrderRelation $productOrderRelation)
     {
+        if (!!$productOrderRelation->getProduct() || !$productOrderRelation->getProduct()->getType())
+            return;
+
         $order = $productOrderRelation->getOrder();
         $orderClass = get_class($order);
 

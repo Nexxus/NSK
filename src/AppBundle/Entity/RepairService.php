@@ -44,6 +44,35 @@ class RepairService extends AService
     }
 
     /**
+     * @var int In eurocents
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $price;
+
+    /**
+     * In euros (float)
+     *
+     * @param float $price
+     */
+    public function setPrice($price)
+    {
+        $this->price = $price * 100;
+
+        return $this;
+    }
+
+    /**
+     * In euros (float)
+     *
+     * @return float
+     */
+    public function getPrice()
+    {
+        return floatval($this->price) / 100;
+    }
+
+    /**
      * @return SalesOrder
      */
     public function getSalesOrder() {

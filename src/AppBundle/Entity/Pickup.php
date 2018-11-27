@@ -95,6 +95,11 @@ class Pickup
      */
     private $agreement;
 
+    public function getId()
+    {
+        return $this->id;
+    }
+
     /**
      * @return PurchaseOrder
      */
@@ -108,7 +113,7 @@ class Pickup
         return $this->pickupDate;
     }
 
-    public function setPickupDate($pickupDate)
+    public function setPickupDate(\DateTime $pickupDate)
     {
         $this->pickupDate = $pickupDate;
         return $this;

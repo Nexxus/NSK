@@ -80,11 +80,9 @@ class AttributeController extends Controller
         {
             if ($form->has('newOption') && $newOptionName = $form->get('newOption')->getData())
             {
-                $newOption = new AttributeOption();
+                $newOption = new AttributeOption($attribute);
                 $newOption->setName($newOptionName);
-                $newOption->setAttribute($attribute);
                 $em->persist($newOption);
-                $attribute->addOption($newOption);
             }
 
             $em->persist($attribute);

@@ -32,6 +32,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use AppBundle\Entity\AService;
 
+/**
+ * ChecklistServiceForm is parented by ChecklistForm
+ */
 class ChecklistServiceForm extends AbstractType
 {
     /**
@@ -39,7 +42,7 @@ class ChecklistServiceForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-                /*
+        /*
          * Since this form type is used in a collection,
          * the object is not yet present at the buildForm function call.
          * Therefor the code can be wrapped in the presetdata event listener.

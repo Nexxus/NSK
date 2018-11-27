@@ -38,7 +38,6 @@ class Supplier extends ACompany
     public function __construct() {
         $this->products = new ArrayCollection();
         $this->orders = new ArrayCollection();
-        parent::__construct();
     }
 
     /**

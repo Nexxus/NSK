@@ -49,7 +49,7 @@ class TaskService extends AService
      * @var Task Task that will be or is applied in this Service
      *
      * @ORM\ManyToOne(targetEntity="Task", fetch="EAGER")
-     * @ORM\JoinColumn(name="task_id", referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="task_id", referencedColumnName="id", nullable=true)
      */
     private $task;
 
