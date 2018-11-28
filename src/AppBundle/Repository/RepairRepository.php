@@ -23,7 +23,7 @@
 namespace AppBundle\Repository;
 
 use AppBundle\Entity\Repair;
-use AppBundle\Entity\RepairService;
+use AppBundle\Entity\SalesService;
 use AppBundle\Entity\Product;
 use AppBundle\Entity\ProductOrderRelation;
 
@@ -45,19 +45,19 @@ class RepairRepository extends \Doctrine\ORM\EntityRepository
         $productOrderRelation->setQuantity(1);
         $this->_em->persist($productOrderRelation);
 
-        $research = new RepairService($productOrderRelation);
+        $research = new SalesService($productOrderRelation);
         $research->setDescription("Research");
         $this->_em->persist($research);
 
-        $backup = new RepairService($productOrderRelation);
+        $backup = new SalesService($productOrderRelation);
         $backup->setDescription("Backup");
         $this->_em->persist($backup);
 
-        $replacement = new RepairService($productOrderRelation);
+        $replacement = new SalesService($productOrderRelation);
         $replacement->setDescription("Replacement");
         $this->_em->persist($replacement);
 
-        $repair = new RepairService($productOrderRelation);
+        $repair = new SalesService($productOrderRelation);
         $repair->setDescription("Repair till €50,--");
         $this->_em->persist($repair);
     }

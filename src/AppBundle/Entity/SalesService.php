@@ -25,20 +25,20 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * RepairService is a task that has been applied to a product which is not purchased,
+ * SalesService is a task that has been applied to a product which is not purchased,
  * but owned by customer. A repair is a consumed service.
  *
  * @ORM\Entity
  */
-class RepairService extends AService
+class SalesService extends AService
 {
     public function __construct(ProductOrderRelation $productOrderRelation)
     {
         $order = $productOrderRelation->getOrder();
         $orderClass = get_class($order);
 
-        if ($order == null || $orderClass != SalesOrder::class || $order->getRepair() == null)
-            throw new \Exception("Repair service can only be bound to sales order with repair property");
+        if ($order == null || $orderClass != SalesOrder::class)
+            throw new \Exception("Repair service can only be bound to sales order");
 
         parent::__construct($productOrderRelation);
     }
@@ -77,12 +77,5 @@ class RepairService extends AService
      */
     public function getSalesOrder() {
         return $this->productOrderRelation->getOrder();
-    }
-
-    /**
-     * @return Repair
-     */
-    public function getRepair() {
-        return $this->getSalesOrder()->getRepair();
     }
 }

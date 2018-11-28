@@ -25,15 +25,15 @@ namespace AppBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use AppBundle\Entity\RepairService;
+use AppBundle\Entity\SalesService;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 /**
- * RepairServiceForm is parented by ProductOrderRelationForm
+ * SalesServiceForm is parented by ProductOrderRelationForm
  */
-class RepairServiceForm extends AbstractType
+class SalesServiceForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -41,11 +41,11 @@ class RepairServiceForm extends AbstractType
             ->add('status', ChoiceType::class, [
                 'attr' => ['class' => 'service-status'],
                 'choices' => [
-                    'New' => RepairService::STATUS_NEW,
-                    'Todo' => RepairService::STATUS_TODO,
-                    'Hold' => RepairService::STATUS_HOLD,
-                    'Busy' => RepairService::STATUS_BUSY,
-                    'Done' => RepairService::STATUS_DONE
+                    'New' => SalesService::STATUS_NEW,
+                    'Todo' => SalesService::STATUS_TODO,
+                    'Hold' => SalesService::STATUS_HOLD,
+                    'Busy' => SalesService::STATUS_BUSY,
+                    'Done' => SalesService::STATUS_DONE
                 ]])
             ->add('description', TextareaType::class, ['required' => false])
             ->add('price', MoneyType::class, ['required' => false]);
@@ -54,7 +54,7 @@ class RepairServiceForm extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => RepairService::class
+            'data_class' => SalesService::class
         ));
     }
 }

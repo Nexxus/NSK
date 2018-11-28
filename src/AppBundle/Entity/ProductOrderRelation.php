@@ -82,7 +82,7 @@ class ProductOrderRelation
 
     /**
      * Services that are applied to this Product
-     * RepairServices in case of SalesOrder
+     * SalesServices in case of SalesOrder
      * TaskServices in case of PurchaseOrder
      *
      * @var ArrayCollection|AService[]

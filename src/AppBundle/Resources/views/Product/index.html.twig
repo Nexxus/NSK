@@ -61,7 +61,7 @@
                     {% if product.getQuantityInStock() > 1 %}
                     <a class="btn btn-default btn-modal" href="{{ path('product_split', { 'id': product.id }) }}" data-target="#modalSplitter" title="Split bundle"><span class="glyphicon glyphicon-flash" aria-label="Split"></span></a>
                     {% endif %}
-                    {% if product.type and product.type.tasks|length > 0 %}
+                    {% if product.purchaseOrderRelation and product.type and product.type.tasks|length > 0 %}
                     <a class="btn btn-default btn-modal" href="{{ path('product_checklist', { 'relationId': product.purchaseOrderRelation.id }) }}" data-target="#modalEditor" title="Checklist of tasks">
                         <span class="glyphicon glyphicon-check" aria-label="Checklist" style="margin-right: 3px"></span>
                         {{ product.purchaseOrderRelation.servicesDone }} / {{ product.type.tasks|length }}

@@ -30,6 +30,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\ProductOrderRelation;
 
 /**
@@ -55,11 +56,11 @@ class ProductOrderRelationForm extends AbstractType
                 ->add('price', MoneyType::class)
                 ->add('quantity', IntegerType::class);
 
-            if ($productOrderRelation->getOrder() && $productOrderRelation->getOrder()->getRepair())
+            if ($productOrderRelation->getOrder() && get_class($productOrderRelation->getOrder()) == SalesOrder::class)
             {
                 $form
                     ->add('services', CollectionType::class, [
-                    'entry_type' => RepairServiceForm::class,
+                    'entry_type' => SalesServiceForm::class,
                     'entry_options' => ['label' => false],
                     'label' => false,
                 ]);
