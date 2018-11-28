@@ -192,7 +192,9 @@
                     {% endif %}
                 </div>
                 <div class="col-sm-5">
+                    {% if order.productRelations|length %}
                     {{ form_row(form.newService) }}
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -242,7 +244,7 @@
 
          /* New service */
 
-         $('select[name="sales_order_form[addService]"]').change(function () {
+         $('select[name="sales_order_form[newService]"]').change(function () {
              if ($(this).val()) {
                  $('form[name="sales_order_form"]').submit();
              }
