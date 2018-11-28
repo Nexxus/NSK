@@ -187,7 +187,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
 
     public function generateTaskServices(ProductOrderRelation $productOrderRelation)
     {
-        if (!!$productOrderRelation->getProduct() || !$productOrderRelation->getProduct()->getType())
+        if (!$productOrderRelation->getProduct() || !$productOrderRelation->getProduct()->getType())
             return;
 
         $order = $productOrderRelation->getOrder();
