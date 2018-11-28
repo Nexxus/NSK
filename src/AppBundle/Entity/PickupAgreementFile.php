@@ -27,9 +27,20 @@ use Doctrine\ORM\Mapping as ORM;
 /** @ORM\Entity */
 class PickupAgreementFile extends AFile
 {
+    public function __construct(Pickup $pickup, $originalClientFilename, $uniqueServerFilename) {
+        $this->pickup = $pickup;
+        $pickup->setAgreement($this);
+        parent::__construct($originalClientFilename, $uniqueServerFilename);
+    }
+
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Pickup", inversedBy="agreement", fetch="EAGER")
+     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Pickup", inversedBy="agreement", fetch="EAGER")
      * @ORM\JoinColumn(name="pickup_id", referencedColumnName="id")
      */
     private $pickup;
+
+    public function getPickup()
+    {
+        return $this->pickup;
+    }
 }

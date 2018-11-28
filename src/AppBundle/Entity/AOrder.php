@@ -126,7 +126,6 @@ abstract class AOrder
 
     /**
      * @param bool $isGift
-     * @return AOrder
      */
     public function setIsGift($isGift)
     {
@@ -147,8 +146,6 @@ abstract class AOrder
      * Set discount price, in euros (float), positive number
      *
      * @param integer $discount
-     *
-     * @return AOrder
      */
     public function setDiscount($discount)
     {
@@ -171,8 +168,6 @@ abstract class AOrder
      * Set price for transport, in euros (float)
      *
      * @param integer $transport
-     *
-     * @return AOrder
      */
     public function setTransport($transport)
     {
@@ -195,8 +190,6 @@ abstract class AOrder
      * Set orderNr
      *
      * @param string $orderNr
-     *
-     * @return AOrder
      */
     public function setOrderNr($orderNr)
     {
@@ -220,8 +213,6 @@ abstract class AOrder
      * Set remarks
      *
      * @param string $remarks
-     *
-     * @return AOrder
      */
     public function setRemarks($remarks)
     {
@@ -245,7 +236,7 @@ abstract class AOrder
         return $this->orderDate;
     }
 
-    public function setOrderDate(\DateTime $orderDate)
+    public function setOrderDate($orderDate)
     {
         $this->orderDate = $orderDate;
         return $this;
@@ -255,8 +246,6 @@ abstract class AOrder
      * Add productRelation
      *
      * @param ProductOrderRelation $productRelation
-     *
-     * @return AOrder
      */
     public function addProductRelation(ProductOrderRelation $productRelation)
     {
@@ -289,10 +278,8 @@ abstract class AOrder
      * Set status
      *
      * @param OrderStatus $status
-     *
-     * @return AOrder
      */
-    public function setStatus(OrderStatus $status = null)
+    public function setStatus(OrderStatus $status)
     {
         $this->status = $status;
 
@@ -313,8 +300,6 @@ abstract class AOrder
      * Set location
      *
      * @param Location $location
-     *
-     * @return AOrder
      */
     public function setLocation($location)
     {
@@ -350,6 +335,15 @@ abstract class AOrder
         {
             /** @var $r ProductOrderRelation */
             $price += $r->getPrice() * $r->getQuantity();
+
+            foreach ($r->getServices() as $s)
+            {
+                if (is_a($s, SalesService::class))
+                {
+                    /** @var $s SalesService */
+                    $price += $s->getPrice();
+                }
+            }
         }
 
         if ($this->getDiscount() > 0)

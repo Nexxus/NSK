@@ -38,6 +38,12 @@ a {
     height: 35px;
 }
 
+td .btn, td .form-control, td .input-group-addon {
+    margin-right: 2px;
+    padding: 3px 5px;
+    height: 29px;
+}
+
 .btn-success {
     background-color: #006e2e;
     border-color: #006e2e;
@@ -53,7 +59,7 @@ a {
 }
 
 .navbar-gradient {
-  background: #006e2e;
+    background: #006e2e;
 }
 .navbar-inverse .badge {
   background-color: #fff;

@@ -37,10 +37,6 @@ use AppBundle\Entity\Location;
  */
 abstract class ACompany
 {
-    public function __construct() {
-        $this->addresses = new ArrayCollection();
-    }
-
     /**
      * @var int
      *

@@ -7,13 +7,14 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\SalesOrder;
+use AppBundle\Entity\Repair;
+use AppBundle\Entity\SalesService;
 use AppBundle\Entity\Customer;
 use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Entity\ProductOrderRelation;
 use AppBundle\Form\IndexSearchForm;
 use AppBundle\Form\SalesOrderForm;
 use Symfony\Component\Form\FormError;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Route("/salesorder")
@@ -121,45 +122,67 @@ class SalesOrderController extends Controller
                 if ($success !== false)
                 {
                     $purchase = null;
+                    $backorder = $form->has('backorder');
+                    $repairorder = $form->has('repairorder');
 
-                    if ($form->get('backorder')->getData()) // new sales order being backorder
+                    if ($backorder && $repairorder)
                     {
-                        $purchase = new PurchaseOrder();
-                        $purchase->setLocation($order->getLocation());
-                        $purchase->setRemarks("Created by backorder");
-                        $purchase->setOrderDate(new \DateTime());
-                        $purchase->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate("Backorder", true, false));
-                        $em->persist($purchase);
-                        $order->setBackingPurchaseOrder($purchase);
-
-
+                        $form->get('repairorder')->addError(new FormError('Order cannot be repair and back order simultaneously'));
+                        $success = false;
                     }
-                    else if ($addProduct = $form->get('addProduct')->getData()) // existing sales order not being backorder
+                    else
                     {
-                        $r = new ProductOrderRelation();
-                        $r->setProduct($addProduct);
-                        $r->setOrder($order);
-                        $r->setPrice($addProduct->getPrice());
-                        $r->setQuantity(1);
-                        $order->addProductRelation($r);
-                        $em->persist($r);
-                    }
-
-                    $em->flush();
-
-                    if (!$order->getOrderNr())
-                    {
-                        $order->setOrderNr($repo->generateOrderNr($order));
-
-                        if ($purchase)
+                        if ($backorder) // new sales order being backorder
                         {
-                            $purchase->setOrderNr($em->getRepository('AppBundle:PurchaseOrder')->generateOrderNr($purchase));
+                            $purchase = new PurchaseOrder();
+                            $purchase->setLocation($order->getLocation());
+                            $purchase->setRemarks("Created by backorder");
+                            $purchase->setOrderDate(new \DateTime());
+                            $purchase->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate("Backorder", true, false));
+                            $em->persist($purchase);
+                            $order->setBackingPurchaseOrder($purchase);
+                        }
+                        if ($repairorder) // new sales order being repair
+                        {
+                            $repair = new Repair($order);
+                            $em->getRepository('AppBundle:Repair')->generateBaseServices($repair);
+                            $em->persist($repair);
+                            $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate("To repair", false, true));
+                        }
+                        else // existing sales order
+                        {
+                            if ($form->has('addProduct') && $addProduct = $form->get('addProduct')->getData()) // not being backorder or repair
+                            {
+                                $r = new ProductOrderRelation($addProduct, $order);
+                                $r->setPrice($addProduct->getPrice());
+                                $r->setQuantity(1);
+                                $em->persist($r);
+                            }
+
+                            if ($form->has('newService') && $newServiceRelation = $form->get('newService')->getData())
+                            {
+                                $service = new SalesService($newServiceRelation);
+                                $service->setDescription("New service");
+                                $em->persist($service);
+                            }
                         }
 
                         $em->flush();
-                    }
 
-                    return $this->redirectToRoute("salesorder_edit", array('id' => $order->getId(), 'success' => true));
+                        if (!$order->getOrderNr())
+                        {
+                            $order->setOrderNr($repo->generateOrderNr($order));
+
+                            if ($purchase)
+                            {
+                                $purchase->setOrderNr($em->getRepository('AppBundle:PurchaseOrder')->generateOrderNr($purchase));
+                            }
+
+                            $em->flush();
+                        }
+
+                        return $this->redirectToRoute("salesorder_edit", array('id' => $order->getId(), 'success' => true));
+                    }
                 }
             }
             else
@@ -200,6 +223,19 @@ class SalesOrderController extends Controller
         $em->flush();
 
         return $this->redirectToRoute('salesorder_edit', ['id' => $id, 'success' => true]);
+    }
+
+    /**
+     * @Route("/deleteservice/{id}/{orderId}", name="salesorder_delete_service")
+     */
+    public function deleteServiceAction($id, $orderId)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $service = $em->find(SalesService::class, $id);
+        $em->remove($service);
+        $em->flush();
+
+        return $this->redirectToRoute('salesorder_edit', ['id' => $orderId, 'success' => true]);
     }
 
     /**

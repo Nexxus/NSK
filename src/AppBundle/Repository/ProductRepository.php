@@ -26,10 +26,11 @@ use AppBundle\Entity\AOrder;
 use AppBundle\Entity\Product;
 use AppBundle\Entity\ProductStatus;
 use AppBundle\Entity\User;
+use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Entity\SalesOrder;
+use AppBundle\Entity\TaskService;
 use AppBundle\Entity\ProductAttributeRelation;
 use AppBundle\Entity\ProductOrderRelation;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * ProductRepository
@@ -147,6 +148,9 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
 
     public function generateProductAttributeRelations(Product $product)
     {
+        if (!$product->getType())
+            return;
+
         // get all possible attributes for this product type
         $allAttributes = $product->getType()->getAttributes();
 
@@ -160,11 +164,8 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
 
             if (!$exists)
             {
-                $r = new ProductAttributeRelation();
-                $r->setAttribute($newAttribute);
-                $r->setProduct($product);
+                $r = new ProductAttributeRelation($product, $newAttribute);
                 $this->_em->persist($r);
-                $product->addAttributeRelation($r);
             }
         }
     }
@@ -178,12 +179,38 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
 
         if (!$exists)
         {
-            $r = new ProductOrderRelation();
-            $r->setOrder($order);
-            $r->setProduct($product);
+            $r = new ProductOrderRelation($product, $order);
             $r->setQuantity($quantity);
             $this->_em->persist($r);
-            $product->addOrderRelation($r);
+        }
+    }
+
+    public function generateTaskServices(ProductOrderRelation $productOrderRelation)
+    {
+        if (!!$productOrderRelation->getProduct() || !$productOrderRelation->getProduct()->getType())
+            return;
+
+        $order = $productOrderRelation->getOrder();
+        $orderClass = get_class($order);
+
+        if (!$order || $orderClass != PurchaseOrder::class)
+            throw new \Exception("Tasks can only be added to purchase order.");
+
+        // get all possible tasks for this product type
+        $allTasks = $productOrderRelation->getProduct()->getType()->getTasks();
+
+        // add new tasks to this product relation
+        foreach ($allTasks as $newTask)
+        {
+            $exists = $productOrderRelation->getServices()->exists(function($key, TaskService $s) use ($newTask) {
+                return $s->getTask() == $newTask;
+            });
+
+            if (!$exists)
+            {
+                $s = new TaskService($newTask, $productOrderRelation);
+                $this->_em->persist($s);
+            }
         }
     }
 
@@ -210,23 +237,17 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         $this->_em->persist($newProduct);
 
         $purchaseRelation = $product->getPurchaseOrderRelation();
-        $newPurchaseRelation = new ProductOrderRelation();
-        $newPurchaseRelation->setProduct($newProduct);
+        $newPurchaseRelation = new ProductOrderRelation($newProduct, $purchaseRelation->getOrder());
         $newPurchaseRelation->setQuantity($quantity);
-        $newPurchaseRelation->setOrder($purchaseRelation->getOrder());
         if ($purchaseRelation->getPrice()) $newPurchaseRelation->setPrice($purchaseRelation->getPrice());
-        $newProduct->addOrderRelation($purchaseRelation);
         $this->_em->persist($newPurchaseRelation);
 
         foreach ($product->getAttributeRelations() as $attributeRelation)
         {
-            $newAttributeRelation = new ProductAttributeRelation();
-            $newAttributeRelation->setAttribute($attributeRelation->getAttribute());
-            $newAttributeRelation->setProduct($newProduct);
+            $newAttributeRelation = new ProductAttributeRelation($newProduct, $attributeRelation->getAttribute());
             if ($attributeRelation->getValueProduct()) $newAttributeRelation->setQuantity(0);
             if ($attributeRelation->getValue()) $newAttributeRelation->setValue($attributeRelation->getValue());
             if ($attributeRelation->getValueProduct()) $newAttributeRelation->setValueProduct($attributeRelation->getValueProduct());
-            $newProduct->addAttributeRelation($newAttributeRelation);
             $this->_em->persist($newAttributeRelation);
         }
 

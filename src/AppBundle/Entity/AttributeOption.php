@@ -33,6 +33,11 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class AttributeOption
 {
+    public function __construct(Attribute $attribute) {
+        $this->attribute = $attribute;
+        $attribute->addOption($this);
+    }
+
     /**
      * @var int
      *
@@ -97,20 +102,6 @@ class AttributeOption
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * Set attribute
-     *
-     * @param Attribute $attribute
-     *
-     * @return AttributeOption
-     */
-    public function setAttribute(Attribute $attribute)
-    {
-        $this->attribute = $attribute;
-
-        return $this;
     }
 
     /**

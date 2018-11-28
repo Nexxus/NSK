@@ -25,6 +25,7 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use AppBundle\Entity\Supplier;
 
 /**
@@ -32,9 +33,6 @@ use AppBundle\Entity\Supplier;
  *
  * @ORM\Table(name="product")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\ProductRepository")
- * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"p" = "Product", "s" = "Service"})
  */
 class Product
 {
@@ -42,7 +40,6 @@ class Product
         $this->attributeRelations = new ArrayCollection();
         $this->attributedRelations = new ArrayCollection();
         $this->orderRelations = new ArrayCollection();
-        $this->services = new ArrayCollection();
         $this->images = new ArrayCollection();
         $this->files = new ArrayCollection();
         $this->createdAt = new \DateTime();
@@ -156,13 +153,6 @@ class Product
      * @JMS\Exclude
      */
     private $orderRelations;
-
-    /**
-     * @var ArrayCollection|Service[] Services that are applied to this Product
-     * @ORM\OneToMany(targetEntity="Service", mappedBy="product", fetch="LAZY")
-     * @JMS\Exclude()
-     */
-    private $services;
 
     /**
      * @var Supplier
@@ -470,40 +460,6 @@ class Product
         return $this->orderRelations;
     }
 
-    /**
-     * Add service
-     *
-     * @param Service $service
-     *
-     * @return Product
-     */
-    public function addService(Service $service)
-    {
-        $this->services[] = $service;
-
-        return $this;
-    }
-
-    /**
-     * Remove service
-     *
-     * @param Service $service
-     */
-    public function removeService(Service $service)
-    {
-        $this->services->removeElement($service);
-    }
-
-    /**
-     * Get services
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getServices()
-    {
-        return $this->services;
-    }
-
     public function getCreatedAt()
     {
         return $this->updatedAt->format('d-m-Y H:i');
@@ -531,10 +487,20 @@ class Product
         {
             $q = 0;
         }
+        elseif ($r = $this->getPurchaseOrderRelation())
+        {
+            $q = $r->getQuantity();
+        }
+        elseif ($this->getSalesOrderRelations()->count() == 1 && $this->getSalesOrderRelations()->first()->getOrder()->getRepair())
+        {
+            // Repair
+            $r = $this->getSalesOrderRelations()->first();
+            $q = $r->getQuantity();
+        }
         else
         {
-            $r = $this->getPurchaseOrderRelation();
-            $q = $r ? $r->getQuantity() : 0;
+            //throw new \Exception("Product has no purchase order and is not a repair, which should be impossible.");
+            $q = 0;
         }
 
         return $q - $this->getQuantitySold();
@@ -548,7 +514,7 @@ class Product
 
     public function getQuantitySaleable()
     {
-        $isSaleable = $this->getStatus() ? $this->getStatus()->getIsSaleable() : true;
+        $isSaleable = $this->getStatus() ? $this->getStatus()->getIsSaleable() : false;
         if (!$isSaleable)
         {
             $q = 0;
@@ -564,16 +530,16 @@ class Product
 
     public function getQuantitySold()
     {
-        $q = 0;
-        $isSaleable = $this->getStatus() ? $this->getStatus()->getIsSaleable() : true;
+        $isSaleable = $this->getStatus() ? $this->getStatus()->getIsSaleable() : false;
 
-        foreach ($this->getOrderRelations() as $r)
+        if (!$isSaleable)
+            return 0;
+
+        $q = 0;
+
+        foreach ($this->getSalesOrderRelations() as $r)
         {
-            /** @var $r ProductOrderRelation */
-            if (is_a($r->getOrder(), SalesOrder::class) && $isSaleable)
-            {
-                $q += $r->getQuantity();
-            }
+            $q += $r->getQuantity();
         }
 
         return $q;
@@ -591,6 +557,18 @@ class Product
                 /** @var $r ProductOrderRelation */
                 return is_a($r->getOrder(), PurchaseOrder::class);
             })->first();
+    }
+
+    /**
+     * @return Collection|ProductOrderRelation[] Relations to sales orders
+     */
+    public function getSalesOrderRelations()
+    {
+        return $this->getOrderRelations()->filter(
+            function($r) {
+                /** @var $r ProductOrderRelation */
+                return is_a($r->getOrder(), SalesOrder::class);
+            });
     }
 
     /**
