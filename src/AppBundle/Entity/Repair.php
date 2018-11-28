@@ -125,7 +125,7 @@ class Repair
         return $this->deliveryDate;
     }
 
-    public function setDeliveryDate(\DateTime $deliveryDate)
+    public function setDeliveryDate($deliveryDate)
     {
         $this->deliveryDate = $deliveryDate;
         return $this;

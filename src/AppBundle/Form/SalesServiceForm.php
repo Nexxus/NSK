@@ -27,7 +27,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use AppBundle\Entity\SalesService;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 /**
@@ -47,7 +47,7 @@ class SalesServiceForm extends AbstractType
                     'Busy' => SalesService::STATUS_BUSY,
                     'Done' => SalesService::STATUS_DONE
                 ]])
-            ->add('description', TextareaType::class, ['required' => false])
+            ->add('description', TextType::class, ['required' => false])
             ->add('price', MoneyType::class, ['required' => false]);
     }
 

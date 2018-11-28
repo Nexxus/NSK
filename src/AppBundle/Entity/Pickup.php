@@ -113,7 +113,7 @@ class Pickup
         return $this->pickupDate;
     }
 
-    public function setPickupDate(\DateTime $pickupDate)
+    public function setPickupDate($pickupDate)
     {
         $this->pickupDate = $pickupDate;
         return $this;

@@ -36,6 +36,7 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\Product;
+use AppBundle\Entity\ProductOrderRelation;
 
 class SalesOrderForm extends AbstractType
 {
@@ -103,6 +104,15 @@ class SalesOrderForm extends AbstractType
             ->add('productRelations', CollectionType::class, [
                 'entry_type' => ProductOrderRelationForm::class
             ])
+            ->add('newService',  EntityType::class, [
+                    'required' => false,
+                    'mapped' => false,
+                    'class' => 'AppBundle:ProductOrderRelation',
+                    'choices' => $order->getProductRelations(),
+                    'choice_label' => function (ProductOrderRelation $r) {
+                        return $r->getProduct()->getSku();
+                    },
+                ])
             ->add('save', SubmitType::class, [
                 'attr' => ['class' => 'btn-success btn-120']
             ]);
@@ -119,28 +129,36 @@ class SalesOrderForm extends AbstractType
                 ->add('backorder', CheckboxType::class, ['required' => false, 'mapped' => false, 'label' => 'Back order: This creates empty purchase order too'])
                 ->add('repairorder', CheckboxType::class, ['required' => false, 'mapped' => false, 'label' => 'Repair order: These products are not purchased']);
         }
-
-        if ($order->getBackingPurchaseOrder() || $order->getRepair())
-        {
-            $builder->add('newProduct',  EntityType::class, [
-                'required' => false,
-                'mapped' => false,
-                'class' => 'AppBundle:ProductType',
-                'choice_label' => 'name',
-            ]);
-        }
         else
         {
-            $builder->add('addProduct',  EntityType::class, [
-                'required' => false,
-                'mapped' => false,
-                'class' => Product::class,
-                'choice_label' => function(Product $p) {
-                    return $p->getSku() . ' - ' . $p->getName();
-                },
-                'choices' => $options['stock'],
-                'attr' => ['class' => 'combobox focus']
-            ]);
+            if ($order->getRepair())
+            {
+                $builder
+                    ->add('repair', RepairForm::class, ['label' => false]);
+            }
+
+            if ($order->getBackingPurchaseOrder() || $order->getRepair())
+            {
+                $builder->add('newProduct',  EntityType::class, [
+                    'required' => false,
+                    'mapped' => false,
+                    'class' => 'AppBundle:ProductType',
+                    'choice_label' => 'name',
+                ]);
+            }
+            else
+            {
+                $builder->add('addProduct',  EntityType::class, [
+                    'required' => false,
+                    'mapped' => false,
+                    'class' => Product::class,
+                    'choice_label' => function(Product $p) {
+                        return $p->getSku() . ' - ' . $p->getName();
+                    },
+                    'choices' => $options['stock'],
+                    'attr' => ['class' => 'combobox focus']
+                ]);
+            }
         }
 
         if ($user && !$user->hasRole("ROLE_LOCAL"))

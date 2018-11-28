@@ -8,7 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\Repair;
-use AppBundle\Entity\Product;
+use AppBundle\Entity\SalesService;
 use AppBundle\Entity\Customer;
 use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Entity\ProductOrderRelation;
@@ -122,8 +122,8 @@ class SalesOrderController extends Controller
                 if ($success !== false)
                 {
                     $purchase = null;
-                    $backorder = $form->get('backorder')->getData();
-                    $repairorder = $form->get('repairorder')->getData();
+                    $backorder = $form->has('backorder');
+                    $repairorder = $form->has('repairorder');
 
                     if ($backorder && $repairorder)
                     {
@@ -149,12 +149,22 @@ class SalesOrderController extends Controller
                             $em->persist($repair);
                             $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate("To repair", false, true));
                         }
-                        else if ($addProduct = $form->get('addProduct')->getData()) // existing sales order not being backorder or repair
+                        else // existing sales order
                         {
-                            $r = new ProductOrderRelation($addProduct, $order);
-                            $r->setPrice($addProduct->getPrice());
-                            $r->setQuantity(1);
-                            $em->persist($r);
+                            if ($form->has('addProduct') && $addProduct = $form->get('addProduct')->getData()) // not being backorder or repair
+                            {
+                                $r = new ProductOrderRelation($addProduct, $order);
+                                $r->setPrice($addProduct->getPrice());
+                                $r->setQuantity(1);
+                                $em->persist($r);
+                            }
+
+                            if ($form->has('newService') && $newServiceRelation = $form->get('newService')->getData())
+                            {
+                                $service = new SalesService($newServiceRelation);
+                                $service->setDescription("New service");
+                                $em->persist($service);
+                            }
                         }
 
                         $em->flush();
@@ -213,6 +223,19 @@ class SalesOrderController extends Controller
         $em->flush();
 
         return $this->redirectToRoute('salesorder_edit', ['id' => $id, 'success' => true]);
+    }
+
+    /**
+     * @Route("/deleteservice/{id}/{orderId}", name="salesorder_delete_service")
+     */
+    public function deleteServiceAction($id, $orderId)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $service = $em->find(SalesService::class, $id);
+        $em->remove($service);
+        $em->flush();
+
+        return $this->redirectToRoute('salesorder_edit', ['id' => $orderId, 'success' => true]);
     }
 
     /**

@@ -82,11 +82,11 @@ class ProductController extends Controller
     }
 
     /**
-     * @Route("/new/{purchaseOrderId}/{backingSalesOrderId}/{productTypeId}", name="product_new")
+     * @Route("/new/{purchaseOrderId}/{salesOrderId}/{productTypeId}", name="product_new")
      * @Route("/edit/{id}/{success}", name="product_edit")
      * @Route("/editsub/{refId}/{id}", name="product_subedit")
      */
-    public function editAction(Request $request, $id = 0, $purchaseOrderId = 0, $backingSalesOrderId = 0, $productTypeId = 0, $success = null, $refId = null)
+    public function editAction(Request $request, $id = 0, $purchaseOrderId = 0, $salesOrderId = 0, $productTypeId = 0, $success = null, $refId = null)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -108,13 +108,16 @@ class ProductController extends Controller
             $product->setType($em->getReference(ProductType::class, $productTypeId));
         }
 
-
-        if ($backingSalesOrderId > 0 && $purchaseOrderId > 0)
+        if ($salesOrderId > 0 && $purchaseOrderId > 0) // backorder
         {
-            $repo->generateProductOrderRelation($product, $em->find(SalesOrder::class, $backingSalesOrderId));
+            $repo->generateProductOrderRelation($product, $em->find(SalesOrder::class, $salesOrderId));
             $repo->generateProductOrderRelation($product, $em->find(PurchaseOrder::class, $purchaseOrderId), 0);
         }
-        elseif ($purchaseOrderId > 0)
+        elseif ($salesOrderId > 0) // repair order
+        {
+            $repo->generateProductOrderRelation($product, $em->find(SalesOrder::class, $salesOrderId));
+        }
+        elseif ($purchaseOrderId > 0) // normal purchase
         {
             $repo->generateProductOrderRelation($product, $em->find(PurchaseOrder::class, $purchaseOrderId));
         }

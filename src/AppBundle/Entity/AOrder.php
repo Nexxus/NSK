@@ -236,7 +236,7 @@ abstract class AOrder
         return $this->orderDate;
     }
 
-    public function setOrderDate(\DateTime $orderDate)
+    public function setOrderDate($orderDate)
     {
         $this->orderDate = $orderDate;
         return $this;
@@ -335,6 +335,15 @@ abstract class AOrder
         {
             /** @var $r ProductOrderRelation */
             $price += $r->getPrice() * $r->getQuantity();
+
+            foreach ($r->getServices() as $s)
+            {
+                if (is_a($s, SalesService::class))
+                {
+                    /** @var $s SalesService */
+                    $price += $s->getPrice();
+                }
+            }
         }
 
         if ($this->getDiscount() > 0)
