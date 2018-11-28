@@ -322,6 +322,8 @@ class ProductController extends Controller
         /** @var ProductOrderRelation */
         $relation = $em->find(ProductOrderRelation::class, $relationId);
 
+        $em->getRepository('AppBundle:Product')->generateTaskServices($relation);
+
         $html = $this->render('AppBundle:Product:printchecklist.html.twig', array('relation' => $relation));
         $mPdfConfiguration = ['', 'A4' ,'','',10,10,10,10,0,0,'P'];
 
