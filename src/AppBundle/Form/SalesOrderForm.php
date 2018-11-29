@@ -107,6 +107,7 @@ class SalesOrderForm extends AbstractType
             ->add('newService',  EntityType::class, [
                     'required' => false,
                     'mapped' => false,
+                    'data' => null,
                     'class' => 'AppBundle:ProductOrderRelation',
                     'choices' => $order->getProductRelations(),
                     'choice_label' => function (ProductOrderRelation $r) {
@@ -114,7 +115,7 @@ class SalesOrderForm extends AbstractType
                     },
                 ])
             ->add('backorder', CheckboxType::class, ['required' => false, 'mapped' => false, 'label' => 'Back order: This creates empty purchase order too']) // new
-            ->add('repairorder', CheckboxType::class, ['required' => false, 'mapped' => false, 'label' => 'Repair order: These products are not purchased']) // new
+            ->add('repairorder', CheckboxType::class, ['required' => false, 'mapped' => false, 'label' => 'Repair order: These products are not purchased', 'data' => $options['isRepair']]) // new
             ->add('save', SubmitType::class, [
                 'attr' => ['class' => 'btn-success btn-120']
             ]);
@@ -173,6 +174,6 @@ class SalesOrderForm extends AbstractType
             'csrf_token_id'   => 'sorder',
         ));
 
-        $resolver->setRequired(array('user', 'stock'));
+        $resolver->setRequired(array('user', 'stock', 'isRepair'));
     }
 }

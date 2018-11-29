@@ -10,6 +10,7 @@ use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\Repair;
 use AppBundle\Entity\SalesService;
 use AppBundle\Entity\Customer;
+use AppBundle\Entity\Product;
 use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Entity\ProductOrderRelation;
 use AppBundle\Form\IndexSearchForm;
@@ -57,10 +58,13 @@ class SalesOrderController extends Controller
     }
 
     /**
+     * @Route("/new/{productId}/{isRepair}", name="salesorder_new")
      * @Route("/edit/{id}/{success}", name="salesorder_edit")
      */
-    public function editAction(Request $request, $id = 0, $success = null)
+    public function editAction(Request $request, $id = 0, $productId = 0, $isRepair = false, $success = null)
     {
+        $isRepair = $isRepair ? true : false; // from loose to strict
+
         $em = $this->getDoctrine()->getManager();
 
         /** @var \AppBundle\Repository\SalesOrderRepository */
@@ -71,6 +75,15 @@ class SalesOrderController extends Controller
             $order = new SalesOrder();
             $order->setOrderDate(new \DateTime());
             $stock = $em->getRepository('AppBundle:Product')->findStock($this->getUser());
+
+            if ($productId > 0)
+            {
+                $sellProduct = $em->find(Product::class, $productId);
+                $r = new ProductOrderRelation($sellProduct, $order);
+                $r->setPrice($sellProduct->getPrice());
+                $r->setQuantity(1);
+                $em->persist($r);
+            }
         }
         else
         {
@@ -79,7 +92,7 @@ class SalesOrderController extends Controller
             $stock = $em->getRepository('AppBundle:Product')->findStockAndNotYetInOrder($this->getUser(), $order);
         }
 
-        $form = $this->createForm(SalesOrderForm::class, $order, array('user' => $this->getUser(), 'stock' => $stock));
+        $form = $this->createForm(SalesOrderForm::class, $order, array('user' => $this->getUser(), 'stock' => $stock, 'isRepair' => $isRepair));
 
         $form->handleRequest($request);
 
@@ -149,7 +162,7 @@ class SalesOrderController extends Controller
                             $em->persist($repair);
                             $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate("To repair", false, true));
                         }
-                        else // existing sales order
+                        elseif ($id) // existing sales order
                         {
                             if ($form->has('addProduct') && $addProduct = $form->get('addProduct')->getData()) // not being backorder or repair
                             {
@@ -236,20 +249,5 @@ class SalesOrderController extends Controller
         $em->flush();
 
         return $this->redirectToRoute('salesorder_edit', ['id' => $orderId, 'success' => true]);
-    }
-
-    /**
-     * @Route("/inlist/{class}/{id}", name="salesorder_inlist")
-     * @Method("GET")
-     * @param string $entity Full entity name of object holding the orders collection association
-     */
-    public function inlistAction($entity, $id)
-    {
-        $object = $this->getDoctrine()->getEntityManager()->find($entity, $id);
-        $orders = $object->getSalesOrders();
-
-        return $this->render('AppBundle:SalesOrder:inlist.html.twig', array(
-            'orders' => $orders
-        ));
     }
 }

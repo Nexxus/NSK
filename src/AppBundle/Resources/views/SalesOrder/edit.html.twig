@@ -125,7 +125,6 @@
         <div class="panel-heading">
             <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Products and services{% endtrans %}
         </div>
-        {% if ( order.id > 0) %}
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -158,7 +157,9 @@
                         {% if (order.repair) %}
                         <a class="btn btn-success" href="{{ path('product_edit', { 'id': product.id }) }}" data-toggle="modal" data-target="#modalEditor"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
                         {% endif %}
+                        {% if ( order.id > 0) %}
                         <a class="btn btn-danger btn-delete" href="{{ path('salesorder_delete_relation', { 'id': order.id, 'productId': product.id }) }}" data-class="product from order" data-name="{{ product.name }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% for formService in formRelation.services %}
@@ -182,6 +183,7 @@
         
             </tbody>
         </table>
+        {% if ( order.id > 0) %}
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-5 col-sm-offset-1">
@@ -199,7 +201,7 @@
             </div>
         </div>
         {% else %}
-        <div class="panel-body">Please save order first...</div>
+        <div class="panel-body"><center><i>Please save order to add products and services</i></center></div>
         {% endif %}
     </div>
 
