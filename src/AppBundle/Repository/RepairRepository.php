@@ -45,20 +45,20 @@ class RepairRepository extends \Doctrine\ORM\EntityRepository
         $productOrderRelation->setQuantity(1);
         $this->_em->persist($productOrderRelation);
 
-        $research = new SalesService($productOrderRelation);
-        $research->setDescription("Research");
-        $this->_em->persist($research);
-
-        $backup = new SalesService($productOrderRelation);
-        $backup->setDescription("Backup");
-        $this->_em->persist($backup);
-
         $replacement = new SalesService($productOrderRelation);
-        $replacement->setDescription("Replacement");
+        $replacement->setDescription("1. Replacement: ...");
         $this->_em->persist($replacement);
 
+        $research = new SalesService($productOrderRelation);
+        $research->setDescription("2a. Research: ...");
+        $this->_em->persist($research);
+
         $repair = new SalesService($productOrderRelation);
-        $repair->setDescription("Repair till €50,--");
+        $repair->setDescription("2b. Repair ...till €50,-- ...");
         $this->_em->persist($repair);
+
+        $backup = new SalesService($productOrderRelation);
+        $backup->setDescription("3. Backup by ...us/customer...");
+        $this->_em->persist($backup);
     }
 }

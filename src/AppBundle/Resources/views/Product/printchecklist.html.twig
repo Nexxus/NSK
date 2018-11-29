@@ -4,61 +4,56 @@
 
 {% block body %}
 
-    <h2>Checklist {{ relation.product.sku }}</h2>
+<h2>Checklist {{ relation.product.sku }}</h2>
 
-    <div class="row">
-        <div class="col-xs-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Order details{% endtrans %}
-                </div>
-                <table class="table">
-                    <tr>
-                        <td width="20%">Order nr</td>
-                        <td width="40%">{{ relation.order.orderNr }}</td>
-                        <td width="10%" rowspan="99" align="right"><barcode code="{{ relation.order.orderNr }}" type="C39" size="0.8" height="2" /></td>
-                    </tr>
-                    <tr><td>Order date</td><td>{{ relation.order.orderDate|date("d-m-Y")|default("Unknown") }}</td></tr>
-                    <tr><td>Status</td><td>{{ relation.order.status.name|default("Unknown") }}</td></tr>
-                </table>
-            </div>
-        </div>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Order details{% endtrans %}
     </div>
-    <div class="row">
-        <div class="col-xs-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Product details{% endtrans %}
-                </div>
-                <table class="table">
-                    <tr>
-                        <td width="20%">SKU</td>
-                        <td width="40%">{{ relation.product.sku }}</td>
-                        <td width="10%" rowspan="99" align="right"><barcode code="{{ relation.product.sku }}" type="C39" size="0.8" height="2" /></td>
-                    </tr>
-                    <tr><td>Name</td><td>{{ relation.product.name }}</td></tr>
-                    <tr><td>Status</td><td>{{ relation.product.status.name|default("Unknown") }}</td></tr>
-                    <tr><td>Location</td><td>{{ relation.product.location.name|default("Unknown") }}</td></tr>
-                </table>
-            </div>
-        </div>
-    </div>
-            
-    <table class="table table-bordered table-checklist">
+    <table class="table">
         <tr>
-            <th width="5%"></th>
-            <th width="30%">Task</th>
-            <th width="70%">Description</th>
+            <td width="20%">Order nr</td>
+            <td width="40%">{{ relation.order.orderNr }}</td>
+            <td width="10%" rowspan="99" align="right"><barcode code="{{ relation.order.orderNr }}" type="C39" size="0.8" height="2" /></td>
         </tr>
-        {% for service in relation.services %}
-        <tr>
-            <td style="padding: 25px 0px 25px 5px">
-                <div style="border: 2px solid black">&nbsp;&nbsp;&nbsp;&nbsp;</div>
-            </td>
-            <td>{{ service.task.name }}</td>
-            <td>{{ service.description }}</td>
-        </tr>
-        {% endfor %}
+        <tr><td>Order date</td><td>{{ relation.order.orderDate|date("d-m-Y")|default("Unknown") }}</td></tr>
+        <tr><td>Status</td><td>{{ relation.order.status.name|default("Unknown") }}</td></tr>
     </table>
+</div>
+
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Product details{% endtrans %}
+    </div>
+    <table class="table">
+        <tr>
+            <td width="20%">SKU</td>
+            <td width="40%">{{ relation.product.sku }}</td>
+            <td width="10%" rowspan="99" align="right"><barcode code="{{ relation.product.sku }}" type="C39" size="0.8" height="2" /></td>
+        </tr>
+        <tr><td>Name</td><td>{{ relation.product.name }}</td></tr>
+        <tr><td>Status</td><td>{{ relation.product.status.name|default("Unknown") }}</td></tr>
+        <tr><td>Location</td><td>{{ relation.product.location.name|default("Unknown") }}</td></tr>
+    </table>
+</div>
+
+
+<table class="table table-bordered table-checklist">
+    <tr>
+        <th width="5%"></th>
+        <th width="30%">Task</th>
+        <th width="70%">Description</th>
+    </tr>
+    {% for service in relation.services %}
+    <tr>
+        <td style="padding: 25px 0px 25px 5px">
+            <div style="border: 2px solid black">&nbsp;&nbsp;&nbsp;&nbsp;</div>
+        </td>
+        <td>{{ service.task.name }}</td>
+        <td>{{ service.description }}</td>
+    </tr>
+    {% endfor %}
+</table>
 
 {% endblock %}

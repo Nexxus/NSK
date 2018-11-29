@@ -22,6 +22,8 @@ use Symfony\Component\Form\FormError;
  */
 class SalesOrderController extends Controller
 {
+    use PdfControllerTrait;
+
     /**
      * @Route("/", name="salesorder_index")
      */
@@ -226,12 +228,12 @@ class SalesOrderController extends Controller
     }
 
     /**
-     * @Route("/deleterelation/{id}/{productId}", name="salesorder_delete_relation")
+     * @Route("/deleterelation/{id}", name="salesorder_delete_relation")
      */
-    public function deleteRelationAction($id, $productId)
+    public function deleteRelationAction($id)
     {
         $em = $this->getDoctrine()->getManager();
-        $relation = $em->getRepository('AppBundle:ProductOrderRelation')->findOneBy(array('order' => $id, 'product' => $productId));
+        $relation = $em->find(ProductOrderRelation::class, $id);
         $em->remove($relation);
         $em->flush();
 
@@ -249,5 +251,38 @@ class SalesOrderController extends Controller
         $em->flush();
 
         return $this->redirectToRoute('salesorder_edit', ['id' => $orderId, 'success' => true]);
+    }
+
+    /**
+     * @Route("/printrepair/{id}/{relationId}", name="salesorder_repair_print")
+     */
+    public function printRepairAction(Request $request, $id, $relationId)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var Repair */
+        $repair = $em->find(Repair::class, $id);
+        $relation = $em->find(ProductOrderRelation::class, $relationId);
+
+        $html = $this->render('AppBundle:SalesOrder:printrepair.html.twig', array('repair' => $repair, 'relation' => $relation));
+        $mPdfConfiguration = ['', 'A4' ,'','',10,10,10,10,0,0,'P'];
+
+        return $this->getPdfResponse("Repair", $html, $mPdfConfiguration);
+    }
+
+    /**
+     * @Route("/invoice/{id}", name="salesorder_invoice")
+     */
+    public function printInvoiceAction(Request $request, $id)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var SalesOrder */
+        $order = $em->find(SalesOrder::class, $id);
+
+        $html = $this->render('AppBundle:SalesOrder:invoice.html.twig', array('order' => $order));
+        $mPdfConfiguration = ['', 'A4' ,'','',10,10,10,10,0,0,'P'];
+
+        return $this->getPdfResponse("Invoice", $html, $mPdfConfiguration);
     }
 }

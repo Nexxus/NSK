@@ -1,0 +1,119 @@
+{% extends "::pdf.html.twig" %}
+
+{% block title %}Repair form{% endblock %}
+
+{% block body %}
+
+<h2>Repair form {{ repair.order.orderNr }}</h2>
+
+{% if repair.order.customer %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Customer{% endtrans %}
+    </div>
+    <table class="table">
+        <tr><td width="50%">Name</td><td>{{ repair.order.customer.name }}</td></tr>
+        <tr><td>Representative</td><td>{{ repair.order.customer.representative }}</td></tr>
+        <tr><td>E-mail</td><td>{{ repair.order.customer.email }}</td></tr>
+        <tr><td>Phone</td><td>{{ repair.order.customer.phone }}</td></tr>
+        <tr><td>Street</td><td>{{ repair.order.customer.street }}</td></tr>
+        <tr><td>Street extra</td><td>{{ repair.order.customer.streetExtra }}</td></tr>
+        <tr><td>City</td><td>{{ repair.order.customer.city }}</td></tr>
+        <tr><td>Zip</td><td>{{ repair.order.customer.zip }}</td></tr>
+    </table>
+</div>
+{% endif %}
+
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Product details{% endtrans %}
+    </div>
+    <table class="table">
+        <tr>
+            <td width="20%">SKU</td>
+            <td width="40%">{{ relation.product.sku }}</td>
+            <td width="10%" rowspan="99" align="right"><barcode code="{{ relation.product.sku }}" type="C39" size="0.8" height="2" /></td>
+        </tr>
+        <tr><td>Name</td><td>{{ relation.product.name }}</td></tr>
+        <tr><td>Status</td><td>{{ relation.product.status.name|default("Unknown") }}</td></tr>
+        <tr><td>Location</td><td>{{ relation.product.location.name|default("Unknown") }}</td></tr>
+    </table>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Repair details{% endtrans %}
+    </div>
+    <table class="table">
+        <tr>
+            <td width="20%">Ready at</td>
+            <td width="40%">{{ repair.deliveryDate|date("d-m-Y")|default("Unknown") }}</td>
+            <td width="10%" rowspan="99" align="right"><barcode code="{{ repair.order.orderNr }}" type="C39" size="0.8" height="2" /></td>
+        </tr>
+        <tr>
+            <td>Delivery type</td>
+            <td>
+                {% if repair.deliveryType == 0 %}
+                Pickup
+                {% elseif repair.deliveryType == 1 %}
+                Delivery to address above
+                {% elseif repair.deliveryType == 2 %}
+                Shipping to address above
+                {% else %}
+                Unknown
+                {% endif %}
+            </td>
+        </tr>
+        <tr><td>Complaints</td><td>{{ repair.description }}</td></tr>
+        <tr><td>Damages before repair</td><td>{{ repair.damage }}</td></tr>
+    </table>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Repair services{% endtrans %}
+    </div>
+    <table class="table">
+        {% for service in relation.services %}
+        <tr>
+            <td>{{ service.description }}</td>
+            <td>&euro; {{ service.price|number_format(2, ',', '.') }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Agreement at order{% endtrans %}
+    </div>
+    <table class="table table-bordered">
+        <tr>
+            <td style="padding: 5px 5px 70px 5px">Name: </td>
+            <td style="padding: 5px 5px 70px 5px">Signature customer:</td>
+        </tr>
+        <tr>
+            <td style="padding: 5px 5px 70px 5px">Date: </td>
+            <td style="padding: 5px 5px 70px 5px">Signature repairer:</td>
+        </tr>
+    </table>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Agreement after repair{% endtrans %}
+    </div>
+    <table class="table table-bordered">
+        <tr>
+            <td style="padding: 5px 5px 70px 5px">Name: </td>
+            <td style="padding: 5px 5px 70px 5px">Signature customer:</td>
+        </tr>
+        <tr>
+            <td style="padding: 5px 5px 70px 5px">Date: </td>
+            <td style="padding: 5px 5px 70px 5px">Signature repairer:</td>
+        </tr>
+    </table>
+</div>
+
+{% endblock %}
