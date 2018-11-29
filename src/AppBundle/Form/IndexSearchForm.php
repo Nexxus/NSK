@@ -77,6 +77,13 @@ class IndexSearchForm extends AbstractType
                 'placeholder' => 'All statuses',
                 'required' => false
             ]);
+
+            $builder->add('producttype',  EntityType::class, [
+                'class' => 'AppBundle:ProductType',
+                'choice_label' => 'name',
+                'placeholder' => 'All types',
+                'required' => false
+            ]);
         }
         elseif ($container->className == \AppBundle\Entity\SalesOrder::class)
         {

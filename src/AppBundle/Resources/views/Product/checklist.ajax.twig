@@ -46,12 +46,12 @@
 <script>
 
     $('.service-done').click(function () {
-        var status = $(this).is(':checked') ? 4 : 0;
+        var status = $(this).is(':checked') ? 3 : 0;
         $(this).closest(".form-group").find(".service-status").val(status);
     });
 
     $('.service-status').change(function () {
-        var done = $(this).val() == 4;
+        var done = $(this).val() == 3;
         $(this).closest(".form-group").find(".service-done").prop('checked', done);
     });
 

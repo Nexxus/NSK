@@ -166,19 +166,4 @@ class PurchaseOrderController extends Controller
 
         return $this->getPdfResponse("Nexxus purchase order", $html, $mPdfConfiguration);
     }
-
-    /**
-     * @Route("/inlist/{class}/{id}", name="purchaseorder_inlist")
-     * @Method("GET")
-     * @param string $entity Full entity name of object holding the orders collection association
-     */
-    public function inlistAction($entity, $id)
-    {
-        $object = $this->getDoctrine()->getEntityManager()->find($entity, $id);
-        $orders = $object->getPurchaseOrders();
-
-        return $this->render('AppBundle:PurchaseOrder:inlist.html.twig', array(
-            'orders' => $orders
-        ));
-    }
 }

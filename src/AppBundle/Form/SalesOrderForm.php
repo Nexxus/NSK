@@ -107,12 +107,15 @@ class SalesOrderForm extends AbstractType
             ->add('newService',  EntityType::class, [
                     'required' => false,
                     'mapped' => false,
+                    'data' => null,
                     'class' => 'AppBundle:ProductOrderRelation',
                     'choices' => $order->getProductRelations(),
                     'choice_label' => function (ProductOrderRelation $r) {
                         return $r->getProduct()->getSku();
                     },
                 ])
+            ->add('backorder', CheckboxType::class, ['required' => false, 'mapped' => false, 'label' => 'Back order: This creates empty purchase order too']) // new
+            ->add('repairorder', CheckboxType::class, ['required' => false, 'mapped' => false, 'label' => 'Repair order: These products are not purchased', 'data' => $options['isRepair']]) // new
             ->add('save', SubmitType::class, [
                 'attr' => ['class' => 'btn-success btn-120']
             ]);
@@ -123,43 +126,34 @@ class SalesOrderForm extends AbstractType
                 ->add('repair', RepairForm::class, ['label' => false]);
         }
 
-        if (!$order->getId()) // new order
+        if ($order->getRepair())
         {
-            $builder
-                ->add('backorder', CheckboxType::class, ['required' => false, 'mapped' => false, 'label' => 'Back order: This creates empty purchase order too'])
-                ->add('repairorder', CheckboxType::class, ['required' => false, 'mapped' => false, 'label' => 'Repair order: These products are not purchased']);
+            $builder->add('repair', RepairForm::class, ['label' => false]);
+        }
+
+        if ($order->getBackingPurchaseOrder() || $order->getRepair())
+        {
+            $builder->add('newProduct',  EntityType::class, [
+                'required' => false,
+                'mapped' => false,
+                'class' => 'AppBundle:ProductType',
+                'choice_label' => 'name',
+            ]);
         }
         else
         {
-            if ($order->getRepair())
-            {
-                $builder
-                    ->add('repair', RepairForm::class, ['label' => false]);
-            }
-
-            if ($order->getBackingPurchaseOrder() || $order->getRepair())
-            {
-                $builder->add('newProduct',  EntityType::class, [
-                    'required' => false,
-                    'mapped' => false,
-                    'class' => 'AppBundle:ProductType',
-                    'choice_label' => 'name',
-                ]);
-            }
-            else
-            {
-                $builder->add('addProduct',  EntityType::class, [
-                    'required' => false,
-                    'mapped' => false,
-                    'class' => Product::class,
-                    'choice_label' => function(Product $p) {
-                        return $p->getSku() . ' - ' . $p->getName();
-                    },
-                    'choices' => $options['stock'],
-                    'attr' => ['class' => 'combobox focus']
-                ]);
-            }
+            $builder->add('addProduct',  EntityType::class, [
+                'required' => false,
+                'mapped' => false,
+                'class' => Product::class,
+                'choice_label' => function(Product $p) {
+                    return $p->getSku() . ' - ' . $p->getName();
+                },
+                'choices' => $options['stock'],
+                'attr' => ['class' => 'combobox focus']
+            ]);
         }
+
 
         if ($user && !$user->hasRole("ROLE_LOCAL"))
         {
@@ -180,6 +174,6 @@ class SalesOrderForm extends AbstractType
             'csrf_token_id'   => 'sorder',
         ));
 
-        $resolver->setRequired(array('user', 'stock'));
+        $resolver->setRequired(array('user', 'stock', 'isRepair'));
     }
 }

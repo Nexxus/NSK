@@ -58,10 +58,10 @@ class ChecklistServiceForm extends AbstractType
                 ->add('status', ChoiceType::class, [
                     'attr' => ['class' => 'service-status'],
                     'choices' => [
-                        'New' => AService::STATUS_NEW,
                         'Todo' => AService::STATUS_TODO,
                         'Hold' => AService::STATUS_HOLD,
                         'Busy' => AService::STATUS_BUSY,
+                        'Cancel' => AService::STATUS_CANCEL,
                         'Done' => AService::STATUS_DONE
                     ]])
                 ->add('done', CheckboxType::class, [

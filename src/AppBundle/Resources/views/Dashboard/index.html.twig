@@ -128,24 +128,6 @@
             <div class="col-md-4">
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <a class="btn btn-primary btn-120" href="#" role="button">+ {% trans %}Reparatie{% endtrans %}</a>
-                        <div class="btn-group pull-right">
-                          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="glyphicon glyphicon-menu-hamburger" aria-label="Menu"></span> <span class="caret"></span>
-                          </button>
-                          <ul class="dropdown-menu">
-                            <li><a href="#">{% trans %}Nieuwe reparatie{% endtrans %}</a></li>
-                            <li><a href="#">{% trans %}Lijst van alle reparaties{% endtrans %}</a></li>
-                            <li><a href="{{ path('orderstatus_index') }}">{% trans %}Orderstatussen wijzigen{% endtrans %}</a></li>
-                          </ul>
-                        </div>
-                        <div id="chart1"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="panel panel-default">
-                    <div class="panel-body">
                         <a class="btn btn-primary btn-120" href="{{ path('purchaseorder_edit') }}" role="button">+ {% trans %}Inkoop{% endtrans %}</a>
                         <div class="btn-group pull-right">
                           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -164,7 +146,7 @@
             <div class="col-md-4">
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <a class="btn btn-primary btn-120" href="{{ path('salesorder_index') }}" role="button">+ {% trans %}Verkoop{% endtrans %}</a>
+                        <a class="btn btn-primary btn-120" href="{{ path('salesorder_new') }}" role="button">+ {% trans %}Verkoop{% endtrans %}</a>
                         <div class="btn-group pull-right">
                           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="glyphicon glyphicon-menu-hamburger" aria-label="Menu"></span> <span class="caret"></span>
@@ -176,6 +158,24 @@
                           </ul>
                         </div>
                         <div id="chart3"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <a class="btn btn-primary btn-120" href="{{ path('salesorder_new', { 'productId': 0, 'isRepair': true }) }}" role="button">+ {% trans %}Reparatie{% endtrans %}</a>
+                        <div class="btn-group pull-right">
+                          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="glyphicon glyphicon-menu-hamburger" aria-label="Menu"></span> <span class="caret"></span>
+                          </button>
+                          <ul class="dropdown-menu">
+                            <li><a href="#">{% trans %}Nieuwe reparatie{% endtrans %}</a></li>
+                            <li><a href="#">{% trans %}Lijst van alle reparaties{% endtrans %}</a></li>
+                            <li><a href="{{ path('orderstatus_index') }}">{% trans %}Orderstatussen wijzigen{% endtrans %}</a></li>
+                          </ul>
+                        </div>
+                        <div id="chart1"></div>
                     </div>
                 </div>
             </div>

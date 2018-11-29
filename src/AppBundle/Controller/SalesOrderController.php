@@ -10,6 +10,7 @@ use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\Repair;
 use AppBundle\Entity\SalesService;
 use AppBundle\Entity\Customer;
+use AppBundle\Entity\Product;
 use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Entity\ProductOrderRelation;
 use AppBundle\Form\IndexSearchForm;
@@ -21,6 +22,8 @@ use Symfony\Component\Form\FormError;
  */
 class SalesOrderController extends Controller
 {
+    use PdfControllerTrait;
+
     /**
      * @Route("/", name="salesorder_index")
      */
@@ -57,10 +60,13 @@ class SalesOrderController extends Controller
     }
 
     /**
+     * @Route("/new/{productId}/{isRepair}", name="salesorder_new")
      * @Route("/edit/{id}/{success}", name="salesorder_edit")
      */
-    public function editAction(Request $request, $id = 0, $success = null)
+    public function editAction(Request $request, $id = 0, $productId = 0, $isRepair = false, $success = null)
     {
+        $isRepair = $isRepair ? true : false; // from loose to strict
+
         $em = $this->getDoctrine()->getManager();
 
         /** @var \AppBundle\Repository\SalesOrderRepository */
@@ -71,6 +77,15 @@ class SalesOrderController extends Controller
             $order = new SalesOrder();
             $order->setOrderDate(new \DateTime());
             $stock = $em->getRepository('AppBundle:Product')->findStock($this->getUser());
+
+            if ($productId > 0)
+            {
+                $sellProduct = $em->find(Product::class, $productId);
+                $r = new ProductOrderRelation($sellProduct, $order);
+                $r->setPrice($sellProduct->getPrice());
+                $r->setQuantity(1);
+                $em->persist($r);
+            }
         }
         else
         {
@@ -79,7 +94,7 @@ class SalesOrderController extends Controller
             $stock = $em->getRepository('AppBundle:Product')->findStockAndNotYetInOrder($this->getUser(), $order);
         }
 
-        $form = $this->createForm(SalesOrderForm::class, $order, array('user' => $this->getUser(), 'stock' => $stock));
+        $form = $this->createForm(SalesOrderForm::class, $order, array('user' => $this->getUser(), 'stock' => $stock, 'isRepair' => $isRepair));
 
         $form->handleRequest($request);
 
@@ -122,12 +137,12 @@ class SalesOrderController extends Controller
                 if ($success !== false)
                 {
                     $purchase = null;
-                    $backorder = $form->has('backorder');
-                    $repairorder = $form->has('repairorder');
+                    $backorder = $form->has('backorder') ? $form->get('backorder')->getData() : false;
+                    $repairorder = $form->has('repairorder') ? $form->get('repairorder')->getData() : false;
 
                     if ($backorder && $repairorder)
                     {
-                        $form->get('repairorder')->addError(new FormError('Order cannot be repair and back order simultaneously'));
+                        $form->get('remarks')->addError(new FormError('Order cannot be repair and back order simultaneously'));
                         $success = false;
                     }
                     else
@@ -149,7 +164,7 @@ class SalesOrderController extends Controller
                             $em->persist($repair);
                             $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate("To repair", false, true));
                         }
-                        else // existing sales order
+                        elseif ($id) // existing sales order
                         {
                             if ($form->has('addProduct') && $addProduct = $form->get('addProduct')->getData()) // not being backorder or repair
                             {
@@ -213,12 +228,12 @@ class SalesOrderController extends Controller
     }
 
     /**
-     * @Route("/deleterelation/{id}/{productId}", name="salesorder_delete_relation")
+     * @Route("/deleterelation/{id}", name="salesorder_delete_relation")
      */
-    public function deleteRelationAction($id, $productId)
+    public function deleteRelationAction($id)
     {
         $em = $this->getDoctrine()->getManager();
-        $relation = $em->getRepository('AppBundle:ProductOrderRelation')->findOneBy(array('order' => $id, 'product' => $productId));
+        $relation = $em->find(ProductOrderRelation::class, $id);
         $em->remove($relation);
         $em->flush();
 
@@ -239,17 +254,35 @@ class SalesOrderController extends Controller
     }
 
     /**
-     * @Route("/inlist/{class}/{id}", name="salesorder_inlist")
-     * @Method("GET")
-     * @param string $entity Full entity name of object holding the orders collection association
+     * @Route("/printrepair/{id}/{relationId}", name="salesorder_repair_print")
      */
-    public function inlistAction($entity, $id)
+    public function printRepairAction(Request $request, $id, $relationId)
     {
-        $object = $this->getDoctrine()->getEntityManager()->find($entity, $id);
-        $orders = $object->getSalesOrders();
+        $em = $this->getDoctrine()->getManager();
 
-        return $this->render('AppBundle:SalesOrder:inlist.html.twig', array(
-            'orders' => $orders
-        ));
+        /** @var Repair */
+        $repair = $em->find(Repair::class, $id);
+        $relation = $em->find(ProductOrderRelation::class, $relationId);
+
+        $html = $this->render('AppBundle:SalesOrder:printrepair.html.twig', array('repair' => $repair, 'relation' => $relation));
+        $mPdfConfiguration = ['', 'A4' ,'','',10,10,10,10,0,0,'P'];
+
+        return $this->getPdfResponse("Repair", $html, $mPdfConfiguration);
+    }
+
+    /**
+     * @Route("/invoice/{id}", name="salesorder_invoice")
+     */
+    public function printInvoiceAction(Request $request, $id)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var SalesOrder */
+        $order = $em->find(SalesOrder::class, $id);
+
+        $html = $this->render('AppBundle:SalesOrder:invoice.html.twig', array('order' => $order));
+        $mPdfConfiguration = ['', 'A4' ,'','',10,10,10,10,0,0,'P'];
+
+        return $this->getPdfResponse("Invoice", $html, $mPdfConfiguration);
     }
 }

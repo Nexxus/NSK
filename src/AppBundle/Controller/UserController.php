@@ -71,7 +71,7 @@ class UserController extends Controller
             $user = $em->getRepository('AppBundle:User')->find($id);
         }
 
-        $form = $this->createForm(UserForm::class, $user);
+        $form = $this->createForm(UserForm::class, $user, ['authCheck' => $this->container->get('security.authorization_checker')]);
 
         $form->handleRequest($request);
 

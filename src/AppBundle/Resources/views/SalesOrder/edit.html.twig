@@ -71,7 +71,7 @@
                     {{ form_row(form.repair.deliveryDate) }} 
                     {{ form_row(form.repair.deliveryType) }} 
                     {{ form_row(form.repair.description) }} 
-                    {{ form_row(form.repair.damage) }} 
+                    {{ form_row(form.repair.damage) }}
                 </div>
             </div>
             {% endif %}
@@ -125,7 +125,6 @@
         <div class="panel-heading">
             <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Products and services{% endtrans %}
         </div>
-        {% if ( order.id > 0) %}
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -156,9 +155,12 @@
                     <td>{{ form_widget(formRelation.quantity) }}</td>
                     <td nowrap>
                         {% if (order.repair) %}
+                        <a class="btn btn-default" href="{{ path('salesorder_repair_print', { 'id': order.repair.id, 'relationId': formRelation.vars.data.id }) }}" target="_blank"><span class="glyphicon glyphicon-print" aria-label="Edit"></span></a>
                         <a class="btn btn-success" href="{{ path('product_edit', { 'id': product.id }) }}" data-toggle="modal" data-target="#modalEditor"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
                         {% endif %}
-                        <a class="btn btn-danger btn-delete" href="{{ path('salesorder_delete_relation', { 'id': order.id, 'productId': product.id }) }}" data-class="product from order" data-name="{{ product.name }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
+                        {% if ( order.id > 0) %}
+                        <a class="btn btn-danger btn-delete" href="{{ path('salesorder_delete_relation', { 'id': formRelation.vars.data.id }) }}" data-class="product from order" data-name="{{ product.name }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% for formService in formRelation.services %}
@@ -182,6 +184,7 @@
         
             </tbody>
         </table>
+        {% if ( order.id > 0) %}
         <div class="panel-body">
             <div class="row">
                 <div class="col-sm-5 col-sm-offset-1">
@@ -199,13 +202,16 @@
             </div>
         </div>
         {% else %}
-        <div class="panel-body">Please save order first...</div>
+        <div class="panel-body"><center><i>Please save order to add products and services</i></center></div>
         {% endif %}
     </div>
 
     <div class="panel panel-default">
         <div class="panel-body text-center">
             {{ form_widget(form.save) }}
+            {% if (order.id > 0) %}
+            <a class="btn btn-default" href="{{ path('salesorder_invoice', { 'id': order.id }) }}" target="_blank">Print</a>
+            {% endif %}
         </div>
     </div>
     

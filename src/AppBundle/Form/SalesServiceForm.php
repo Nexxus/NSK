@@ -41,10 +41,9 @@ class SalesServiceForm extends AbstractType
             ->add('status', ChoiceType::class, [
                 'attr' => ['class' => 'service-status'],
                 'choices' => [
-                    'New' => SalesService::STATUS_NEW,
                     'Todo' => SalesService::STATUS_TODO,
                     'Hold' => SalesService::STATUS_HOLD,
-                    'Busy' => SalesService::STATUS_BUSY,
+                    'Cancel' => SalesService::STATUS_CANCEL,
                     'Done' => SalesService::STATUS_DONE
                 ]])
             ->add('description', TextType::class, ['required' => false])
