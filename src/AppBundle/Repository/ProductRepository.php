@@ -81,6 +81,9 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         if ($search->status)
             $qb = $qb->andWhere("o.status = :status")->setParameter("status", $search->status);
 
+        if ($search->producttype)
+            $qb = $qb->andWhere("o.type = :producttype")->setParameter("producttype", $search->producttype);
+
         return $qb->getQuery()->getResult();
     }
 
