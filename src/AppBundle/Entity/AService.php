@@ -36,14 +36,14 @@ abstract class AService
     public function __construct(ProductOrderRelation $productOrderRelation) {
         $this->productOrderRelation = $productOrderRelation;
         $productOrderRelation->addService($this);
-        $this->status = self::STATUS_NEW;
+        $this->status = self::STATUS_TODO;
     }
 
-    const STATUS_NEW = 0;
-    const STATUS_TODO = 1;
-    const STATUS_HOLD = 2;
-    const STATUS_BUSY = 3;
-    const STATUS_DONE = 4;
+    const STATUS_TODO = 0;
+    const STATUS_HOLD = 1;
+    const STATUS_BUSY = 2;
+    const STATUS_DONE = 3;
+    const STATUS_CANCEL = 4;
 
     /**
      * @var int

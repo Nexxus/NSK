@@ -5,7 +5,8 @@ security:
     
     role_hierarchy:
         ROLE_MANAGER: ROLE_LOCAL
-        ROLE_SUPER_ADMIN: ROLE_MANAGER   
+        ROLE_ADMIN: ROLE_MANAGER   
+        ROLE_SUPER_ADMIN: ROLE_ADMIN   
     providers:
         fos_userbundle:
             id: fos_user.user_provider.username
@@ -49,5 +50,5 @@ security:
         - { path: ^/ophaaldienst, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/leergeld-bestelling, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
-        - { path: ^/admin/, role: ROLE_SUPER_ADMIN }
+        - { path: ^/admin/, role: ROLE_ADMIN }
         - { path: ^/, role: ROLE_LOCAL }

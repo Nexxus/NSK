@@ -122,12 +122,12 @@ class SalesOrderController extends Controller
                 if ($success !== false)
                 {
                     $purchase = null;
-                    $backorder = $form->has('backorder');
-                    $repairorder = $form->has('repairorder');
+                    $backorder = $form->has('backorder') ? $form->get('backorder')->getData() : false;
+                    $repairorder = $form->has('repairorder') ? $form->get('repairorder')->getData() : false;
 
                     if ($backorder && $repairorder)
                     {
-                        $form->get('repairorder')->addError(new FormError('Order cannot be repair and back order simultaneously'));
+                        $form->get('remarks')->addError(new FormError('Order cannot be repair and back order simultaneously'));
                         $success = false;
                     }
                     else
