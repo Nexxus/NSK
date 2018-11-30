@@ -39,7 +39,8 @@ class Pickup
     const DATADESTRUCTION_SHRED = 3;
     const DATADESTRUCTION_KILLDISK = 4;
 
-    public function __construct() {
+    public function __construct(PurchaseOrder $order) {
+        $this->order = $order;
         $this->images = new ArrayCollection();
     }
 
@@ -94,14 +95,9 @@ class Pickup
      */
     private $agreement;
 
-    /**
-     * @return Pickup
-     */
-    public function setOrder(PurchaseOrder $order)
+    public function getId()
     {
-        $this->order = $order;
-
-        return $this;
+        return $this->id;
     }
 
     /**

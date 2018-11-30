@@ -39,17 +39,38 @@ class UserForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        /** @var User */
+        $user = $builder->getData();
+
+        $authCheck = $options['authCheck'];
+
+        if (!$authCheck->isGranted('ROLE_SUPER_ADMIN') && $user->hasRole("ROLE_SUPER_ADMIN"))
+        {
+            throw new \Exception("Super admin cannot be edited by you!");
+        }
+
         $builder
             ->add('username', TextType::class)
             ->add('firstname', TextType::class, ['required' => false])
             ->add('lastname', TextType::class, ['required' => false])
-            ->add('email', EmailType::class)
-            ->add('plainPassword', RepeatedType::class, array(
+            ->add('email', EmailType::class);
+
+        if ($authCheck->isGranted('ROLE_SUPER_ADMIN'))
+        {
+            $builder->add('plainPassword', RepeatedType::class, array(
                 'required' => true, // see below
                 'type' => PasswordType::class,
                 'first_options'  => array('label' => 'New password'),
                 'second_options' => array('label' => 'Repeat password'),
-            ))
+            ));
+
+            if ($user->getId() > 0)
+            {
+                $builder->get("plainPassword")->setRequired(false);
+            }
+        }
+
+        $builder
             ->add('location',  EntityType::class, array(
                 'class' => 'AppBundle:Location',
                 'choice_label' => 'name'
@@ -57,19 +78,12 @@ class UserForm extends AbstractType
             ->add('role', ChoiceType::class, ['mapped' => false,
                 'choices' => [
                     'Super_admin' => 'ROLE_SUPER_ADMIN',
+                    'Admin' => 'ROLE_ADMIN',
                     'Manager' => 'ROLE_MANAGER',
                     'Local' => 'ROLE_LOCAL'
                 ]])
             ->add('enabled', CheckboxType::class, ['required' => false])
             ->add('save', SubmitType::class, ['attr' => ['class' => 'btn-success btn-120']]);
-
-        /** @var User */
-        $user = $builder->getData();
-
-        if ($user->getId() > 0)
-        {
-            $builder->get("plainPassword")->setRequired(false);
-        }
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -80,5 +94,7 @@ class UserForm extends AbstractType
             'csrf_field_name' => '_token',
             'csrf_token_id'   => 'user'
         ));
+
+        $resolver->setRequired(array('authCheck'));
     }
 }

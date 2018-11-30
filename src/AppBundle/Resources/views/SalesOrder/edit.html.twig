@@ -41,8 +41,9 @@
                     {{ form_row(form.location) }} 
                     {% endif %}
                     {{ form_row(form.remarks) }} 
-                    {% if ( order.id == 0) %}
+                    {% if (order.id == 0) %}
                     {{ form_row(form.backorder) }} 
+                    {{ form_row(form.repairorder) }} 
                     {% endif %}
                 </div>
             </div>
@@ -59,6 +60,18 @@
                     To check if products are arrived, please check stock column below. 
                     If it is below zero, it is still in back order. 
                     If stock is zero (or higher), the product is in stock and the quantity is assigned to this sales order.
+                </div>
+            </div>
+            {% elseif (order.repair) %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Repair order{% endtrans %}
+                </div>
+                <div class="panel-body">
+                    {{ form_row(form.repair.deliveryDate) }} 
+                    {{ form_row(form.repair.deliveryType) }} 
+                    {{ form_row(form.repair.description) }} 
+                    {{ form_row(form.repair.damage) }}
                 </div>
             </div>
             {% endif %}
@@ -110,9 +123,8 @@
             
     <div class="panel panel-default">
         <div class="panel-heading">
-            <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Products{% endtrans %}
+            <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Products and services{% endtrans %}
         </div>
-        {% if ( order.id > 0) %}
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -136,15 +148,32 @@
                     <td>{{ product.id }}</td>
                     <td>{{ product.sku }}</td>
                     <td>{{ product.name }}</td>
-                    <td>{{ product.type.name }}</td>
-                    <td>{{ product.getQuantityInStock(true) }}</td>
+                    <td>{{ product.type.name|default("") }}</td>
+                    <td>{{ product.getQuantityInStock() }}</td>
                     <td>&euro; {{ product.price|number_format(2, ',', '.') }}</td>
                     <td>{{ form_widget(formRelation.price) }}</td>
                     <td>{{ form_widget(formRelation.quantity) }}</td>
                     <td nowrap>
-                        <a class="btn btn-danger btn-delete" href="{{ path('salesorder_delete_relation', { 'id': order.id, 'productId': product.id }) }}" data-class="product from order" data-name="{{ product.name }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
+                        {% if (order.repair) %}
+                        <a class="btn btn-default" href="{{ path('salesorder_repair_print', { 'id': order.repair.id, 'relationId': formRelation.vars.data.id }) }}" target="_blank"><span class="glyphicon glyphicon-print" aria-label="Edit"></span></a>
+                        <a class="btn btn-success" href="{{ path('product_edit', { 'id': product.id }) }}" data-toggle="modal" data-target="#modalEditor"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
+                        {% endif %}
+                        {% if ( order.id > 0) %}
+                        <a class="btn btn-danger btn-delete" href="{{ path('salesorder_delete_relation', { 'id': formRelation.vars.data.id }) }}" data-class="product from order" data-name="{{ product.name }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
+                        {% endif %}
                     </td>
                 </tr>
+                {% for formService in formRelation.services %}
+                <tr>
+                    <td align="right"><span class="glyphicon glyphicon-wrench" aria-label="Delete"></span></td>
+                    <td colspan="3">{{ form_widget(formService.description) }}</td>
+                    <td colspan="2">{{ form_widget(formService.status) }}</td>
+                    <td>{{ form_widget(formService.price) }}</td>
+                    <td colspan="2" nowrap>
+                        <a class="btn btn-danger btn-delete" href="{{ path('salesorder_delete_service', { 'id': formService.vars.data.id, 'orderId': order.id }) }}" data-class="service from product" data-name="{{ formService.vars.data.description }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
+                    </td>
+                </tr>
+                {% endfor %}
             {% else %}
                 <tr>
                     <td colspan="99">
@@ -155,28 +184,34 @@
         
             </tbody>
         </table>
+        {% if ( order.id > 0) %}
         <div class="panel-body">
             <div class="row">
-                <div class="col-sm-6">
-                    {% if ( order.backingPurchaseOrder) %}
+                <div class="col-sm-5 col-sm-offset-1">
+                    {% if (order.backingPurchaseOrder or order.repair) %}
                     {{ form_row(form.newProduct) }}
                     {% else %}
                     {{ form_row(form.addProduct) }}
                     {% endif %}
                 </div>
-                <div class="col-sm-6 text-right">
-                    <i>Products can be edited or fully deleted from stock in <a href="{{ path('product_index') }}">stock index</a></i>
+                <div class="col-sm-5">
+                    {% if order.productRelations|length %}
+                    {{ form_row(form.newService) }}
+                    {% endif %}
                 </div>
             </div>
         </div>
         {% else %}
-        <div class="panel-body">Please save order first...</div>
+        <div class="panel-body"><center><i>Please save order to add products and services</i></center></div>
         {% endif %}
     </div>
 
     <div class="panel panel-default">
         <div class="panel-body text-center">
             {{ form_widget(form.save) }}
+            {% if (order.id > 0) %}
+            <a class="btn btn-default" href="{{ path('salesorder_invoice', { 'id': order.id }) }}" target="_blank">Print</a>
+            {% endif %}
         </div>
     </div>
     
@@ -212,14 +247,35 @@
          $('[required]').prop('required', function () {
              return $(this).is(':visible');
          });
-         
+
+         /* New service */
+
+         $('select[name="sales_order_form[newService]"]').change(function () {
+             if ($(this).val()) {
+                 $('form[name="sales_order_form"]').submit();
+             }
+         });
+
          {% if (order.backingPurchaseOrder) %}
 
          /* New product (Backorder) */
 
          $('select[name="sales_order_form[newProduct]"]').change(function () {
              if ($(this).val()) {
-                 $("#modalEditor .modal-content").load('{{ path('product_new', { 'purchaseOrderId': order.backingPurchaseOrder.id, 'backingSalesOrderId': order.id }) }}/' + $(this).val(), function () {
+                 $("#modalEditor .modal-content").load('{{ path('product_new', { 'purchaseOrderId': order.backingPurchaseOrder.id, 'salesOrderId': order.id }) }}/' + $(this).val(), function () {
+                     focusBarcodeInput();
+                 });
+                 $("#modalEditor").modal('show');
+             }
+         });
+
+         {% elseif (order.repair) %}
+
+         /* New product (Repair) */
+
+         $('select[name="sales_order_form[newProduct]"]').change(function () {
+             if ($(this).val()) {
+                 $("#modalEditor .modal-content").load('{{ path('product_new', { 'purchaseOrderId': 0, 'salesOrderId': order.id }) }}/' + $(this).val(), function () {
                      focusBarcodeInput();
                  });
                  $("#modalEditor").modal('show');

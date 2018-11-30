@@ -42,9 +42,12 @@ class IndexSearchContainer
     /** @var \AppBundle\Entity\User */
     public $user;
 
+    /** @var \AppBundle\Entity\ProductType */
+    public $producttype;
+
     /** @return bool */
     public function isSearchable() {
-        if ($this->location || $this->status || $this->query)
+        if ($this->location || $this->status || $this->producttype || $this->query)
             return true;
         else
             return false;

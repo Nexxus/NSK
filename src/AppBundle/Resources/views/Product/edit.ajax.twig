@@ -109,22 +109,69 @@
                         &euro; {{ formRelation.vars.data.totalStandardPrice|number_format(2, ',', '.') }}
                     </div>
                 </div>
+            
             {% else %}
             No attributes available for products of this type. Please ask your manager to relate attributes to product types.
             {% endfor %}
 
-   
         </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Orders{% endtrans %}
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th width="1%"></th>
+                    <th width="10%">Order nr</th>
+                    <th width="10%">Order date</th>
+                    <th width="20%">Supplier/Customer</th>
+                    <th width="10%">Status</th>
+                    <th width="3%">Quantity</th>
+                    <th width="1%"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if product.purchaseOrderRelation %}
+                <tr>
+                    <td><span class="glyphicon glyphicon glyphicon-log-in" aria-label="Purchase"></span></td>
+                    <td>{{ product.purchaseOrderRelation.order.orderNr }}</td>
+                    <td>{{ product.purchaseOrderRelation.order.orderDate|date("Y-m-d") }}</td>
+                    <td>From: {{ product.purchaseOrderRelation.order.customer.name|default("") }}</td>
+                    <td>{{ product.purchaseOrderRelation.order.status.name|default("") }}</td>
+                    <td>{{ product.purchaseOrderRelation.quantity }}</td>
+                    <td><a class="btn btn-success" href="{{ path('purchaseorder_edit', { 'id': product.purchaseOrderRelation.order.id }) }}"><span class="glyphicon glyphicon-chevron-right" aria-label="Edit"></span></a></td>
+                </tr>
+                {% endif %}
+                {% for salesOrderRelation in product.salesOrderRelations %}
+                <tr>
+                    <td><span class="glyphicon glyphicon glyphicon-log-out" aria-label="Sales"></span></td>
+                    <td>{{ salesOrderRelation.order.orderNr }}</td>
+                    <td>{{ salesOrderRelation.order.orderDate|date("Y-m-d") }}</td>
+                    <td>To: {{ salesOrderRelation.order.customer.name|default("") }}</td>
+                    <td>{{ salesOrderRelation.order.status.name|default("") }}</td>
+                    <td>{{ salesOrderRelation.quantity }}</td>
+                    <td><a class="btn btn-success" href="{{ path('salesorder_edit', { 'id': salesOrderRelation.order.id }) }}"><span class="glyphicon glyphicon-chevron-right" aria-label="Edit"></span></a></td>
+                </tr>
+                {% endfor %}
+        
+            </tbody>
+        </table>
     </div>
 
     <div class="text-center">
         {{ form_widget(form.save) }}
         {% if (product.id > 0) %}
-        <a class="btn btn-default" href="{{ path('product_print', { 'id': product.id }) }}" target="_blank">Print</a>
+        <a class="btn btn-default" role="button" href="{{ path('product_print', { 'id': product.id }) }}" target="_blank">Print</a>
+        {% if product.getQuantitySaleable() > 0 %}
+        <a class="btn btn-default" role="button" href="{{ path('salesorder_new', { 'productId': product.id }) }}">Sell</a>
+        {% endif %}
         {% endif %}
         <button type="button" class="btn btn-default close-modal">Close</button>
         {% if (refId) %}
-        <a class="btn btn-default btn-refedit" href="{{ path('product_edit', { 'id': refId }) }}">Back</a>
+        <a class="btn btn-default btn-refedit" role="button" href="{{ path('product_edit', { 'id': refId }) }}">Back</a>
         {% endif %}
     </div>
 

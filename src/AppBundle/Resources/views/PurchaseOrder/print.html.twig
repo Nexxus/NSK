@@ -4,145 +4,144 @@
 
 {% block body %}
 
-    <h2>Purchase order {{ order.orderNr }}</h2>
+<h2>Purchase order {{ order.orderNr }}</h2>
 
-    <div class="row">
-        <div class="col-xs-5">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Order details{% endtrans %}
-                </div>
-                <div class="panel-body">
-                    <barcode code="{{ order.orderNr }}" type="C39" />
-                </div>
-                <table class="table">
-                    <tr><td width="50%">Order nr</td><td>{{ order.orderNr }}</td></tr>
-                    <tr><td>Order date</td><td>{{ order.orderDate|date("d-m-Y")|default("Unknown") }}</td></tr>
-                    <tr><td>Status</td><td>{{ order.status.name|default("Unknown") }}</td></tr>
-                    <tr><td>Location</td><td>{{ order.location.name|default("Unknown") }}</td></tr>
-                    <tr><td>Remarks</td><td>{{ order.remarks|default("None") }}</td></tr>
-                </table>
+<div class="row">
+    <div class="col-xs-5">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Order details{% endtrans %}
             </div>
+            <div class="panel-body">
+                <barcode code="{{ order.orderNr }}" type="C39" />
+            </div>
+            <table class="table">
+                <tr><td width="50%">Order nr</td><td>{{ order.orderNr }}</td></tr>
+                <tr><td>Order date</td><td>{{ order.orderDate|date("d-m-Y")|default("Unknown") }}</td></tr>
+                <tr><td>Status</td><td>{{ order.status.name|default("Unknown") }}</td></tr>
+                <tr><td>Location</td><td>{{ order.location.name|default("Unknown") }}</td></tr>
+                <tr><td>Remarks</td><td>{{ order.remarks|default("None") }}</td></tr>
+            </table>
+        </div>
 
-            {% if order.pickup %}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Pickup{% endtrans %}
-                </div>
-                <table class="table">
-                    <tr>
-                        <td width="50%">Pickup date</td>
-                        <td>{{ order.pickup.pickupDate|date("d-m-Y")|default("Unknown") }}</td>
-                    </tr>
-                    <tr>
-                        <td>Description</td>
-                        <td>{{ order.pickup.description|default("None") }}</td>
-                    </tr>
-                    <tr>
-                        <td>Data destruction</td>
-                        <td>
-                            {% if order.pickup.dataDestruction == 0 %}
-                                None
-                            {% elseif order.pickup.dataDestruction == 1 %}
-                                Format
-                            {% elseif order.pickup.dataDestruction == 2 %}
-                                Statement
-                            {% elseif order.pickup.dataDestruction == 3 %}
-                                elseShred
-                            {% elseif order.pickup.dataDestruction == 4 %}
-                                Killdisk
-                            {% else %}
-                                Unknown
-                            {% endif %}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Agreement</td>
-                        <td>{{ order.pickup.agreement.originalClientFilename|default("None") }}</td>
-                    </tr>
-                    <tr>
-                        <td>Images</td>
-                        {% if order.pickup.images|length > 0 %}
-                        <td>Yes</td>
+        {% if order.pickup %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Pickup{% endtrans %}
+            </div>
+            <table class="table">
+                <tr>
+                    <td width="50%">Pickup date</td>
+                    <td>{{ order.pickup.pickupDate|date("d-m-Y")|default("Unknown") }}</td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td>{{ order.pickup.description|default("None") }}</td>
+                </tr>
+                <tr>
+                    <td>Data destruction</td>
+                    <td>
+                        {% if order.pickup.dataDestruction == 0 %}
+                        None
+                        {% elseif order.pickup.dataDestruction == 1 %}
+                        Format
+                        {% elseif order.pickup.dataDestruction == 2 %}
+                        Statement
+                        {% elseif order.pickup.dataDestruction == 3 %}
+                        elseShred
+                        {% elseif order.pickup.dataDestruction == 4 %}
+                        Killdisk
                         {% else %}
-                        <td>No</td>
+                        Unknown
                         {% endif %}
-                    </tr>
-                </table>
-            </div>
-
-            {% endif %}
-
+                    </td>
+                </tr>
+                <tr>
+                    <td>Agreement</td>
+                    <td>{{ order.pickup.agreement.originalClientFilename|default("None") }}</td>
+                </tr>
+                <tr>
+                    <td>Images</td>
+                    {% if order.pickup.images|length > 0 %}
+                    <td>Yes</td>
+                    {% else %}
+                    <td>No</td>
+                    {% endif %}
+                </tr>
+            </table>
         </div>
 
-        <div class="col-xs-5">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Pricing{% endtrans %}
-                </div>
-                <table class="table">
-                    <tr><td width="50%"><h4>Total</h4></td><td><h4>&euro; {{ order.calculateTotalPrice()|number_format(2, ',', '.') }}</h4></td></tr>
-                    <tr><td>&nbsp;</td><td></td></tr>
-                    <tr><td>Transport</td><td>&euro; {{ order.transport|number_format(2, ',', '.') }}</td></tr>
-                    <tr><td>Discount</td><td>&euro; {{ order.discount|number_format(2, ',', '.') }}</td></tr>
-                    <tr><td>Gift</td><td>{{ order.isGift == true ? "Yes" : "No" }}</td></tr>
-                </table>
-            </div>
+        {% endif %}
 
-            {% if order.supplier %}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Supplier{% endtrans %}
-                </div>
-                <table class="table">
-                    <tr><td width="50%">Name</td><td>{{ order.supplier.name }}</td></tr>
-                    <tr><td>KvK nr</td><td>{{ order.supplier.kvkNr }}</td></tr>
-                    <tr><td>Representative</td><td>{{ order.supplier.representative }}</td></tr>
-                    <tr><td>E-mail</td><td>{{ order.supplier.email }}</td></tr>
-                    <tr><td>Phone</td><td>{{ order.supplier.phone }}</td></tr>
-                    <tr><td>Street</td><td>{{ order.supplier.street }}</td></tr>
-                    <tr><td>Street extra</td><td>{{ order.supplier.streetExtra }}</td></tr>
-                    <tr><td>City</td><td>{{ order.supplier.city }}</td></tr>
-                    <tr><td>Zip</td><td>{{ order.supplier.zip }}</td></tr>
-                    <tr><td>state</td><td>{{ order.supplier.state }}</td></tr>
-                    <tr><td>Country</td><td>{{ order.supplier.country }}</td></tr>
-                    <tr><td>Partner</td><td>{{ order.supplier.isPartner == true ? "Yes" : "No" }}</td></tr>
-                    <tr><td>Owner</td><td>{{ order.supplier.isOwner == true ? "Yes" : "No" }}</td></tr>
-                </table>
-            </div>
-            {% endif %}
-        </div>
     </div>
-            
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Products{% endtrans %}
+
+    <div class="col-xs-5">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Pricing{% endtrans %}
+            </div>
+            <table class="table">
+                <tr><td width="50%"><h4>Total</h4></td><td><h4>&euro; {{ order.calculateTotalPrice()|number_format(2, ',', '.') }}</h4></td></tr>
+                <tr><td>&nbsp;</td><td></td></tr>
+                <tr><td>Transport</td><td>&euro; {{ order.transport|number_format(2, ',', '.') }}</td></tr>
+                <tr><td>Discount</td><td>&euro; {{ order.discount|number_format(2, ',', '.') }}</td></tr>
+                <tr><td>Gift</td><td>{{ order.isGift == true ? "Yes" : "No" }}</td></tr>
+            </table>
         </div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>SKU</th>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th width="15%">Price p.u.</th>
-                    <th width="10%">Qty</th>
-                </tr>
-                <tr>
-                </tr>
-            </thead>
-            <tbody>
+
+        {% if order.supplier %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Supplier{% endtrans %}
+            </div>
+            <table class="table">
+                <tr><td width="50%">Name</td><td>{{ order.supplier.name }}</td></tr>
+                <tr><td>KvK nr</td><td>{{ order.supplier.kvkNr }}</td></tr>
+                <tr><td>Representative</td><td>{{ order.supplier.representative }}</td></tr>
+                <tr><td>E-mail</td><td>{{ order.supplier.email }}</td></tr>
+                <tr><td>Phone</td><td>{{ order.supplier.phone }}</td></tr>
+                <tr><td>Street</td><td>{{ order.supplier.street }}</td></tr>
+                <tr><td>Street extra</td><td>{{ order.supplier.streetExtra }}</td></tr>
+                <tr><td>City</td><td>{{ order.supplier.city }}</td></tr>
+                <tr><td>Zip</td><td>{{ order.supplier.zip }}</td></tr>
+                <tr><td>State</td><td>{{ order.supplier.state }}</td></tr>
+                <tr><td>Country</td><td>{{ order.supplier.country }}</td></tr>
+                <tr><td>Partner</td><td>{{ order.supplier.isPartner == true ? "Yes" : "No" }}</td></tr>
+                <tr><td>Owner</td><td>{{ order.supplier.isOwner == true ? "Yes" : "No" }}</td></tr>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Products{% endtrans %}
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>SKU</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th width="15%">Price p.u.</th>
+                <th width="10%">Qty</th>
+            </tr>
+            <tr></tr>
+        </thead>
+        <tbody>
             {% for r in order.productRelations %}
-                <tr>
-                    <td>{{ r.product.sku }}</td>
-                    <td>{{ r.product.name }}</td>
-                    <td>{{ r.product.type.name }}</td>
-                    <td>&euro; {{ r.price|number_format(2, ',', '.') }}</td>
-                    <td>{{ r.quantity }}</td>
-                </tr>
+            <tr>
+                <td>{{ r.product.sku }}</td>
+                <td>{{ r.product.name }}</td>
+                <td>{{ r.product.type.name|default("") }}</td>
+                <td>&euro; {{ r.price|number_format(2, ',', '.') }}</td>
+                <td>{{ r.quantity }}</td>
+            </tr>
             {% endfor %}
-            </tbody>
-        </table>
-    </div>
+        </tbody>
+    </table>
+</div>
 
 
 {% endblock %}
