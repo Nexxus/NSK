@@ -50,7 +50,7 @@ class ProductForm extends AbstractType
             ->add('name', TextType::class)
             ->add('price', MoneyType::class, [
                 'required' => false,
-                'label' => 'Standard'
+                'label' => 'Sales standard'
             ])
             ->add('description', TextType::class, [
                 'required' => false
