@@ -28,7 +28,7 @@
             <td nowrap>
                 <a class="btn btn-success" href="{{ path('producttype_edit', {'id': t.id}) }}">Edit</a>
                 {% if t.products|length == 0 %}
-                <a class="btn btn-danger" href="{{ path('producttype_delete', { 'id': t.id }) }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
+                <a class="btn btn-danger btn-delete" href="{{ path('producttype_delete', { 'id': t.id }) }}" data-class="product type" data-name="{{ t.name }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
                 {% endif %}
             </td>
         </tr>

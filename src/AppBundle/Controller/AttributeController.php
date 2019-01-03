@@ -27,14 +27,16 @@ class AttributeController extends Controller
 
         $attributes = array();
 
-        $form = $this->createForm(IndexSearchForm::class, array());
+        $container = new \AppBundle\Helper\IndexSearchContainer();
+        $container->className = Attribute::class;
+
+        $form = $this->createForm(IndexSearchForm::class, $container);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid())
         {
-            $data = $form->getData();
-            $attributes = $repo->findBySearchQuery($data['query']);
+            $attributes = $repo->findBySearchQuery($container->query);
         }
         else
         {
@@ -78,11 +80,9 @@ class AttributeController extends Controller
         {
             if ($form->has('newOption') && $newOptionName = $form->get('newOption')->getData())
             {
-                $newOption = new AttributeOption();
+                $newOption = new AttributeOption($attribute);
                 $newOption->setName($newOptionName);
-                $newOption->setAttribute($attribute);
                 $em->persist($newOption);
-                $attribute->addOption($newOption);
             }
 
             $em->persist($attribute);

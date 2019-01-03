@@ -13,12 +13,4 @@
     {{ form_widget(form) }}
     {{ form_end(form) }}
 
-    {% if customer.id %}
-    {{
-     render(controller(
-            'AppBundle:SalesOrder:inlist',
-            { 'entity': 'AppBundle:Customer', 'id': customer.id, }
-        ))
-    }}
-    {% endif %}
 {% endblock %}

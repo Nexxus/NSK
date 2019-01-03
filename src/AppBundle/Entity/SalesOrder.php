@@ -47,7 +47,7 @@ class SalesOrder extends AOrder
     private $backingPurchaseOrder;
 
     /**
-     * @ORM\OneToOne(targetEntity="Repair", mappedBy="order")
+     * @ORM\OneToOne(targetEntity="Repair", mappedBy="order", cascade={"all"}, orphanRemoval=true)
      */
     private $repair;
 

@@ -46,16 +46,37 @@ class PurchaseOrderRepository extends \Doctrine\ORM\EntityRepository
             return $this->findBy(array(), array('id' => 'DESC'));
     }
 
-    /**
-     * This function searches in fields: Id, Kvk, Email, Name
-     */
-    public function findBySearchQuery($query)
+    public function findMineByStatus(User $user, $statusId)
     {
-        $q = $this->getEntityManager()
-            ->createQuery("SELECT o FROM AppBundle:PurchaseOrder o WHERE o.orderNr = ?1 ORDER BY o.id DESC")
-            ->setParameter(1, $query);
+        if ($user->hasRole("ROLE_LOCAL"))
+            return $this->findBy(array("location" => $user->getLocation(), "status" => $statusId), array('id' => 'DESC'));
+        else
+            return $this->findBy(array("status" => $statusId), array('id' => 'DESC'));
+    }
 
-        return $q->getResult();
+    public function findMineById(User $user, $id)
+    {
+        if ($user->hasRole("ROLE_LOCAL"))
+            return $this->findOneBy(array("location" => $user->getLocation(), "id" => $id), array('id' => 'DESC'));
+        else
+            return $this->findOneBy(array("id" => $id), array('id' => 'DESC'));
+    }
+
+    public function findBySearchQuery(\AppBundle\Helper\IndexSearchContainer $search)
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder()
+            ->from("AppBundle:PurchaseOrder", "o")->select("o")->orderBy("o.id", "DESC");
+
+        if ($search->query)
+            $qb = $qb->andWhere("o.orderNr = :query")->setParameter("query", $search->query);
+
+        if ($search->location)
+            $qb = $qb->andWhere("o.location = :location")->setParameter("location", $search->location);
+
+        if ($search->status)
+            $qb = $qb->andWhere("o.status = :status")->setParameter("status", $search->status);
+
+        return $qb->getQuery()->getResult();
     }
 
     public function generateOrderNr(PurchaseOrder $order)

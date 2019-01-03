@@ -23,6 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * ProductOrderRelation
@@ -32,19 +33,34 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ProductOrderRelation
 {
+    public function __construct(Product $product, AOrder $order) {
+        $this->product = $product;
+        $this->order = $order;
+        $product->addOrderRelation($this);
+        $order->addProductRelation($this);
+        $this->services = new ArrayCollection();
+    }
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
     /**
      * @var Product
      *
-     * @ORM\Id
      * @ORM\ManyToOne(targetEntity="Product", inversedBy="orderRelations", fetch="EAGER")
      * @ORM\JoinColumn(name="product_id", referencedColumnName="id", nullable=false)
      */
     private $product;
 
     /**
-     * @var AOrder
+     * @var AOrder|PurchaseOrder|SalesOrder
      *
-     * @ORM\Id
      * @ORM\ManyToOne(targetEntity="AOrder", inversedBy="productRelations", fetch="EAGER")
      * @ORM\JoinColumn(name="order_id", referencedColumnName="id", nullable=false)
      */
@@ -65,17 +81,18 @@ class ProductOrderRelation
     private $price;
 
     /**
-     * Set product
+     * Services that are applied to this Product
+     * SalesServices in case of SalesOrder
+     * TaskServices in case of PurchaseOrder
      *
-     * @param Product $product
-     *
-     * @return ProductOrderRelation
+     * @var ArrayCollection|AService[]
+     * @ORM\OneToMany(targetEntity="AService", mappedBy="productOrderRelation", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
      */
-    public function setProduct(Product $product)
-    {
-        $this->product = $product;
+    private $services;
 
-        return $this;
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**
@@ -89,23 +106,9 @@ class ProductOrderRelation
     }
 
     /**
-     * Set order
-     *
-     * @param AOrder $order
-     *
-     * @return ProductOrderRelation
-     */
-    public function setOrder(AOrder $order)
-    {
-        $this->order = $order;
-
-        return $this;
-    }
-
-    /**
      * Get order
      *
-     * @return AOrder
+     * @return AOrder|PurchaseOrder|SalesOrder
      */
     public function getOrder()
     {
@@ -158,5 +161,37 @@ class ProductOrderRelation
     public function getPrice()
     {
         return floatval($this->price) / 100;
+    }
+
+    /**
+     * Add service
+     *
+     * @param AService $service
+     *
+     * @return ProductOrderRelation
+     */
+    public function addService(AService $service)
+    {
+        $this->services[] = $service;
+
+        return $this;
+    }
+
+    public function removeService(AService $service)
+    {
+        $this->services->removeElement($service);
+    }
+
+    public function getServices()
+    {
+        return $this->services;
+    }
+
+    public function getServicesDone() {
+        $servicesDone = $this->services->filter(function (AService $service) {
+            return $service->getStatus() == AService::STATUS_DONE;
+        });
+
+        return $servicesDone->count() ?? 0;
     }
 }

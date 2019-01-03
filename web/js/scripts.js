@@ -10,6 +10,22 @@ $(document).ready(function () {
         buttonClass: 'btn'
     });
 
+    $('.btn-delete').click(function (e) {
+
+        e.preventDefault();
+
+        var href = $(this).attr("href");
+        var className = $(this).data("class");
+        var name = $(this).data("name");
+
+        $('#modalConfirm .modal-body').html("Are you sure you want to delete this " + className + "?<br/>&nbsp;<br/><b>" + name + "</b>" );
+        $('#modalConfirm').modal('show') 
+
+        $('.btn-delete-confirmed').click(function () {
+            location.href = href;
+        });
+    });
+
     focusBarcodeInput();
 });
 

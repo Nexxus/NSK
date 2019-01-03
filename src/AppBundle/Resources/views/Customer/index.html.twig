@@ -5,10 +5,15 @@
 
     {{ form_start(form) }}
     <div class="row" style="margin-bottom: 20px">
-        <div class="col-sm-7">
+        <div class="col-sm-6">
             {{ form_widget(form.query, {'attr': {'placeholder': 'Zoeken op Id, KvK, e-mail of (deel van) naam'} }) }}
         </div>
         <div class="col-sm-2">
+            {% if form.location is defined %}
+            {{ form_widget(form.location) }}
+            {% endif %}
+        </div>
+        <div class="col-sm-1">
             {{ form_widget(form.submit) }}
         </div>
         <div class="col-sm-3">
@@ -41,7 +46,7 @@
                 <td nowrap>
                     <a class="btn btn-success" href="{{ path('customer_edit', { 'id': customer.id }) }}"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
                     {% if customer.salesOrders|length == 0 %}
-                    <a class="btn btn-danger" href="{{ path('customer_delete', { 'id': customer.id }) }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
+                    <a class="btn btn-danger btn-delete" href="{{ path('customer_delete', { 'id': customer.id }) }}" data-class="customer" data-name="{{ customer.name }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
                     {% endif %}
                 </td>
             </tr>

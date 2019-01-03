@@ -7,11 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\Supplier;
-use AppBundle\Entity\Address;
 use AppBundle\Entity\PurchaseOrder;
-use AppBundle\Entity\Location;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use AppBundle\Form\IndexSearchForm;
 use AppBundle\Form\PurchaseOrderForm;
 use Symfony\Component\Form\FormError;
@@ -21,6 +17,8 @@ use Symfony\Component\Form\FormError;
  */
 class PurchaseOrderController extends Controller
 {
+    use PdfControllerTrait;
+
     /**
      * @Route("/", name="purchaseorder_index")
      */
@@ -30,14 +28,17 @@ class PurchaseOrderController extends Controller
 
         $orders = array();
 
-        $form = $this->createForm(IndexSearchForm::class, array());
+        $container = new \AppBundle\Helper\IndexSearchContainer();
+        $container->user = $this->getUser();
+        $container->className = PurchaseOrder::class;
+
+        $form = $this->createForm(IndexSearchForm::class, $container);
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid())
+        if ($form->isSubmitted() && $form->isValid() && $container->isSearchable())
         {
-            $data = $form->getData();
-            $orders = $repo->findBySearchQuery($data['query']);
+            $orders = $repo->findBySearchQuery($container);
         }
         else
         {
@@ -153,17 +154,16 @@ class PurchaseOrderController extends Controller
     }
 
     /**
-     * @Route("/inlist/{class}/{id}", name="purchaseorder_inlist")
-     * @Method("GET")
-     * @param string $entity Full entity name of object holding the orders collection association
+     * @Route("/print/{id}", name="purchaseorder_print")
      */
-    public function inlistAction($entity, $id)
+    public function printAction($id)
     {
-        $object = $this->getDoctrine()->getEntityManager()->find($entity, $id);
-        $orders = $object->getPurchaseOrders();
+        $em = $this->getDoctrine()->getManager();
+        $order = $em->getRepository('AppBundle:PurchaseOrder')->find($id);
 
-        return $this->render('AppBundle:PurchaseOrder:inlist.html.twig', array(
-            'orders' => $orders
-        ));
+        $html = $this->render('AppBundle:PurchaseOrder:print.html.twig', array('order' => $order));
+        $mPdfConfiguration = ['', 'A4' ,'','',10,10,10,10,0,0,'P'];
+
+        return $this->getPdfResponse("Nexxus purchase order", $html, $mPdfConfiguration);
     }
 }

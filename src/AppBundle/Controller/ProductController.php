@@ -30,18 +30,22 @@ use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\ProductAttributeFile;
 use AppBundle\Entity\ProductAttributeRelation;
 use AppBundle\Form\ProductForm;
+use AppBundle\Form\ProductSplitForm;
+use AppBundle\Form\ChecklistForm;
 use AppBundle\Form\IndexSearchForm;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Form\FormError;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 /**
  * @Route("/product")
  */
-class ProductController extends APdfController
+class ProductController extends Controller
 {
+    use PdfControllerTrait;
+
     /**
      * @Route("/", name="product_index")
      */
@@ -51,14 +55,17 @@ class ProductController extends APdfController
 
         $products = array();
 
-        $form = $this->createForm(IndexSearchForm::class, array());
+        $container = new \AppBundle\Helper\IndexSearchContainer();
+        $container->user = $this->getUser();
+        $container->className = Product::class;
+
+        $form = $this->createForm(IndexSearchForm::class, $container);
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid())
+        if ($form->isSubmitted() && $form->isValid() && $container->isSearchable())
         {
-            $data = $form->getData();
-            $products = $repo->findBySearchQuery($data['query']);
+            $products = $repo->findBySearchQuery($container);
         }
         else
         {
@@ -66,7 +73,7 @@ class ProductController extends APdfController
         }
 
         $paginator = $this->get('knp_paginator');
-        $productsPage = $paginator->paginate($products, $request->query->getInt('page', 1), 10);
+        $productsPage = $paginator->paginate($products, $request->query->getInt('page', 1), 20);
 
         return $this->render('AppBundle:Product:index.html.twig', array(
             'products' => $productsPage,
@@ -75,11 +82,11 @@ class ProductController extends APdfController
     }
 
     /**
-     * @Route("/new/{purchaseOrderId}/{backingSalesOrderId}/{productTypeId}", name="product_new")
+     * @Route("/new/{purchaseOrderId}/{salesOrderId}/{productTypeId}", name="product_new")
      * @Route("/edit/{id}/{success}", name="product_edit")
      * @Route("/editsub/{refId}/{id}", name="product_subedit")
      */
-    public function editAction(Request $request, $id = 0, $purchaseOrderId = 0, $backingSalesOrderId = 0, $productTypeId = 0, $success = null, $refId = null)
+    public function editAction(Request $request, $id = 0, $purchaseOrderId = 0, $salesOrderId = 0, $productTypeId = 0, $success = null, $refId = null)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -101,13 +108,16 @@ class ProductController extends APdfController
             $product->setType($em->getReference(ProductType::class, $productTypeId));
         }
 
-
-        if ($backingSalesOrderId > 0 && $purchaseOrderId > 0)
+        if ($salesOrderId > 0 && $purchaseOrderId > 0) // backorder
         {
-            $repo->generateProductOrderRelation($product, $em->find(SalesOrder::class, $backingSalesOrderId));
+            $repo->generateProductOrderRelation($product, $em->find(SalesOrder::class, $salesOrderId));
             $repo->generateProductOrderRelation($product, $em->find(PurchaseOrder::class, $purchaseOrderId), 0);
         }
-        elseif ($purchaseOrderId > 0)
+        elseif ($salesOrderId > 0) // repair order
+        {
+            $repo->generateProductOrderRelation($product, $em->find(SalesOrder::class, $salesOrderId));
+        }
+        elseif ($purchaseOrderId > 0) // normal purchase
         {
             $repo->generateProductOrderRelation($product, $em->find(PurchaseOrder::class, $purchaseOrderId));
         }
@@ -138,10 +148,7 @@ class ProductController extends APdfController
 
                     foreach ($fileNames as $k => $v)
                     {
-                        $file = new ProductAttributeFile();
-                        $file->setUniqueServerFilename($k);
-                        $file->setOriginalClientFilename($v);
-                        $file->setProduct($product);
+                        $file = new ProductAttributeFile($product, $v, $k);
                         $em->persist($file);
                         $em->flush($file);
 
@@ -179,6 +186,119 @@ class ProductController extends APdfController
     }
 
     /**
+     * @Route("/split/{id}", name="product_split")
+     */
+    public function splitAction(Request $request, $id)
+    {
+        $success = null;
+
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var \AppBundle\Repository\ProductRepository */
+        $repo = $em->getRepository('AppBundle:Product');
+
+        /** @var Product */
+        $product = $repo->find($id);
+
+        $data = array('quantity' => 1, 'status' => $product->getStatus(), 'individualize' => false);
+        $options = array('max' => $product->getQuantityInStock() - 1);
+
+        $form = $this->createForm(ProductSplitForm::class, $data, $options);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted())
+        {
+            if ($form->isValid())
+            {
+                $data = $form->getData();
+                $quantity = $data['quantity'];
+
+                if ($data['individualize'] && $quantity > 1)
+                {
+                    for ($i = 1; $i <= $quantity; $i++)
+                    {
+                        $repo->splitProduct($product, $data['status'], 1, "(split ".$i.")");
+                    }
+                }
+                else
+                {
+                    $repo->splitProduct($product, $data['status'], $quantity, "(split)");
+                }
+
+                try {
+                    $em->flush();
+                    $success = true;
+                }
+                catch (\Exception $e) {
+                    $form->get('quantity')->addError(new FormError($e->getMessage()));
+                    $success = false;
+                }
+            }
+            else
+            {
+                $success = false;
+            }
+        }
+
+        return $this->render('AppBundle:Product:split.ajax.twig', array(
+                'product' => $product,
+                'form' => $form->createView(),
+                'formAction' => $request->getRequestUri(),
+                'success' => $success
+            ));
+    }
+
+    /**
+     * @Route("/checklist/{relationId}", name="product_checklist")
+     */
+    public function checklistAction(Request $request, $relationId)
+    {
+        $success = null;
+
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var ProductOrderRelation */
+        $relation = $em->find(ProductOrderRelation::class, $relationId);
+
+        /** @var \AppBundle\Repository\ProductRepository */
+        $repo = $em->getRepository('AppBundle:Product');
+
+        $repo->generateTaskServices($relation);
+
+        $form = $this->createForm(ChecklistForm::class, $relation);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted())
+        {
+            if ($form->isValid())
+            {
+                $em->persist($relation);
+
+                try {
+                    $em->flush();
+                    $success = true;
+                }
+                catch (\Exception $e) {
+                    $success = false;
+                }
+            }
+            else
+            {
+                $success = false;
+            }
+        }
+
+        return $this->render('AppBundle:Product:checklist.ajax.twig', array(
+                'relation' => $relation,
+                'form' => $form->createView(),
+                'formAction' => $request->getRequestUri(),
+                'success' => $success
+            ));
+    }
+
+    /**
      * @Route("/print/{id}", name="product_print")
      */
     public function printAction($id)
@@ -190,6 +310,24 @@ class ProductController extends APdfController
         $mPdfConfiguration = ['', 'A6' ,'','',0,0,0,0,0,0,'P'];
 
         return $this->getPdfResponse("Nexxus price tag", $html, $mPdfConfiguration);
+    }
+
+    /**
+     * @Route("/checklistprint/{relationId}", name="product_checklist_print")
+     */
+    public function printChecklistAction(Request $request, $relationId)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var ProductOrderRelation */
+        $relation = $em->find(ProductOrderRelation::class, $relationId);
+
+        $em->getRepository('AppBundle:Product')->generateTaskServices($relation);
+
+        $html = $this->render('AppBundle:Product:printchecklist.html.twig', array('relation' => $relation));
+        $mPdfConfiguration = ['', 'A4' ,'','',10,10,10,10,0,0,'P'];
+
+        return $this->getPdfResponse("Checklist", $html, $mPdfConfiguration);
     }
 
     /**
@@ -231,7 +369,7 @@ class ProductController extends APdfController
         $relation->setValue(implode(",", $vals));
 
         $em->persist($relation);
-        $em->remove($file);
+        // $em->remove($file); can be used by other products after split
         $em->flush();
 
         return new Response();

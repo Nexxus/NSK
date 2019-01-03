@@ -23,6 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
@@ -83,6 +84,7 @@ class ProductType
      *
      * @ORM\ManyToMany(targetEntity="Attribute", inversedBy="productTypes")
      * @ORM\JoinTable(name="product_type_attribute")
+     * @JMS\Exclude()
      */
     private $attributes;
 
@@ -91,6 +93,7 @@ class ProductType
      *
      * @ORM\ManyToMany(targetEntity="Task", inversedBy="productTypes")
      * @ORM\JoinTable(name="product_type_task")
+     * @JMS\Exclude()
      */
     private $tasks;
 
@@ -98,6 +101,7 @@ class ProductType
      * @var ArrayCollection|Product[]
      *
      * @ORM\OneToMany(targetEntity="Product", mappedBy="type")
+     * @JMS\Exclude()
      */
     private $products;
 

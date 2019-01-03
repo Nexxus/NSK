@@ -1,44 +1,46 @@
 {% extends 'admin.html.twig' %}
 
 {% block body %}
-    
-    <div class="row" style="margin-bottom: 20px">
-        <div class="col-sm-9">
-            <h1>User list</h1>
-        </div>
-        <div class="col-sm-3" style="padding-top: 15px">
-            <a href="{{ path('admin_user_edit', { 'id': 0 }) }}" class="btn btn-primary pull-right" role="button">Create new user</a>
-        </div>
+
+<div class="row" style="margin-bottom: 20px">
+    <div class="col-sm-9">
+        <h1>User list</h1>
     </div>
-    
-    <table class="table table-striped">
-        <tr>
-            <th>Id</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th width="1%"></th>
-        </tr>
-        {% for u in users %}
-            <tr>
-                <td>{{ u.id }}</td>
-                <td>{{ u.username }}</td>
-                <td>{{ u.email }}</td>
-                <td>
-                    {{ u.roles[0]|slice(5)|capitalize }}
-                </td>
-                <td nowrap>
-                    <a class="btn btn-success" href="{{ path('admin_user_edit', {'id': u.id}) }}">Edit</a>
-                    <a class="btn btn-danger" href="{{ path('admin_user_delete', { 'id': u.id }) }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
-                </td>
-            </tr>
-          {% else %}
-            <tr>
-                <td colspan="99">
-                    <h4>{% trans %}No records found{% endtrans %}</h4>
-                </td>
-            </tr>
-        {% endfor %}
-        
-    </table>
+    <div class="col-sm-3" style="padding-top: 15px">
+        <a href="{{ path('admin_user_edit', { 'id': 0 }) }}" class="btn btn-primary pull-right" role="button">Create new user</a>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <tr>
+        <th>Id</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th width="1%"></th>
+    </tr>
+    {% for u in users %}
+    {% if not u.hasRole("ROLE_SUPER_ADMIN") or is_granted('ROLE_SUPER_ADMIN')  %}
+    <tr>
+        <td>{{ u.id }}</td>
+        <td>{{ u.username }}</td>
+        <td>{{ u.email }}</td>
+        <td>
+            {{ u.roles[0]|slice(5)|capitalize }}
+        </td>
+        <td nowrap>
+            <a class="btn btn-success" href="{{ path('admin_user_edit', {'id': u.id}) }}">Edit</a>
+            <a class="btn btn-danger btn-delete" href="{{ path('admin_user_delete', { 'id': u.id }) }}" data-class="user" data-name="{{ u.username }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
+        </td>
+    </tr>
+    {% endif %}
+    {% else %}
+    <tr>
+        <td colspan="99">
+            <h4>{% trans %}No records found{% endtrans %}</h4>
+        </td>
+    </tr>
+    {% endfor %}
+
+</table>
 {% endblock %}

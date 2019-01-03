@@ -37,7 +37,7 @@
 
                     {{ form_row(form.orderDate) }} 
                     {{ form_row(form.status) }} 
-                    {% if is_granted('ROLE_MANAGER') %}
+                    {% if form.location is defined %}
                     {{ form_row(form.location) }} 
                     {% endif %}
                     {{ form_row(form.remarks) }} 
@@ -152,11 +152,11 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>Id</th>
-                    <th>SKU</th>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Standard sales<br />price p.u.</th>
+                    <th width="5%">Id</th>
+                    <th width="15%">SKU</th>
+                    <th width="30%">Name</th>
+                    <th width="20%">Type</th>
+                    <th width="10%">Standard sales price p.u.</th>
                     <th width="15%">Purchase<br />price p.u.</th>
                     <th width="10%">Purchase<br />quantity</th>
                     <th width="1%"></th>
@@ -171,7 +171,7 @@
                     <td>{{ product.id }}</td>
                     <td>{{ product.sku }}</td>
                     <td>{{ product.name }}</td>
-                    <td>{{ product.type.name }}</td>
+                    <td>{{ product.type.name|default("") }}</td>
                     <td>&euro; {{ product.price|number_format(2, ',', '.') }}</td>
                     <td>{{ form_widget(formRelation.price) }}</td>
                     <td>{{ form_widget(formRelation.quantity) }}</td>
@@ -208,6 +208,9 @@
     <div class="panel panel-default">
         <div class="panel-body text-center">
             {{ form_widget(form.save) }}
+            {% if (order.id > 0) %}
+            <a class="btn btn-default" href="{{ path('purchaseorder_print', { 'id': order.id }) }}" target="_blank">Print</a>
+            {% endif %}
         </div>
     </div>
     

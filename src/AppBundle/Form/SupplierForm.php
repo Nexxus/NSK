@@ -41,7 +41,7 @@ class SupplierForm extends AbstractType
         /** @var \AppBundle\Entity\User */
         $user = $options['user'];
 
-        if ($user && ($user->hasRole("ROLE_MANAGER") || $user->hasRole("ROLE_ADMIN") || $user->hasRole("ROLE_SUPER_ADMIN")))
+        if ($user && !$user->hasRole("ROLE_LOCAL"))
         {
             $builder->add('location',  EntityType::class, [
                     'class' => 'AppBundle:Location',

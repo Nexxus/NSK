@@ -52,14 +52,16 @@ class TaskController extends Controller
 
         $tasks = array();
 
-        $form = $this->createForm(IndexSearchForm::class, array());
+        $container = new \AppBundle\Helper\IndexSearchContainer();
+        $container->className = Task::class;
+
+        $form = $this->createForm(IndexSearchForm::class, $container);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid())
         {
-            $data = $form->getData();
-            $tasks = $repo->findBySearchQuery($data['query']);
+            $tasks = $repo->findBySearchQuery($container->query);
         }
         else
         {
@@ -104,6 +106,7 @@ class TaskController extends Controller
                     'expanded' => false,
                     'class' => ProductType::class,
                     'choice_label' => 'name',
+                    'by_reference' => false,
                     'attr' => ['class' => 'multiselect']))
                 ->add('save', SubmitType::class, array('attr' => ['class' => 'btn-success btn-120']))
             ->getForm();

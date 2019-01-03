@@ -5,14 +5,22 @@
 
     {{ form_start(form) }}
     <div class="row" style="margin-bottom: 20px">
-        <div class="col-sm-7">
+        <div class="col-sm-4">
             {{ form_widget(form.query, {'attr': {'placeholder': 'Zoeken op ordernummer'} }) }}
         </div>
         <div class="col-sm-2">
+            {{ form_widget(form.status) }}
+        </div>
+        <div class="col-sm-2">
+            {% if form.location is defined %}
+            {{ form_widget(form.location) }}
+            {% endif %}
+        </div>
+        <div class="col-sm-1">
             {{ form_widget(form.submit) }}
         </div>
         <div class="col-sm-3">
-            <a href="{{ path('salesorder_edit') }}" class="btn btn-primary pull-right" role="button">Create new sales</a>
+            <a href="{{ path('salesorder_new') }}" class="btn btn-primary pull-right" role="button">Create new sales</a>
         </div>
     </div>
     {{ form_end(form) }}
@@ -23,6 +31,7 @@
                 <th{% if orders.isSorted('orderNr') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Order nr', 'orderNr') }}</th>
                 <th{% if orders.isSorted('orderDate') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Order date', 'orderDate') }}</th>
                 <th{% if orders.isSorted('customer.name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Customer', 'customer.name') }}</th>
+                <th{% if orders.isSorted('status') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Status', 'status') }}</th>
                 <th{% if orders.isSorted('location.name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Location', 'location.name') }}</th>
                 <th width="1%"></th>
             </tr>
@@ -35,10 +44,11 @@
                 <td>{{ order.orderNr }}</td>
                 <td>{{ order.orderDate|date("Y-m-d") }}</td>
                 <td>{{ order.customer.name|default("") }}</td>
+                <td>{{ order.status.name|default("") }}</td>
                 <td>{{ order.location.name|default("") }}</td>
                 <td nowrap>
                     <a class="btn btn-success" href="{{ path('salesorder_edit', { 'id': order.id }) }}"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
-                    <a class="btn btn-danger" href="{{ path('salesorder_delete', { 'id': order.id }) }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
+                    <a class="btn btn-danger btn-delete" href="{{ path('salesorder_delete', { 'id': order.id }) }}" data-class="sales order" data-name="Order {{ order.orderNr }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
                 </td>
             </tr>
         {% else %}

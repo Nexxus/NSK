@@ -24,11 +24,13 @@ namespace AppBundle\Repository;
 
 use AppBundle\Entity\AOrder;
 use AppBundle\Entity\Product;
+use AppBundle\Entity\ProductStatus;
 use AppBundle\Entity\User;
+use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Entity\SalesOrder;
+use AppBundle\Entity\TaskService;
 use AppBundle\Entity\ProductAttributeRelation;
 use AppBundle\Entity\ProductOrderRelation;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * ProductRepository
@@ -54,47 +56,62 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
     /**
      * This function searches in fields: Id, Sku, Name
      */
-    public function findBySearchQuery($query)
+    public function findBySearchQuery(\AppBundle\Helper\IndexSearchContainer $search)
     {
-        if (is_numeric($query))
+        $qb = $this->getEntityManager()->createQueryBuilder()
+            ->from("AppBundle:Product", "o")->select("o")->orderBy("o.id", "DESC");
+
+        if ($search->query)
         {
-            $q = $this->getEntityManager()
-                ->createQuery("SELECT c FROM AppBundle:Product c WHERE c.id = ?1 OR c.sku = ?1 ORDER BY c.id DESC")->setParameter(1, $query);
-        }
-        else
-        {
-            $q = $this->getEntityManager()
-                ->createQuery("SELECT c FROM AppBundle:Product c WHERE c.name LIKE ?2 OR c.sku = ?1 ORDER BY c.id DESC")->setParameter(1, $query)->setParameter(2, '%' . $query . '%');
+            if (is_numeric($search->query))
+            {
+                $qb = $qb->andWhere("o.id = :query OR o.sku = :query");
+            }
+            else
+            {
+                $qb = $qb->andWhere("o.name LIKE :queryLike OR o.sku = :query")->setParameter("queryLike", '%'.$search->query.'%');
+            }
+
+            $qb = $qb->setParameter("query", $search->query);
         }
 
-        return $q->getResult();
+        if ($search->location)
+            $qb = $qb->andWhere("o.location = :location")->setParameter("location", $search->location);
+
+        if ($search->status)
+            $qb = $qb->andWhere("o.status = :status")->setParameter("status", $search->status);
+
+        if ($search->producttype)
+            $qb = $qb->andWhere("o.type = :producttype")->setParameter("producttype", $search->producttype);
+
+        return $qb->getQuery()->getResult();
     }
 
     /**
      * This function searches in fields: Sku (of products) and orderNr (of orders)
      */
-    public function findByBarcodeSearchQuery($query)
+    public function findByBarcodeSearchQuery(\AppBundle\Helper\IndexSearchContainer $search)
     {
         $result = array();
 
-        foreach ($this->findBySearchQuery($query) as $product)
+        foreach ($this->findBySearchQuery($search) as $product)
         {
             /** @var Product $product */
             $result["product-".$product->getId()] = sprintf("Product '%s' with SKU %s, in quantity %s, at location %s",
                 $product->getName(), $product->getSku(), $product->getQuantityInStock(true), $product->getLocation()->getName());
         }
 
-        foreach ($this->_em->getRepository(\AppBundle\Entity\SalesOrder::class)->findBySearchQuery($query) as $salesOrder)
+        foreach ($this->_em->getRepository(\AppBundle\Entity\SalesOrder::class)->findBySearchQuery($search) as $salesOrder)
         {
             /** @var \AppBundle\Entity\SalesOrder $salesOrder */
             $result["salesorder-".$salesOrder->getId()] = sprintf("Sales order with nr %s, dated %s, to customer %s, at location %s",
                 $salesOrder->getOrderNr(), $salesOrder->getOrderDate()->format("M j, Y"), $salesOrder->getCustomer()->getName(), $salesOrder->getLocation()->getName());
         }
 
-        foreach ($this->_em->getRepository(\AppBundle\Entity\PurchaseOrder::class)->findBySearchQuery($query) as $purchaseOrder)
+        foreach ($this->_em->getRepository(\AppBundle\Entity\PurchaseOrder::class)->findBySearchQuery($search) as $purchaseOrder)
         {
             /** @var \AppBundle\Entity\PurchaseOrder $purchaseOrder */
-            $result["salesorder-".$purchaseOrder->getId()] = sprintf("Purchase order with nr %s, dated %s, from supplier %s, at location %s",
+            $result["purchaseorder-".$purchaseOrder->getId()] = sprintf("Purchase order with nr %s, dated %s, from supplier %s, at location %s",
                 $purchaseOrder->getOrderNr(), $purchaseOrder->getOrderDate()->format("M j, Y"), $purchaseOrder->getSupplier()->getName(), $purchaseOrder->getLocation()->getName());
         }
 
@@ -105,7 +122,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
     {
         $products = $this->findMine($user);
 
-        $products = (new ArrayCollection($products))->filter(
+        $products = array_filter($products,
             function(Product $product) {
                 return $product->getQuantityInStock(true) != 0;
             });
@@ -118,7 +135,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         $products = $this->findStock($user);
 
         // cannot add product to sales order twice
-        $products = $products->filter(
+        $products = array_filter($products,
             function (Product $product) use ($order) {
                 /** @var SalesOrder $order */
                 foreach ($order->getProductRelations() as $r)
@@ -134,6 +151,9 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
 
     public function generateProductAttributeRelations(Product $product)
     {
+        if (!$product->getType())
+            return;
+
         // get all possible attributes for this product type
         $allAttributes = $product->getType()->getAttributes();
 
@@ -147,11 +167,8 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
 
             if (!$exists)
             {
-                $r = new ProductAttributeRelation();
-                $r->setAttribute($newAttribute);
-                $r->setProduct($product);
+                $r = new ProductAttributeRelation($product, $newAttribute);
                 $this->_em->persist($r);
-                $product->addAttributeRelation($r);
             }
         }
     }
@@ -165,12 +182,80 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
 
         if (!$exists)
         {
-            $r = new ProductOrderRelation();
-            $r->setOrder($order);
-            $r->setProduct($product);
+            $r = new ProductOrderRelation($product, $order);
             $r->setQuantity($quantity);
             $this->_em->persist($r);
-            $product->addOrderRelation($r);
         }
+    }
+
+    public function generateTaskServices(ProductOrderRelation $productOrderRelation)
+    {
+        if (!$productOrderRelation->getProduct() || !$productOrderRelation->getProduct()->getType())
+            return;
+
+        $order = $productOrderRelation->getOrder();
+        $orderClass = get_class($order);
+
+        if (!$order || $orderClass != PurchaseOrder::class)
+            throw new \Exception("Tasks can only be added to purchase order.");
+
+        // get all possible tasks for this product type
+        $allTasks = $productOrderRelation->getProduct()->getType()->getTasks();
+
+        // add new tasks to this product relation
+        foreach ($allTasks as $newTask)
+        {
+            $exists = $productOrderRelation->getServices()->exists(function($key, TaskService $s) use ($newTask) {
+                return $s->getTask() == $newTask;
+            });
+
+            if (!$exists)
+            {
+                $s = new TaskService($newTask, $productOrderRelation);
+                $this->_em->persist($s);
+            }
+        }
+    }
+
+    /**
+     * Separates a quantity of products from an existing Product object bundle
+     * @param Product $product
+     * @param ProductStatus $status
+     * @param int $quantity
+     * @param bool $individualize
+     * @param string $nameSupplement
+     * @return Product The new product
+     */
+    public function splitProduct(Product $product, ProductStatus $status, $quantity, $nameSupplement)
+    {
+        $newProduct = new Product();
+        if ($product->getDescription()) $newProduct->setDescription($product->getDescription());
+        if ($product->getLocation()) $newProduct->setLocation($product->getLocation());
+        $newProduct->setName($product->getName() . " " . trim($nameSupplement));
+        if ($product->getOwner()) $newProduct->setOwner($product->getOwner());
+        if ($product->getPrice() !== null) $newProduct->setPrice($product->getPrice());
+        if ($product->getSku()) $newProduct->setSku($product->getSku());
+        $newProduct->setStatus($status);
+        if ($product->getType()) $newProduct->setType($product->getType());
+        $this->_em->persist($newProduct);
+
+        $purchaseRelation = $product->getPurchaseOrderRelation();
+        $newPurchaseRelation = new ProductOrderRelation($newProduct, $purchaseRelation->getOrder());
+        $newPurchaseRelation->setQuantity($quantity);
+        if ($purchaseRelation->getPrice()) $newPurchaseRelation->setPrice($purchaseRelation->getPrice());
+        $this->_em->persist($newPurchaseRelation);
+
+        foreach ($product->getAttributeRelations() as $attributeRelation)
+        {
+            $newAttributeRelation = new ProductAttributeRelation($newProduct, $attributeRelation->getAttribute());
+            if ($attributeRelation->getValueProduct()) $newAttributeRelation->setQuantity(0);
+            if ($attributeRelation->getValue()) $newAttributeRelation->setValue($attributeRelation->getValue());
+            if ($attributeRelation->getValueProduct()) $newAttributeRelation->setValueProduct($attributeRelation->getValueProduct());
+            $this->_em->persist($newAttributeRelation);
+        }
+
+        $purchaseRelation->setQuantity($purchaseRelation->getQuantity() - $quantity);
+
+        return $newProduct;
     }
 }

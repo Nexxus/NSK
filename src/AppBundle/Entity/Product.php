@@ -23,7 +23,9 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use AppBundle\Entity\Supplier;
 
 /**
@@ -31,9 +33,6 @@ use AppBundle\Entity\Supplier;
  *
  * @ORM\Table(name="product")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\ProductRepository")
- * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"p" = "Product", "s" = "Service"})
  */
 class Product
 {
@@ -41,7 +40,6 @@ class Product
         $this->attributeRelations = new ArrayCollection();
         $this->attributedRelations = new ArrayCollection();
         $this->orderRelations = new ArrayCollection();
-        $this->services = new ArrayCollection();
         $this->images = new ArrayCollection();
         $this->files = new ArrayCollection();
         $this->createdAt = new \DateTime();
@@ -56,6 +54,8 @@ class Product
         $this->updatedAt= new \DateTime();
     }
 
+    #region Properties
+
     /**
      * @var int
      *
@@ -68,7 +68,7 @@ class Product
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=16, unique=true)
+     * @ORM\Column(type="string", length=16)
      */
     private $sku;
 
@@ -102,13 +102,6 @@ class Product
     private $price;
 
     /**
-     * @var int Written off part of stock
-     *
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $quantityWrittenOff;
-
-    /**
      * @var Location
      *
      * @ORM\ManyToOne(targetEntity="Location", inversedBy="products", fetch="EAGER")
@@ -140,7 +133,6 @@ class Product
 
     /**
      * @var ArrayCollection|ProductAttributeRelation[]
-     *
      * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="product", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
      */
     private $attributeRelations;
@@ -150,24 +142,17 @@ class Product
      * KEEP THIS PROPERTY PRIVATE
      *
      * @var ArrayCollection|ProductAttributeRelation[]
-     *
      * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="valueProduct", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
+     * @JMS\Exclude
      */
     private $attributedRelations;
 
     /**
      * @var ArrayCollection|ProductOrderRelation[]
-     *
-     * @ORM\OneToMany(targetEntity="ProductOrderRelation", mappedBy="product", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="ProductOrderRelation", mappedBy="product", fetch="EAGER", cascade={"all"}, orphanRemoval=true)
+     * @JMS\Exclude
      */
     private $orderRelations;
-
-    /**
-     * @var ArrayCollection|Service[] Services that are applied to this Product
-     *
-     * @ORM\OneToMany(targetEntity="Service", mappedBy="product", fetch="LAZY")
-     */
-    private $services;
 
     /**
      * @var Supplier
@@ -184,7 +169,9 @@ class Product
      */
     private $files;
 
-    #region Db getters and setters
+    #endregion
+
+    #region Getters and setters
 
     /**
      * Returns all files of all attributes. Files can be attached to products thru its attributes.
@@ -423,23 +410,6 @@ class Product
     }
 
     /**
-     * Check if product has attribute as relation on key, returns true if it does
-     */
-    public function containsAttributeRelation($id)
-    {
-        $bool = false;
-
-        foreach($this->getAttributeRelations() as $attr)
-        {
-            if($id === $attr->getAttribute()->getId())
-            {
-                $bool = true;
-            }
-        }
-        return $bool;
-    }
-
-    /**
      * Add orderRelation
      *
      * @param ProductOrderRelation $orderRelation
@@ -473,40 +443,6 @@ class Product
         return $this->orderRelations;
     }
 
-    /**
-     * Add service
-     *
-     * @param Service $service
-     *
-     * @return Product
-     */
-    public function addService(Service $service)
-    {
-        $this->services[] = $service;
-
-        return $this;
-    }
-
-    /**
-     * Remove service
-     *
-     * @param Service $service
-     */
-    public function removeService(Service $service)
-    {
-        $this->services->removeElement($service);
-    }
-
-    /**
-     * Get services
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getServices()
-    {
-        return $this->services;
-    }
-
     public function getCreatedAt()
     {
         return $this->updatedAt->format('d-m-Y H:i');
@@ -521,109 +457,102 @@ class Product
 
     #region Quantity calculators
 
-    /**
-     * @param bool $withRepairs
-     * @return integer
-     */
-    public function getQuantityInStock($withRepairs)
-    {
-        $in = $this->getQuantityPurchased();
-
-        if ($withRepairs)
-            $in += $this->getQuantityRepairing();
-
-        $out = $this->getQuantitySold();
-
-        $out += $this->getQuantityWrittenOff();
-
-        $out += $this->getQuantityAttributed();
-
-        return $in - $out;
-    }
-
     public function getQuantityPurchased()
     {
-        $purchase = $this->getOrderRelations()->filter(
-            function(ProductOrderRelation $r) {
-                return is_a($r->getOrder(), PurchaseOrder::class);
-            })->first();
-
-        return $purchase ? $purchase->getQuantity() : 0;
+        $r = $this->getPurchaseOrderRelation();
+        return $r ? $r->getQuantity() : 0;
     }
 
-    public function getQuantityRepairing()
+    public function getQuantityInStock()
     {
-        $repairing = 0;
-
-        foreach ($this->getOrderRelations() as $r)
+        $isStock = $this->getStatus() ? $this->getStatus()->getIsStock() : true;
+        if (!$isStock)
         {
-            if (is_a($r->getOrder(), SalesOrder::class) && $r->getOrder()->getRepair()) // to do: and is not done
-            {
-                $repairing += $r->getQuantity();
-            }
+            $q = 0;
+        }
+        elseif ($r = $this->getPurchaseOrderRelation())
+        {
+            $q = $r->getQuantity();
+        }
+        elseif ($this->getSalesOrderRelations()->count() == 1 && $this->getSalesOrderRelations()->first()->getOrder()->getRepair())
+        {
+            // Repair
+            $r = $this->getSalesOrderRelations()->first();
+            $q = $r->getQuantity();
+        }
+        else
+        {
+            //throw new \Exception("Product has no purchase order and is not a repair, which should be impossible.");
+            $q = 0;
         }
 
-        return $repairing;
+        return $q - $this->getQuantitySold();
+    }
+
+    public function getQuantityOnHold()
+    {
+        $q = $this->getQuantityInStock() - $this->getQuantitySaleable();
+        return $q > 0 ? $q : 0;
+    }
+
+    public function getQuantitySaleable()
+    {
+        $isSaleable = $this->getStatus() ? $this->getStatus()->getIsSaleable() : false;
+        if (!$isSaleable)
+        {
+            $q = 0;
+        }
+        else
+        {
+            $r = $this->getPurchaseOrderRelation();
+            $q = $r ? $r->getQuantity() : 0;
+        }
+
+        return $q - $this->getQuantitySold();
     }
 
     public function getQuantitySold()
     {
-        $sold = 0;
+        $isSaleable = $this->getStatus() ? $this->getStatus()->getIsSaleable() : false;
 
-        foreach ($this->getOrderRelations() as $r)
+        if (!$isSaleable)
+            return 0;
+
+        $q = 0;
+
+        foreach ($this->getSalesOrderRelations() as $r)
         {
-            if (is_a($r->getOrder(), SalesOrder::class) && $r->getOrder()->getRepair() == null)
-            {
-                $sold += $r->getQuantity();
-            }
+            $q += $r->getQuantity();
         }
 
-        return $sold;
+        return $q;
     }
 
-    public function getQuantityAttributed()
-    {
-        $attributed = 0;
-
-        foreach ($this->attributedRelations as $r)
-        {
-            $attributed += $r->getQuantity();
-        }
-
-        return $attributed;
-    }
+    #endregion
 
     /**
-     * @return PurchaseOrder
+     * @return ProductOrderRelation Relation to purchase order
      */
-    public function getPurchaseOrder()
+    public function getPurchaseOrderRelation()
     {
         return $this->getOrderRelations()->filter(
             function($r) {
                 /** @var $r ProductOrderRelation */
                 return is_a($r->getOrder(), PurchaseOrder::class);
-            })->first()->getOrder();
+            })->first();
     }
 
     /**
-     * @param integer $quantity
+     * @return Collection|ProductOrderRelation[] Relations to sales orders
      */
-    public function setQuantityWrittenOff($quantityWrittenOff)
+    public function getSalesOrderRelations()
     {
-        $this->quantityWrittenOff = $quantityWrittenOff;
-
-        return $this;
+        return $this->getOrderRelations()->filter(
+            function($r) {
+                /** @var $r ProductOrderRelation */
+                return is_a($r->getOrder(), SalesOrder::class);
+            });
     }
-
-    /**
-     * @return integer
-     */
-    public function getQuantityWrittenOff()
-    {
-        return $this->quantityWrittenOff !== null ? $this->quantityWrittenOff : 0;
-    }
-
-    #endregion
 
     /**
      * Standard prices multiplied by Quantities of (selected) attributes and/or attributed products

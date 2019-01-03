@@ -47,7 +47,7 @@
                 <td nowrap>
                     <a class="btn btn-success" href="{{ path('admin_attribute_edit', { 'id': attribute.id }) }}">Edit</a>
                     {% if attribute.productRelations|length == 0 %}
-                    <a class="btn btn-danger" href="{{ path('admin_attribute_delete', { 'id': attribute.id }) }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
+                    <a class="btn btn-danger btn-delete" href="{{ path('admin_attribute_delete', { 'id': attribute.id }) }}" data-class="attribute" data-name="{{ attribute.name }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
                     {% endif %}
                 </td>
             </tr>

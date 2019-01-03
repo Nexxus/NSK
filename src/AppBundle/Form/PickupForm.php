@@ -38,57 +38,52 @@ class PickupForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
+
 
             // First the mapped fields
-            ->add('supplier', SupplierForm::class, [
-                'property_path' => 'order.supplier'
-            ])
-            ->add('pickupDate', DateType::class, ['required' => false])
-            ->add('dataDestruction', ChoiceType::class, [
-                'expanded' => false,
-                'multiple' => false,
-                'choices' => [
-                    'Format is voldoende (gratis)' => Pickup::DATADESTRUCTION_FORMAT,
-                    'Geen HDD aangeleverd' =>  Pickup::DATADESTRUCTION_NONE,
-                    'Vernietigingsverklaring (gratis)' => Pickup::DATADESTRUCTION_STATEMENT,
-                    'HDD op locatie shredden a €12,50 (extra 0.89ct per KM)' => Pickup::DATADESTRUCTION_SHRED,
-                    'HDD wipe report KillDisk a €3,50' => Pickup::DATADESTRUCTION_KILLDISK
-                ]
-            ])
-            ->add('description', TextareaType::class, ['required' => false])
+           $builder
+                ->add('supplier', SupplierForm::class, ['property_path' => 'order.supplier'])
+                ->add('pickupDate', DateType::class, ['required' => false])
+                ->add('dataDestruction', ChoiceType::class, [
+                    'expanded' => false,
+                    'multiple' => false,
+                    'choices' => [
+                        'Format is voldoende (gratis)' => Pickup::DATADESTRUCTION_FORMAT,
+                        'Geen HDD aangeleverd' =>  Pickup::DATADESTRUCTION_NONE,
+                        'Vernietigingsverklaring (gratis)' => Pickup::DATADESTRUCTION_STATEMENT,
+                        'HDD op locatie shredden a €12,50 (extra 0.89ct per KM)' => Pickup::DATADESTRUCTION_SHRED,
+                        'HDD wipe report KillDisk a €3,50' => Pickup::DATADESTRUCTION_KILLDISK
+                    ]
+                ])
+                ->add('description', TextareaType::class, ['required' => false]);
 
-            // Then the unmapped fields: quantities and files
-            ->add('qComputer', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Computers', 'attr' => ['placeholder' => '0']])
-            ->add('qServer', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Servers', 'attr' => ['placeholder' => '0']])
-            ->add('qPhone', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Phones', 'attr' => ['placeholder' => '0']])
-            ->add('qPrinter', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Printers', 'attr' => ['placeholder' => '0']])
-            ->add('qMonitor', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Monitors', 'attr' => ['placeholder' => '0']])
-            ->add('qLaptop', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Laptop', 'attr' => ['placeholder' => '0']])
-            ->add('qToetsenbord', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Toetsenborden', 'attr' => ['placeholder' => '0']])
-            ->add('qMuis', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Muizen', 'attr' => ['placeholder' => '0']])
-            ->add('qOplader', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Opladers', 'attr' => ['placeholder' => '0']])
-            ->add('qKabel', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Kabels', 'attr' => ['placeholder' => '0']])
-            ->add('qCamera', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Camera\'s', 'attr' => ['placeholder' => '0']])
-            ->add('qRouter', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Routers', 'attr' => ['placeholder' => '0']])
-            ->add('qSwitches', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Switches', 'attr' => ['placeholder' => '0']])
-            ->add('qAPC', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'APC\'s', 'attr' => ['placeholder' => '0']])
-            ->add('qPSU', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'PSU\'s', 'attr' => ['placeholder' => '0']])
+            // Then the unmapped fields for quantities
+            foreach ($options['productTypes'] as $productType)
+            {
+                $builder->add('q' . $productType->getName(), IntegerType::class, [
+                    'mapped' => false,
+                    'required' => false,
+                    'label' => $productType->getName() . " aantal",
+                    'attr' => ['placeholder' => '0']]);
+            }
 
-            ->add('imagesInput', FileType::class, ['mapped' => false, 'required' => false, 'label' => 'Images'])
-            ->add('agreementInput', FileType::class, ['mapped' => false, 'required' => false, 'label' => 'Processing Agreement'])
+            // Then the unmapped fields for files
+            $builder
+                ->add('imagesInput', FileType::class, ['mapped' => false, 'required' => false, 'label' => 'Images'])
+                ->add('agreementInput', FileType::class, ['mapped' => false, 'required' => false, 'label' => 'Processing Agreement']);
 
             // Finally the hidden fields
-            ->add('imagesNames', HiddenType::class, ['mapped' => false, 'required' => false])
-            ->add('agreementName', HiddenType::class, ['mapped' => false, 'required' => false])
-            ->add('orderStatusName', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => "To plan and pickup"])
-            ->add('locationId', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => 1])
-            ->add('save', SubmitType::class, [
-                'label' => 'Send',
-                'attr' => [
-                    'class' => 'btn-success',
-                ]
-            ]);
+            $builder
+                ->add('imagesNames', HiddenType::class, ['mapped' => false, 'required' => false])
+                ->add('agreementName', HiddenType::class, ['mapped' => false, 'required' => false])
+                ->add('orderStatusName', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => "To plan and pickup"])
+                ->add('locationId', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => 1])
+                ->add('save', SubmitType::class, [
+                    'label' => 'Send',
+                    'attr' => [
+                        'class' => 'btn-success',
+                    ]
+                ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -97,5 +92,7 @@ class PickupForm extends AbstractType
             'data_class' => Pickup::class,
             'csrf_protection' => false
         ));
+
+        $resolver->setRequired(array('productTypes'));
     }
 }

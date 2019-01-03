@@ -35,7 +35,6 @@ class Customer extends ACompany
 {
     public function __construct() {
         $this->orders = new ArrayCollection();
-        parent::__construct();
     }
 
     /**
