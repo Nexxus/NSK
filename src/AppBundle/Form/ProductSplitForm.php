@@ -29,6 +29,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Doctrine\ORM\EntityRepository;
 
 class ProductSplitForm extends AbstractType
 {
@@ -44,7 +45,8 @@ class ProductSplitForm extends AbstractType
             ->add('status',  EntityType::class, [
                 'class' => 'AppBundle:ProductStatus',
                 'choice_label' => 'name',
-                'required' => false
+                'required' => false,
+                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
             ])
             ->add('individualize', CheckboxType::class, [
                 'required' => false

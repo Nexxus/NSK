@@ -14,6 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Doctrine\ORM\EntityRepository;
 
 class ProductTypeForm extends AbstractType
 {
@@ -36,14 +37,18 @@ class ProductTypeForm extends AbstractType
                     'expanded' => false,
                     'class' => Task::class,
                     'choice_label' => 'name',
-                    'attr' => ['class' => 'multiselect']))
+                    'attr' => ['class' => 'multiselect'],
+                    'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
+                    ))
             ->add('attributes', EntityType::class, array(
                     'required' => false,
                     'multiple' => true,
                     'expanded' => false,
                     'class' => Attribute::class,
                     'choice_label' => 'name',
-                    'attr' => ['class' => 'multiselect']))
+                    'attr' => ['class' => 'multiselect'],
+                    'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
+                    ))
             ->add('newTask', TextType::class, array('required' => false, 'mapped' => false, 'attr' => ['placeholder' => 'Add new task']))
             ->add('newAttribute', TextType::class, array('required' => false, 'mapped' => false, 'attr' => ['placeholder' => 'Add new attribute']))
             ->add('newAttributeType', ChoiceType::class, array('required' => false, 'mapped' => false,

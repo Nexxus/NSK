@@ -34,7 +34,6 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
 use AppBundle\Entity\PurchaseOrder;
 
 class PurchaseOrderForm extends AbstractType
@@ -61,7 +60,7 @@ class PurchaseOrderForm extends AbstractType
                 'class' => 'AppBundle:OrderStatus',
                 'choice_label' => 'name',
                 'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('os')->where('os.isPurchase = true');
+                    return $er->createQueryBuilder('os')->where('os.isPurchase = true')->orderBy("os.name", "ASC");
                 }
             ])
             ->add('supplier', EntityType::class, [
@@ -69,6 +68,8 @@ class PurchaseOrderForm extends AbstractType
                 'choice_label' => 'name',
                 'label' => 'Select',
                 'required' => false,
+                'attr' => ['class' => 'combobox'],
+                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
             ])
             ->add('newSupplier', SupplierForm::class, [
                 'mapped' => false,
@@ -90,6 +91,8 @@ class PurchaseOrderForm extends AbstractType
                 'mapped' => false,
                 'class' => 'AppBundle:ProductType',
                 'choice_label' => 'name',
+                'attr' => ['class' => 'combobox'],
+                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
             ])
             ->add('productRelations', CollectionType::class, [
                 'entry_type' => ProductOrderRelationForm::class
@@ -103,7 +106,8 @@ class PurchaseOrderForm extends AbstractType
             $builder->add('location',  EntityType::class, [
                     'class' => 'AppBundle:Location',
                     'choice_label' => 'name',
-                    'required' => false
+                    'required' => false,
+                    'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
                 ]);
         }
 

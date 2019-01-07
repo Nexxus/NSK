@@ -39,15 +39,19 @@ class Builder implements ContainerAwareInterface
 
         $menu->setChildrenAttribute('class', 'nav navbar-nav');
 
-        $menu->addChild('Home', array('route' => 'home'));
+       
 
         // add user menu items
         if($role->isGranted('ROLE_LOCAL')) {
+            $menu->addChild('Dashboard', array('route' => 'home'));
             $menu->addChild('Voorraad', array('route' => 'product_index'));
             $menu->addChild('Inkoop', array('route' => 'purchaseorder_index'));
             $menu->addChild('Verkoop', array('route' => 'salesorder_index'));
             $menu->addChild('Klanten', array('route' => 'customer_index'));
             $menu->addChild('Leveranciers', array('route' => 'supplier_index'));
+        }
+        else {
+            $menu->addChild('Portal', array('route' => 'home'));
         }
 
         return $menu;

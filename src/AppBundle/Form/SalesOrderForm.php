@@ -76,15 +76,15 @@ class SalesOrderForm extends AbstractType
             ->add('status', EntityType::class, [
                 'class' => 'AppBundle:OrderStatus',
                 'choice_label' => 'name',
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('os')->where('os.isSale = true');
-                }
+                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('os')->where('os.isSale = true')->orderBy("os.name", "ASC"); }
             ])
             ->add('customer', EntityType::class, [
                 'class' => 'AppBundle:Customer',
                 'choice_label' => 'name',
                 'label' => 'Select',
                 'required' => false,
+                'attr' => ['class' => 'combobox'],
+                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
             ])
             ->add('newCustomer', CustomerForm::class, [
                 'mapped' => false,
@@ -110,6 +110,7 @@ class SalesOrderForm extends AbstractType
                     'data' => null,
                     'class' => 'AppBundle:ProductOrderRelation',
                     'choices' => $order->getProductRelations(),
+                    'attr' => ['class' => 'combobox'],
                     'choice_label' => function (ProductOrderRelation $r) {
                         return $r->getProduct()->getSku();
                     },
@@ -138,6 +139,8 @@ class SalesOrderForm extends AbstractType
                 'mapped' => false,
                 'class' => 'AppBundle:ProductType',
                 'choice_label' => 'name',
+                'attr' => ['class' => 'combobox'],
+                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
             ]);
         }
         else
@@ -150,7 +153,8 @@ class SalesOrderForm extends AbstractType
                     return $p->getSku() . ' - ' . $p->getName();
                 },
                 'choices' => $options['stock'],
-                'attr' => ['class' => 'combobox focus']
+                'attr' => ['class' => 'combobox focus'],
+                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.sku", "ASC"); }
             ]);
         }
 
@@ -160,7 +164,8 @@ class SalesOrderForm extends AbstractType
             $builder->add('location',  EntityType::class, [
                     'class' => 'AppBundle:Location',
                     'choice_label' => 'name',
-                    'required' => false
+                    'required' => false,
+                    'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
                 ]);
         }
     }

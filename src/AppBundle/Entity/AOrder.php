@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek ï¿½ info@copiatek.nl ï¿½ Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Entity;
@@ -338,7 +338,7 @@ abstract class AOrder
 
             foreach ($r->getServices() as $s)
             {
-                if (is_a($s, SalesService::class))
+                if (is_a($s, SalesService::class) && $s->getStatus() != SalesService::STATUS_CANCEL)
                 {
                     /** @var $s SalesService */
                     $price += $s->getPrice();
