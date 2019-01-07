@@ -569,4 +569,35 @@ class Product
 
         return $price;
     }
+
+    /**
+     * @return string for use in views tooltips
+     */
+    public function getAttributesList() {
+
+        $list = array();
+
+        foreach ($this->attributeRelations as $r) {
+
+            if ($r->getAttribute()->getType() == Attribute::TYPE_FILE && $r->getFiles()->count()) {
+
+                $filesList = array();
+                foreach ($r->getFiles() as $f) {
+
+                    $filesList[] = $f->getOriginalClientFilename();
+                }
+
+                $list[] = $r->getAttribute()->getName() . ": " . implode(", ", $filesList);
+            }
+            elseif ($r->getAttribute()->getType() == Attribute::TYPE_PRODUCT && $r->getValueProduct()) {
+                
+                $list[] = $r->getAttribute()->getName() . ": " . $r->getValueProduct()->getName();
+            }
+            elseif ($r->getValue()) {
+                $list[] = $r->getAttribute()->getName() . ": " . $r->getValue();
+            }
+        }
+
+        return implode("<br />", $list);
+    }
 }

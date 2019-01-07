@@ -41,9 +41,9 @@
         <tbody>
         {% for order in orders %}
             <tr>
-                <td>{{ order.orderNr }}</td>
+                <td><a href="{{ path('salesorder_edit', { 'id': order.id }) }}" data-toggle="tooltip" title="{{ order.getAttributesList() }}">{{ order.orderNr }}</a></td>
                 <td>{{ order.orderDate|date("Y-m-d") }}</td>
-                <td>{{ order.customer.name|default("") }}</td>
+                <td><a class="inlist" href="{{ path('customer_edit', { 'id': order.customer.id|default(0) }) }}">{{ order.customer.name|default("") }}</a></td>
                 <td>{{ order.status.name|default("") }}</td>
                 <td>{{ order.location.name|default("") }}</td>
                 <td nowrap>

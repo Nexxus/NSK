@@ -2,6 +2,11 @@
 
 $(document).ready(function () {
 
+    $('[data-toggle="tooltip"]').tooltip({
+        placement: 'auto right',
+        html: true
+    });
+
     $('.combobox').combobox();
 
     $('.multiselect').multiselect({
@@ -30,7 +35,7 @@ $(document).ready(function () {
 });
 
 function focusBarcodeInput() {
-    if (!$('input.focus:first').val()) {
+    //if (!$('input.focus:first').val()) {
         $('input.focus:first').focus();
-    }
+    //}
 }

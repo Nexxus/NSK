@@ -39,8 +39,6 @@ class Builder implements ContainerAwareInterface
 
         $menu->setChildrenAttribute('class', 'nav navbar-nav');
 
-       
-
         // add user menu items
         if($role->isGranted('ROLE_LOCAL')) {
             $menu->addChild('Dashboard', array('route' => 'home'));
@@ -60,6 +58,7 @@ class Builder implements ContainerAwareInterface
     public function createUserMenu(FactoryInterface $factory, array $options)
     {
         $role = $this->container->get('security.authorization_checker');
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
 
         $menu = $factory->createItem('root');
 
@@ -72,7 +71,7 @@ class Builder implements ContainerAwareInterface
         if($role->isGranted('ROLE_LOCAL'))
         {
             $menu->addChild('Help', array('route' => 'underconstruction'));
-            $menu->addChild('Logout', array('route' => 'fos_user_security_logout'));
+            $menu->addChild(strtoupper($user->getUsername()) . ': Logout', array('route' => 'fos_user_security_logout'));
         }
         else
         {

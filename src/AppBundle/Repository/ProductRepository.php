@@ -222,7 +222,6 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
      * @param Product $product
      * @param ProductStatus $status
      * @param int $quantity
-     * @param bool $individualize
      * @param string $nameSupplement
      * @return Product The new product
      */
@@ -234,7 +233,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         $newProduct->setName($product->getName() . " " . trim($nameSupplement));
         if ($product->getOwner()) $newProduct->setOwner($product->getOwner());
         if ($product->getPrice() !== null) $newProduct->setPrice($product->getPrice());
-        if ($product->getSku()) $newProduct->setSku($product->getSku());
+        $newProduct->setSku(time());
         $newProduct->setStatus($status);
         if ($product->getType()) $newProduct->setType($product->getType());
         $this->_em->persist($newProduct);

@@ -354,4 +354,26 @@ abstract class AOrder
 
         return $price;
     }
+
+    /**
+     * @return string for use in views tooltips
+     */
+    public function getAttributesList() {
+
+        $list = array();
+
+        foreach ($this->productRelations as $r) {
+
+            $list[] = $r->getQuantity() . "x " . $r->getProduct()->getName();
+        }
+
+        $listStr = implode("<br/>", $list);
+
+        if ($this->remarks)
+        {
+            $listStr = $this->remarks . "<br/><br/>" . $listStr;
+        }
+
+        return $listStr;
+    }
 }
