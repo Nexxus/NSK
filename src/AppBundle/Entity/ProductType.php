@@ -295,7 +295,7 @@ class ProductType
      *
      * @param bool $isAttribute
      *
-     * @return Product
+     * @return ProductType
      */
     public function setIsAttribute($isAttribute)
     {

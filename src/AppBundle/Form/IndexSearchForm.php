@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek ï¿½ info@copiatek.nl ï¿½ Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Form;
@@ -49,7 +49,8 @@ class IndexSearchForm extends AbstractType
                     'class' => 'AppBundle:Location',
                     'choice_label' => 'name',
                     'placeholder' => 'All locations',
-                    'required' => false
+                    'required' => false,
+                    'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
                 ]);
         }
 
@@ -75,14 +76,16 @@ class IndexSearchForm extends AbstractType
                 'class' => 'AppBundle:ProductStatus',
                 'choice_label' => 'name',
                 'placeholder' => 'All statuses',
-                'required' => false
+                'required' => false,
+                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
             ]);
 
             $builder->add('producttype',  EntityType::class, [
                 'class' => 'AppBundle:ProductType',
                 'choice_label' => 'name',
                 'placeholder' => 'All types',
-                'required' => false
+                'required' => false,
+                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
             ]);
         }
         elseif ($container->className == \AppBundle\Entity\SalesOrder::class)
@@ -93,7 +96,7 @@ class IndexSearchForm extends AbstractType
                 'placeholder' => 'All statuses',
                 'required' => false,
                 'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('os')->where('os.isSale = true');
+                    return $er->createQueryBuilder('os')->where('os.isSale = true')->orderBy("os.name", "ASC");
                 }
             ]);
         }
@@ -105,7 +108,7 @@ class IndexSearchForm extends AbstractType
                 'placeholder' => 'All statuses',
                 'required' => false,
                 'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('os')->where('os.isPurchase = true');
+                    return $er->createQueryBuilder('os')->where('os.isPurchase = true')->orderBy("os.name", "ASC");
                 }
             ]);
         }

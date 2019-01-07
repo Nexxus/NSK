@@ -36,7 +36,9 @@ class AttributeForm extends AbstractType
                     'class' => ProductType::class,
                     'choice_label' => 'name',
                     'by_reference' => false,
-                    'attr' => ['class' => 'multiselect']));
+                    'attr' => ['class' => 'multiselect'],
+                    'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.pindex", "ASC")->addOrderBy("x.name", "ASC"); }
+                ));
 
         if (!$attribute->getId())
         {
@@ -67,7 +69,7 @@ class AttributeForm extends AbstractType
                     'class' => ProductType::class,
                     'choice_label' => 'name',
                     'query_builder' => function (EntityRepository $er) {
-                        return $er->createQueryBuilder('pt')->where("pt.isAttribute = true");
+                        return $er->createQueryBuilder('pt')->where("pt.isAttribute = true")->orderBy("pt.pindex", "ASC")->addOrderBy("pt.name", "ASC");
                     }));
         }
         else

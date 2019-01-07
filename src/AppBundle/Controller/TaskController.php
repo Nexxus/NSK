@@ -32,6 +32,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use AppBundle\Form\IndexSearchForm;
+use Doctrine\ORM\EntityRepository;
 
 /**
  * Task controller.
@@ -107,7 +108,9 @@ class TaskController extends Controller
                     'class' => ProductType::class,
                     'choice_label' => 'name',
                     'by_reference' => false,
-                    'attr' => ['class' => 'multiselect']))
+                    'attr' => ['class' => 'multiselect'],
+                    'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.pindex", "ASC")->addOrderBy("x.name", "ASC"); }
+                    ))
                 ->add('save', SubmitType::class, array('attr' => ['class' => 'btn-success btn-120']))
             ->getForm();
 

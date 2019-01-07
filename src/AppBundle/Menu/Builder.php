@@ -39,15 +39,17 @@ class Builder implements ContainerAwareInterface
 
         $menu->setChildrenAttribute('class', 'nav navbar-nav');
 
-        $menu->addChild('Home', array('route' => 'home'));
-
         // add user menu items
         if($role->isGranted('ROLE_LOCAL')) {
+            $menu->addChild('Dashboard', array('route' => 'home'));
             $menu->addChild('Voorraad', array('route' => 'product_index'));
             $menu->addChild('Inkoop', array('route' => 'purchaseorder_index'));
             $menu->addChild('Verkoop', array('route' => 'salesorder_index'));
             $menu->addChild('Klanten', array('route' => 'customer_index'));
             $menu->addChild('Leveranciers', array('route' => 'supplier_index'));
+        }
+        else {
+            $menu->addChild('Portal', array('route' => 'home'));
         }
 
         return $menu;
@@ -56,6 +58,7 @@ class Builder implements ContainerAwareInterface
     public function createUserMenu(FactoryInterface $factory, array $options)
     {
         $role = $this->container->get('security.authorization_checker');
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
 
         $menu = $factory->createItem('root');
 
@@ -68,7 +71,7 @@ class Builder implements ContainerAwareInterface
         if($role->isGranted('ROLE_LOCAL'))
         {
             $menu->addChild('Help', array('route' => 'underconstruction'));
-            $menu->addChild('Logout', array('route' => 'fos_user_security_logout'));
+            $menu->addChild(strtoupper($user->getUsername()) . ': Logout', array('route' => 'fos_user_security_logout'));
         }
         else
         {
