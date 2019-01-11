@@ -24,13 +24,7 @@
             Webmaster, please note the hidden form fields.<br /><br />
             #}
 
-            {% if success %}
-            <div class="alert alert-success" role="alert">The pickup order is registered successfully.</div>
-            {% elseif success is same as(false) %}
-            <div class="alert alert-danger" role="alert">The pickup order is not registered. Please contact us!</div>
-            {% endif %}
-
-            {{form_start(form)}}
+            {{form_start(form, {'multipart': false})}}
 
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -131,7 +125,7 @@
                     
                     <div class="row">
                         <div class="col-md-4">
-                            <div class="g-recaptcha" data-sitekey="6LdyzXMUAAAAAD_c780y1hElRPgST2XMzAfCJefH"></div>
+                            <div class="g-recaptcha" data-sitekey="6LdzW4QUAAAAANRAfkgl8Cz4-QNUcNEJomOj5wgX"></div>
                         </div>
                         <div class="col-md-4">
                             {{ form_widget(form.save) }}
@@ -145,12 +139,36 @@
             {{ form_widget(form.locationId) }}
             {{ form_widget(form.orderStatusName) }}
             {{ form_end(form, {'render_rest': false}) }}
+
+            <div id="errorContainer" style="color: red"></div>
         </div>
 
         <script src="{{ asset('bootstrap/js/jquery.min.js') }}"></script>
         <script src="{{ asset('bootstrap/js/bootstrap.min.js') }}"></script>
         <script src="{{ asset('js/jquery.uploadifive.min.js') }}"></script>
 	    <script type="text/javascript">
+
+            $("form").submit(function (e) {
+
+                var form = $('form')
+
+                $.ajax({
+                    type: "POST",
+                    url: '{{ app.request.uri|replace({"/public/pickup": "/public/pickup/post"}) }}',
+                    data: form.serialize()
+                })
+                .done(function (response) {
+                    alert(response);
+                })
+                .fail(function (xhr, err) {
+                    $("#errorContainer").text(xhr.responseText);   
+                });
+
+                e.preventDefault(); 
+                e.stopPropagation();
+
+                return false;
+            });
 
             $('#pickup_form_imagesInput').uploadifive({
 				'checkScript': '{{ path('uploadifive_checkexists') }}',

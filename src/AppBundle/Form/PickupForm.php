@@ -90,6 +90,7 @@ class PickupForm extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => Pickup::class,
+            'allow_extra_fields' => true,
             'csrf_protection' => false
         ));
 
