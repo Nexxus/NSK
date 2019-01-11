@@ -31,7 +31,7 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
+use Doctrine\ORM\EntityRepository;
 use AppBundle\Entity\Product;
 use AppBundle\Entity\ProductAttributeRelation;
 
@@ -50,7 +50,7 @@ class ProductForm extends AbstractType
             ->add('name', TextType::class)
             ->add('price', MoneyType::class, [
                 'required' => false,
-                'label' => 'Standard'
+                'label' => 'Retail price'
             ])
             ->add('description', TextType::class, [
                 'required' => false
@@ -58,11 +58,13 @@ class ProductForm extends AbstractType
             ->add('type',  EntityType::class, [
                 'class' => 'AppBundle:ProductType',
                 'choice_label' => 'name',
+                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
             ])
             ->add('status',  EntityType::class, [
                 'class' => 'AppBundle:ProductStatus',
                 'choice_label' => 'name',
-                'required' => false
+                'required' => false,
+                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
             ])
             ->add('attributeRelations', CollectionType::class, [
                 'entry_type' => ProductAttributeRelationForm::class,
@@ -81,7 +83,8 @@ class ProductForm extends AbstractType
             $builder->add('location',  EntityType::class, [
                     'class' => 'AppBundle:Location',
                     'choice_label' => 'name',
-                    'required' => true
+                    'required' => true,
+                    'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
                 ]);
         }
     }

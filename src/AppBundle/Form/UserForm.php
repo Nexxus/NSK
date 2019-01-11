@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek ï¿½ info@copiatek.nl ï¿½ Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Form;
@@ -34,6 +34,7 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Doctrine\ORM\EntityRepository;
 
 class UserForm extends AbstractType
 {
@@ -73,7 +74,8 @@ class UserForm extends AbstractType
         $builder
             ->add('location',  EntityType::class, array(
                 'class' => 'AppBundle:Location',
-                'choice_label' => 'name'
+                'choice_label' => 'name',
+                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
             ))
             ->add('role', ChoiceType::class, ['mapped' => false,
                 'choices' => [

@@ -47,8 +47,8 @@
         <tbody>
         {% for product in products %}
             <tr>
-                <td>{{ product.sku }}</td>
-                <td>{{ product.name }}</td>
+                <td><a href="{{ path('product_edit', { 'id': product.id }) }}" data-target="#modalEditor" class="btn-modal" data-toggle="tooltip" title="{{ product.getAttributesList() }}">{{ product.sku }}</a></td>
+                <td><a href="{{ path('product_edit', { 'id': product.id }) }}" data-target="#modalEditor" class="btn-modal" data-toggle="tooltip" title="{{ product.getAttributesList() }}">{{ product.name }}</a></td>
                 <td>{{ product.type.name|default("") }}</td>
                 <td>{{ product.location.name|default("") }}</td>
                 <td>&euro; {{ product.price|number_format(2, ',', '.') }}</td>

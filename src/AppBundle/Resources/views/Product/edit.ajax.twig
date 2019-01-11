@@ -37,7 +37,7 @@
             {{ form_row(form.description) }} 
             {{ form_row(form.price) }}
             <div class="row form-display">
-                <div class="col-sm-9 col-md-offset-3"><b>Total price of attributes: </b>&euro; {{ product.totalStandardPriceOfAttributes|number_format(2, ',', '.') }}</div>
+                <div class="col-sm-9 col-md-offset-3"><b>List price: </b>&euro; {{ product.totalStandardPriceOfAttributes|number_format(2, ',', '.') }}</div>
             </div>
         </div>
         <div class="col-md-6">

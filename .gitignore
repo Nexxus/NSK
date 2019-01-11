@@ -42,5 +42,6 @@ logs/
 *.phpproj
 *.phpproj.user
 /.vs/
+/.vscode/
 /Properties/
 web.config

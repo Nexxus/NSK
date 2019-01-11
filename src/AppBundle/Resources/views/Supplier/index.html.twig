@@ -38,8 +38,8 @@
         <tbody>
         {% for supplier in suppliers %}
             <tr>
-                <td>{{ supplier.id }}</td>
-                <td>{{ supplier.name }}</td>
+                <td><a class="inlist" href="{{ path('supplier_edit', { 'id': supplier.id }) }}">{{ supplier.id }}</a></td>
+                <td><a class="inlist" href="{{ path('supplier_edit', { 'id': supplier.id }) }}">{{ supplier.name }}</a></td>
                 <td>{{ supplier.representative }}</td>
                 <td>{{ supplier.email }}</td>
                 <td>{{ supplier.location.name|default("") }}</td>

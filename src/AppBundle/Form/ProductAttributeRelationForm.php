@@ -84,7 +84,7 @@ class ProductAttributeRelationForm extends AbstractType
                                     ->setParameter("pt", $relation->getProduct()->getType())
                                     ->orderBy('p.sku', 'ASC');
 
-                                return $qb;
+                                return $qb->orderBy("p.name", "ASC");
                             },
                            'class' => 'AppBundle:Product',
                            'choice_label' => 'name',

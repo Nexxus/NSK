@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek ï¿½ info@copiatek.nl ï¿½ Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Form;
@@ -30,6 +30,7 @@ use AppBundle\Entity\Customer;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Doctrine\ORM\EntityRepository;
 
 class CustomerForm extends AbstractType
 {
@@ -46,7 +47,8 @@ class CustomerForm extends AbstractType
             $builder->add('location',  EntityType::class, [
                     'class' => 'AppBundle:Location',
                     'choice_label' => 'name',
-                    'required' => true
+                    'required' => true,
+                    'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
                 ]);
         }
 
