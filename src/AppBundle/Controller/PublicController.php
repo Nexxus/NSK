@@ -139,7 +139,7 @@ class PublicController extends Controller
             foreach ($allProductTypes as $productType)
             {
                 $productTypeName = $productType->getName();
-                $quantity = $form->get('q'.$productTypeName)->getData();
+                $quantity = $form->get($this->toFieldname($productTypeName))->getData();
                 if ($quantity)
                 {
                     $product = new Product();
@@ -179,6 +179,12 @@ class PublicController extends Controller
         {
             return new Response($exception->getMessage(), 500);
         }
+    }
+
+    private function toFieldname($productTypeName) {
+        $productTypeName = str_replace("/", "_slash_", $productTypeName);
+        $productTypeName = str_replace(" ", "_", $productTypeName);
+        return 'q' . $productTypeName;
     }
 
     /**
