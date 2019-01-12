@@ -60,7 +60,7 @@ class PickupForm extends AbstractType
             // Then the unmapped fields for quantities
             foreach ($options['productTypes'] as $productType)
             {
-                $builder->add('q' . $productType->getName(), IntegerType::class, [
+                $builder->add($this->toFieldname($productType->getName()), IntegerType::class, [
                     'mapped' => false,
                     'required' => false,
                     'label' => $productType->getName() . " aantal",
@@ -95,5 +95,11 @@ class PickupForm extends AbstractType
         ));
 
         $resolver->setRequired(array('productTypes'));
+    }
+
+    private function toFieldname($productTypeName) {
+        $productTypeName = str_replace("/", "_slash_", $productTypeName);
+        $productTypeName = str_replace(" ", "_", $productTypeName);
+        return 'q' . $productTypeName;
     }
 }
