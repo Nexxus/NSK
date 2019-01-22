@@ -33,7 +33,11 @@
         <tr>
             <td width="20%">SKU</td>
             <td width="40%">{{ relation.product.sku }}</td>
-            <td width="10%" rowspan="99" align="right"><barcode code="{{ relation.product.sku }}" type="C39" size="0.8" height="2" /></td>
+            <td width="40%" rowspan="99" align="right">
+                <div>
+                    <barcode code="{{ relation.product.sku }}" type="C39" size="0.8" height="2" />
+                </div>
+            </td>
         </tr>
         <tr><td>Name</td><td>{{ relation.product.name }}</td></tr>
         <tr><td>Status</td><td>{{ relation.product.status.name|default("Unknown") }}</td></tr>
@@ -49,7 +53,11 @@
         <tr>
             <td width="20%">Ready at</td>
             <td width="40%">{{ repair.deliveryDate|date("d-m-Y")|default("Unknown") }}</td>
-            <td width="10%" rowspan="99" align="right"><barcode code="{{ repair.order.orderNr }}" type="C39" size="0.8" height="2" /></td>
+            <td width="40%" rowspan="99" align="right">
+                <div>
+                    <barcode code="{{ repair.order.orderNr }}" type="C39" size="0.8" height="2" />
+                </div>
+            </td>
         </tr>
         <tr>
             <td>Delivery type</td>
