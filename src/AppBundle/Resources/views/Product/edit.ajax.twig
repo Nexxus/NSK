@@ -139,7 +139,7 @@
                     <td><span class="glyphicon glyphicon glyphicon-log-in" aria-label="Purchase"></span></td>
                     <td>{{ product.purchaseOrderRelation.order.orderNr }}</td>
                     <td>{{ product.purchaseOrderRelation.order.orderDate|date("Y-m-d") }}</td>
-                    <td>From: {{ product.purchaseOrderRelation.order.customer.name|default("") }}</td>
+                    <td>From: {{ product.purchaseOrderRelation.order.supplier.name|default("") }}</td>
                     <td>{{ product.purchaseOrderRelation.order.status.name|default("") }}</td>
                     <td>{{ product.purchaseOrderRelation.quantity }}</td>
                     <td><a class="btn btn-success" href="{{ path('purchaseorder_edit', { 'id': product.purchaseOrderRelation.order.id }) }}"><span class="glyphicon glyphicon-chevron-right" aria-label="Edit"></span></a></td>

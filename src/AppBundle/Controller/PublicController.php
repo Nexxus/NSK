@@ -161,7 +161,6 @@ class PublicController extends Controller
             #endregion
 
             $em->flush();
-
             if (!$pickup->getOrder()->getOrderNr())
             {
                 $orderNr = $em->getRepository('AppBundle:PurchaseOrder')->generateOrderNr($pickup->getOrder());
@@ -181,7 +180,9 @@ class PublicController extends Controller
         }
     }
 
+    // Duplicate exists in PickupForm
     private function toFieldname($productTypeName) {
+        $productTypeName = str_replace("'", "_quote_", $productTypeName);
         $productTypeName = str_replace("/", "_slash_", $productTypeName);
         $productTypeName = str_replace(" ", "_", $productTypeName);
         return 'q' . $productTypeName;

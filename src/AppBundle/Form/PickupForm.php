@@ -97,7 +97,9 @@ class PickupForm extends AbstractType
         $resolver->setRequired(array('productTypes'));
     }
 
+    // Duplicate exists in PublicController
     private function toFieldname($productTypeName) {
+        $productTypeName = str_replace("'", "_quote_", $productTypeName);
         $productTypeName = str_replace("/", "_slash_", $productTypeName);
         $productTypeName = str_replace(" ", "_", $productTypeName);
         return 'q' . $productTypeName;
