@@ -593,6 +593,10 @@ class Product
                 
                 $list[] = $r->getAttribute()->getName() . ": " . $r->getValueProduct()->getName();
             }
+            elseif ($r->getAttribute()->getType() == Attribute::TYPE_SELECT && $r->getValue()) {
+                
+                $list[] = $r->getSelectedOption()->getName();
+            }
             elseif ($r->getValue()) {
                 $list[] = $r->getAttribute()->getName() . ": " . $r->getValue();
             }
