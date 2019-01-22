@@ -91,7 +91,10 @@ class ProductAttributeRelationForm extends AbstractType
                            'required' => false,
                            'label' => 'Part'
                         ]);
-                        $form->add('quantity', IntegerType::class);
+
+                        if ($relation->getAttribute()->getHasQuantity())
+                            $form->add('quantity', IntegerType::class);
+                            
                         break;
                     case Attribute::TYPE_SELECT:
                         $form->add('value', ChoiceType::class, [

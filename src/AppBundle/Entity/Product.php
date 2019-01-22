@@ -525,6 +525,15 @@ class Product
             $q += $r->getQuantity();
         }
 
+        // #173 count also sold attributed products
+        foreach ($this->attributedRelations as $attributedRelation)
+        {
+            $quantityPerUnit = $attributedRelation->getQuantity() ?? 1;
+            $parentProductQuantitySold = $attributedRelation->getProduct()->getQuantitySold() ?? 0;
+
+            $q += $quantityPerUnit * $parentProductQuantitySold;
+        }
+
         return $q;
     }
 

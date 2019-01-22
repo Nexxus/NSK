@@ -113,6 +113,13 @@ class Attribute
     private $options;
 
     /**
+     * @var bool If true, the ProductAttributeRelation can use quantity, meaning quantity per unit
+     *
+     * @ORM\Column(type="boolean", nullable=false, options={"default" : false})
+     */
+    private $hasQuantity = false;
+
+    /**
      * Get id
      *
      * @return integer
@@ -370,6 +377,30 @@ class Attribute
             throw new \Exception("Options is only available if attribute is of select type.");
 
         return $this->options;
+    }
+
+    /**
+     * Set hasQuantity
+     *
+     * @param bool $hasQuantity
+     *
+     * @return Attribute
+     */
+    public function setHasQuantity($hasQuantity)
+    {
+        $this->hasQuantity = $hasQuantity;
+
+        return $this;
+    }
+
+    /**
+     * Get hasQuantity
+     *
+     * @return bool
+     */
+    public function getHasQuantity()
+    {
+        return $this->hasQuantity;
     }
 
     public function __toString()

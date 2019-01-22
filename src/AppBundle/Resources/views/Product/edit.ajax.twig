@@ -90,9 +90,11 @@
                             {{ form_widget(formRelation.valueFiles, { 'attr': {'class': 'file-input'}}) }}
                         {% elseif formRelation.vars.data.attribute.type == 3 %}{# Product #}
                             <div class="form-group">
+                                {% if formRelation.vars.data.attribute.hasQuantity %}
                                 <div class="col-sm-3">{{ form_widget(formRelation.quantity) }}</div>
                                 <div class="col-sm-1" style="padding: 8px 0 0 0">X</div>
-                                <div class="col-sm-8">
+                                {% endif %}
+                                <div class="col-sm-{{ formRelation.vars.data.attribute.hasQuantity ? "8" : "12" }}">
                                     <div class="input-group">
                                         {{ form_widget(formRelation.valueProduct) }}
                                         <span class="input-group-btn">
