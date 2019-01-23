@@ -92,6 +92,10 @@ class SalesOrderController extends Controller
         {
             /** @var SalesOrder */
             $order = $repo->find($id);
+
+            // Here is a bug on production environment, but cannot reproduce it locally
+            if (!$order) die("Here is a bug on production environment, but cannot reproduce it locally. Id is " . $id);
+
             $stock = $em->getRepository('AppBundle:Product')->findStockAndNotYetInOrder($this->getUser(), $order);
         }
 

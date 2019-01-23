@@ -223,9 +223,10 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
      * @param ProductStatus $status
      * @param int $quantity
      * @param string $nameSupplement
+     * @param int $newSkuIndex One or higher if new SKU is needed
      * @return Product The new product
      */
-    public function splitProduct(Product $product, ProductStatus $status, $quantity, $nameSupplement)
+    public function splitProduct(Product $product, ProductStatus $status, $quantity, $nameSupplement, $newSkuIndex)
     {
         $newProduct = new Product();
         if ($product->getDescription()) $newProduct->setDescription($product->getDescription());
@@ -233,9 +234,13 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         $newProduct->setName($product->getName() . " " . trim($nameSupplement));
         if ($product->getOwner()) $newProduct->setOwner($product->getOwner());
         if ($product->getPrice() !== null) $newProduct->setPrice($product->getPrice());
-        $newProduct->setSku(time());
         $newProduct->setStatus($status);
         if ($product->getType()) $newProduct->setType($product->getType());
+        if ($newSkuIndex !== false) 
+            $newProduct->setSku(time() + $newSkuIndex);
+        else
+            $newProduct->setSku($product->getSku());
+
         $this->_em->persist($newProduct);
 
         $purchaseRelation = $product->getPurchaseOrderRelation();
