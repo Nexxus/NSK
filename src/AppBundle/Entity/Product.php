@@ -604,7 +604,7 @@ class Product
             }
             elseif ($r->getAttribute()->getType() == Attribute::TYPE_SELECT && $r->getValue()) {
                 
-                $list[] = $r->getSelectedOption()->getName();
+                $list[] = $r->getAttribute()->getName() . ": " . $r->getSelectedOption()->getName();
             }
             elseif ($r->getValue()) {
                 $list[] = $r->getAttribute()->getName() . ": " . $r->getValue();

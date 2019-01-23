@@ -45,11 +45,15 @@ class ProductSplitForm extends AbstractType
             ->add('status',  EntityType::class, [
                 'class' => 'AppBundle:ProductStatus',
                 'choice_label' => 'name',
-                'required' => false,
+                'required' => true,
                 'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
             ])
             ->add('individualize', CheckboxType::class, [
                 'required' => false
+            ])
+            ->add('newSku', CheckboxType::class, [
+                'required' => false,
+                'label' => 'Create new SKU(s)'
             ])
             ->add('split', SubmitType::class, [
                 'attr' => ['class' => 'btn-success btn-120']

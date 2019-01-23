@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek ï¿½ info@copiatek.nl ï¿½ Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Entity;
@@ -564,6 +564,19 @@ abstract class ACompany
     public function getLocation()
     {
         return $this->location;
+    }
+
+    /**
+     * @return string for use in views tooltips
+     */
+    public function getAddressString() {
+        $address = $this->street . "<br />" .
+            $this->zip . " " . $this->city;
+            
+        if ($this->location)    
+        $address .= "<br />Your location: " . $this->location->getName();
+
+        return $address;
     }
 }
 

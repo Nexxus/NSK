@@ -79,7 +79,7 @@
         <script src="{{ asset('js/jquery.uploadifive.min.js') }}"></script>
         <script src="{{ asset('js/ajax-form.js') }}"></script>
         <script src="{{ asset('js/ajax-modal.js') }}"></script>
-        <script src="{{ asset('js/scripts.js') }}"></script>
+        <script src="{{ asset('js/scripts.js') }}?refresh={{ random() }}"></script>
         {% block javascripts %}
         {% endblock %}
     </body>

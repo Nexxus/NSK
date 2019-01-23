@@ -46,10 +46,9 @@ security:
     access_control:
         - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/upload/, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/uploadexists/, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/upload, role: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/uploadexists, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/public/, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/ophaaldienst, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/leergeld-bestelling, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/admin/, role: ROLE_ADMIN }

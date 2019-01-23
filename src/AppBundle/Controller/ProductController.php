@@ -200,7 +200,7 @@ class ProductController extends Controller
         /** @var Product */
         $product = $repo->find($id);
 
-        $data = array('quantity' => 1, 'status' => $product->getStatus(), 'individualize' => false);
+        $data = array('quantity' => 1, 'status' => $product->getStatus(), 'individualize' => false, 'newSku' => false);
         $options = array('max' => $product->getQuantityInStock() - 1);
 
         $form = $this->createForm(ProductSplitForm::class, $data, $options);
@@ -218,12 +218,14 @@ class ProductController extends Controller
                 {
                     for ($i = 1; $i <= $quantity; $i++)
                     {
-                        $repo->splitProduct($product, $data['status'], 1, "(split ".$i.")");
+                        $newSkuIndex = $data['newSku'] ? $i-1 : false;
+                        $repo->splitProduct($product, $data['status'], 1, "(split ".$i.")", $newSkuIndex);
                     }
                 }
                 else
                 {
-                    $repo->splitProduct($product, $data['status'], $quantity, "(split)");
+                    $newSkuIndex = $data['newSku'] ? 0 : false;
+                    $repo->splitProduct($product, $data['status'], $quantity, "(split)", $newSkuIndex);
                 }
 
                 try {

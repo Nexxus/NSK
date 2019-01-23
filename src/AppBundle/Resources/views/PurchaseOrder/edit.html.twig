@@ -86,11 +86,20 @@
                     </tr>
                     <tr>
                         <td>Images</td>
-                        {% if order.pickup.images|length > 0 %}
-                        <td>Yes</td>
-                        {% else %}
-                        <td>No</td>
-                        {% endif %}
+                        <td>
+                            <div class="row">
+                            {% for image in order.pickup.images %}
+                                <div class="col-md-4 col-filecontainer" id="col-file-{{ image.id }}">
+                                    <div class="panel panel-default panel-filecontainer">
+                                        <div class="panel-body panel-body-small">
+                                            <a href="{{ path("download", { 'id': image.id }) }}" title="{{ image.originalClientFilename }}" target="_blank">{{ image.originalClientFilename }}</a><br />
+                                            <img src="{{ path("download", { 'id': image.id }) }}" title="{{ image.originalClientFilename }}" />
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            </div>
+                        </td>
                     </tr>
                 </table>
             </div>

@@ -36,6 +36,7 @@ $(document).ready(function () {
 
 function focusBarcodeInput() {
     //if (!$('input.focus:first').val()) {
+        $('input.focus:first').select();
         $('input.focus:first').focus();
     //}
 }

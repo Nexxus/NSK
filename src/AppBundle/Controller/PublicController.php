@@ -359,6 +359,9 @@ class PublicController extends Controller
             "secret"=>"6LdzW4QUAAAAAD2ys-7G0Wa7URj58VGvppOhBgDS","response"=>$recaptcha));
         $response = curl_exec($ch);
         curl_close($ch);
+
+        if ($response === false) return false;
+
         $data = json_decode($response);
 
         return $data->success;
