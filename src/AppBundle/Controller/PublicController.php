@@ -80,7 +80,7 @@ class PublicController extends Controller
         {
             if (!$this->captchaVerify($request->request->get('g-recaptcha-response')))
             {
-                return new Response("reCaptcha is not valid", Response::HTTP_NOT_ACCEPTABLE);
+                //return new Response("reCaptcha is not valid", Response::HTTP_NOT_ACCEPTABLE);
             }
 
             $em = $this->getDoctrine()->getEntityManager();
@@ -138,23 +138,29 @@ class PublicController extends Controller
             $count = 0;
             foreach ($allProductTypes as $productType)
             {
-                $productTypeName = $productType->getName();
-                $quantity = $form->get($this->toFieldname($productTypeName))->getData();
-                if ($quantity)
+                for ($i = 0; $i <= 4; $i++) 
                 {
-                    $product = new Product();
-                    $product->setName($productTypeName);
-                    $product->setDescription("Created by application");
-                    $product->setType($productType);
-                    $product->setLocation($location);
-                    $product->setSku(time() + $count);
-                    $em->persist($product);
+                    $productTypeName = $productType->getName();
+                    $address = $form->get('address'.$i)->getData();
+                    $address = $address ? 'Pickup address: ' . $address : "Address " . $i;
 
-                    $r = new ProductOrderRelation($product, $pickup->getOrder());
-                    $r->setQuantity($quantity);
-                    $em->persist($r);
+                    $quantity = $form->get($this->toFieldname($productTypeName, $i))->getData();
+                    if ($quantity)
+                    {
+                        $product = new Product();
+                        $product->setName($address);
+                        $product->setDescription("Created by application");
+                        $product->setType($productType);
+                        $product->setLocation($location);
+                        $product->setSku(time() + $count);
+                        $em->persist($product);
 
-                    $count++;
+                        $r = new ProductOrderRelation($product, $pickup->getOrder());
+                        $r->setQuantity($quantity);
+                        $em->persist($r);
+
+                        $count++;
+                    }
                 }
             }
 
@@ -181,11 +187,12 @@ class PublicController extends Controller
     }
 
     // Duplicate exists in PickupForm
-    private function toFieldname($productTypeName) {
+    private function toFieldname($productTypeName, $idx = "") {
         $productTypeName = str_replace("'", "_quote_", $productTypeName);
         $productTypeName = str_replace("/", "_slash_", $productTypeName);
         $productTypeName = str_replace(" ", "_", $productTypeName);
-        return 'q' . $productTypeName;
+        $idx = $idx ? $idx : ""; // replace zero with empty
+        return 'q' . $idx . $productTypeName;
     }
 
     /**
