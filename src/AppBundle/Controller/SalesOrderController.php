@@ -92,21 +92,12 @@ class SalesOrderController extends Controller
         {
             /** @var SalesOrder */
             $order = $repo->find($id);
-
-            // Here is a bug on production environment, but cannot reproduce it locally
-            if (!$order) die("Here is a bug on production environment, but cannot reproduce it locally. Id is " . $id);
-
             $stock = $em->getRepository('AppBundle:Product')->findStockAndNotYetInOrder($this->getUser(), $order);
         }
 
         $form = $this->createForm(SalesOrderForm::class, $order, array('user' => $this->getUser(), 'stock' => $stock, 'isRepair' => $isRepair));
 
         $form->handleRequest($request);
-
-        if (!$order->getLocation())
-        {
-            $order->setLocation($this->get('security.token_storage')->getToken()->getUser()->getLocation());
-        }
 
         if ($form->isSubmitted())
         {
@@ -241,11 +232,12 @@ class SalesOrderController extends Controller
     public function deleteRelationAction($id)
     {
         $em = $this->getDoctrine()->getManager();
+        /** @var ProductOrderRelation */
         $relation = $em->find(ProductOrderRelation::class, $id);
         $em->remove($relation);
         $em->flush();
 
-        return $this->redirectToRoute('salesorder_edit', ['id' => $id, 'success' => true]);
+        return $this->redirectToRoute('salesorder_edit', ['id' => $relation->getOrder()->getId(), 'success' => true]);
     }
 
     /**

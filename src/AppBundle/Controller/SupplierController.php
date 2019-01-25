@@ -63,7 +63,7 @@ class SupplierController extends Controller
         }
 
         $paginator = $this->get('knp_paginator');
-        $suppliersPage = $paginator->paginate($suppliers, $request->query->getInt('page', 1), 10);
+        $suppliersPage = $paginator->paginate($suppliers, $request->query->getInt('page', 1), 20);
 
         return $this->render('AppBundle:Supplier:index.html.twig', array(
             'suppliers' => $suppliersPage,

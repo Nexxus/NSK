@@ -62,7 +62,7 @@ class CustomerController extends Controller
         }
 
         $paginator = $this->get('knp_paginator');
-        $customersPage = $paginator->paginate($customers, $request->query->getInt('page', 1), 10);
+        $customersPage = $paginator->paginate($customers, $request->query->getInt('page', 1), 20);
 
         return $this->render('AppBundle:Customer:index.html.twig', array(
             'customers' => $customersPage,
