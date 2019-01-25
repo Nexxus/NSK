@@ -121,7 +121,7 @@ class PublicController extends Controller
                 $location = $em->getRepository(Location::class)->find($locationId);
             elseif ($zipcode)
                 $location = $em->getRepository(Location::class)->findOneByZipcode($zipcode);
-            $pickup->getOrder()->setLocation($location);
+            if ($location) $pickup->getOrder()->setLocation($location);
 
             $pickup->getOrder()->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), true, false));
 
@@ -158,7 +158,7 @@ class PublicController extends Controller
                         $product->setName($address);
                         $product->setDescription("Created by application");
                         $product->setType($productType);
-                        $product->setLocation($location);
+                        if ($location) $product->setLocation($location);
                         $product->setSku(time() + $count);
                         $em->persist($product);
 

@@ -45,14 +45,16 @@ class SalesOrderController extends Controller
         if ($form->isSubmitted() && $form->isValid() && $container->isSearchable())
         {
             $orders = $repo->findBySearchQuery($container);
+            $pageLength = 200;
         }
         else
         {
             $orders = $repo->findMine($this->getUser());
+            $pageLength = 20;
         }
 
         $paginator = $this->get('knp_paginator');
-        $ordersPage = $paginator->paginate($orders, $request->query->getInt('page', 1), 10);
+        $ordersPage = $paginator->paginate($orders, $request->query->getInt('page', 1), $pageLength);
 
         return $this->render('AppBundle:SalesOrder:index.html.twig', array(
             'orders' => $ordersPage,
