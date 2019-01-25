@@ -47,8 +47,8 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
 
     public function findMine(User $user)
     {
-        if ($user->hasRole("ROLE_LOCAL"))
-            return $this->findBy(array("location" => $user->getLocation()), array('id' => 'DESC'));
+        if (!$user->hasRole("ROLE_LOCAL"))
+            return $this->findBy(array("location" => $user->getLocationIds()), array('id' => 'DESC'));
         else
             return $this->findBy(array(), array('id' => 'DESC'));
     }

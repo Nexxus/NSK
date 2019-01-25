@@ -32,6 +32,7 @@ use AppBundle\Entity\Customer;
 use AppBundle\Entity\PickupImageFile;
 use AppBundle\Entity\PickupAgreementFile;
 use AppBundle\Entity\ProductOrderRelation;
+use AppBundle\Entity\Location;
 use AppBundle\Form\PickupForm;
 use AppBundle\Form\PublicSalesOrderForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -80,7 +81,7 @@ class PublicController extends Controller
         {
             if (!$this->captchaVerify($request->request->get('g-recaptcha-response')))
             {
-                //return new Response("reCaptcha is not valid", Response::HTTP_NOT_ACCEPTABLE);
+                return new Response("reCaptcha is not valid", Response::HTTP_NOT_ACCEPTABLE);
             }
 
             $em = $this->getDoctrine()->getEntityManager();
@@ -111,10 +112,16 @@ class PublicController extends Controller
 
             // Create full order
 
-            $location = $em->getReference("AppBundle:Location", $form->get('locationId')->getData());
-            $pickup->getOrder()->setLocation($location);
-
             $pickup->getOrder()->setSupplier($em->getRepository('AppBundle:Supplier')->checkExists($pickup->getOrder()->getSupplier()));
+
+            $locationId = $form->get('locationId')->getData();
+            $location = null;
+            $zipcode = $pickup->getOrder()->getSupplier()->getZip();
+            if ($locationId)
+                $location = $em->getRepository(Location::class)->find($locationId);
+            elseif ($zipcode)
+                $location = $em->getRepository(Location::class)->findOneByZipcode($zipcode);
+            $pickup->getOrder()->setLocation($location);
 
             $pickup->getOrder()->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), true, false));
 

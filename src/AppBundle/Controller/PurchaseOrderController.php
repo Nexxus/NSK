@@ -46,7 +46,7 @@ class PurchaseOrderController extends Controller
         }
 
         $paginator = $this->get('knp_paginator');
-        $ordersPage = $paginator->paginate($orders, $request->query->getInt('page', 1), 10);
+        $ordersPage = $paginator->paginate($orders, $request->query->getInt('page', 1), 20);
 
         return $this->render('AppBundle:PurchaseOrder:index.html.twig', array(
             'orders' => $ordersPage,
@@ -79,11 +79,6 @@ class PurchaseOrderController extends Controller
 
         $form->handleRequest($request);
 
-        if (!$order->getLocation())
-        {
-            $order->setLocation($this->get('security.token_storage')->getToken()->getUser()->getLocation());
-        }
-
         if ($form->isSubmitted())
         {
             if ($form->get('newOrExistingSupplier')->getData() == 'existing')
@@ -98,11 +93,11 @@ class PurchaseOrderController extends Controller
                 /** @var Supplier */
                 $newSupplier = $form->get('newSupplier')->getData();
                 $newSupplier->addPurchaseOrder($order);
-                $newSupplier->setLocation($order->getLocation());
+                //$newSupplier->setLocation($order->getLocation());
                 $em->persist($newSupplier);
                 $order->setSupplier($newSupplier);
             }
-
+            
             if ($form->isValid())
             {
                 $em->persist($order);

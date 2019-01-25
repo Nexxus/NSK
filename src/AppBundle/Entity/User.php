@@ -25,7 +25,7 @@ namespace AppBundle\Entity;
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
 use AppBundle\Entity\Location;
-
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * User
@@ -45,6 +45,11 @@ use AppBundle\Entity\Location;
 
 class User extends BaseUser
 {
+    public function __construct() {
+        parent::__construct();
+        $this->locations = new ArrayCollection();
+    }
+
     /**
      * @var int
      *
@@ -69,20 +74,12 @@ class User extends BaseUser
     protected $lastname;
 
     /**
-     * @var Location
+     * @var ArrayCollection|Location[]
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Location", inversedBy="users")
-     * @ORM\JoinColumn(name="location_id", referencedColumnName="id")
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Location", inversedBy="users")
+     * @ORM\JoinTable(name="user_location")
      */
-    private $location;
-
-
-
-    public function __construct()
-    {
-        parent::__construct();
-
-    }
+    private $locations;
 
     /**
      * Get id
@@ -215,27 +212,45 @@ class User extends BaseUser
     }
 
     /**
-     * Set location
+     * Add location
      *
      * @param Location $location
      *
      * @return User
      */
-    public function setLocation($location)
+    public function addLocation(Location $location)
     {
-        $this->location = $location;
+        $this->locations[] = $location;
 
         return $this;
     }
 
     /**
-     * Get location
+     * Remove location
      *
-     * @return Location
+     * @param Location $location
      */
-    public function getLocation()
+    public function removeLocation(Location $location)
     {
-        return $this->location;
+        $this->locations->removeElement($location);
+    }
+
+    /**
+     * Get locations
+     *
+     * @return Location[]|ArrayCollection
+     */
+    public function getLocations()
+    {
+        return $this->locations;
+    }
+
+    /** @return array */
+    public function getLocationIds() {
+        $locationIds = array();
+        foreach ($this->locations as $location)
+            $locationIds[] = $location->getId();
+        return $locationIds;
     }
 }
 

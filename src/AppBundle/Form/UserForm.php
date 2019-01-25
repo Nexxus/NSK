@@ -72,9 +72,12 @@ class UserForm extends AbstractType
         }
 
         $builder
-            ->add('location',  EntityType::class, array(
+            ->add('locations',  EntityType::class, array(
                 'class' => 'AppBundle:Location',
                 'choice_label' => 'name',
+                'attr' => ['class' => 'multiselect'],
+                'multiple' => true,
+                'expanded' => false,
                 'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
             ))
             ->add('role', ChoiceType::class, ['mapped' => false,
