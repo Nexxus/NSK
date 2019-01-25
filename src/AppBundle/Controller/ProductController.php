@@ -66,14 +66,16 @@ class ProductController extends Controller
         if ($form->isSubmitted() && $form->isValid() && $container->isSearchable())
         {
             $products = $repo->findBySearchQuery($container);
+            $pageLength = 200;
         }
         else
         {
             $products = $repo->findStock($this->getUser());
+            $pageLength = 20;
         }
 
         $paginator = $this->get('knp_paginator');
-        $productsPage = $paginator->paginate($products, $request->query->getInt('page', 1), 20);
+        $productsPage = $paginator->paginate($products, $request->query->getInt('page', 1), $pageLength);
 
         return $this->render('AppBundle:Product:index.html.twig', array(
             'products' => $productsPage,
