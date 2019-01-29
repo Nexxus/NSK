@@ -33,6 +33,8 @@ use AppBundle\Form\ProductForm;
 use AppBundle\Form\ProductSplitForm;
 use AppBundle\Form\ChecklistForm;
 use AppBundle\Form\IndexSearchForm;
+use AppBundle\Form\IndexBulkEditForm;
+use AppBundle\Form\ProductBulkEditForm;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -79,8 +81,46 @@ class ProductController extends Controller
 
         return $this->render('AppBundle:Product:index.html.twig', array(
             'products' => $productsPage,
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'formBulkEdit' => $this->createForm(IndexBulkEditForm::class, $products)->createView()
             ));
+    }
+
+    /**
+     * @Route("/bulkedit", name="product_bulkedit")
+     */
+    public function bulkEditAction(Request $request, $success = null)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        // Get variables from IndexBulkEditForm
+        $action = $request->query->get('index_bulk_edit_form')['action'];
+        $productIds = $request->query->get('index_bulk_edit_form')['index'];
+        $products = $em->getRepository(Product::class)->findById($productIds);
+
+        if ($action == "status")
+        {
+            $form = $this->createForm(ProductBulkEditForm::class, $products, array('user' => $this->getUser()));
+
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid())
+            {
+                //$em->persist($customer);
+                //$em->flush();
+
+                return $this->redirectToRoute("product_bulkedit", array('index_bulk_edit_form[action]' => $action, 'index_bulk_edit_form[productIds]' => $productIds, 'success' => true));
+            }
+            else if ($form->isSubmitted())
+            {
+                $success = false;
+            }
+
+            return $this->render('AppBundle:Product:bulkedit.html.twig', array(
+                'form' => $form->createView(),
+                'success' => $success
+            ));
+        }
     }
 
     /**
