@@ -42,8 +42,8 @@ class IndexBulkEditForm extends AbstractType
                 'required' => true])
             ->add('action', ChoiceType::class, [
                 'choices' => [
-                    'Met geselecteerde regels...' => '',
-                    'Status en locatie bewerken' => 'status'
+                    'With selected lines...' => '',
+                    'Edit status and location' => 'status'
                 ],
                 'choice_attr' => function($key, $val, $index) {
                     return !$key ? ['disabled' => 'disabled'] : [];

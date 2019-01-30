@@ -15,7 +15,9 @@ use AppBundle\Entity\Product;
 use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Entity\ProductOrderRelation;
 use AppBundle\Form\IndexSearchForm;
+use AppBundle\Form\IndexBulkEditForm;
 use AppBundle\Form\SalesOrderForm;
+use AppBundle\Form\SalesOrderBulkEditForm;
 use Symfony\Component\Form\FormError;
 
 /**
@@ -58,8 +60,61 @@ class SalesOrderController extends Controller
 
         return $this->render('AppBundle:SalesOrder:index.html.twig', array(
             'orders' => $ordersPage,
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'formBulkEdit' => $this->createForm(IndexBulkEditForm::class, $orders)->createView()
             ));
+    }
+
+    /**
+     * @Route("/bulkedit/{success}", name="salesorder_bulkedit")
+     */
+    public function bulkEditAction(Request $request, $success = null)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        // Get variables from IndexBulkEditForm
+        $action = $request->query->get('index_bulk_edit_form')['action'];
+        $orderIds = $request->query->get('index_bulk_edit_form')['index'];
+        $orders = $em->getRepository(SalesOrder::class)->findById($orderIds);
+
+        if ($action == "status")
+        {
+            $form = $this->createForm(SalesOrderBulkEditForm::class, $orders, array('user' => $this->getUser()));
+
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid())
+            {
+                $location = $form->get("location")->getData();
+                $status = $form->get("status")->getData();
+                
+                foreach ($orders as $order)
+                {
+                     /** @var SalesOrder $order */
+
+                    if ($location)
+                        $order->setLocation($location);
+
+                    if ($status)
+                        $order->setStatus($status);
+                }
+                
+                $em->flush();
+
+                return $this->redirectToRoute("salesorder_bulkedit", array('index_bulk_edit_form[action]' => $action, 'index_bulk_edit_form[index]' => $orderIds, 'success' => true));
+            }
+            else if ($form->isSubmitted())
+            {
+                $success = false;
+            }
+
+            return $this->render('AppBundle:SalesOrder:bulkedit.html.twig', array(
+                'form' => $form->createView(),
+                'success' => $success
+            ));
+        }
+
+        return false;
     }
 
     /**

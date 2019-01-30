@@ -87,7 +87,7 @@ class ProductController extends Controller
     }
 
     /**
-     * @Route("/bulkedit", name="product_bulkedit")
+     * @Route("/bulkedit/{success}", name="product_bulkedit")
      */
     public function bulkEditAction(Request $request, $success = null)
     {
@@ -106,10 +106,23 @@ class ProductController extends Controller
 
             if ($form->isSubmitted() && $form->isValid())
             {
-                //$em->persist($customer);
-                //$em->flush();
+                $location = $form->get("location")->getData();
+                $status = $form->get("status")->getData();
+                
+                foreach ($products as $product)
+                {
+                     /** @var Product $product */
 
-                return $this->redirectToRoute("product_bulkedit", array('index_bulk_edit_form[action]' => $action, 'index_bulk_edit_form[productIds]' => $productIds, 'success' => true));
+                    if ($location)
+                        $product->setLocation($location);
+
+                    if ($status)
+                        $product->setStatus($status);
+                }
+                
+                $em->flush();
+
+                return $this->redirectToRoute("product_bulkedit", array('index_bulk_edit_form[action]' => $action, 'index_bulk_edit_form[index]' => $productIds, 'success' => true));
             }
             else if ($form->isSubmitted())
             {
@@ -121,6 +134,8 @@ class ProductController extends Controller
                 'success' => $success
             ));
         }
+
+        return false;
     }
 
     /**

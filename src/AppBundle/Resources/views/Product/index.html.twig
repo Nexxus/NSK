@@ -15,9 +15,7 @@
             {{ form_widget(form.producttype) }}
         </div>
         <div class="col-sm-2">
-            {% if form.location is defined %}
             {{ form_widget(form.location) }}
-            {% endif %}
         </div>
         <div class="col-sm-1">
             {{ form_widget(form.submit) }}
@@ -98,6 +96,6 @@
         {{ knp_pagination_render(products) }}
     </div>
 
-    {{ form_start(formBulkEdit) }}
+    {{ form_end(formBulkEdit) }}
 
 {% endblock %}
