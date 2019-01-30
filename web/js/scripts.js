@@ -15,6 +15,10 @@ $(document).ready(function () {
         buttonClass: 'btn'
     });
 
+    $('#index_bulk_edit_form_action').change(function (e) {
+        $('form[name="index_bulk_edit_form"]').submit();
+    });
+
     $('.btn-delete').click(function (e) {
 
         e.preventDefault();

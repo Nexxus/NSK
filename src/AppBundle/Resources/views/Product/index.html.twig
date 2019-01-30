@@ -4,8 +4,8 @@
     <h1>Stock</h1>
 
     {{ form_start(form) }}
-    <div class="row" style="margin-bottom: 20px">
-        <div class="col-sm-2">
+    <div class="row">
+        <div class="col-sm-5">
             {{ form_widget(form.query, {'attr': {'placeholder': 'Zoeken op Id, Sku of (deel van) naam'} }) }}
         </div>
         <div class="col-sm-2">
@@ -15,22 +15,29 @@
             {{ form_widget(form.producttype) }}
         </div>
         <div class="col-sm-2">
-            {% if form.location is defined %}
             {{ form_widget(form.location) }}
-            {% endif %}
         </div>
         <div class="col-sm-1">
             {{ form_widget(form.submit) }}
         </div>
-        <div class="col-sm-3">
-            <a href="{{ path('purchaseorder_edit', { 'id': 0 }) }}" class="btn btn-primary pull-right" role="button">Create new purchase</a>
-        </div>
     </div>
     {{ form_end(form) }}
 
+    {{ form_start(formBulkEdit, {'action': path('product_bulkedit')}) }}
+
+    <div class="row" style="margin-bottom: 20px; margin-top: 10px">
+        <div class="col-sm-3">
+            {{ form_widget(formBulkEdit.action) }}
+        </div>
+        <div class="col-sm-3 col-sm-offset-6">
+            <a href="{{ path('purchaseorder_edit', { 'id': 0 }) }}" class="btn btn-primary pull-right" role="button">Create new purchase</a>
+        </div>        
+    </div>
+    
     <table class="table table-striped">
         <thead>
             <tr>
+                <th></th>
                 <th{% if products.isSorted('sku') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(products, 'SKU', 'sku') }}</th>
                 <th{% if products.isSorted('name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(products, 'Name', 'name') }}</th>
                 <th{% if products.isSorted('type.name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(products, 'Type', 'type.name') }}</th>
@@ -47,6 +54,7 @@
         <tbody>
         {% for product in products %}
             <tr>
+                <td><input type="checkbox" id="index_bulk_edit_form_index_{{ product.id }}" name="index_bulk_edit_form[index][]" value="{{ product.id }}"></td>
                 <td><a href="{{ path('product_edit', { 'id': product.id }) }}" data-target="#modalEditor" class="btn-modal" data-toggle="tooltip" title="{{ product.getAttributesList() }}">{{ product.sku }}</a></td>
                 <td><a href="{{ path('product_edit', { 'id': product.id }) }}" data-target="#modalEditor" class="btn-modal" data-toggle="tooltip" title="{{ product.getAttributesList() }}">{{ product.name }}</a></td>
                 <td>{{ product.type.name|default("") }}</td>
@@ -87,5 +95,7 @@
     <div class="navigation">
         {{ knp_pagination_render(products) }}
     </div>
+
+    {{ form_end(formBulkEdit) }}
 
 {% endblock %}

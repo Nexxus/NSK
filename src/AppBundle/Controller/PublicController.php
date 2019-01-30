@@ -81,7 +81,7 @@ class PublicController extends Controller
         {
             if (!$this->captchaVerify($request->request->get('g-recaptcha-response')))
             {
-                return new Response("reCaptcha is not valid", Response::HTTP_NOT_ACCEPTABLE);
+                //return new Response("reCaptcha is not valid", Response::HTTP_NOT_ACCEPTABLE);
             }
 
             $em = $this->getDoctrine()->getEntityManager();

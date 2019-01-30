@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek ï¿½ info@copiatek.nl ï¿½ Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Controller;
@@ -44,7 +44,8 @@ class DashboardController extends Controller
         $result = null;
 
         $container = new \AppBundle\Helper\IndexSearchContainer();
-
+        $container->user = $this->getUser();
+        
         $form = $this->createForm(IndexSearchForm::class, $container);
 
         $form->handleRequest($request);

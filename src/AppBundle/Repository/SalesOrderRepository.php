@@ -56,6 +56,9 @@ class SalesOrderRepository extends \Doctrine\ORM\EntityRepository
 
         if ($search->location)
             $qb = $qb->andWhere("o.location = :location")->setParameter("location", $search->location);
+        elseif ($search->user->hasRole("ROLE_LOCAL"))
+            $qb = $qb->andWhere('IDENTITY(o.location) IN (:locationIds)')->setParameter('locationIds', $search->user->getLocationIds()); 
+
 
         if ($search->status)
             $qb = $qb->andWhere("o.status = :status")->setParameter("status", $search->status);
