@@ -20,14 +20,19 @@
     </div>
     {{ form_end(form) }}
 
+    <hr />
+
     {{ form_start(formBulkEdit, {'action': path('purchaseorder_bulkedit')}) }}
 
     <div class="row" style="margin-bottom: 20px; margin-top: 10px">
-        <div class="col-sm-3">
+        <div class="col-sm-1 col-xs-3">
+            <button type="button" class="btn btn-default btn-selectall">Select all</button>
+        </div>
+        <div class="col-sm-3 col-xs-9">
             {{ form_widget(formBulkEdit.action) }}
         </div>
-        <div class="col-sm-3 col-sm-offset-6">
-            <a href="{{ path('purchaseorder_edit') }}" class="btn btn-primary pull-right" role="button">Create new purchase</a>
+        <div class="col-sm-3 col-sm-offset-5 col-xs-12">
+            <a href="{{ path('purchaseorder_edit', { 'id': 0 }) }}" class="btn btn-primary pull-right" role="button">Create new purchase</a>
         </div>        
     </div>
 
@@ -74,6 +79,6 @@
         {{ knp_pagination_render(orders) }}
     </div>
 
-    {{ form_end(formBulkEdit) }}
+    {{ form_end(formBulkEdit, {'render_rest': false}) }}
 
 {% endblock %}
