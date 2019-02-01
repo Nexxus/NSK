@@ -19,6 +19,12 @@ $(document).ready(function () {
         $('form[name="index_bulk_edit_form"]').submit();
     });
 
+    $('.btn-selectall').click(function (e) {
+        $('input[name^="index_bulk_edit_form[index]"]').each(function() {
+            $(this).prop('checked', true);
+        });
+    });
+
     $('.btn-delete').click(function (e) {
 
         e.preventDefault();
