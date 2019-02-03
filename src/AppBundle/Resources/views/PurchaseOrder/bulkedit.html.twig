@@ -1,0 +1,16 @@
+{% extends "::base.html.twig" %}
+
+{% block body %}
+    <h1 style="margin-bottom: 30px">Purchase orders bulk edit</h1>
+
+    {% if success %}
+    <div class="alert alert-success" role="alert">The orders are saved successfully.</div>
+    {% elseif success is same as(false) %}
+    <div class="alert alert-danger" role="alert">The orders could not be saved. Please check details below.</div>
+    {% endif %}
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+    {{ form_end(form) }}
+
+{% endblock %}

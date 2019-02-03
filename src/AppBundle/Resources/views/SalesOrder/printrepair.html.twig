@@ -33,7 +33,11 @@
         <tr>
             <td width="20%">SKU</td>
             <td width="40%">{{ relation.product.sku }}</td>
-            <td width="10%" rowspan="99" align="right"><barcode code="{{ relation.product.sku }}" type="C39" size="0.8" height="2" /></td>
+            <td width="40%" rowspan="99" align="right">
+                <div>
+                    <barcode code="{{ relation.product.sku }}" type="C39" size="0.8" height="2" />
+                </div>
+            </td>
         </tr>
         <tr><td>Name</td><td>{{ relation.product.name }}</td></tr>
         <tr><td>Status</td><td>{{ relation.product.status.name|default("Unknown") }}</td></tr>
@@ -49,7 +53,11 @@
         <tr>
             <td width="20%">Ready at</td>
             <td width="40%">{{ repair.deliveryDate|date("d-m-Y")|default("Unknown") }}</td>
-            <td width="10%" rowspan="99" align="right"><barcode code="{{ repair.order.orderNr }}" type="C39" size="0.8" height="2" /></td>
+            <td width="40%" rowspan="99" align="right">
+                <div>
+                    <barcode code="{{ repair.order.orderNr }}" type="C39" size="0.8" height="2" />
+                </div>
+            </td>
         </tr>
         <tr>
             <td>Delivery type</td>
@@ -65,8 +73,10 @@
                 {% endif %}
             </td>
         </tr>
-        <tr><td>Complaints</td><td>{{ repair.description }}</td></tr>
-        <tr><td>Damages before repair</td><td>{{ repair.damage }}</td></tr>
+        <tr><td>Complaints</td>
+            <td><div>{{ repair.description }}</div></td></tr>
+        <tr><td>Damages before repair</td>
+            <td><div>{{ repair.damage }}</div></td></tr>
     </table>
 </div>
 
@@ -84,36 +94,46 @@
     </table>
 </div>
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Agreement at order{% endtrans %}
+<table border="0" width="100%">
+<tr>
+<td width="50%">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Agreement at order{% endtrans %}
+        </div>
+        <table class="table table-bordered">
+            <tr>
+                <td style="padding: 5px 5px 70px 5px">Name: </td>
+                <td style="padding: 5px 5px 70px 5px">Signature customer:</td>
+            </tr>
+            <tr>
+                <td style="padding: 5px 5px 70px 5px">Date: </td>
+                <td style="padding: 5px 5px 70px 5px">Signature repairer:</td>
+            </tr>
+        </table>
     </div>
-    <table class="table table-bordered">
-        <tr>
-            <td style="padding: 5px 5px 70px 5px">Name: </td>
-            <td style="padding: 5px 5px 70px 5px">Signature customer:</td>
-        </tr>
-        <tr>
-            <td style="padding: 5px 5px 70px 5px">Date: </td>
-            <td style="padding: 5px 5px 70px 5px">Signature repairer:</td>
-        </tr>
-    </table>
-</div>
+</td>
+<td width="50%">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Agreement after repair{% endtrans %}
+        </div>
+        <table class="table table-bordered">
+            <tr>
+                <td style="padding: 5px 5px 70px 5px">Name: </td>
+                <td style="padding: 5px 5px 70px 5px">Signature customer:</td>
+            </tr>
+            <tr>
+                <td style="padding: 5px 5px 70px 5px">Date: </td>
+                <td style="padding: 5px 5px 70px 5px">Signature repairer:</td>
+            </tr>
+        </table>
+    </div>
+</td>
+</tr>
+</table>
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Agreement after repair{% endtrans %}
-    </div>
-    <table class="table table-bordered">
-        <tr>
-            <td style="padding: 5px 5px 70px 5px">Name: </td>
-            <td style="padding: 5px 5px 70px 5px">Signature customer:</td>
-        </tr>
-        <tr>
-            <td style="padding: 5px 5px 70px 5px">Date: </td>
-            <td style="padding: 5px 5px 70px 5px">Signature repairer:</td>
-        </tr>
-    </table>
-</div>
+
+
 
 {% endblock %}

@@ -36,7 +36,7 @@ use AppBundle\Entity\Product;
  * Locations bound to products by ID
  *
  * @ORM\Table(name="location")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\LocationRepository")
  * @JMS\ExclusionPolicy("all")
  */
 class Location
@@ -65,6 +65,13 @@ class Location
     private $name;
 
     /**
+     * @var string Comma separated list of zipcodes
+     * @ORM\Column(type="string")
+     * @JMS\Expose
+     */
+    private $zipcodes;
+
+    /**
      * @var ArrayCollection|Product[]
      * @ORM\OneToMany(targetEntity="Product", mappedBy="location", fetch="LAZY")
      */
@@ -73,7 +80,7 @@ class Location
     /**
      * @var ArrayCollection|User[]
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\User", mappedBy="location", fetch="LAZY")
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\User", mappedBy="locations", fetch="LAZY")
      */
     private $users;
 
@@ -123,6 +130,36 @@ class Location
     public function getName()
     {
         return $this->name;
+    }
+    
+    /**
+     * Set zipcodes
+     *
+     * @param string $zipcodes
+     *
+     * @return Location
+     */
+    public function setZipcodes($zipcodes)
+    {
+        $this->zipcodes = $zipcodes;
+
+        return $this;
+    }
+
+    /**
+     * Get zipcodes
+     *
+     * @return string
+     */
+    public function getZipcodes()
+    {
+        return $this->zipcodes;
+    }
+
+    /** @return array */
+    public function getZipcodesAsArray()
+    {
+        return array_map('trim', explode(',', $this->zipcodes));
     }
 
     /**

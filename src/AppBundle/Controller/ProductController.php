@@ -33,6 +33,8 @@ use AppBundle\Form\ProductForm;
 use AppBundle\Form\ProductSplitForm;
 use AppBundle\Form\ChecklistForm;
 use AppBundle\Form\IndexSearchForm;
+use AppBundle\Form\IndexBulkEditForm;
+use AppBundle\Form\ProductBulkEditForm;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -66,19 +68,74 @@ class ProductController extends Controller
         if ($form->isSubmitted() && $form->isValid() && $container->isSearchable())
         {
             $products = $repo->findBySearchQuery($container);
+            $pageLength = 200;
         }
         else
         {
             $products = $repo->findStock($this->getUser());
+            $pageLength = 20;
         }
 
         $paginator = $this->get('knp_paginator');
-        $productsPage = $paginator->paginate($products, $request->query->getInt('page', 1), 20);
+        $productsPage = $paginator->paginate($products, $request->query->getInt('page', 1), $pageLength);
 
         return $this->render('AppBundle:Product:index.html.twig', array(
             'products' => $productsPage,
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'formBulkEdit' => $this->createForm(IndexBulkEditForm::class, $products)->createView()
             ));
+    }
+
+    /**
+     * @Route("/bulkedit/{success}", name="product_bulkedit")
+     */
+    public function bulkEditAction(Request $request, $success = null)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        // Get variables from IndexBulkEditForm
+        $action = $request->query->get('index_bulk_edit_form')['action'];
+        $productIds = $request->query->get('index_bulk_edit_form')['index'];
+        $products = $em->getRepository(Product::class)->findById($productIds);
+
+        if ($action == "status")
+        {
+            $form = $this->createForm(ProductBulkEditForm::class, $products, array('user' => $this->getUser()));
+
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid())
+            {
+                $location = $form->get("location")->getData();
+                $status = $form->get("status")->getData();
+                
+                foreach ($products as $product)
+                {
+                     /** @var Product $product */
+
+                    if ($location)
+                        $product->setLocation($location);
+
+                    if ($status)
+                        $product->setStatus($status);
+                }
+                
+                $em->flush();
+
+                return $this->redirectToRoute("product_bulkedit", array('index_bulk_edit_form[action]' => $action, 'index_bulk_edit_form[index]' => $productIds, 'success' => true));
+            }
+            else if ($form->isSubmitted())
+            {
+                $success = false;
+            }
+
+            return $this->render('AppBundle:Product:bulkedit.html.twig', array(
+                'form' => $form->createView(),
+                'success' => $success
+            ));
+        }
+
+        return false;
     }
 
     /**
@@ -200,7 +257,7 @@ class ProductController extends Controller
         /** @var Product */
         $product = $repo->find($id);
 
-        $data = array('quantity' => 1, 'status' => $product->getStatus(), 'individualize' => false);
+        $data = array('quantity' => 1, 'status' => $product->getStatus(), 'individualize' => false, 'newSku' => false);
         $options = array('max' => $product->getQuantityInStock() - 1);
 
         $form = $this->createForm(ProductSplitForm::class, $data, $options);
@@ -218,12 +275,14 @@ class ProductController extends Controller
                 {
                     for ($i = 1; $i <= $quantity; $i++)
                     {
-                        $repo->splitProduct($product, $data['status'], 1, "(split ".$i.")");
+                        $newSkuIndex = $data['newSku'] ? $i-1 : false;
+                        $repo->splitProduct($product, $data['status'], 1, "(split ".$i.")", $newSkuIndex);
                     }
                 }
                 else
                 {
-                    $repo->splitProduct($product, $data['status'], $quantity, "(split)");
+                    $newSkuIndex = $data['newSku'] ? 0 : false;
+                    $repo->splitProduct($product, $data['status'], $quantity, "(split)", $newSkuIndex);
                 }
 
                 try {

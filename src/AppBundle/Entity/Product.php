@@ -525,6 +525,15 @@ class Product
             $q += $r->getQuantity();
         }
 
+        // #173 count also sold attributed products
+        foreach ($this->attributedRelations as $attributedRelation)
+        {
+            $quantityPerUnit = $attributedRelation->getQuantity() ?? 1;
+            $parentProductQuantitySold = $attributedRelation->getProduct()->getQuantitySold() ?? 0;
+
+            $q += $quantityPerUnit * $parentProductQuantitySold;
+        }
+
         return $q;
     }
 
@@ -592,6 +601,10 @@ class Product
             elseif ($r->getAttribute()->getType() == Attribute::TYPE_PRODUCT && $r->getValueProduct()) {
                 
                 $list[] = $r->getAttribute()->getName() . ": " . $r->getValueProduct()->getName();
+            }
+            elseif ($r->getAttribute()->getType() == Attribute::TYPE_SELECT && $r->getValue()) {
+                
+                $list[] = $r->getAttribute()->getName() . ": " . $r->getSelectedOption()->getName();
             }
             elseif ($r->getValue()) {
                 $list[] = $r->getAttribute()->getName() . ": " . $r->getValue();

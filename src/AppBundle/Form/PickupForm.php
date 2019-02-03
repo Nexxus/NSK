@@ -28,6 +28,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use AppBundle\Entity\Pickup;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -38,10 +39,8 @@ class PickupForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-
-
             // First the mapped fields
-           $builder
+            $builder
                 ->add('supplier', SupplierForm::class, ['property_path' => 'order.supplier'])
                 ->add('pickupDate', DateType::class, ['required' => false])
                 ->add('dataDestruction', ChoiceType::class, [
@@ -55,16 +54,24 @@ class PickupForm extends AbstractType
                         'HDD wipe report KillDisk a €3,50' => Pickup::DATADESTRUCTION_KILLDISK
                     ]
                 ])
-                ->add('description', TextareaType::class, ['required' => false]);
+                ->add('description', TextareaType::class, ['required' => false])
+                ->add('address0', TextType::class, ['required' => false, 'mapped' => false])
+                ->add('address1', TextType::class, ['required' => false, 'mapped' => false])
+                ->add('address2', TextType::class, ['required' => false, 'mapped' => false])
+                ->add('address3', TextType::class, ['required' => false, 'mapped' => false])
+                ->add('address4', TextType::class, ['required' => false, 'mapped' => false]);
 
             // Then the unmapped fields for quantities
-            foreach ($options['productTypes'] as $productType)
+            for ($i = 0; $i <= 4; $i++) 
             {
-                $builder->add($this->toFieldname($productType->getName()), IntegerType::class, [
-                    'mapped' => false,
-                    'required' => false,
-                    'label' => $productType->getName() . " aantal",
-                    'attr' => ['placeholder' => '0']]);
+                foreach ($options['productTypes'] as $productType)
+                {
+                    $builder->add($this->toFieldname($productType->getName(), $i), IntegerType::class, [
+                        'mapped' => false,
+                        'required' => false,
+                        'label' => $productType->getName() . " aantal voor adres " . $i,
+                        'attr' => ['placeholder' => '0']]);
+                }
             }
 
             // Then the unmapped fields for files
@@ -97,9 +104,12 @@ class PickupForm extends AbstractType
         $resolver->setRequired(array('productTypes'));
     }
 
-    private function toFieldname($productTypeName) {
+    // Duplicate exists in PublicController
+    private function toFieldname($productTypeName, $idx = "") {
+        $productTypeName = str_replace("'", "_quote_", $productTypeName);
         $productTypeName = str_replace("/", "_slash_", $productTypeName);
         $productTypeName = str_replace(" ", "_", $productTypeName);
-        return 'q' . $productTypeName;
+        $idx = $idx ? $idx : ""; // replace zero with empty
+        return 'q' . $idx . $productTypeName;
     }
 }

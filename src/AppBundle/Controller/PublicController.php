@@ -32,6 +32,7 @@ use AppBundle\Entity\Customer;
 use AppBundle\Entity\PickupImageFile;
 use AppBundle\Entity\PickupAgreementFile;
 use AppBundle\Entity\ProductOrderRelation;
+use AppBundle\Entity\Location;
 use AppBundle\Form\PickupForm;
 use AppBundle\Form\PublicSalesOrderForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -80,7 +81,7 @@ class PublicController extends Controller
         {
             if (!$this->captchaVerify($request->request->get('g-recaptcha-response')))
             {
-                return new Response("reCaptcha is not valid", Response::HTTP_NOT_ACCEPTABLE);
+                //return new Response("reCaptcha is not valid", Response::HTTP_NOT_ACCEPTABLE);
             }
 
             $em = $this->getDoctrine()->getEntityManager();
@@ -111,10 +112,16 @@ class PublicController extends Controller
 
             // Create full order
 
-            $location = $em->getReference("AppBundle:Location", $form->get('locationId')->getData());
-            $pickup->getOrder()->setLocation($location);
-
             $pickup->getOrder()->setSupplier($em->getRepository('AppBundle:Supplier')->checkExists($pickup->getOrder()->getSupplier()));
+
+            $locationId = $form->get('locationId')->getData();
+            $location = null;
+            $zipcode = $pickup->getOrder()->getSupplier()->getZip();
+            if ($locationId)
+                $location = $em->getRepository(Location::class)->find($locationId);
+            elseif ($zipcode)
+                $location = $em->getRepository(Location::class)->findOneByZipcode($zipcode);
+            if ($location) $pickup->getOrder()->setLocation($location);
 
             $pickup->getOrder()->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), true, false));
 
@@ -138,30 +145,35 @@ class PublicController extends Controller
             $count = 0;
             foreach ($allProductTypes as $productType)
             {
-                $productTypeName = $productType->getName();
-                $quantity = $form->get($this->toFieldname($productTypeName))->getData();
-                if ($quantity)
+                for ($i = 0; $i <= 4; $i++) 
                 {
-                    $product = new Product();
-                    $product->setName($productTypeName);
-                    $product->setDescription("Created by application");
-                    $product->setType($productType);
-                    $product->setLocation($location);
-                    $product->setSku(time() + $count);
-                    $em->persist($product);
+                    $productTypeName = $productType->getName();
+                    $address = $form->get('address'.$i)->getData();
+                    $address = $address ? 'Pickup address: ' . $address : "Address " . $i;
 
-                    $r = new ProductOrderRelation($product, $pickup->getOrder());
-                    $r->setQuantity($quantity);
-                    $em->persist($r);
+                    $quantity = $form->get($this->toFieldname($productTypeName, $i))->getData();
+                    if ($quantity)
+                    {
+                        $product = new Product();
+                        $product->setName($address);
+                        $product->setDescription("Created by application");
+                        $product->setType($productType);
+                        if ($location) $product->setLocation($location);
+                        $product->setSku(time() + $count);
+                        $em->persist($product);
 
-                    $count++;
+                        $r = new ProductOrderRelation($product, $pickup->getOrder());
+                        $r->setQuantity($quantity);
+                        $em->persist($r);
+
+                        $count++;
+                    }
                 }
             }
 
             #endregion
 
             $em->flush();
-
             if (!$pickup->getOrder()->getOrderNr())
             {
                 $orderNr = $em->getRepository('AppBundle:PurchaseOrder')->generateOrderNr($pickup->getOrder());
@@ -181,10 +193,13 @@ class PublicController extends Controller
         }
     }
 
-    private function toFieldname($productTypeName) {
+    // Duplicate exists in PickupForm
+    private function toFieldname($productTypeName, $idx = "") {
+        $productTypeName = str_replace("'", "_quote_", $productTypeName);
         $productTypeName = str_replace("/", "_slash_", $productTypeName);
         $productTypeName = str_replace(" ", "_", $productTypeName);
-        return 'q' . $productTypeName;
+        $idx = $idx ? $idx : ""; // replace zero with empty
+        return 'q' . $idx . $productTypeName;
     }
 
     /**
@@ -358,6 +373,9 @@ class PublicController extends Controller
             "secret"=>"6LdzW4QUAAAAAD2ys-7G0Wa7URj58VGvppOhBgDS","response"=>$recaptcha));
         $response = curl_exec($ch);
         curl_close($ch);
+
+        if ($response === false) return false;
+
         $data = json_decode($response);
 
         return $data->success;

@@ -24,38 +24,53 @@ namespace AppBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityRepository;
+use AppBundle\Entity\Product;
 
-class ProductSplitForm extends AbstractType
+class ProductBulkEditForm extends AbstractType
 {
     /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $user = $options['user'];
+        $products = $builder->getData();
+        
         $builder
-            ->add('quantity', IntegerType::class, [
-                'attr' => ['min' => 1, 'max' => $options['max']]
-            ])
+            ->add('products', EntityType::class, [
+                'class' => Product::class,
+                'choice_label' => function(Product $p) {
+                    return $p->getSku() . ' - ' . $p->getName();
+                },
+                'choices' => $products,
+                'data' => $products,
+                'multiple' => true, 
+                'expanded' => false, 
+                'attr' => ['class' => 'multiselect'],
+                'required' => true])
             ->add('status',  EntityType::class, [
                 'class' => 'AppBundle:ProductStatus',
                 'choice_label' => 'name',
-                'required' => true,
+                'required' => false,
                 'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
             ])
-            ->add('individualize', CheckboxType::class, [
-                'required' => false
-            ])
-            ->add('newSku', CheckboxType::class, [
+            ->add('location',  EntityType::class, [
+                'class' => 'AppBundle:Location',
+                'choice_label' => 'name',
                 'required' => false,
-                'label' => 'Create new SKU(s)'
-            ])
-            ->add('split', SubmitType::class, [
+                'query_builder' => function (EntityRepository $er) use ($user) { 
+                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
+                    /** @var \AppBundle\Entity\User $user */
+                    if ($user->hasRole("ROLE_LOCAL"))
+                        $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
+                    return $qb;
+                }
+            ])            
+            ->add('save', SubmitType::class, [
                 'attr' => ['class' => 'btn-success btn-120']
             ]);
     }
@@ -65,9 +80,9 @@ class ProductSplitForm extends AbstractType
         $resolver->setDefaults(array(
             'csrf_protection' => true,
             'csrf_field_name' => '_token',
-            'csrf_token_id'   => 'splitproduct',
+            'csrf_token_id'   => 'productsbulkedit',
         ));
 
-        $resolver->setRequired(array('max'));
+        $resolver->setRequired(array('user'));
     }
 }

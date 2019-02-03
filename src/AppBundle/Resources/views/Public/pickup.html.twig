@@ -105,12 +105,25 @@
                     <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}About the materials{% endtrans %}
                 </div>
                 <div class="panel-body">
+                    {{ form_row(form.address0) }} 
+                    {{ form_row(form.address1) }} 
+                    {{ form_row(form.address2) }} 
+                    {{ form_row(form.address3) }} 
+                    {{ form_row(form.address4) }} 
+                    <hr />
+
                     <!-- Only known product types are allowed. Not all product types are allowed. -->
                     {% for q in form if q.vars.name starts with 'q' %}
                     {{ form_row(q) }} 
                     {% endfor %}
-            
-                    <hr />
+                </div>
+            </div>
+
+                        <div class="panel panel-default">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Additional info{% endtrans %}
+                </div>
+                <div class="panel-body">
                     {{ form_row(form.pickupDate) }} 
                     {{ form_row(form.description) }} 
                     {{ form_row(form.dataDestruction) }} 
@@ -136,7 +149,7 @@
 
             {{ form_widget(form.imagesNames) }}
             {{ form_widget(form.agreementName) }}
-            {{ form_widget(form.locationId) }}
+            {# form_widget(form.locationId) #}
             {{ form_widget(form.orderStatusName) }}
             {{ form_end(form, {'render_rest': false}) }}
 

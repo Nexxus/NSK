@@ -70,7 +70,7 @@ class TaskController extends Controller
         }
 
         $paginator = $this->get('knp_paginator');
-        $tasksPage = $paginator->paginate($tasks, $request->query->getInt('page', 1), 10);
+        $tasksPage = $paginator->paginate($tasks, $request->query->getInt('page', 1), 20);
 
         return $this->render('AppBundle:Task:index.html.twig', array(
             'tasks' => $tasksPage,

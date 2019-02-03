@@ -9,9 +9,7 @@
             {{ form_widget(form.query, {'attr': {'placeholder': 'Zoeken op Id, KvK, e-mail of (deel van) naam'} }) }}
         </div>
         <div class="col-sm-2">
-            {% if form.location is defined %}
             {{ form_widget(form.location) }}
-            {% endif %}
         </div>
         <div class="col-sm-1">
             {{ form_widget(form.submit) }}
@@ -38,8 +36,8 @@
         <tbody>
         {% for customer in customers %}
             <tr>
-                <td><a class="inlist" href="{{ path('customer_edit', { 'id': customer.id }) }}">{{ customer.id }}</a></td>
-                <td><a class="inlist" href="{{ path('customer_edit', { 'id': customer.id }) }}">{{ customer.name }}</a></td>
+                <td><a class="inlist" href="{{ path('customer_edit', { 'id': customer.id }) }}" data-toggle="tooltip" title="{{ customer.getAddressString() }}">{{ customer.id }}</a></td>
+                <td><a class="inlist" href="{{ path('customer_edit', { 'id': customer.id }) }}" data-toggle="tooltip" title="{{ customer.getAddressString() }}">{{ customer.name }}</a></td>
                 <td>{{ customer.representative }}</td>
                 <td>{{ customer.email }}</td>
                 <td>{{ customer.location.name|default("") }}</td>

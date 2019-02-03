@@ -27,6 +27,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
@@ -74,6 +75,7 @@ class LocationController extends Controller
 
         $form = $this->createFormBuilder($location)
                 ->add('name')
+                ->add('zipcodes', TextType::class, array('required' => false, 'attr' => ['placeholder' => 'Comma separated list of zipcodes of each four chars']))
                 ->add('save', SubmitType::class, array('attr' => ['class' => 'btn-success btn-120']))
             ->getForm();
 

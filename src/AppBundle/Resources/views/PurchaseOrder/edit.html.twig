@@ -37,9 +37,7 @@
 
                     {{ form_row(form.orderDate) }} 
                     {{ form_row(form.status) }} 
-                    {% if form.location is defined %}
                     {{ form_row(form.location) }} 
-                    {% endif %}
                     {{ form_row(form.remarks) }} 
                 </div>
             </div>
@@ -65,10 +63,10 @@
                                 None
                             {% elseif order.pickup.dataDestruction == 1 %}
                                 Format
-                            {% elseif order.pickup.dataDestruction == 2 %}
-                                Statement
+                            {% elseif order.pickup.dataDestruction == 2 %}       
+                                Destruction statement
                             {% elseif order.pickup.dataDestruction == 3 %}
-                                elseShred
+                                Shred
                             {% elseif order.pickup.dataDestruction == 4 %}
                                 Killdisk
                             {% else %}
@@ -86,11 +84,20 @@
                     </tr>
                     <tr>
                         <td>Images</td>
-                        {% if order.pickup.images|length > 0 %}
-                        <td>Yes</td>
-                        {% else %}
-                        <td>No</td>
-                        {% endif %}
+                        <td>
+                            <div class="row">
+                            {% for image in order.pickup.images %}
+                                <div class="col-md-4 col-filecontainer" id="col-file-{{ image.id }}">
+                                    <div class="panel panel-default panel-filecontainer">
+                                        <div class="panel-body panel-body-small">
+                                            <a href="{{ path("download", { 'id': image.id }) }}" title="{{ image.originalClientFilename }}" target="_blank">{{ image.originalClientFilename }}</a><br />
+                                            <img src="{{ path("download", { 'id': image.id }) }}" title="{{ image.originalClientFilename }}" />
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            </div>
+                        </td>
                     </tr>
                 </table>
             </div>

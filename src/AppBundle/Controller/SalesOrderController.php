@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\Repair;
 use AppBundle\Entity\SalesService;
@@ -14,7 +15,9 @@ use AppBundle\Entity\Product;
 use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Entity\ProductOrderRelation;
 use AppBundle\Form\IndexSearchForm;
+use AppBundle\Form\IndexBulkEditForm;
 use AppBundle\Form\SalesOrderForm;
+use AppBundle\Form\SalesOrderBulkEditForm;
 use Symfony\Component\Form\FormError;
 
 /**
@@ -44,19 +47,74 @@ class SalesOrderController extends Controller
         if ($form->isSubmitted() && $form->isValid() && $container->isSearchable())
         {
             $orders = $repo->findBySearchQuery($container);
+            $pageLength = 200;
         }
         else
         {
             $orders = $repo->findMine($this->getUser());
+            $pageLength = 20;
         }
 
         $paginator = $this->get('knp_paginator');
-        $ordersPage = $paginator->paginate($orders, $request->query->getInt('page', 1), 10);
+        $ordersPage = $paginator->paginate($orders, $request->query->getInt('page', 1), $pageLength);
 
         return $this->render('AppBundle:SalesOrder:index.html.twig', array(
             'orders' => $ordersPage,
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'formBulkEdit' => $this->createForm(IndexBulkEditForm::class, $orders)->createView()
             ));
+    }
+
+    /**
+     * @Route("/bulkedit/{success}", name="salesorder_bulkedit")
+     */
+    public function bulkEditAction(Request $request, $success = null)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        // Get variables from IndexBulkEditForm
+        $action = $request->query->get('index_bulk_edit_form')['action'];
+        $orderIds = $request->query->get('index_bulk_edit_form')['index'];
+        $orders = $em->getRepository(SalesOrder::class)->findById($orderIds);
+
+        if ($action == "status")
+        {
+            $form = $this->createForm(SalesOrderBulkEditForm::class, $orders, array('user' => $this->getUser()));
+
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid())
+            {
+                $location = $form->get("location")->getData();
+                $status = $form->get("status")->getData();
+                
+                foreach ($orders as $order)
+                {
+                     /** @var SalesOrder $order */
+
+                    if ($location)
+                        $order->setLocation($location);
+
+                    if ($status)
+                        $order->setStatus($status);
+                }
+                
+                $em->flush();
+
+                return $this->redirectToRoute("salesorder_bulkedit", array('index_bulk_edit_form[action]' => $action, 'index_bulk_edit_form[index]' => $orderIds, 'success' => true));
+            }
+            else if ($form->isSubmitted())
+            {
+                $success = false;
+            }
+
+            return $this->render('AppBundle:SalesOrder:bulkedit.html.twig', array(
+                'form' => $form->createView(),
+                'success' => $success
+            ));
+        }
+
+        return false;
     }
 
     /**
@@ -97,11 +155,6 @@ class SalesOrderController extends Controller
         $form = $this->createForm(SalesOrderForm::class, $order, array('user' => $this->getUser(), 'stock' => $stock, 'isRepair' => $isRepair));
 
         $form->handleRequest($request);
-
-        if (!$order->getLocation())
-        {
-            $order->setLocation($this->get('security.token_storage')->getToken()->getUser()->getLocation());
-        }
 
         if ($form->isSubmitted())
         {
@@ -236,11 +289,12 @@ class SalesOrderController extends Controller
     public function deleteRelationAction($id)
     {
         $em = $this->getDoctrine()->getManager();
+        /** @var ProductOrderRelation */
         $relation = $em->find(ProductOrderRelation::class, $id);
         $em->remove($relation);
         $em->flush();
 
-        return $this->redirectToRoute('salesorder_edit', ['id' => $id, 'success' => true]);
+        return $this->redirectToRoute('salesorder_edit', ['id' => $relation->getOrder()->getId(), 'success' => true]);
     }
 
     /**
