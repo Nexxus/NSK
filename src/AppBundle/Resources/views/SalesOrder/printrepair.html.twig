@@ -94,36 +94,46 @@
     </table>
 </div>
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Agreement at order{% endtrans %}
+<table border="0" width="100%">
+<tr>
+<td width="50%">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Agreement at order{% endtrans %}
+        </div>
+        <table class="table table-bordered">
+            <tr>
+                <td style="padding: 5px 5px 70px 5px">Name: </td>
+                <td style="padding: 5px 5px 70px 5px">Signature customer:</td>
+            </tr>
+            <tr>
+                <td style="padding: 5px 5px 70px 5px">Date: </td>
+                <td style="padding: 5px 5px 70px 5px">Signature repairer:</td>
+            </tr>
+        </table>
     </div>
-    <table class="table table-bordered">
-        <tr>
-            <td style="padding: 5px 5px 70px 5px">Name: </td>
-            <td style="padding: 5px 5px 70px 5px">Signature customer:</td>
-        </tr>
-        <tr>
-            <td style="padding: 5px 5px 70px 5px">Date: </td>
-            <td style="padding: 5px 5px 70px 5px">Signature repairer:</td>
-        </tr>
-    </table>
-</div>
+</td>
+<td width="50%">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Agreement after repair{% endtrans %}
+        </div>
+        <table class="table table-bordered">
+            <tr>
+                <td style="padding: 5px 5px 70px 5px">Name: </td>
+                <td style="padding: 5px 5px 70px 5px">Signature customer:</td>
+            </tr>
+            <tr>
+                <td style="padding: 5px 5px 70px 5px">Date: </td>
+                <td style="padding: 5px 5px 70px 5px">Signature repairer:</td>
+            </tr>
+        </table>
+    </div>
+</td>
+</tr>
+</table>
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Agreement after repair{% endtrans %}
-    </div>
-    <table class="table table-bordered">
-        <tr>
-            <td style="padding: 5px 5px 70px 5px">Name: </td>
-            <td style="padding: 5px 5px 70px 5px">Signature customer:</td>
-        </tr>
-        <tr>
-            <td style="padding: 5px 5px 70px 5px">Date: </td>
-            <td style="padding: 5px 5px 70px 5px">Signature repairer:</td>
-        </tr>
-    </table>
-</div>
+
+
 
 {% endblock %}
