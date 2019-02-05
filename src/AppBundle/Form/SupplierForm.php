@@ -43,18 +43,6 @@ class SupplierForm extends AbstractType
         $user = $options['user'];
 
         $builder
-            ->add('location',  EntityType::class, [
-                'class' => 'AppBundle:Location',
-                'choice_label' => 'name',
-                'required' => true,
-                'query_builder' => function (EntityRepository $er) use ($user) { 
-                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
-                    /** @var \AppBundle\Entity\User $user */
-                    if ($user->hasRole("ROLE_LOCAL"))
-                        $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
-                    return $qb;
-                }
-            ])
             ->add('kvkNr', TextType::class, ['required' => false])
             ->add('representative', TextType::class, ['required' => false])
             ->add('email', EmailType::class, ['required' => true])
@@ -75,6 +63,22 @@ class SupplierForm extends AbstractType
             ->add('isPartner', CheckboxType::class, ['required' => false, 'label' => 'This supplier should be rewarded as partner'])
             ->add('isOwner', CheckboxType::class, ['required' => false, 'label' => 'This supplier should be rewarded as owner'])
             ->add('save', SubmitType::class, ['attr' => ['class' => 'btn-success btn-120']]);
+
+        if ($user) 
+        {
+            $builder->add('location',  EntityType::class, [
+                'class' => 'AppBundle:Location',
+                'choice_label' => 'name',
+                'required' => true,
+                'query_builder' => function (EntityRepository $er) use ($user) { 
+                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
+                    /** @var \AppBundle\Entity\User $user */
+                    if ($user->hasRole("ROLE_LOCAL"))
+                        $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
+                    return $qb;
+                }
+            ]);
+        }    
     }
 
     public function configureOptions(OptionsResolver $resolver)

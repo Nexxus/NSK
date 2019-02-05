@@ -27,8 +27,7 @@ class AttributeController extends Controller
 
         $attributes = array();
 
-        $container = new \AppBundle\Helper\IndexSearchContainer();
-        $container->className = Attribute::class;
+        $container = new \AppBundle\Helper\IndexSearchContainer($this->getUser(), Attribute::class);
 
         $form = $this->createForm(IndexSearchForm::class, $container);
 

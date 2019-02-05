@@ -57,9 +57,7 @@ class ProductController extends Controller
 
         $products = array();
 
-        $container = new \AppBundle\Helper\IndexSearchContainer();
-        $container->user = $this->getUser();
-        $container->className = Product::class;
+        $container = new \AppBundle\Helper\IndexSearchContainer($this->getUser(), Product::class);
 
         $form = $this->createForm(IndexSearchForm::class, $container);
 

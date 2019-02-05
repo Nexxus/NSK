@@ -45,9 +45,7 @@ class SupplierController extends Controller
 
         $suppliers = array();
 
-        $container = new \AppBundle\Helper\IndexSearchContainer();
-        $container->user = $this->getUser();
-        $container->className = Supplier::class;
+        $container = new \AppBundle\Helper\IndexSearchContainer($this->getUser(), Supplier::class);
 
         $form = $this->createForm(IndexSearchForm::class, $container);
 
