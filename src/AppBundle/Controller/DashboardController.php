@@ -43,8 +43,7 @@ class DashboardController extends Controller
     {
         $result = null;
 
-        $container = new \AppBundle\Helper\IndexSearchContainer();
-        $container->user = $this->getUser();
+        $container = new \AppBundle\Helper\IndexSearchContainer($this->getUser(), null);
         
         $form = $this->createForm(IndexSearchForm::class, $container);
 

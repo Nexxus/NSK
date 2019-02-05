@@ -36,9 +36,7 @@ class SalesOrderController extends Controller
 
         $orders = array();
 
-        $container = new \AppBundle\Helper\IndexSearchContainer();
-        $container->user = $this->getUser();
-        $container->className = SalesOrder::class;
+        $container = new \AppBundle\Helper\IndexSearchContainer($this->getUser(), SalesOrder::class);
 
         $form = $this->createForm(IndexSearchForm::class, $container);
 

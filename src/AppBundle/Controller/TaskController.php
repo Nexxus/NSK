@@ -53,8 +53,7 @@ class TaskController extends Controller
 
         $tasks = array();
 
-        $container = new \AppBundle\Helper\IndexSearchContainer();
-        $container->className = Task::class;
+        $container = new \AppBundle\Helper\IndexSearchContainer($this->getUser(), Task::class);
 
         $form = $this->createForm(IndexSearchForm::class, $container);
 
