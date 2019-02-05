@@ -44,9 +44,7 @@ class CustomerController extends Controller
 
         $customers = array();
 
-        $container = new \AppBundle\Helper\IndexSearchContainer();
-        $container->user = $this->getUser();
-        $container->className = Customer::class;
+        $container = new \AppBundle\Helper\IndexSearchContainer($this->getUser(), Customer::class);
 
         $form = $this->createForm(IndexSearchForm::class, $container);
 

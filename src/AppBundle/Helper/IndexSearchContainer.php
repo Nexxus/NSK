@@ -17,13 +17,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek ï¿½ info@copiatek.nl ï¿½ Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Helper;
 
+use AppBundle\Entity\User;
+
 class IndexSearchContainer
 {
+    public function __construct(User $user, $className) {
+        $this->user = $user;
+        $this->className = $className;
+    }
+    
     /** @var string */
     public $className;
 
@@ -39,7 +46,7 @@ class IndexSearchContainer
     /** @var \AppBundle\Entity\Location */
     public $location;
 
-    /** @var \AppBundle\Entity\User */
+    /** @var User */
     public $user;
 
     /** @var \AppBundle\Entity\ProductType */

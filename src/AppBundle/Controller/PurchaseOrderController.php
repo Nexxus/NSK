@@ -30,9 +30,7 @@ class PurchaseOrderController extends Controller
 
         $orders = array();
 
-        $container = new \AppBundle\Helper\IndexSearchContainer();
-        $container->user = $this->getUser();
-        $container->className = PurchaseOrder::class;
+        $container = new \AppBundle\Helper\IndexSearchContainer($this->getUser(), PurchaseOrder::class);
 
         $form = $this->createForm(IndexSearchForm::class, $container);
 
