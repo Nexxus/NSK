@@ -158,7 +158,7 @@ class SalesOrderForm extends AbstractType
         }
         else
         {
-            $builder->add('addProduct',  EntityType::class, [
+            $builder->add('addProduct', EntityType::class, [
                 'required' => false,
                 'mapped' => false,
                 'class' => Product::class,
@@ -166,8 +166,7 @@ class SalesOrderForm extends AbstractType
                     return $p->getSku() . ' - ' . $p->getName();
                 },
                 'choices' => $options['stock'],
-                'attr' => ['class' => 'combobox focus'],
-                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.sku", "ASC"); }
+                'attr' => ['class' => 'combobox focus']
             ]);
         }
     }
