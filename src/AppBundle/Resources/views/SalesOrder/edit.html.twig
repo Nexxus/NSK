@@ -280,16 +280,6 @@
              }
          });
 
-        {% else %}
-
-        /* Add product: Submit form on select */
-
-        setInterval(function() {
-            if ($('input[name="sales_order_form[addProduct]"]').val()) {
-                $('form[name="sales_order_form"]').submit();
-            }
-        }, 1000);
-
         {% endif %}
 
      </script>
