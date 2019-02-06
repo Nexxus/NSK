@@ -184,6 +184,9 @@ class SalesOrderController extends Controller
                     $form->get('orderNr')->addError(new FormError('Already exists'));
                     $success = false;
                 }
+                catch (\Exception $e) {
+                    $success = false;
+                }
 
                 if ($success !== false)
                 {
