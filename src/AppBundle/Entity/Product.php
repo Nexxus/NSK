@@ -604,9 +604,15 @@ class Product
             }
             elseif ($r->getAttribute()->getType() == Attribute::TYPE_SELECT && $r->getValue()) {
                 
-                $list[] = $r->getAttribute()->getName() . ": " . $r->getSelectedOption()->getName();
+                if (!$r->getSelectedOption())
+                    $selectedOption = "(none)";
+                else
+                    $selectedOption = $r->getSelectedOption()->getName();
+                
+                $list[] = $r->getAttribute()->getName() . ": " . $selectedOption;
             }
             elseif ($r->getValue()) {
+                
                 $list[] = $r->getAttribute()->getName() . ": " . $r->getValue();
             }
         }
