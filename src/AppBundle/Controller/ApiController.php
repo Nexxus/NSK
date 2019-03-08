@@ -117,4 +117,137 @@ class ApiController extends FOSRestController
 
         return new View("Attachment saved successfully", Response::HTTP_OK);
     }
+
+    /**
+     * @Rest\Post("/product")
+     */
+    public function postProductAction(Request $request)
+    {
+        $sku = $request->get('sku');
+        $name = $request->get('name');
+        $retailPrice = $request->get('retailPrice');
+        $purchasePrice = $request->get('purchasePrice');
+        $description = $request->get('description');
+        $purchaseOrderId = $request->get('purchaseOrderId');
+        $quantity = $request->get('quantity') ?? 1;
+        $typeId = $request->get('typeId');
+        $statusId = $request->get('statusId');
+        $locationId = $request->get('locationId');
+
+        if (!$name || !$typeId || !$purchaseOrderId)
+        {
+            return new View("One or more required fields are missing: name a/o purchaseOrderId a/o typeId", Response::HTTP_NO_CONTENT);
+        }
+        elseif ($retailPrice && !is_numeric($retailPrice))
+        {
+            return new View("Retail price is not a number.", Response::HTTP_NO_CONTENT);
+        }
+        elseif ($purchasePrice && !is_numeric($purchasePrice))
+        {
+            return new View("Purchase price is not a number.", Response::HTTP_NO_CONTENT);
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $repo = $this->getDoctrine()->getRepository(Product::class);
+
+        $type = $em->getReference(\AppBundle\Entity\ProductType::class, $typeId);
+        $purchaseOrder = $this->getDoctrine()->getRepository(PurchaseOrder::class)->findMineById($this->getUser(), $purchaseOrderId);
+        $status = $statusId ? $em->getReference(\AppBundle\Entity\ProductStatus::class, $statusId) : null;
+
+        if (!$type || !$purchaseOrder)
+        {
+            return new View("One or more required fields are invalid: purchaseOrderId a/o typeId", Response::HTTP_NO_CONTENT);
+        }
+
+        if (!$locationId)
+            $location = $purchaseOrder->getLocation();
+        else {
+            $location = $em->getReference(\AppBundle\Entity\Location::class, $locationId);
+            if (!$location) $location = $purchaseOrder->getLocation();
+        }
+        
+        if (!$sku) $sku = time();
+
+        $product = new Product();
+        $repo->generateProductAttributeRelations($product);
+        $r = $repo->generateProductOrderRelation($product, $purchaseOrder, $quantity);
+        $r->setPrice($purchasePrice);
+        $product->setName($name);
+        $product->setType($type);
+        $product->setStatus($status);
+        $product->setLocation($location);
+        $product->setDescription($description);
+        $product->setPrice($retailPrice);
+        $product->setSku($sku);
+
+        $em->persist($product);
+        $em->flush();
+
+        return new View("Product saved successfully", Response::HTTP_OK);
+    }
+
+        /**
+     * @Rest\Put("/purchaseorderlocation")
+     */
+    public function updateLocationAction(Request $request)
+    {
+        $purchaseOrderId = $request->get('purchaseOrderId');
+        $locationId = $request->get('locationId');
+
+        $em = $this->getDoctrine()->getManager();
+        $repo = $this->getDoctrine()->getRepository(PurchaseOrder::class);
+
+        /** @var PurchaseOrder */
+        $order = $repo->findMineById($this->getUser(), $purchaseOrderId);
+
+        if ($order === null)
+        {
+            return new View("No order found", Response::HTTP_NO_CONTENT);
+        }
+
+        $order->setLocation($em->getReference(\AppBundle\Entity\Location::class, $locationId));
+
+        $em->flush();
+
+        return new View("Order updated successfully", Response::HTTP_OK);
+    }
+
+    /**
+     * @Rest\Put("/purchaseorderquantity")
+     */
+    public function updateQuantityAction(Request $request)
+    {
+        $purchaseOrderId = $request->get('purchaseOrderId');
+        $productId = $request->get('productId');
+        $quantity = $request->get('quantity');
+
+        if (!$quantity || !is_numeric($quantity))
+        {
+            return new View("Quantity value is not valid", Response::HTTP_NO_CONTENT);
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $repo = $this->getDoctrine()->getRepository(PurchaseOrder::class);
+
+        /** @var PurchaseOrder */
+        $order = $repo->findMineById($this->getUser(), $purchaseOrderId);
+     
+        if ($order === null)
+        {
+            return new View("No order found", Response::HTTP_NO_CONTENT);
+        }
+
+        $r = $order->getProductRelation($productId);
+
+        if ($r === null)
+        {
+            return new View("Product is not yet in order", Response::HTTP_NO_CONTENT);
+        }
+
+        $r->setQuantity($quantity);
+
+        $em->flush();
+
+        return new View("Order updated successfully", Response::HTTP_OK);
+    }
 }
