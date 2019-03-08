@@ -190,7 +190,10 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
             $r = new ProductOrderRelation($product, $order);
             $r->setQuantity($quantity);
             $this->_em->persist($r);
+            return $r;
         }
+
+        return null;
     }
 
     public function generateTaskServices(ProductOrderRelation $productOrderRelation)

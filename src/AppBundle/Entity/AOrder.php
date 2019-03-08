@@ -275,6 +275,18 @@ abstract class AOrder
     }
 
     /**
+     * Get productRelation by product id
+     *
+     * @return ProductOrderRelation
+     */
+    public function getProductRelation($productId)
+    {
+        return $this->productRelations->filter(function (ProductOrderRelation $r) use ($productId) {
+            return $r->getProduct()->getId() == $productId;
+        })->first();
+    }
+
+    /**
      * Set status
      *
      * @param OrderStatus $status
