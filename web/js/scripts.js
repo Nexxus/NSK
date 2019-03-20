@@ -2,12 +2,27 @@
 
 $(document).ready(function () {
 
+    $('[data-toggle="tooltip"]').tooltip({
+        placement: 'auto right',
+        html: true
+    });
+
     $('.combobox').combobox();
 
     $('.multiselect').multiselect({
         maxHeight: 200,
         buttonWidth: '100%',
         buttonClass: 'btn'
+    });
+
+    $('#index_bulk_edit_form_action').change(function (e) {
+        $('form[name="index_bulk_edit_form"]').submit();
+    });
+
+    $('.btn-selectall').click(function (e) {
+        $('input[name^="index_bulk_edit_form[index]"]').each(function() {
+            $(this).prop('checked', true);
+        });
     });
 
     $('.btn-delete').click(function (e) {
@@ -30,7 +45,8 @@ $(document).ready(function () {
 });
 
 function focusBarcodeInput() {
-    if (!$('input.focus:first').val()) {
+    //if (!$('input.focus:first').val()) {
+        $('input.focus:first').select();
         $('input.focus:first').focus();
-    }
+    //}
 }

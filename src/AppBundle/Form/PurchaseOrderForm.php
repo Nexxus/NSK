@@ -25,6 +25,7 @@ namespace AppBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -34,7 +35,6 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
 use AppBundle\Entity\PurchaseOrder;
 
 class PurchaseOrderForm extends AbstractType
@@ -53,7 +53,7 @@ class PurchaseOrderForm extends AbstractType
                 'required' => false
             ])
             ->add('orderDate', DateType::class)
-            ->add('remarks', TextType::class, ['required' => false])
+            ->add('remarks', TextareaType::class, ['required' => false, 'attr' => ['rows' => '4']])
             ->add('transport', MoneyType::class, ['required' => false])
             ->add('discount', MoneyType::class, ['required' => false])
             ->add('isGift', CheckboxType::class, ['required' => false])
@@ -61,7 +61,7 @@ class PurchaseOrderForm extends AbstractType
                 'class' => 'AppBundle:OrderStatus',
                 'choice_label' => 'name',
                 'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('os')->where('os.isPurchase = true');
+                    return $er->createQueryBuilder('os')->where('os.isPurchase = true')->orderBy("os.name", "ASC");
                 }
             ])
             ->add('supplier', EntityType::class, [
@@ -69,6 +69,8 @@ class PurchaseOrderForm extends AbstractType
                 'choice_label' => 'name',
                 'label' => 'Select',
                 'required' => false,
+                'attr' => ['class' => 'combobox'],
+                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
             ])
             ->add('newSupplier', SupplierForm::class, [
                 'mapped' => false,
@@ -90,23 +92,27 @@ class PurchaseOrderForm extends AbstractType
                 'mapped' => false,
                 'class' => 'AppBundle:ProductType',
                 'choice_label' => 'name',
+                'attr' => ['class' => 'combobox'],
+                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
             ])
             ->add('productRelations', CollectionType::class, [
                 'entry_type' => ProductOrderRelationForm::class
             ])
+            ->add('location',  EntityType::class, [
+                'class' => 'AppBundle:Location',
+                'choice_label' => 'name',
+                'required' => true,
+                'query_builder' => function (EntityRepository $er) use ($user) { 
+                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
+                    /** @var \AppBundle\Entity\User $user */
+                    if ($user->hasRole("ROLE_LOCAL"))
+                        $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
+                    return $qb;
+                }
+            ])            
             ->add('save', SubmitType::class, [
                 'attr' => ['class' => 'btn-success btn-120']
             ]);
-
-        if ($user && !$user->hasRole("ROLE_LOCAL"))
-        {
-            $builder->add('location',  EntityType::class, [
-                    'class' => 'AppBundle:Location',
-                    'choice_label' => 'name',
-                    'required' => false
-                ]);
-        }
-
     }
 
     public function configureOptions(OptionsResolver $resolver)

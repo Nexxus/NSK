@@ -525,6 +525,15 @@ class Product
             $q += $r->getQuantity();
         }
 
+        // #173 count also sold attributed products
+        foreach ($this->attributedRelations as $attributedRelation)
+        {
+            $quantityPerUnit = $attributedRelation->getQuantity() ?? 1;
+            $parentProductQuantitySold = $attributedRelation->getProduct()->getQuantitySold() ?? 0;
+
+            $q += $quantityPerUnit * $parentProductQuantitySold;
+        }
+
         return $q;
     }
 
@@ -568,5 +577,46 @@ class Product
         }
 
         return $price;
+    }
+
+    /**
+     * @return string for use in views tooltips
+     */
+    public function getAttributesList() {
+
+        $list = array();
+
+        foreach ($this->attributeRelations as $r) {
+
+            if ($r->getAttribute()->getType() == Attribute::TYPE_FILE && $r->getFiles()->count()) {
+
+                $filesList = array();
+                foreach ($r->getFiles() as $f) {
+
+                    $filesList[] = $f->getOriginalClientFilename();
+                }
+
+                $list[] = $r->getAttribute()->getName() . ": " . implode(", ", $filesList);
+            }
+            elseif ($r->getAttribute()->getType() == Attribute::TYPE_PRODUCT && $r->getValueProduct()) {
+                
+                $list[] = $r->getAttribute()->getName() . ": " . $r->getValueProduct()->getName();
+            }
+            elseif ($r->getAttribute()->getType() == Attribute::TYPE_SELECT && $r->getValue()) {
+                
+                if (!$r->getSelectedOption())
+                    $selectedOption = "(none)";
+                else
+                    $selectedOption = $r->getSelectedOption()->getName();
+                
+                $list[] = $r->getAttribute()->getName() . ": " . $selectedOption;
+            }
+            elseif ($r->getValue()) {
+                
+                $list[] = $r->getAttribute()->getName() . ": " . $r->getValue();
+            }
+        }
+
+        return implode("<br />", $list);
     }
 }

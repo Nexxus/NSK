@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek ï¿½ info@copiatek.nl ï¿½ Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Form;
@@ -30,6 +30,7 @@ use AppBundle\Entity\Customer;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Doctrine\ORM\EntityRepository;
 
 class CustomerForm extends AbstractType
 {
@@ -41,16 +42,19 @@ class CustomerForm extends AbstractType
         /** @var \AppBundle\Entity\User */
         $user = $options['user'];
 
-        if ($user && !$user->hasRole("ROLE_LOCAL"))
-        {
-            $builder->add('location',  EntityType::class, [
-                    'class' => 'AppBundle:Location',
-                    'choice_label' => 'name',
-                    'required' => true
-                ]);
-        }
-
         $builder
+            ->add('location',  EntityType::class, [
+                'class' => 'AppBundle:Location',
+                'choice_label' => 'name',
+                'required' => true,
+                'query_builder' => function (EntityRepository $er) use ($user) { 
+                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
+                    /** @var \AppBundle\Entity\User $user */
+                    if ($user->hasRole("ROLE_LOCAL"))
+                        $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
+                    return $qb;
+                }
+            ])
             ->add('kvkNr', TextType::class, ['required' => false])
             ->add('representative', TextType::class, ['required' => false])
             ->add('email', EmailType::class)

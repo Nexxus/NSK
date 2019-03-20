@@ -31,7 +31,7 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
+use Doctrine\ORM\EntityRepository;
 use AppBundle\Entity\Product;
 use AppBundle\Entity\ProductAttributeRelation;
 
@@ -42,6 +42,8 @@ class ProductForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $user = $options['user'];
+
         $builder
             ->add('sku', TextType::class, [
                 'required' => false,
@@ -50,7 +52,7 @@ class ProductForm extends AbstractType
             ->add('name', TextType::class)
             ->add('price', MoneyType::class, [
                 'required' => false,
-                'label' => 'Standard'
+                'label' => 'Retail price'
             ])
             ->add('description', TextType::class, [
                 'required' => false
@@ -58,32 +60,34 @@ class ProductForm extends AbstractType
             ->add('type',  EntityType::class, [
                 'class' => 'AppBundle:ProductType',
                 'choice_label' => 'name',
+                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
             ])
             ->add('status',  EntityType::class, [
                 'class' => 'AppBundle:ProductStatus',
                 'choice_label' => 'name',
-                'required' => false
+                'required' => false,
+                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
             ])
             ->add('attributeRelations', CollectionType::class, [
                 'entry_type' => ProductAttributeRelationForm::class,
                 'entry_options' => ['label' => false],
                 'label' => 'Attributes',
             ])
+            ->add('location',  EntityType::class, [
+                'class' => 'AppBundle:Location',
+                'choice_label' => 'name',
+                'required' => true,
+                'query_builder' => function (EntityRepository $er) use ($user) { 
+                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
+                    /** @var \AppBundle\Entity\User $user */
+                    if ($user->hasRole("ROLE_LOCAL"))
+                        $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
+                    return $qb;
+                }
+            ])
             ->add('save', SubmitType::class, [
                 'attr' => ['class' => 'btn-success btn-120']
             ]);
-
-        /** @var \AppBundle\Entity\User */
-        $user = $options['user'];
-
-        if ($user && !$user->hasRole("ROLE_LOCAL"))
-        {
-            $builder->add('location',  EntityType::class, [
-                    'class' => 'AppBundle:Location',
-                    'choice_label' => 'name',
-                    'required' => true
-                ]);
-        }
     }
 
     public function configureOptions(OptionsResolver $resolver)

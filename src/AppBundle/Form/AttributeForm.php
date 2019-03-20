@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Doctrine\ORM\EntityRepository;
@@ -36,7 +37,9 @@ class AttributeForm extends AbstractType
                     'class' => ProductType::class,
                     'choice_label' => 'name',
                     'by_reference' => false,
-                    'attr' => ['class' => 'multiselect']));
+                    'attr' => ['class' => 'multiselect'],
+                    'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.pindex", "ASC")->addOrderBy("x.name", "ASC"); }
+                ));
 
         if (!$attribute->getId())
         {
@@ -67,8 +70,9 @@ class AttributeForm extends AbstractType
                     'class' => ProductType::class,
                     'choice_label' => 'name',
                     'query_builder' => function (EntityRepository $er) {
-                        return $er->createQueryBuilder('pt')->where("pt.isAttribute = true");
-                    }));
+                        return $er->createQueryBuilder('pt')->where("pt.isAttribute = true")->orderBy("pt.pindex", "ASC")->addOrderBy("pt.name", "ASC");
+                    }))
+                ->add('hasQuantity', CheckboxType::class, array('required' => false, 'label' => 'This attribute can be applied multiple times per single unit'));
         }
         else
         {

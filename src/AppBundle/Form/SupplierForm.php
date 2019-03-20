@@ -31,6 +31,7 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Doctrine\ORM\EntityRepository;
 
 class SupplierForm extends AbstractType
 {
@@ -40,15 +41,6 @@ class SupplierForm extends AbstractType
 
         /** @var \AppBundle\Entity\User */
         $user = $options['user'];
-
-        if ($user && !$user->hasRole("ROLE_LOCAL"))
-        {
-            $builder->add('location',  EntityType::class, [
-                    'class' => 'AppBundle:Location',
-                    'choice_label' => 'name',
-                    'required' => true
-                ]);
-        }
 
         $builder
             ->add('kvkNr', TextType::class, ['required' => false])
@@ -71,6 +63,22 @@ class SupplierForm extends AbstractType
             ->add('isPartner', CheckboxType::class, ['required' => false, 'label' => 'This supplier should be rewarded as partner'])
             ->add('isOwner', CheckboxType::class, ['required' => false, 'label' => 'This supplier should be rewarded as owner'])
             ->add('save', SubmitType::class, ['attr' => ['class' => 'btn-success btn-120']]);
+
+        if ($user) 
+        {
+            $builder->add('location',  EntityType::class, [
+                'class' => 'AppBundle:Location',
+                'choice_label' => 'name',
+                'required' => true,
+                'query_builder' => function (EntityRepository $er) use ($user) { 
+                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
+                    /** @var \AppBundle\Entity\User $user */
+                    if ($user->hasRole("ROLE_LOCAL"))
+                        $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
+                    return $qb;
+                }
+            ]);
+        }    
     }
 
     public function configureOptions(OptionsResolver $resolver)

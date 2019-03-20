@@ -84,14 +84,17 @@ class ProductAttributeRelationForm extends AbstractType
                                     ->setParameter("pt", $relation->getProduct()->getType())
                                     ->orderBy('p.sku', 'ASC');
 
-                                return $qb;
+                                return $qb->orderBy("p.name", "ASC");
                             },
                            'class' => 'AppBundle:Product',
                            'choice_label' => 'name',
                            'required' => false,
                            'label' => 'Part'
                         ]);
-                        $form->add('quantity', IntegerType::class);
+
+                        if ($relation->getAttribute()->getHasQuantity())
+                            $form->add('quantity', IntegerType::class);
+                            
                         break;
                     case Attribute::TYPE_SELECT:
                         $form->add('value', ChoiceType::class, [

@@ -27,6 +27,12 @@
             Attributes
         </a>
     </li>
+    <li role="presentation" {{ 'task' in app.request.get('_route') ? " class='active'" : "" }}>
+        <a href="{{ path('admin_task_index') }} ">
+            <span class="glyphicon glyphicon-edit" aria-hidden="true" style="margin-right: 10px"></span>
+            {% trans %}Tasks{% endtrans %}
+        </a>
+    </li>
     <li role="presentation" {{ 'productstatus' in app.request.get('_route') ? " class='active'" : "" }}>
         <a href="{{ path('productstatus_index') }} ">
             <span class="glyphicon glyphicon-info-sign" aria-hidden="true" style="margin-right: 10px"></span>
@@ -37,12 +43,6 @@
         <a href="{{ path('orderstatus_index') }} ">
             <span class="glyphicon glyphicon-ok-sign" aria-hidden="true" style="margin-right: 10px"></span>
             {% trans %}Order statuses{% endtrans %}
-        </a>
-    </li>
-    <li role="presentation" {{ 'task' in app.request.get('_route') ? " class='active'" : "" }}>
-        <a href="{{ path('admin_task_index') }} ">
-            <span class="glyphicon glyphicon-edit" aria-hidden="true" style="margin-right: 10px"></span>
-            {% trans %}Tasks{% endtrans %}
         </a>
     </li>
 </ul>

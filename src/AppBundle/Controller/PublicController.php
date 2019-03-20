@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek ï¿½ info@copiatek.nl ï¿½ Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Controller;
@@ -32,6 +32,7 @@ use AppBundle\Entity\Customer;
 use AppBundle\Entity\PickupImageFile;
 use AppBundle\Entity\PickupAgreementFile;
 use AppBundle\Entity\ProductOrderRelation;
+use AppBundle\Entity\Location;
 use AppBundle\Form\PickupForm;
 use AppBundle\Form\PublicSalesOrderForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -45,7 +46,7 @@ class PublicController extends Controller
     /**
      * @Route("/public/pickup", name="pickup")
      * @Route("/ophaaldienst", name="ophaaldienst")
-     * @Method({"GET", "POST"})
+     * @Method({"GET"})
      */
     public function pickupAction(Request $request)
     {
@@ -62,99 +63,147 @@ class PublicController extends Controller
         $supplier = new Supplier();
         $order->setSupplier($supplier);
 
-        $em->persist($order);
-        $em->persist($pickup);
-        $em->persist($supplier);
-
         $form = $this->createForm(PickupForm::class, $pickup, array('productTypes' => $allProductTypes));
-
-        $form->handleRequest($request);
-
-        if ($request->isMethod('POST') && $form->isSubmitted() && $this->captchaVerify($request->request->get('g-recaptcha-response')))
-        {
-            if ($form->isValid())
-            {
-                try
-                {
-                    #region Form data processing
-
-                    // Create full order
-
-                    $location = $em->getReference("AppBundle:Location", $form->get('locationId')->getData());
-                    $pickup->getOrder()->setLocation($location);
-
-                    $pickup->getOrder()->setSupplier($em->getRepository('AppBundle:Supplier')->checkExists($pickup->getOrder()->getSupplier()));
-
-                    $pickup->getOrder()->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), true, false));
-
-                    // Images
-                    $imageNames = UploadifiveController::splitFilenames($form->get('imagesNames')->getData());
-                    foreach ($imageNames as $k => $v)
-                    {
-                        $file = new PickupImageFile($pickup, $v, $k);
-                        $em->persist($file);
-                    }
-
-                    // Agreement
-                    $agreementName = $form->get('agreementName')->getData();
-                    if ($agreementName)
-                    {
-                        $file = new PickupAgreementFile($pickup, substr($agreementName, 13), substr($agreementName, 0, 13));
-                        $em->persist($file);
-                    }
-
-                    // Products
-                    $count = 0;
-                    foreach ($allProductTypes as $productType)
-                    {
-                        $productTypeName = $productType->getName();
-                        $quantity = $form->get('q'.$productTypeName)->getData();
-                        if ($quantity)
-                        {
-                            $product = new Product();
-                            $product->setName($productTypeName);
-                            $product->setDescription("Created by application");
-                            $product->setType($productType);
-                            $product->setLocation($location);
-                            $product->setSku(time() + $count);
-                            $em->persist($product);
-
-                            $r = new ProductOrderRelation($product, $pickup->getOrder());
-                            $r->setQuantity($quantity);
-                            $em->persist($r);
-
-                            $count++;
-                        }
-                    }
-
-                    #endregion
-
-                    $em->flush();
-
-                    if (!$pickup->getOrder()->getOrderNr())
-                    {
-                        $orderNr = $em->getRepository('AppBundle:PurchaseOrder')->generateOrderNr($pickup->getOrder());
-                        $pickup->getOrder()->setOrderNr($orderNr);
-                        $em->flush();
-                    }
-
-                    $success = true;
-                }
-                catch (\Exception $ex)
-                {
-                    $success = false;
-                }
-            }
-            else
-            {
-                $success = false;
-            }
-        }
 
         return $this->render('AppBundle:Public:pickup.html.twig', array(
                 'form' => $form->createView(),
                 'success' => $success,
             ));
+    }
+
+    /**
+     * @Route("/public/pickup/post")
+     * @Method({"POST"})
+     */
+    public function postPickupAction(Request $request)
+    {
+        try
+        {
+            if (!$this->captchaVerify($request->request->get('g-recaptcha-response')))
+            {
+                //return new Response("reCaptcha is not valid", Response::HTTP_NOT_ACCEPTABLE);
+            }
+
+            $em = $this->getDoctrine()->getEntityManager();
+
+            $allProductTypes = $em->getRepository(ProductType::class)->findAll();
+
+            $order = new PurchaseOrder();
+            $order->setOrderDate(new \DateTime());
+            $order->setIsGift(true);
+            $pickup = new Pickup($order);
+            $supplier = new Supplier();
+            $order->setSupplier($supplier);
+    
+            $em->persist($order);
+            $em->persist($pickup);
+            $em->persist($supplier);
+    
+            $form = $this->createForm(PickupForm::class, $pickup, array('productTypes' => $allProductTypes));
+
+            $form->handleRequest($request); 
+
+            if (!$form->isValid())
+            {
+                return new Response($form->getErrors()->current()->getMessage(), Response::HTTP_NOT_ACCEPTABLE);
+            }
+
+            #region Form data processing
+
+            // Create full order
+
+            $pickup->getOrder()->setSupplier($em->getRepository('AppBundle:Supplier')->checkExists($pickup->getOrder()->getSupplier()));
+
+            $locationId = $form->get('locationId')->getData();
+            $location = null;
+            $zipcode = $pickup->getOrder()->getSupplier()->getZip();
+            
+            if ($locationId)
+                $location = $em->getRepository(Location::class)->find($locationId);
+            elseif ($zipcode)
+                $location = $em->getRepository(Location::class)->findOneByZipcode($zipcode);
+            if (!$location) 
+                $location = $em->getRepository(Location::class)->find(1);
+
+            $pickup->getOrder()->setLocation($location);
+
+            $pickup->getOrder()->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), true, false));
+
+            // Images
+            $imageNames = UploadifiveController::splitFilenames($form->get('imagesNames')->getData());
+            foreach ($imageNames as $k => $v)
+            {
+                $file = new PickupImageFile($pickup, $v, $k);
+                $em->persist($file);
+            }
+
+            // Agreement
+            $agreementName = $form->get('agreementName')->getData();
+            if ($agreementName)
+            {
+                $file = new PickupAgreementFile($pickup, substr($agreementName, 13), substr($agreementName, 0, 13));
+                $em->persist($file);
+            }
+
+            // Products
+            $count = 0;
+            foreach ($allProductTypes as $productType)
+            {
+                for ($i = 0; $i <= 4; $i++) 
+                {
+                    $productTypeName = $productType->getName();
+                    $address = $form->get('address'.$i)->getData();
+                    $address = $address ? 'Pickup address: ' . $address : "Address " . $i;
+
+                    $quantity = $form->get($this->toFieldname($productTypeName, $i))->getData();
+                    if ($quantity)
+                    {
+                        $product = new Product();
+                        $product->setName($address);
+                        $product->setDescription("Created by application");
+                        $product->setType($productType);
+                        if ($location) $product->setLocation($location);
+                        $product->setSku(time() + $count);
+                        $em->persist($product);
+
+                        $r = new ProductOrderRelation($product, $pickup->getOrder());
+                        $r->setQuantity($quantity);
+                        $em->persist($r);
+
+                        $count++;
+                    }
+                }
+            }
+
+            #endregion
+
+            $em->flush();
+            if (!$pickup->getOrder()->getOrderNr())
+            {
+                $orderNr = $em->getRepository('AppBundle:PurchaseOrder')->generateOrderNr($pickup->getOrder());
+                $pickup->getOrder()->setOrderNr($orderNr);
+                $em->flush();
+            }
+
+            return new Response("Pickup added successfully", Response::HTTP_OK); 
+        }
+        catch (InvalidFormException $exception)
+        {
+            return $exception->getForm();
+        }
+        catch (\Exception $exception)
+        {
+            return new Response($exception->getMessage(), 500);
+        }
+    }
+
+    // Duplicate exists in PickupForm
+    private function toFieldname($productTypeName, $idx = "") {
+        $productTypeName = str_replace("'", "_quote_", $productTypeName);
+        $productTypeName = str_replace("/", "_slash_", $productTypeName);
+        $productTypeName = str_replace(" ", "_", $productTypeName);
+        $idx = $idx ? $idx : ""; // replace zero with empty
+        return 'q' . $idx . $productTypeName;
     }
 
     /**
@@ -325,9 +374,12 @@ class PublicController extends Controller
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, array(
-            "secret"=>"6LdyzXMUAAAAAHSGkIAZE1QirknxwARCQbgAfHm4","response"=>$recaptcha));
+            "secret"=>"6LdzW4QUAAAAAD2ys-7G0Wa7URj58VGvppOhBgDS","response"=>$recaptcha));
         $response = curl_exec($ch);
         curl_close($ch);
+
+        if ($response === false) return false;
+
         $data = json_decode($response);
 
         return $data->success;

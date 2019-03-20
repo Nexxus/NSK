@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek ï¿½ info@copiatek.nl ï¿½ Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Form;
@@ -43,16 +43,6 @@ class IndexSearchForm extends AbstractType
             ->add('query', TextType::class, ['label' => false, 'required' => false, 'trim' => true, 'attr' => ['class' => 'focus']])
             ->add('submit', SubmitType::class, ['label' => 'Search']);
 
-        if ($container->user && !$container->user->hasRole("ROLE_LOCAL"))
-        {
-            $builder->add('location',  EntityType::class, [
-                    'class' => 'AppBundle:Location',
-                    'choice_label' => 'name',
-                    'placeholder' => 'All locations',
-                    'required' => false
-                ]);
-        }
-
         if ($container === null || $container->className === null) // Dashboard
         {
             $builder->add('type', ChoiceType::class, [
@@ -69,45 +59,64 @@ class IndexSearchForm extends AbstractType
                     'Leveranciers' => 'supplier'
                 ]]);
         }
-        elseif ($container->className == \AppBundle\Entity\Product::class)
+        else
         {
-            $builder->add('status',  EntityType::class, [
-                'class' => 'AppBundle:ProductStatus',
+            $builder->add('location',  EntityType::class, [
+                'class' => 'AppBundle:Location',
                 'choice_label' => 'name',
-                'placeholder' => 'All statuses',
-                'required' => false
+                'placeholder' => 'All locations',
+                'required' => false,
+                'query_builder' => function (EntityRepository $er) use ($container) { 
+                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
+                    /** @var IndexSearchContainer $container */
+                    if ($container->user->hasRole("ROLE_LOCAL"))
+                        $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $container->user->getLocationIds()); 
+                    return $qb;
+                }
             ]);
 
-            $builder->add('producttype',  EntityType::class, [
-                'class' => 'AppBundle:ProductType',
-                'choice_label' => 'name',
-                'placeholder' => 'All types',
-                'required' => false
-            ]);
-        }
-        elseif ($container->className == \AppBundle\Entity\SalesOrder::class)
-        {
-            $builder->add('status', EntityType::class, [
-                'class' => 'AppBundle:OrderStatus',
-                'choice_label' => 'name',
-                'placeholder' => 'All statuses',
-                'required' => false,
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('os')->where('os.isSale = true');
-                }
-            ]);
-        }
-        elseif ($container->className == \AppBundle\Entity\PurchaseOrder::class)
-        {
-            $builder->add('status', EntityType::class, [
-                'class' => 'AppBundle:OrderStatus',
-                'choice_label' => 'name',
-                'placeholder' => 'All statuses',
-                'required' => false,
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('os')->where('os.isPurchase = true');
-                }
-            ]);
+            if ($container->className == \AppBundle\Entity\Product::class)
+            {
+                $builder->add('status',  EntityType::class, [
+                    'class' => 'AppBundle:ProductStatus',
+                    'choice_label' => 'name',
+                    'placeholder' => 'All statuses',
+                    'required' => false,
+                    'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
+                ]);
+    
+                $builder->add('producttype',  EntityType::class, [
+                    'class' => 'AppBundle:ProductType',
+                    'choice_label' => 'name',
+                    'placeholder' => 'All types',
+                    'required' => false,
+                    'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
+                ]);
+            }
+            elseif ($container->className == \AppBundle\Entity\SalesOrder::class)
+            {
+                $builder->add('status', EntityType::class, [
+                    'class' => 'AppBundle:OrderStatus',
+                    'choice_label' => 'name',
+                    'placeholder' => 'All statuses',
+                    'required' => false,
+                    'query_builder' => function (EntityRepository $er) {
+                        return $er->createQueryBuilder('os')->where('os.isSale = true')->orderBy("os.name", "ASC");
+                    }
+                ]);
+            }
+            elseif ($container->className == \AppBundle\Entity\PurchaseOrder::class)
+            {
+                $builder->add('status', EntityType::class, [
+                    'class' => 'AppBundle:OrderStatus',
+                    'choice_label' => 'name',
+                    'placeholder' => 'All statuses',
+                    'required' => false,
+                    'query_builder' => function (EntityRepository $er) {
+                        return $er->createQueryBuilder('os')->where('os.isPurchase = true')->orderBy("os.name", "ASC");
+                    }
+                ]);
+            }
         }
     }
 }

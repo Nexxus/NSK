@@ -4,30 +4,42 @@
     <h1>Sales order list</h1>
 
     {{ form_start(form) }}
-    <div class="row" style="margin-bottom: 20px">
-        <div class="col-sm-4">
+    <div class="row">
+        <div class="col-sm-7">
             {{ form_widget(form.query, {'attr': {'placeholder': 'Zoeken op ordernummer'} }) }}
         </div>
         <div class="col-sm-2">
             {{ form_widget(form.status) }}
         </div>
         <div class="col-sm-2">
-            {% if form.location is defined %}
             {{ form_widget(form.location) }}
-            {% endif %}
         </div>
         <div class="col-sm-1">
             {{ form_widget(form.submit) }}
         </div>
-        <div class="col-sm-3">
-            <a href="{{ path('salesorder_new') }}" class="btn btn-primary pull-right" role="button">Create new sales</a>
-        </div>
     </div>
     {{ form_end(form) }}
+
+    <hr />
+
+    {{ form_start(formBulkEdit, {'action': path('salesorder_bulkedit')}) }}
+
+    <div class="row" style="margin-bottom: 20px; margin-top: 10px">
+        <div class="col-sm-1 col-xs-3">
+            <button type="button" class="btn btn-default btn-selectall">Select all</button>
+        </div>
+        <div class="col-sm-3 col-xs-9">
+            {{ form_widget(formBulkEdit.action) }}
+        </div>
+        <div class="col-sm-3 col-sm-offset-5 col-xs-12">
+            <a href="{{ path('salesorder_new') }}" class="btn btn-primary pull-right" role="button">Create new sales</a>
+        </div>        
+    </div>
 
     <table class="table table-striped">
         <thead>
             <tr>
+                <th></th>
                 <th{% if orders.isSorted('orderNr') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Order nr', 'orderNr') }}</th>
                 <th{% if orders.isSorted('orderDate') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Order date', 'orderDate') }}</th>
                 <th{% if orders.isSorted('customer.name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Customer', 'customer.name') }}</th>
@@ -41,9 +53,10 @@
         <tbody>
         {% for order in orders %}
             <tr>
-                <td>{{ order.orderNr }}</td>
+                <td><input type="checkbox" id="index_bulk_edit_form_index_{{ order.id }}" name="index_bulk_edit_form[index][]" value="{{ order.id }}"></td>
+                <td><a href="{{ path('salesorder_edit', { 'id': order.id }) }}" data-toggle="tooltip" title="{{ order.getAttributesList() }}">{{ order.orderNr }}</a></td>
                 <td>{{ order.orderDate|date("Y-m-d") }}</td>
-                <td>{{ order.customer.name|default("") }}</td>
+                <td><a class="inlist" href="{{ path('customer_edit', { 'id': order.customer.id|default(0) }) }}" data-toggle="tooltip" title="{{ order.customer.getAddressString()|default("") }}">{{ order.customer.name|default("") }}</a></td>
                 <td>{{ order.status.name|default("") }}</td>
                 <td>{{ order.location.name|default("") }}</td>
                 <td nowrap>
@@ -65,4 +78,7 @@
     <div class="navigation">
         {{ knp_pagination_render(orders) }}
     </div>
+
+    {{ form_end(formBulkEdit, {'render_rest': false}) }}
+
 {% endblock %}

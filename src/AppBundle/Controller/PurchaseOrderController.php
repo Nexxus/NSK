@@ -9,7 +9,9 @@ use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\Supplier;
 use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Form\IndexSearchForm;
+use AppBundle\Form\IndexBulkEditForm;
 use AppBundle\Form\PurchaseOrderForm;
+use AppBundle\Form\PurchaseOrderBulkEditForm;
 use Symfony\Component\Form\FormError;
 
 /**
@@ -28,9 +30,7 @@ class PurchaseOrderController extends Controller
 
         $orders = array();
 
-        $container = new \AppBundle\Helper\IndexSearchContainer();
-        $container->user = $this->getUser();
-        $container->className = PurchaseOrder::class;
+        $container = new \AppBundle\Helper\IndexSearchContainer($this->getUser(), PurchaseOrder::class);
 
         $form = $this->createForm(IndexSearchForm::class, $container);
 
@@ -39,19 +39,74 @@ class PurchaseOrderController extends Controller
         if ($form->isSubmitted() && $form->isValid() && $container->isSearchable())
         {
             $orders = $repo->findBySearchQuery($container);
+            $pageLength = 200;
         }
         else
         {
             $orders = $repo->findMine($this->getUser());
+            $pageLength = 20;
         }
 
         $paginator = $this->get('knp_paginator');
-        $ordersPage = $paginator->paginate($orders, $request->query->getInt('page', 1), 10);
+        $ordersPage = $paginator->paginate($orders, $request->query->getInt('page', 1), $pageLength);
 
         return $this->render('AppBundle:PurchaseOrder:index.html.twig', array(
             'orders' => $ordersPage,
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'formBulkEdit' => $this->createForm(IndexBulkEditForm::class, $orders)->createView()
             ));
+    }
+
+    /**
+     * @Route("/bulkedit/{success}", name="purchaseorder_bulkedit")
+     */
+    public function bulkEditAction(Request $request, $success = null)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        // Get variables from IndexBulkEditForm
+        $action = $request->query->get('index_bulk_edit_form')['action'];
+        $orderIds = $request->query->get('index_bulk_edit_form')['index'];
+        $orders = $em->getRepository(PurchaseOrder::class)->findById($orderIds);
+
+        if ($action == "status")
+        {
+            $form = $this->createForm(PurchaseOrderBulkEditForm::class, $orders, array('user' => $this->getUser()));
+
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted() && $form->isValid())
+            {
+                $location = $form->get("location")->getData();
+                $status = $form->get("status")->getData();
+                
+                foreach ($orders as $order)
+                {
+                     /** @var PurchaseOrder $order */
+
+                    if ($location)
+                        $order->setLocation($location);
+
+                    if ($status)
+                        $order->setStatus($status);
+                }
+                
+                $em->flush();
+
+                return $this->redirectToRoute("purchaseorder_bulkedit", array('index_bulk_edit_form[action]' => $action, 'index_bulk_edit_form[index]' => $orderIds, 'success' => true));
+            }
+            else if ($form->isSubmitted())
+            {
+                $success = false;
+            }
+
+            return $this->render('AppBundle:PurchaseOrder:bulkedit.html.twig', array(
+                'form' => $form->createView(),
+                'success' => $success
+            ));
+        }
+
+        return false;
     }
 
     /**
@@ -79,11 +134,6 @@ class PurchaseOrderController extends Controller
 
         $form->handleRequest($request);
 
-        if (!$order->getLocation())
-        {
-            $order->setLocation($this->get('security.token_storage')->getToken()->getUser()->getLocation());
-        }
-
         if ($form->isSubmitted())
         {
             if ($form->get('newOrExistingSupplier')->getData() == 'existing')
@@ -98,11 +148,11 @@ class PurchaseOrderController extends Controller
                 /** @var Supplier */
                 $newSupplier = $form->get('newSupplier')->getData();
                 $newSupplier->addPurchaseOrder($order);
-                $newSupplier->setLocation($order->getLocation());
+                //$newSupplier->setLocation($order->getLocation());
                 $em->persist($newSupplier);
                 $order->setSupplier($newSupplier);
             }
-
+            
             if ($form->isValid())
             {
                 $em->persist($order);

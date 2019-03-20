@@ -45,9 +45,7 @@ class SupplierController extends Controller
 
         $suppliers = array();
 
-        $container = new \AppBundle\Helper\IndexSearchContainer();
-        $container->user = $this->getUser();
-        $container->className = Supplier::class;
+        $container = new \AppBundle\Helper\IndexSearchContainer($this->getUser(), Supplier::class);
 
         $form = $this->createForm(IndexSearchForm::class, $container);
 
@@ -63,7 +61,7 @@ class SupplierController extends Controller
         }
 
         $paginator = $this->get('knp_paginator');
-        $suppliersPage = $paginator->paginate($suppliers, $request->query->getInt('page', 1), 10);
+        $suppliersPage = $paginator->paginate($suppliers, $request->query->getInt('page', 1), 20);
 
         return $this->render('AppBundle:Supplier:index.html.twig', array(
             'suppliers' => $suppliersPage,

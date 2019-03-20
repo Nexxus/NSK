@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek ï¿½ info@copiatek.nl ï¿½ Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Entity;
@@ -275,6 +275,18 @@ abstract class AOrder
     }
 
     /**
+     * Get productRelation by product id
+     *
+     * @return ProductOrderRelation
+     */
+    public function getProductRelation($productId)
+    {
+        return $this->productRelations->filter(function (ProductOrderRelation $r) use ($productId) {
+            return $r->getProduct()->getId() == $productId;
+        })->first();
+    }
+
+    /**
      * Set status
      *
      * @param OrderStatus $status
@@ -338,7 +350,7 @@ abstract class AOrder
 
             foreach ($r->getServices() as $s)
             {
-                if (is_a($s, SalesService::class))
+                if (is_a($s, SalesService::class) && $s->getStatus() != SalesService::STATUS_CANCEL)
                 {
                     /** @var $s SalesService */
                     $price += $s->getPrice();
@@ -353,5 +365,27 @@ abstract class AOrder
             $price += $this->getTransport();
 
         return $price;
+    }
+
+    /**
+     * @return string for use in views tooltips
+     */
+    public function getAttributesList() {
+
+        $list = array();
+
+        foreach ($this->productRelations as $r) {
+
+            $list[] = $r->getQuantity() . "x " . $r->getProduct()->getName();
+        }
+
+        $listStr = implode("<br/>", $list);
+
+        if ($this->remarks)
+        {
+            $listStr = $this->remarks . "<br/><br/>" . $listStr;
+        }
+
+        return $listStr;
     }
 }

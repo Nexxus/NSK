@@ -158,3 +158,13 @@ a.list-group-item-success.active {
 .row.form-display {
     margin-bottom: 20px;
 }
+
+.tooltip-inner {
+    background-color: #006e2e;
+    max-width:none;
+    text-align: left;
+}
+
+a[data-toggle=tooltip], .inlist {
+    color: #15007c;
+}

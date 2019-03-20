@@ -25,6 +25,7 @@ namespace AppBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -68,7 +69,7 @@ class SalesOrderForm extends AbstractType
                 ]);
         }
 
-        $builder->add('remarks', TextType::class, ['required' => false])
+        $builder->add('remarks', TextareaType::class, ['required' => false, 'attr' => ['rows' => '4']])
             ->add('orderDate', DateType::class)
             ->add('transport', MoneyType::class, ['required' => false])
             ->add('discount', MoneyType::class, ['required' => false])
@@ -76,15 +77,15 @@ class SalesOrderForm extends AbstractType
             ->add('status', EntityType::class, [
                 'class' => 'AppBundle:OrderStatus',
                 'choice_label' => 'name',
-                'query_builder' => function (EntityRepository $er) {
-                    return $er->createQueryBuilder('os')->where('os.isSale = true');
-                }
+                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('os')->where('os.isSale = true')->orderBy("os.name", "ASC"); }
             ])
             ->add('customer', EntityType::class, [
                 'class' => 'AppBundle:Customer',
                 'choice_label' => 'name',
                 'label' => 'Select',
                 'required' => false,
+                'attr' => ['class' => 'combobox'],
+                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
             ])
             ->add('newCustomer', CustomerForm::class, [
                 'mapped' => false,
@@ -110,12 +111,25 @@ class SalesOrderForm extends AbstractType
                     'data' => null,
                     'class' => 'AppBundle:ProductOrderRelation',
                     'choices' => $order->getProductRelations(),
+                    'attr' => ['class' => 'combobox'],
                     'choice_label' => function (ProductOrderRelation $r) {
                         return $r->getProduct()->getSku();
                     },
                 ])
             ->add('backorder', CheckboxType::class, ['required' => false, 'mapped' => false, 'label' => 'Back order: This creates empty purchase order too']) // new
             ->add('repairorder', CheckboxType::class, ['required' => false, 'mapped' => false, 'label' => 'Repair order: These products are not purchased', 'data' => $options['isRepair']]) // new
+            ->add('location',  EntityType::class, [
+                'class' => 'AppBundle:Location',
+                'choice_label' => 'name',
+                'required' => true,
+                'query_builder' => function (EntityRepository $er) use ($user) { 
+                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
+                    /** @var \AppBundle\Entity\User $user */
+                    if ($user->hasRole("ROLE_LOCAL"))
+                        $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
+                    return $qb;
+                }
+            ])             
             ->add('save', SubmitType::class, [
                 'attr' => ['class' => 'btn-success btn-120']
             ]);
@@ -138,11 +152,13 @@ class SalesOrderForm extends AbstractType
                 'mapped' => false,
                 'class' => 'AppBundle:ProductType',
                 'choice_label' => 'name',
+                'attr' => ['class' => 'combobox'],
+                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
             ]);
         }
         else
         {
-            $builder->add('addProduct',  EntityType::class, [
+            $builder->add('addProduct', EntityType::class, [
                 'required' => false,
                 'mapped' => false,
                 'class' => Product::class,
@@ -152,16 +168,6 @@ class SalesOrderForm extends AbstractType
                 'choices' => $options['stock'],
                 'attr' => ['class' => 'combobox focus']
             ]);
-        }
-
-
-        if ($user && !$user->hasRole("ROLE_LOCAL"))
-        {
-            $builder->add('location',  EntityType::class, [
-                    'class' => 'AppBundle:Location',
-                    'choice_label' => 'name',
-                    'required' => false
-                ]);
         }
     }
 

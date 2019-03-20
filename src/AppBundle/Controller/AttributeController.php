@@ -27,8 +27,7 @@ class AttributeController extends Controller
 
         $attributes = array();
 
-        $container = new \AppBundle\Helper\IndexSearchContainer();
-        $container->className = Attribute::class;
+        $container = new \AppBundle\Helper\IndexSearchContainer($this->getUser(), Attribute::class);
 
         $form = $this->createForm(IndexSearchForm::class, $container);
 
@@ -44,7 +43,7 @@ class AttributeController extends Controller
         }
 
         $paginator = $this->get('knp_paginator');
-        $attributesPage = $paginator->paginate($attributes, $request->query->getInt('page', 1), 10);
+        $attributesPage = $paginator->paginate($attributes, $request->query->getInt('page', 1), 20);
 
         return $this->render('AppBundle:Attribute:index.html.twig', array(
             'attributes' => $attributesPage,

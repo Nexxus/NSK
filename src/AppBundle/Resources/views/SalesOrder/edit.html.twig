@@ -37,9 +37,7 @@
 
                     {{ form_row(form.orderDate) }} 
                     {{ form_row(form.status) }} 
-                    {% if form.location is defined %}
                     {{ form_row(form.location) }} 
-                    {% endif %}
                     {{ form_row(form.remarks) }} 
                     {% if (order.id == 0) %}
                     {{ form_row(form.backorder) }} 
@@ -133,9 +131,9 @@
                     <th>Name</th>
                     <th>Type</th>
                     <th>Stock</th>
-                    <th>Standard<br />price p.u.</th>
-                    <th width="15%">This sale<br />price p.u.</th>
-                    <th width="10%">This sale<br />quantity</th>
+                    <th>Retail<br />price p.u.</th>
+                    <th width="15%">Sale<br />price p.u.</th>
+                    <th width="10%">Sale<br />quantity</th>
                     <th width="1%"></th>
                 </tr>
                 <tr>
@@ -281,16 +279,6 @@
                  $("#modalEditor").modal('show');
              }
          });
-
-        {% else %}
-
-        /* Add product: Submit form on select */
-
-        setInterval(function() {
-            if ($('input[name="sales_order_form[addProduct]"]').val()) {
-                $('form[name="sales_order_form"]').submit();
-            }
-        }, 1000);
 
         {% endif %}
 
