@@ -92,6 +92,16 @@ class IndexSearchForm extends AbstractType
                     'required' => false,
                     'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
                 ]);
+
+                $builder->add('availability', ChoiceType::class, array(
+                    'placeholder' => 'All availability',
+                    'required' => false,
+                    'choices' => [
+                        'In stock' => 'InStock',
+                        'On hold' => 'OnHold',
+                        'For sale' => 'Saleable',
+                        'Sold' => 'Sold'
+                ]));
             }
             elseif ($container->className == \AppBundle\Entity\SalesOrder::class)
             {

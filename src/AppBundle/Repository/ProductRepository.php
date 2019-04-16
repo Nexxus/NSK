@@ -89,7 +89,17 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         if ($search->producttype)
             $qb = $qb->andWhere("o.type = :producttype")->setParameter("producttype", $search->producttype);
 
-        return $qb->getQuery()->getResult();
+        $products = $qb->getQuery()->getResult();
+
+        if ($search->availability && count($products) > 0)
+        {
+            $quantityMethod = 'getQuantity' . $search->availability;
+            $products = array_filter($products, function (Product $product) use ($quantityMethod) {
+                return $product->{$quantityMethod}() > 0;
+            });
+        }
+
+        return $products;
     }
 
     /**

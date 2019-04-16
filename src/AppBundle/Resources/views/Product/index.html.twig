@@ -5,8 +5,11 @@
 
     {{ form_start(form) }}
     <div class="row">
-        <div class="col-sm-5">
+        <div class="col-sm-3">
             {{ form_widget(form.query, {'attr': {'placeholder': 'Zoeken op Id, Sku of (deel van) naam'} }) }}
+        </div>
+        <div class="col-sm-2">
+            {{ form_widget(form.availability) }}
         </div>
         <div class="col-sm-2">
             {{ form_widget(form.status) }}
