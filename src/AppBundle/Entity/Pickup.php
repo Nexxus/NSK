@@ -74,6 +74,13 @@ class Pickup
     private $realPickupDate;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255)
+     */
+    private $origin;
+
+    /**
      * @var int Use constants
      *
      * @ORM\Column(type="integer", nullable=true)
@@ -210,5 +217,17 @@ class Pickup
     public function getAgreement()
     {
         return $this->agreement;
+    }
+
+    public function setOrigin($origin)
+    {
+        $this->origin = $origin;
+
+        return $this;
+    }
+
+    public function getOrigin()
+    {
+        return $this->origin;
     }
 }
