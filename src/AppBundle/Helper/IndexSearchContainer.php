@@ -43,6 +43,9 @@ class IndexSearchContainer
     /** @var string */
     public $type;
 
+    /** @var string */
+    public $availability;
+
     /** @var \AppBundle\Entity\Location */
     public $location;
 
@@ -54,7 +57,7 @@ class IndexSearchContainer
 
     /** @return bool */
     public function isSearchable() {
-        if ($this->location || $this->status || $this->producttype || $this->query)
+        if ($this->location || $this->status || $this->producttype || $this->query || $this->availability)
             return true;
         else
             return false;

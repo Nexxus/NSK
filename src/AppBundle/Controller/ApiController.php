@@ -221,7 +221,7 @@ class ApiController extends FOSRestController
         $productId = $request->get('productId');
         $quantity = $request->get('quantity');
 
-        if (!$quantity || !is_numeric($quantity))
+        if ($quantity === null || !is_numeric($quantity))
         {
             return new View("Quantity value is not valid", Response::HTTP_NO_CONTENT);
         }

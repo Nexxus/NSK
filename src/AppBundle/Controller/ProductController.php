@@ -255,8 +255,8 @@ class ProductController extends Controller
         /** @var Product */
         $product = $repo->find($id);
 
-        $data = array('quantity' => 1, 'status' => $product->getStatus(), 'individualize' => false, 'newSku' => false);
-        $options = array('max' => $product->getQuantityInStock() - 1);
+        $data = array('quantity' => 1, 'status' => $product->getStatus());
+        $options = array('stock' => $product->getQuantityInStock());
 
         $form = $this->createForm(ProductSplitForm::class, $data, $options);
 
@@ -267,21 +267,26 @@ class ProductController extends Controller
             if ($form->isValid())
             {
                 $data = $form->getData();
-                $quantity = $data['quantity'];
+                $quantity = 0;
+                $individualize = true;
+                $sales = false;
 
-                if ($data['individualize'] && $quantity > 1)
-                {
-                    for ($i = 1; $i <= $quantity; $i++)
-                    {
-                        $newSkuIndex = $data['newSku'] ? $i-1 : false;
-                        $repo->splitProduct($product, $data['status'], 1, "(split ".$i.")", $newSkuIndex);
-                    }
+                switch ($data['how']) {
+                    case "split_stockpart":
+                        $individualize = false;
+                    case "individualize_stockpart":
+                        $quantity = $data['quantity'];
+                        break;
+                    case "individualize_stock":
+                        $quantity = $product->getQuantityInStock() - 1;
+                        break;                    
+                    case "individualize_bundle":
+                        $quantity = $product->getQuantityPurchased() - 1;
+                        $sales = true;
+                        break;
                 }
-                else
-                {
-                    $newSkuIndex = $data['newSku'] ? 0 : false;
-                    $repo->splitProduct($product, $data['status'], $quantity, "(split)", $newSkuIndex);
-                }
+
+                $repo->splitProduct($product, $data['status'], $quantity, $individualize, $sales, $data['newSku']);
 
                 try {
                     $em->flush();

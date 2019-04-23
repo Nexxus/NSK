@@ -89,7 +89,17 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         if ($search->producttype)
             $qb = $qb->andWhere("o.type = :producttype")->setParameter("producttype", $search->producttype);
 
-        return $qb->getQuery()->getResult();
+        $products = $qb->getQuery()->getResult();
+
+        if ($search->availability && count($products) > 0)
+        {
+            $quantityMethod = 'getQuantity' . $search->availability;
+            $products = array_filter($products, function (Product $product) use ($quantityMethod) {
+                return $product->{$quantityMethod}() > 0;
+            });
+        }
+
+        return $products;
     }
 
     /**
@@ -230,13 +240,76 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
      * @param Product $product
      * @param ProductStatus $status
      * @param int $quantity
+     * @param bool $individualize
+     * @param bool $salesorder
+     * @param bool $newSku
+     */
+    public function splitProduct(Product $product, ProductStatus $status, $quantity, $individualize, $sales, $newSku)
+    {
+        if ($sales)
+        {
+            $i = 1;
+            foreach ($product->getOrderRelations() as $orderRelation)
+            {
+                /** @var ProductOrderRelation $orderRelation */
+                if (is_a($orderRelation->getOrder(), SalesOrder::class))
+                {
+                    for ($ii = 1; $ii <= $orderRelation->getQuantity(); $ii++)
+                    {
+                        $newSkuIndex = $newSku ? $i-1 : false;
+                        $this->splitToProduct($product, $status, 1, "(split ".$i.")", $newSkuIndex, $orderRelation);
+                        $i++;
+                    }
+                }
+            }
+
+            for ($ii = $i; $ii <= $quantity; $ii++)
+            {
+                $newSkuIndex = $newSku ? $ii-1 : false;
+                $this->splitToProduct($product, $status, 1, "(split ".$ii.")", $newSkuIndex);
+            }
+        }
+        elseif ($individualize && $quantity > 1)
+        {
+            for ($i = 1; $i <= $quantity; $i++)
+            {
+                $newSkuIndex = $newSku ? $i-1 : false;
+                $this->splitToProduct($product, $status, 1, "(split ".$i.")", $newSkuIndex);
+            }
+        }
+        else
+        {
+            $newSkuIndex = $newSku ? 0 : false;
+            $this->splitToProduct($product, $status, $quantity, "(split)", $newSkuIndex);
+        }
+    }
+
+    /**
+     * Separates a quantity of products from an existing Product object bundle
+     * @param Product $product
+     * @param ProductStatus $status
+     * @param int $quantity
      * @param string $nameSupplement
      * @param int $newSkuIndex One or higher if new SKU is needed
+     * @param ProductOrderRelation $salesRelation
      * @return Product The new product
      */
-    public function splitProduct(Product $product, ProductStatus $status, $quantity, $nameSupplement, $newSkuIndex)
+    private function splitToProduct(Product $product, ProductStatus $status, $quantity, $nameSupplement, $newSkuIndex, $salesRelation = null)
     {
         $newProduct = new Product();
+        
+        if ($quantity > 1 && $salesRelation)
+        {
+            throw new \Exception("Bundle split with sales order involved is not allowed");
+        }
+        elseif ($salesRelation)
+        {
+            $newSalesRelation = new ProductOrderRelation($newProduct, $salesRelation->getOrder());
+            $newSalesRelation->setQuantity(1);
+            $newSalesRelation->setPrice($salesRelation->getPrice());
+            $this->_em->persist($newSalesRelation);
+        }
+        
         if ($product->getDescription()) $newProduct->setDescription($product->getDescription());
         if ($product->getLocation()) $newProduct->setLocation($product->getLocation());
         $newProduct->setName($product->getName() . " " . trim($nameSupplement));
@@ -267,6 +340,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         }
 
         $purchaseRelation->setQuantity($purchaseRelation->getQuantity() - $quantity);
+        if ($salesRelation) $salesRelation->setQuantity($salesRelation->getQuantity() - $quantity);
 
         return $newProduct;
     }

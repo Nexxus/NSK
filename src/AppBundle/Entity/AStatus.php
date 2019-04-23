@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek ï¿½ info@copiatek.nl ï¿½ Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Entity;
@@ -52,6 +52,13 @@ abstract class AStatus
      * @ORM\Column(name="name", type="string", length=255)
      */
     protected $name;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=6)
+     */
+    protected $color;
 
     /**
      * Get id
