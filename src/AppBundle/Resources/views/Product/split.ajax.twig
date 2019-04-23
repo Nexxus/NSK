@@ -18,19 +18,22 @@
     Enter the desired values for the separated and new product bundle (or set of individual products).
     </p>
 
-    {{ form_row(form.quantity) }} 
-    {{ form_row(form.status) }} 
-    {{ form_row(form.individualize) }} 
-    {{ form_row(form.newSku) }} 
-
-    <div class="text-center">
-        {{ form_widget(form.split) }}
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-    </div>
+    {{ form_widget(form) }}
 
 </div>
 
 {{ form_end(form) }}
 
+<script>
 
+    $('select#product_split_form_how').change(function () {
+        if ($(this).val() == 'split_stockpart' || $(this).val() == 'individualize_stockpart') {
+            $('input#product_split_form_quantity').closest('div.form-group').show();
+        }
+        else {
+            $('input#product_split_form_quantity').closest('div.form-group').hide();
+        }
+    });
+
+</script>
        

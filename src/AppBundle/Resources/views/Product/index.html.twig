@@ -75,14 +75,14 @@
                 <td>{{ product.getQuantitySold() }}</td>
                 <td nowrap align="right">
                     {% spaceless %}
-                    {% if product.getQuantityInStock() > 1 %}
-                    <a class="btn btn-default btn-modal" href="{{ path('product_split', { 'id': product.id }) }}" data-target="#modalSplitter" title="Split bundle"><span class="glyphicon glyphicon-flash" aria-label="Split"></span></a>
-                    {% endif %}
                     {% if product.purchaseOrderRelation and product.type and product.type.tasks|length > 0 %}
                     <a class="btn btn-default btn-modal" href="{{ path('product_checklist', { 'relationId': product.purchaseOrderRelation.id }) }}" data-target="#modalEditor" title="Checklist of tasks">
                         <span class="glyphicon glyphicon-check" aria-label="Checklist" style="margin-right: 3px"></span>
                         {{ product.purchaseOrderRelation.servicesDone }} / {{ product.type.tasks|length }}
                     </a>
+                    {% endif %}
+                    {% if product.getQuantityPurchased() > 1 %}
+                    <a class="btn btn-default btn-modal" href="{{ path('product_split', { 'id': product.id }) }}" data-target="#modalSplitter" title="Split bundle"><span class="glyphicon glyphicon-flash" aria-label="Split"></span></a>
                     {% endif %}
                     <a class="btn btn-success btn-modal" href="{{ path('product_edit', { 'id': product.id }) }}" data-target="#modalEditor" title="Edit"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
                     <a class="btn btn-danger btn-delete btn-modal" href="{{ path('product_delete', { 'id': product.id }) }}" title="Delete" data-class="product" data-name="{{ product.name }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>

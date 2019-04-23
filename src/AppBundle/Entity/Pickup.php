@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek ï¿½ info@copiatek.nl ï¿½ Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Entity;
@@ -67,6 +67,13 @@ class Pickup
     private $pickupDate;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $realPickupDate;
+
+    /**
      * @var int Use constants
      *
      * @ORM\Column(type="integer", nullable=true)
@@ -111,6 +118,17 @@ class Pickup
     public function getPickupDate()
     {
         return $this->pickupDate;
+    }
+
+    public function setRealPickupDate($realPickupDate)
+    {
+        $this->realPickupDate = $realPickupDate;
+        return $this;
+    }
+
+    public function getRealPickupDate()
+    {
+        return $this->realPickupDate;
     }
 
     public function setPickupDate($pickupDate)
