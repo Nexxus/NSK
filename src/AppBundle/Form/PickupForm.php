@@ -55,6 +55,7 @@ class PickupForm extends AbstractType
                     ]
                 ])
                 ->add('description', TextareaType::class, ['required' => false])
+                ->add('origin', TextType::class, ['required' => false])
                 ->add('address0', TextType::class, ['required' => false, 'mapped' => false])
                 ->add('address1', TextType::class, ['required' => false, 'mapped' => false])
                 ->add('address2', TextType::class, ['required' => false, 'mapped' => false])

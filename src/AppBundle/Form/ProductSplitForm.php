@@ -25,6 +25,7 @@ namespace AppBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -38,18 +39,39 @@ class ProductSplitForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        if ($options['stock'] > 2) {
+            $choices = [
+                'Split part of stock to new bundle' => 'split_stockpart',
+                'Individualize part of stock' => 'individualize_stockpart',
+                'Individualize whole stock' => 'individualize_stock',
+                'Individualize whole bundle' => 'individualize_bundle'
+            ];
+        }
+        elseif ($options['stock'] == 2) {
+            $choices = [
+                'Individualize stock' => 'individualize_stock',
+                'Individualize whole bundle' => 'individualize_bundle'
+            ];
+        }
+        else {
+            $choices = ['Individualize whole bundle' => 'individualize_bundle'];           
+        }
+        
+        $builder->add('how', ChoiceType::class, array(
+                'choices' => $choices));
+
+        if ($options['stock'] > 2) {
+            $builder->add('quantity', IntegerType::class, [
+                'attr' => ['min' => 1, 'max' => $options['stock'] - 1]
+            ]);
+        }
+
         $builder
-            ->add('quantity', IntegerType::class, [
-                'attr' => ['min' => 1, 'max' => $options['max']]
-            ])
             ->add('status',  EntityType::class, [
                 'class' => 'AppBundle:ProductStatus',
                 'choice_label' => 'name',
                 'required' => true,
                 'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
-            ])
-            ->add('individualize', CheckboxType::class, [
-                'required' => false
             ])
             ->add('newSku', CheckboxType::class, [
                 'required' => false,
@@ -68,6 +90,6 @@ class ProductSplitForm extends AbstractType
             'csrf_token_id'   => 'splitproduct',
         ));
 
-        $resolver->setRequired(array('max'));
+        $resolver->setRequired(array('stock'));
     }
 }

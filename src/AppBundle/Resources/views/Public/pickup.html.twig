@@ -124,6 +124,7 @@
                     <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Additional info{% endtrans %}
                 </div>
                 <div class="panel-body">
+                    {{ form_row(form.origin) }} 
                     {{ form_row(form.pickupDate) }} 
                     {{ form_row(form.description) }} 
                     {{ form_row(form.dataDestruction) }} 
