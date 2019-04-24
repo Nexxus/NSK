@@ -57,6 +57,10 @@
                         <td>{{ order.pickup.description|default("None") }}</td>
                     </tr>
                     <tr>
+                        <td>Origin</td>
+                        <td>{{ order.pickup.origin|default("None") }}</td>
+                    </tr>
+                    <tr>
                         <td>Data destruction</td>
                         <td>
                             {% if order.pickup.dataDestruction == 0 %}
