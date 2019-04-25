@@ -56,7 +56,7 @@ abstract class AStatus
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=6)
+     * @ORM\Column(type="string", length=7)
      */
     protected $color;
 
@@ -112,5 +112,17 @@ abstract class AStatus
     public function getName()
     {
         return $this->name;
+    }
+
+    public function setColor($color)
+    {
+        $this->color = $color;
+
+        return $this;
+    }
+
+    public function getColor()
+    {
+        return $this->color;
     }
 }

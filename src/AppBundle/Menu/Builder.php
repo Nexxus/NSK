@@ -42,6 +42,11 @@ class Builder implements ContainerAwareInterface
         // add user menu items
         if($role->isGranted('ROLE_LOCAL')) {
             $menu->addChild('Dashboard', array('route' => 'home'));
+
+            if($role->isGranted('ROLE_LOGISTICS')) {
+                $menu->addChild('Logistiek', array('route' => 'logistics_calendar'));
+            }
+
             $menu->addChild('Voorraad', array('route' => 'product_index'));
             $menu->addChild('Inkoop', array('route' => 'purchaseorder_index'));
             $menu->addChild('Verkoop', array('route' => 'salesorder_index'));

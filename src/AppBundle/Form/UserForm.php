@@ -85,6 +85,7 @@ class UserForm extends AbstractType
                     'Super_admin' => 'ROLE_SUPER_ADMIN',
                     'Admin' => 'ROLE_ADMIN',
                     'Manager' => 'ROLE_MANAGER',
+                    'Logistics' => 'ROLE_LOGISTICS',
                     'Local' => 'ROLE_LOCAL'
                 ]])
             ->add('enabled', CheckboxType::class, ['required' => false])

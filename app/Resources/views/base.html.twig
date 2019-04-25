@@ -12,6 +12,9 @@
         <link href="{{ asset('stylesheet/uploadifive.css') }}" rel="stylesheet"/>  
         <link href="{{ asset('stylesheet/override_style.css') }}" rel="stylesheet"/>  
         <!-- <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" /> -->
+
+        {% block extraHeaders %}
+        {% endblock %}
     </head>
     <body>
         <div class="modal fade" tabindex="-1" role="dialog" id="modalEditor" data-backdrop="static" data-keyboard="false">

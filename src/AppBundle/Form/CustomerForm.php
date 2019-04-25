@@ -50,7 +50,7 @@ class CustomerForm extends AbstractType
                 'query_builder' => function (EntityRepository $er) use ($user) { 
                     $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
                     /** @var \AppBundle\Entity\User $user */
-                    if ($user->hasRole("ROLE_LOCAL"))
+                    if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
                         $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
                     return $qb;
                 }
