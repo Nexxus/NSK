@@ -157,6 +157,13 @@ class PurchaseOrderController extends Controller
             {
                 $em->persist($order);
 
+                $pickup = $order->getPickup();
+                if ($pickup) {
+                    $em->persist($pickup);
+                    $pickup->setRealPickupDate($form->get("pickupDate")->getData());
+                    $pickup->setLogistics($form->get("logistics")->getData());
+                }
+
                 try {
                     $em->flush();
                 }

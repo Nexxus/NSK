@@ -47,7 +47,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
 
     public function findMine(User $user)
     {
-        if ($user->hasRole("ROLE_LOCAL"))
+        if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
             return $this->findBy(array("location" => $user->getLocationIds()), array('id' => 'DESC'));
         else
             return $this->findBy(array(), array('id' => 'DESC'));
@@ -61,7 +61,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         $qb = $this->getEntityManager()->createQueryBuilder()
             ->from("AppBundle:Product", "o")->select("o")->orderBy("o.id", "DESC");
 
-        if ($search->user->hasRole("ROLE_LOCAL"))
+        if ($search->user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
             $qb = $qb->where('IDENTITY(o.location) IN (:locationIds)')->setParameter('locationIds', $search->user->getLocationIds()); 
 
         if ($search->query)
@@ -80,7 +80,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
 
         if ($search->location)
             $qb = $qb->andWhere("o.location = :location")->setParameter("location", $search->location);
-        elseif ($search->user->hasRole("ROLE_LOCAL"))
+        elseif ($search->user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
             $qb = $qb->andWhere('IDENTITY(o.location) IN (:locationIds)')->setParameter('locationIds', $search->user->getLocationIds()); 
 
         if ($search->status)

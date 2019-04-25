@@ -47,14 +47,22 @@
                 <div class="panel-heading">
                     <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Pickup{% endtrans %}
                 </div>
+                <div class="panel-body">
+                    {{ form_row(form.pickupDate) }}
+                    {{ form_row(form.logistics) }}
+                </div>
                 <table class="table">
                     <tr>
-                        <td width="40%">Pickup date</td>
+                        <td width="40%">Proposed pickup date</td>
                         <td>{{ order.pickup.pickupDate|date("Y-m-d")|default("Unknown") }}</td>
                     </tr>
                     <tr>
                         <td>Description</td>
                         <td>{{ order.pickup.description|default("None") }}</td>
+                    </tr>
+                    <tr>
+                        <td>Origin</td>
+                        <td>{{ order.pickup.origin|default("None") }}</td>
                     </tr>
                     <tr>
                         <td>Data destruction</td>

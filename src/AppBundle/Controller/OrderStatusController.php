@@ -26,6 +26,7 @@ use AppBundle\Entity\OrderStatus;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ColorType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -69,6 +70,7 @@ class OrderStatusController extends Controller
         $form = $this->createFormBuilder($status)
                 ->add('pindex', IntegerType::class, ['required' => false])
                 ->add('name')
+                ->add('color', ColorType::class, ['required' => false])
                 ->add('isSale', CheckboxType::class, ['required' => false])
                 ->add('isPurchase', CheckboxType::class, ['required' => false])
                 ->add('save', SubmitType::class, array('attr' => ['class' => 'btn-success btn-120']))

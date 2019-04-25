@@ -69,7 +69,7 @@ class IndexSearchForm extends AbstractType
                 'query_builder' => function (EntityRepository $er) use ($container) { 
                     $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
                     /** @var IndexSearchContainer $container */
-                    if ($container->user->hasRole("ROLE_LOCAL"))
+                    if ($container->user->hasRole("ROLE_LOCAL") || $container->user->hasRole("ROLE_LOGISTICS"))
                         $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $container->user->getLocationIds()); 
                     return $qb;
                 }
