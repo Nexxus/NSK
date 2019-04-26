@@ -4,7 +4,8 @@ security:
         FOS\UserBundle\Model\UserInterface: bcrypt
     
     role_hierarchy:
-        ROLE_MANAGER: ROLE_LOCAL
+        ROLE_LOGISTICS: ROLE_LOCAL
+        ROLE_MANAGER: ROLE_LOGISTICS
         ROLE_ADMIN: ROLE_MANAGER   
         ROLE_SUPER_ADMIN: ROLE_ADMIN   
     providers:
@@ -52,4 +53,5 @@ security:
         - { path: ^/leergeld-bestelling, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/admin/, role: ROLE_ADMIN }
+        - { path: ^/logistics/, role: ROLE_LOGISTICS }
         - { path: ^/, role: ROLE_LOCAL }

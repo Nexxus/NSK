@@ -24,6 +24,7 @@ namespace AppBundle\Repository;
 
 use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Entity\User;
+use AppBundle\Entity\Pickup;
 
 /**
  * ProductRepository
@@ -40,7 +41,7 @@ class PurchaseOrderRepository extends \Doctrine\ORM\EntityRepository
 
     public function findMine(User $user)
     {
-        if ($user->hasRole("ROLE_LOCAL"))
+        if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
             return $this->findBy(array("location" => $user->getLocationIds()), array('id' => 'DESC'));
         else
             return $this->findBy(array(), array('id' => 'DESC'));
@@ -48,7 +49,7 @@ class PurchaseOrderRepository extends \Doctrine\ORM\EntityRepository
 
     public function findMineByStatus(User $user, $statusId)
     {
-        if ($user->hasRole("ROLE_LOCAL"))
+        if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
             return $this->findBy(array("location" => $user->getLocationIds(), "status" => $statusId), array('id' => 'DESC'));
         else
             return $this->findBy(array("status" => $statusId), array('id' => 'DESC'));
@@ -56,7 +57,7 @@ class PurchaseOrderRepository extends \Doctrine\ORM\EntityRepository
 
     public function findMineById(User $user, $id)
     {
-        if ($user->hasRole("ROLE_LOCAL"))
+        if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
             return $this->findOneBy(array("location" => $user->getLocationIds(), "id" => $id), array('id' => 'DESC'));
         else
             return $this->findOneBy(array("id" => $id), array('id' => 'DESC'));
@@ -72,14 +73,49 @@ class PurchaseOrderRepository extends \Doctrine\ORM\EntityRepository
 
         if ($search->location)
             $qb = $qb->andWhere("o.location = :location")->setParameter("location", $search->location);
-        elseif ($search->user->hasRole("ROLE_LOCAL"))
+        elseif ($search->user->hasRole("ROLE_LOCAL") || $search->user->hasRole("ROLE_LOGISTICS"))
             $qb = $qb->andWhere('IDENTITY(o.location) IN (:locationIds)')->setParameter('locationIds', $search->user->getLocationIds()); 
-
 
         if ($search->status)
             $qb = $qb->andWhere("o.status = :status")->setParameter("status", $search->status);
 
         return $qb->getQuery()->getResult();
+    }
+
+    public function findPickupEvents(User $user, $baseUrl)
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder()
+            ->from("AppBundle:Pickup", "p")
+            ->join("AppBundle:PurchaseOrder", "o")
+            ->where("p.realPickupDate BETWEEN :start AND :end")
+            ->setParameter("start", new \DateTime("first day of last month"))
+            ->setParameter("end", (new \DateTime())->modify('+1 year'))
+            ->select("p");
+
+        if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
+            $qb = $qb->andWhere('IDENTITY(o.location) IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
+
+        $pickups = $qb->getQuery()->getResult();
+
+        $events = array();
+
+        foreach ($pickups as $pickup) {
+            /** @var Pickup $pickup */
+            
+            $event = [
+                'title' => $pickup->getLogistics() ? $pickup->getLogistics()->getUsername() : "Pickup",
+                'id' => $pickup->getId(),
+                'url' => $baseUrl . '/' . $pickup->getOrder()->getId(),
+                'color' => $pickup->getOrder()->getStatus()->getColor(),
+                'start' => $pickup->getRealPickupDate()->format(\DateTime::ATOM),
+                'end' => $pickup->getRealPickupDate()->modify("+1 hour")->format(\DateTime::ATOM),
+            ];
+
+            $events[] = $event;
+        }
+
+        return $events;
+
     }
 
     public function generateOrderNr(PurchaseOrder $order)

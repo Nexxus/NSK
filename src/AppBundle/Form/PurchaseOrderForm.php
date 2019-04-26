@@ -29,6 +29,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -47,12 +48,15 @@ class PurchaseOrderForm extends AbstractType
         /** @var \AppBundle\Entity\User */
         $user = $options['user'];
 
+        /** @var PurchaseOrder */
+        $po = $builder->getData();
+
         $builder
             ->add('orderNr', TextType::class, [
                 'attr'=> ['placeholder' => 'Keep empty for autogeneration', 'class' => 'focus'],
                 'required' => false
             ])
-            ->add('orderDate', DateType::class)
+            ->add('orderDate', DateType::class)           
             ->add('remarks', TextareaType::class, ['required' => false, 'attr' => ['rows' => '4']])
             ->add('transport', MoneyType::class, ['required' => false])
             ->add('discount', MoneyType::class, ['required' => false])
@@ -105,7 +109,7 @@ class PurchaseOrderForm extends AbstractType
                 'query_builder' => function (EntityRepository $er) use ($user) { 
                     $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
                     /** @var \AppBundle\Entity\User $user */
-                    if ($user->hasRole("ROLE_LOCAL"))
+                    if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
                         $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
                     return $qb;
                 }
@@ -113,6 +117,27 @@ class PurchaseOrderForm extends AbstractType
             ->add('save', SubmitType::class, [
                 'attr' => ['class' => 'btn-success btn-120']
             ]);
+
+            if ($po->getPickup()) {
+
+                // actually property of Pickup child object
+                $builder
+                    ->add('pickupDate', DateTimeType::class, [
+                        'required' => false, 
+                        'mapped' => false,
+                        'data' => $po->getPickup()->getRealPickupDate()
+                    ]) 
+                    ->add('logistics', EntityType::class, [
+                        'required' => false, 
+                        'mapped' => false,
+                        'class' => 'AppBundle:User',
+                        'choice_label' => 'username',
+                        'data' => $po->getPickup()->getLogistics(),
+                        'query_builder' => function (EntityRepository $er) {
+                            return $er->createQueryBuilder('u')->where("u.roles LIKE '%ROLE_LOGISTICS%'")->orderBy("u.username", "ASC");
+                        }
+                    ]); 
+            }
     }
 
     public function configureOptions(OptionsResolver $resolver)

@@ -23,6 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
@@ -72,6 +73,15 @@ class Pickup
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $realPickupDate;
+
+    /**
+     * @var User Driver that will pick up the order
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", fetch="EAGER")
+     * @ORM\JoinColumn(name="logistics_id", referencedColumnName="id")
+     * @JMS\MaxDepth(depth=1)
+     */
+    private $logistics;
 
     /**
      * @var string
@@ -229,5 +239,20 @@ class Pickup
     public function getOrigin()
     {
         return $this->origin;
+    }
+
+    /**
+     * @param User $logistics
+     */
+    public function setLogistics($logistics)
+    {
+        $this->logistics = $logistics;
+
+        return $this;
+    }
+
+    public function getLogistics()
+    {
+        return $this->logistics;
     }
 }
