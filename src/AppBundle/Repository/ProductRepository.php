@@ -61,7 +61,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         $qb = $this->getEntityManager()->createQueryBuilder()
             ->from("AppBundle:Product", "o")->select("o")->orderBy("o.id", "DESC");
 
-        if ($search->user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
+        if ($search->user->hasRole("ROLE_LOCAL") || $search->user->hasRole("ROLE_LOGISTICS"))
             $qb = $qb->where('IDENTITY(o.location) IN (:locationIds)')->setParameter('locationIds', $search->user->getLocationIds()); 
 
         if ($search->query)
