@@ -44,7 +44,10 @@ class IndexBulkEditForm extends AbstractType
             ->add('action', ChoiceType::class, [
                 'choices' => [
                     'With selected lines...' => '',
-                    'Edit status and location' => 'status'
+                    'Edit status and location' => 'status',
+                    'Print barcodes' => 'barcodes',
+                    'Print price cards' => 'pricecards',
+                    'Print checklists' => 'checklists'
                 ],
                 'choice_attr' => function($key, $val, $index) {
                     return !$key ? ['disabled' => 'disabled'] : [];

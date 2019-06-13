@@ -132,8 +132,53 @@ class ProductController extends Controller
                 'success' => $success
             ));
         }
+        else {
+            return $this->bulkPrint($action, $products);
+        }
+    }
 
-        return false;
+    /**
+     * @param string $object
+     * @param Product[] $products
+     */
+    private function bulkPrint($object, $products) {
+
+        $html = array();
+        $mPdfConfiguration = ['', 'A6' ,'','',0,0,0,0,0,0,'P'];;
+
+        if ($object == "checklists") {
+            $products = array_filter($products, function (Product $product) {
+                return $product->getPurchaseOrderRelation() && $product->getType() && $product->getType()->getTasks()->count();
+            });
+        }
+
+        if (!count($products)) {
+            $html = "No (valid) products to print";
+        }
+        else
+        {
+            foreach ($products as $product)
+            {
+                /** @var Product $product */
+
+                switch ($object) {
+                    case "barcodes":
+                        $html[] = $this->render('AppBundle:Barcode:single.html.twig', array('barcode' => $product->getSku()));
+                        $mPdfConfiguration = ['', [54,25] ,'9','',3,'3',1,'','0','0','P'];
+                        break;
+                    case "pricecards":
+                        $html[] = $this->render('AppBundle:Product:print.html.twig', array('product' => $product));
+                        $mPdfConfiguration = ['', 'A6' ,'','',0,0,0,0,0,0,'P'];
+                        break;
+                    case "checklists":
+                        $html[] = $this->render('AppBundle:Product:printchecklist.html.twig', array('relation' => $product->getPurchaseOrderRelation()));
+                        $mPdfConfiguration = ['', 'A4' ,'','',10,10,10,10,0,0,'P'];
+                        break;                 
+                }
+            }
+        }
+
+        return $this->getPdfResponse("Bulk print", $html, $mPdfConfiguration);
     }
 
     /**

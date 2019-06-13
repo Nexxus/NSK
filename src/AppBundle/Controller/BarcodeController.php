@@ -46,42 +46,5 @@ class BarcodeController extends Controller
         return $this->getPdfResponse("Nexxus Barcode", $html, $mPdfConfiguration);
     }
 
-    /**
-     * @Route("barcode/multi/{barcodes}", name="barcode_multi")
-     */
-    public function multiAction(array $barcodes)
-    {
-        $html = array();
-
-        foreach ($barcodes as $barcode)
-        {
-            $html[] = $this->render('AppBundle:Barcode:single.html.twig', array(
-            'barcode' => $barcode
-            ));
-        }
-
-        $mPdfConfiguration = ['', [54,25] ,'9','',3,'3',1,'','0','0','P']; // or ['', [54,25] ,'0','',0,0,0,0,0,0,'P']
-
-        return $this->getPdfResponse("Nexxus Barcode", $html, $mPdfConfiguration);
-    }
-
-    /**
-     * @Route("barcode/a4/{barcodes}", name="barcode_multi_a4")
-     */
-    public function multiA4Action(array $barcodes)
-    {
-        $html = $this->render('AppBundle:Barcode:a4.html.twig', array(
-            'barcodes' => $barcodes
-            ));
-
-        return $this->getPdfResponse("Nexxus Barcode", $html);
-    }
-
-
-
-    /*
-     * $mpdf->AddPage(); to generate multiple stickers
-     *
-     * or use a4 template for multiple barcodes on one A4
-     */
+    // MULTI - HAPPENS IN PRODUCT CONTROLLER
 }

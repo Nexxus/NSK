@@ -116,6 +116,21 @@
                     </div>
                 </div>
             </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Totals per product type{% endtrans %}
+                </div>
+                <table class="table">
+                    {% for productType, quantity in order.getProductTypeQuantities() %}
+                    <tr>
+                        <td width="20%" nowrap>{{ productType }}:</td>
+                        <td>{{ quantity }}x</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
         </div>
     </div>
             

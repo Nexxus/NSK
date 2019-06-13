@@ -80,7 +80,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
 
         if ($search->location)
             $qb = $qb->andWhere("o.location = :location")->setParameter("location", $search->location);
-        elseif ($search->user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
+        elseif ($search->user->hasRole("ROLE_LOCAL") || $search->user->hasRole("ROLE_LOGISTICS"))
             $qb = $qb->andWhere('IDENTITY(o.location) IN (:locationIds)')->setParameter('locationIds', $search->user->getLocationIds()); 
 
         if ($search->status)
@@ -162,6 +162,19 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
             });
 
         return $products;
+    }
+
+    public function findLastUpdated(User $user) {
+        $qb = $this->getEntityManager()->createQueryBuilder()
+            ->from("AppBundle:Product", "o")
+            ->select("o")
+            ->orderBy("o.updatedAt", "DESC")
+            ->setMaxResults(5);
+
+        if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
+            $qb = $qb->andWhere('IDENTITY(o.location) IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
+
+        return $qb->getQuery()->getResult();
     }
 
     public function generateProductAttributeRelations(Product $product)

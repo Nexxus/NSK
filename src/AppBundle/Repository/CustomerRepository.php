@@ -63,7 +63,7 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
 
         if ($search->location)
             $qb = $qb->andWhere("o.location = :location")->setParameter("location", $search->location);
-        elseif ($search->user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
+        elseif ($search->user->hasRole("ROLE_LOCAL") || $search->user->hasRole("ROLE_LOGISTICS"))
             $qb = $qb->andWhere('IDENTITY(o.location) IN (:locationIds)')->setParameter('locationIds', $search->user->getLocationIds()); 
 
         return $qb->getQuery()->getResult();

@@ -68,6 +68,9 @@ doctrine:
             string_functions:
                 SOUNDEX: AppBundle\Helper\SoundexFunction
                 REPLACE: AppBundle\Helper\ReplaceFunction
+                MONTH: DoctrineExtensions\Query\Mysql\Month
+                YEAR: DoctrineExtensions\Query\Mysql\Year
+                DAY: DoctrineExtensions\Query\Mysql\Day
 
 # Swiftmailer Configuration
 swiftmailer:
