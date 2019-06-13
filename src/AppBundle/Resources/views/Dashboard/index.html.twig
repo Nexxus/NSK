@@ -75,13 +75,11 @@
             <div class="col-md-3">
                 <div class="panel panel-default">
                     <div class="panel-body panel-body-small">
-                        <h5>{% trans %}Laatste 5 verkopen{% endtrans %}</h5>
+                        <h5>{% trans %}Laatste verkopen{% endtrans %}</h5>
                         <ul>
-                            <li>Huawei XP542</li>
-                            <li>HP Invento 2.0</li>
-                            <li>Dell Vostro 321 units</li>
-                            <li>Sony Vaio Excellent</li>
-                            <li>Lenovo laptops 15 inch 12 units</li>
+                            {% for sale in sales %}
+                            <li><a href="{{ path('salesorder_edit', { 'id': sale.id }) }}">{{ sale.orderNr }} {{ sale.customer.name }}</a></li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </div>
@@ -89,13 +87,11 @@
             <div class="col-md-3">
                 <div class="panel panel-default">
                     <div class="panel-body panel-body-small">
-                        <h5>{% trans %}Meest actieve locaties{% endtrans %}</h5>
+                        <h5>{% trans %}Nieuwste reparaties{% endtrans %}</h5>
                         <ul>
-                            <li>Den Haag</li>
-                            <li>Amsterdam</li>
-                            <li>Arnhem</li>
-                            <li>Breda</li>
-                            <li>Lutjebroek</li>
+                            {% for repair in repairs %}
+                            <li><a href="{{ path('salesorder_edit', { 'id': repair.id }) }}">{{ repair.orderNr }} {{ repair.customer.name }}</a></li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </div>
@@ -105,11 +101,9 @@
                     <div class="panel-body panel-body-small">
                         <h5>{% trans %}Laatst gewijzigde producten{% endtrans %}</h5>
                         <ul>
-                            <li>HP Invento 2.0</li>
-                            <li>Lenovo laptops 15 inch 12 units</li>
-                            <li>Huawei XP542</li>
-                            <li>Dell Vostro 321 units</li>
-                            <li>Sony Vaio Excellent</li>
+                            {% for product in products %}
+                            <li><a href="{{ path('product_edit', { 'id': product.id }) }}">{{ product.sku }} {{ product.name }}</a></li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </div>
@@ -117,13 +111,11 @@
             <div class="col-md-3">
                 <div class="panel panel-default">
                     <div class="panel-body panel-body-small">
-                        <h5>{% trans %}Berichten{% endtrans %}</h5>
+                        <h5>{% trans %}Nieuwste pickups{% endtrans %}</h5>
                         <ul>
-                            <li>Vandaag uren registreren</li>
-                            <li>Terugbelverzoek voor Sjors</li>
-                            <li>Dell's ophalen in Arnhem</li>
-                            <li>Sony Vaio Excellent</li>
-                            <li>Vrijdag borrel met bitterballen</li>
+                            {% for pickup in pickups %}
+                            <li><a href="{{ path('purchaseorder_edit', { 'id': pickup.id }) }}">{{ pickup.orderNr }} {{ pickup.supplier.name }}</a></li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </div>
@@ -144,7 +136,7 @@
                             <li><a href="{{ path('orderstatus_index') }}">{% trans %}Orderstatussen wijzigen{% endtrans %}</a></li>
                           </ul>
                         </div>
-                        <div id="chart2"></div>
+                        <div id="chart1"></div>
                     </div>
                 </div>
             </div>
@@ -162,7 +154,7 @@
                             <li><a href="{{ path('orderstatus_index') }}">{% trans %}Orderstatussen wijzigen{% endtrans %}</a></li>
                           </ul>
                         </div>
-                        <div id="chart3"></div>
+                        <div id="chart2"></div>
                     </div>
                 </div>
             </div>
@@ -180,7 +172,7 @@
                             <li><a href="{{ path('orderstatus_index') }}">{% trans %}Orderstatussen wijzigen{% endtrans %}</a></li>
                           </ul>
                         </div>
-                        <div id="chart1"></div>
+                        <div id="chart3"></div>
                     </div>
                 </div>
             </div>
@@ -216,11 +208,9 @@
         data.addColumn('number');
         data.addColumn({ type: 'string', role: 'style' });
         data.addRows([
-          [new Date(2018, 1, 1), { v: 323, f: '323,00' }, 'color: #006e2e'],
-          [new Date(2018, 1, 2), { v: 223, f: '223,00' }, 'color: #006e2e'],
-          [new Date(2018, 1, 3), { v: 634, f: '634,00' }, 'color: #006e2e'],
-          [new Date(2018, 1, 4), { v: 435, f: '435,00' }, 'color: #006e2e'],
-          [new Date(2018, 1, 5), { v: 231, f: '231,00' }, 'color: #006e2e'],
+          {% for day in purchasesPerDay %}
+          [new Date({{ day.orderYear }}, {{ day.orderMonth-1 }}, {{ day.orderDay }}), { v: 0{{ day.quantity }} }, 'color: #006e2e'],
+          {% endfor %}
         ]);
 
         var options = {
@@ -229,7 +219,7 @@
             'chartArea': { 'width': '80%', 'height': '70%' },
         };
 
-        var chart = new google.visualization.ColumnChart(document.getElementById('chart1'));
+        var chart = new google.visualization.LineChart(document.getElementById('chart1'));
         chart.draw(data, options);
       }
 
@@ -240,11 +230,9 @@
           data.addColumn('number');
           data.addColumn({ type: 'string', role: 'style' });
           data.addRows([
-            [new Date(2018, 1, 1), { v: 5342, f: '5342,00' }, 'color: #bb0000'],
-            [new Date(2018, 1, 2), { v: 4611, f: '4611,00' }, 'color: #bb0000'],
-            [new Date(2018, 1, 3), { v: 5844, f: '5844,00' }, 'color: #bb0000'],
-            [new Date(2018, 1, 4), { v: 3211, f: '3211,00' }, 'color: #bb0000'],
-            [new Date(2018, 1, 5), { v: 2345, f: '2345,00' }, 'color: #bb0000'],
+            {% for day in salesPerDay %}
+              [new Date({{ day.orderYear }}, {{ day.orderMonth-1 }}, {{ day.orderDay }}), { v: 0{{ day.revenue }} }, 'color: #bb0000'],
+            {% endfor %}
           ]);
 
           var options = {
@@ -253,7 +241,7 @@
               'chartArea': { 'width': '80%', 'height': '70%' },
           };
 
-          var chart = new google.visualization.ColumnChart(document.getElementById('chart2'));
+          var chart = new google.visualization.LineChart(document.getElementById('chart2'));
           chart.draw(data, options);
       }
 
@@ -264,11 +252,9 @@
           data.addColumn('number');
           data.addColumn({ type: 'string', role: 'style' });
           data.addRows([
-            [new Date(2018, 1, 1), { v: 23, f: '23,00' }, 'color: #15007c'],
-            [new Date(2018, 1, 2), { v: 23, f: '23,00' }, 'color: #15007c'],
-            [new Date(2018, 1, 3), { v: 34, f: '34,00' }, 'color: #15007c'],
-            [new Date(2018, 1, 4), { v: 35, f: '35,00' }, 'color: #15007c'],
-            [new Date(2018, 1, 5), { v: 31, f: '31,00' }, 'color: #15007c'],
+            {% for day in repairsPerDay %}
+              [new Date({{ day.orderYear }}, {{ day.orderMonth-1 }}, {{ day.orderDay }}), { v: 0{{ day.quantity }} }, 'color: #15007c'],
+            {% endfor %}            
           ]);
 
           var options = {
@@ -277,7 +263,7 @@
               'chartArea': { 'width': '80%', 'height': '70%' },
           };
 
-          var chart = new google.visualization.ColumnChart(document.getElementById('chart3'));
+          var chart = new google.visualization.LineChart(document.getElementById('chart3'));
           chart.draw(data, options);
       }
 
