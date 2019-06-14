@@ -102,8 +102,13 @@ class PurchaseOrderRepository extends \Doctrine\ORM\EntityRepository
         foreach ($pickups as $pickup) {
             /** @var Pickup $pickup */
             
+            $title = $pickup->getLogistics() ? $pickup->getLogistics()->getUsername() : "Pickup";
+
+            if ($pickup->getOrder() && $pickup->getOrder()->getProductRelations()->count() > 0)
+                $title .= " - " . $pickup->getOrder()->getProductRelations()->first()->getProduct()->getName();
+
             $event = [
-                'title' => $pickup->getLogistics() ? $pickup->getLogistics()->getUsername() : "Pickup",
+                'title' => $title,
                 'id' => $pickup->getId(),
                 'url' => $baseUrl . '/' . $pickup->getOrder()->getId(),
                 'color' => $pickup->getOrder()->getStatus()->getColor(),
