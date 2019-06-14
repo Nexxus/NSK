@@ -85,7 +85,13 @@ class SalesOrderForm extends AbstractType
                 'label' => 'Select',
                 'required' => false,
                 'attr' => ['class' => 'combobox'],
-                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
+                'query_builder' => function (EntityRepository $er) use ($user) { 
+                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); 
+                    /** @var \AppBundle\Entity\User $user */
+                    if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
+                        $qb = $qb->where('x.location IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
+                    return $qb;
+                }
             ])
             ->add('newCustomer', CustomerForm::class, [
                 'mapped' => false,

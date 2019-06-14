@@ -7,6 +7,7 @@
     <link href='{{ asset('js/fullcalendar/timegrid/main.css') }}' rel='stylesheet' />
 
     <script src='{{ asset('js/fullcalendar/core/main.js') }}'></script>
+    <script src='{{ asset('js/fullcalendar/core/locales/nl.js') }}'></script>
     <script src='{{ asset('js/fullcalendar/daygrid/main.js') }}'></script>
     <script src='{{ asset('js/fullcalendar/timegrid/main.js') }}'></script>
     
@@ -19,6 +20,10 @@
           plugins: [ 'timeGrid' ],
           defaultView: 'timeGridWeek',
           allDaySlot: false,
+          locale: 'nl',
+          hiddenDays: [0, 6],
+          minTime: "07:00:00",
+          maxTime: "19:00:00",
           events: {{ events|json_encode|raw }}
         });
 

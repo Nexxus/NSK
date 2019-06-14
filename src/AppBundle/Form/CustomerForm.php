@@ -43,18 +43,6 @@ class CustomerForm extends AbstractType
         $user = $options['user'];
 
         $builder
-            ->add('location',  EntityType::class, [
-                'class' => 'AppBundle:Location',
-                'choice_label' => 'name',
-                'required' => true,
-                'query_builder' => function (EntityRepository $er) use ($user) { 
-                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
-                    /** @var \AppBundle\Entity\User $user */
-                    if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
-                        $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
-                    return $qb;
-                }
-            ])
             ->add('kvkNr', TextType::class, ['required' => false])
             ->add('representative', TextType::class, ['required' => false])
             ->add('email', EmailType::class)
@@ -72,6 +60,18 @@ class CustomerForm extends AbstractType
             ->add('zip2', TextType::class, ['required' => false, 'label' => 'Zip'])
             ->add('state2', TextType::class, ['required' => false, 'label' => 'State'])
             ->add('country2', TextType::class, ['required' => false, 'label' => 'Country'])
+            ->add('location',  EntityType::class, [
+                'class' => 'AppBundle:Location',
+                'choice_label' => 'name',
+                'required' => true,
+                'query_builder' => function (EntityRepository $er) use ($user) { 
+                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
+                    /** @var \AppBundle\Entity\User $user */
+                    if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
+                        $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
+                    return $qb;
+                }
+            ])
             ->add('save', SubmitType::class, ['attr' => ['class' => 'btn-success btn-120']]);
     }
 

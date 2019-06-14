@@ -388,4 +388,27 @@ abstract class AOrder
 
         return $listStr;
     }
+
+    /**
+     * @return integer[] key is product type name, value is quantity of that
+     */
+    public function getProductTypeQuantities() {
+
+        $result = array();
+
+        foreach ($this->productRelations as $relation) {
+            
+            if ($relation->getProduct()->getType()) 
+                $type = $relation->getProduct()->getType()->getName();
+            else
+                $type = "(unknown)";
+
+            if (!array_key_exists($type, $result))
+                $result[$type] = 0;
+
+            $result[$type] += $relation->getQuantity();   
+        }
+
+        return $result;
+    }
 }

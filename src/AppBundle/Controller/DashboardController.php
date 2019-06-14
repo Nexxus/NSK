@@ -27,6 +27,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Form\IndexSearchForm;
+use AppBundle\Entity\PurchaseOrder;
+use AppBundle\Entity\SalesOrder;
+use AppBundle\Entity\Product;
 
 /**
  * Product controller.
@@ -41,6 +44,8 @@ class DashboardController extends Controller
      */
     public function indexAction(Request $request)
     {
+        $em = $this->getDoctrine()->getManager();
+        
         $result = null;
 
         $container = new \AppBundle\Helper\IndexSearchContainer($this->getUser(), null);
@@ -63,6 +68,13 @@ class DashboardController extends Controller
         }
 
         return $this->render('AppBundle:Dashboard:index.html.twig', array(
+            'pickups' => $em->getRepository(PurchaseOrder::class)->findLastPurchases($this->getUser(), true),
+            'purchasesPerDay' => $em->getRepository(PurchaseOrder::class)->findPurchasesPerDay($this->getUser()),
+            'sales' => $em->getRepository(SalesOrder::class)->findLastSales($this->getUser()),
+            'salesPerDay' => $em->getRepository(SalesOrder::class)->findSalesPerDay($this->getUser()),
+            'repairs' => $em->getRepository(SalesOrder::class)->findLastSales($this->getUser(), true),
+            'repairsPerDay' => $em->getRepository(SalesOrder::class)->findRepairsPerDay($this->getUser()),
+            'products' => $em->getRepository(Product::class)->findLastUpdated($this->getUser()),
             'result' => $result,
             'form' => $form->createView()
         ));
