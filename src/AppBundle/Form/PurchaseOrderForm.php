@@ -78,7 +78,7 @@ class PurchaseOrderForm extends AbstractType
                     $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); 
                     /** @var \AppBundle\Entity\User $user */
                     if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
-                        $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
+                        $qb = $qb->where('x.location IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
                     return $qb;                    
                 }
             ])
