@@ -61,24 +61,26 @@ class SupplierForm extends AbstractType
             ->add('state2', TextType::class, ['required' => false, 'label' => 'State'])
             ->add('country2', TextType::class, ['required' => false, 'label' => 'Country'])
             ->add('isPartner', CheckboxType::class, ['required' => false, 'label' => 'This supplier should be rewarded as partner'])
-            ->add('isOwner', CheckboxType::class, ['required' => false, 'label' => 'This supplier should be rewarded as owner'])
-            ->add('save', SubmitType::class, ['attr' => ['class' => 'btn-success btn-120']]);
+            ->add('isOwner', CheckboxType::class, ['required' => false, 'label' => 'This supplier should be rewarded as owner']);
 
-        if ($user) 
-        {
-            $builder->add('location',  EntityType::class, [
-                'class' => 'AppBundle:Location',
-                'choice_label' => 'name',
-                'required' => true,
-                'query_builder' => function (EntityRepository $er) use ($user) { 
-                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
-                    /** @var \AppBundle\Entity\User $user */
-                    if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
-                        $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
-                    return $qb;
-                }
-            ]);
-        }    
+            if ($user) 
+            {
+                $builder->add('location',  EntityType::class, [
+                    'class' => 'AppBundle:Location',
+                    'choice_label' => 'name',
+                    'required' => true,
+                    'query_builder' => function (EntityRepository $er) use ($user) { 
+                        $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
+                        /** @var \AppBundle\Entity\User $user */
+                        if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
+                            $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
+                        return $qb;
+                    }
+                ]);
+            } 
+
+            $builder->add('save', SubmitType::class, ['attr' => ['class' => 'btn-success btn-120']]);
+   
     }
 
     public function configureOptions(OptionsResolver $resolver)
