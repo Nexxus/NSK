@@ -120,7 +120,6 @@ class PurchaseOrderRepository extends \Doctrine\ORM\EntityRepository
         }
 
         return $events;
-
     }
 
     public function findLastPurchases(User $user, $pickupsOnly = false) {
