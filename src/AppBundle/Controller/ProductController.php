@@ -434,6 +434,8 @@ class ProductController extends Controller
         $html = $this->render('AppBundle:Product:printchecklist.html.twig', array('relation' => $relation));
         $mPdfConfiguration = ['', 'A4' ,'','',10,10,10,10,0,0,'P'];
 
+        //return new Response($html);
+
         return $this->getPdfResponse("Checklist", $html, $mPdfConfiguration);
     }
 

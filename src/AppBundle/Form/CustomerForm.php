@@ -64,6 +64,7 @@ class CustomerForm extends AbstractType
                 'class' => 'AppBundle:Location',
                 'choice_label' => 'name',
                 'required' => true,
+                'placeholder' => "",
                 'query_builder' => function (EntityRepository $er) use ($user) { 
                     $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
                     /** @var \AppBundle\Entity\User $user */
