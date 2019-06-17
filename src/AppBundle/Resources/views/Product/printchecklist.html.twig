@@ -48,7 +48,11 @@
     {% for service in relation.services %}
     <tr>
         <td style="padding: 10px 0px 10px 5px">
+        {% if service.status == 3 %}
+            <div style="border: 2px solid black; text-align: center">&nbsp;X&nbsp;</div>
+        {% else %}
             <div style="border: 2px solid black">&nbsp;&nbsp;&nbsp;&nbsp;</div>
+        {% endif %}
         </td>
         <td>{{ service.task.name }}</td>
         <td>{{ service.description }}</td>
