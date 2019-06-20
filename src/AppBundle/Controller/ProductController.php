@@ -143,6 +143,7 @@ class ProductController extends Controller
      */
     private function bulkPrint($object, $products) {
 
+        $em = $this->getDoctrine()->getManager();
         $html = array();
         $mPdfConfiguration = ['', 'A6' ,'','',0,0,0,0,0,0,'P'];;
 
@@ -161,6 +162,8 @@ class ProductController extends Controller
             {
                 /** @var Product $product */
 
+                $em->getRepository('AppBundle:Product')->generateTaskServices($product->getPurchaseOrderRelation());
+
                 switch ($object) {
                     case "barcodes":
                         $html[] = $this->render('AppBundle:Barcode:single.html.twig', array('barcode' => $product->getSku()));
@@ -177,6 +180,8 @@ class ProductController extends Controller
                 }
             }
         }
+
+        //return new Response($html[0]);
 
         return $this->getPdfResponse("Bulk print", $html, $mPdfConfiguration);
     }
