@@ -1,0 +1,96 @@
+{% extends "::pdf.html.twig" %}
+
+{% block title %}Sales order {{ order.orderNr }}{% endblock %}
+
+{% block body %}
+
+<h2>Sales order {{ order.orderNr }}</h2>
+
+<div class="row">
+    <div class="col-xs-5">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Order details{% endtrans %}
+            </div>
+            <div class="panel-body">
+                <barcode code="{{ order.orderNr }}" type="C39" />
+            </div>
+            <table class="table">
+                <tr><td width="50%">Order nr</td><td>{{ order.orderNr }}</td></tr>
+                <tr><td>Order date</td><td>{{ order.orderDate|date("d-m-Y")|default("Unknown") }}</td></tr>
+                <tr><td>Status</td><td>{{ order.status.name|default("Unknown") }}</td></tr>
+                <tr><td>Location</td><td>{{ order.location.name|default("Unknown") }}</td></tr>
+                <tr><td>Remarks</td><td>{{ order.remarks|default("None") }}</td></tr>
+            </table>
+        </div>
+
+    </div>
+
+    <div class="col-xs-5">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Pricing{% endtrans %}
+            </div>
+            <table class="table">
+                <tr><td width="50%"><h4>Total</h4></td><td><h4>&euro; {{ order.calculateTotalPrice()|number_format(2, ',', '.') }}</h4></td></tr>
+                <tr><td>&nbsp;</td><td></td></tr>
+                <tr><td>Transport</td><td>&euro; {{ order.transport|number_format(2, ',', '.') }}</td></tr>
+                <tr><td>Discount</td><td>&euro; {{ order.discount|number_format(2, ',', '.') }}</td></tr>
+                <tr><td>Gift</td><td>{{ order.isGift == true ? "Yes" : "No" }}</td></tr>
+            </table>
+        </div>
+
+        {% if order.customer %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Customer{% endtrans %}
+            </div>
+            <table class="table">
+                <tr><td width="50%">Name</td><td>{{ order.customer.name }}</td></tr>
+                <tr><td>KvK nr</td><td>{{ order.customer.kvkNr }}</td></tr>
+                <tr><td>Representative</td><td>{{ order.customer.representative }}</td></tr>
+                <tr><td>E-mail</td><td>{{ order.customer.email }}</td></tr>
+                <tr><td>Phone</td><td>{{ order.customer.phone }}</td></tr>
+                <tr><td>Street</td><td>{{ order.customer.street }}</td></tr>
+                <tr><td>Street extra</td><td>{{ order.customer.streetExtra }}</td></tr>
+                <tr><td>City</td><td>{{ order.customer.city }}</td></tr>
+                <tr><td>Zip</td><td>{{ order.customer.zip }}</td></tr>
+                <tr><td>State</td><td>{{ order.customer.state }}</td></tr>
+                <tr><td>Country</td><td>{{ order.customer.country }}</td></tr>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Products{% endtrans %}
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>SKU</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th width="15%">Price p.u.</th>
+                <th width="10%">Qty</th>
+            </tr>
+            <tr></tr>
+        </thead>
+        <tbody>
+            {% for r in order.productRelations %}
+            <tr>
+                <td>{{ r.product.sku }}</td>
+                <td>{{ r.product.name }}</td>
+                <td>{{ r.product.type.name|default("") }}</td>
+                <td>&euro; {{ r.price|number_format(2, ',', '.') }}</td>
+                <td>{{ r.quantity }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+{% endblock %}

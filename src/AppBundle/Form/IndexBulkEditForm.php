@@ -25,13 +25,32 @@ namespace AppBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use AppBundle\Entity\Product;
 
 class IndexBulkEditForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $index = $builder->getData();
+
+        if (count($index) && gettype($index[0]) == Product::class)
+        {
+            $choices = [
+                'With selected lines...' => '',
+                'Edit status and location' => 'status',
+                'Print barcodes' => 'barcodes',
+                'Print price cards' => 'pricecards',
+                'Print checklists' => 'checklists'
+            ];
+        }
+        else // Order
+        {
+            $choices = [
+                'With selected lines...' => '',
+                'Edit status and location' => 'status',
+                'Print orders' => 'orders'
+            ];
+        }
 
         $builder
             ->setMethod('GET')
@@ -42,13 +61,7 @@ class IndexBulkEditForm extends AbstractType
                 'label' => false, 
                 'required' => true])
             ->add('action', ChoiceType::class, [
-                'choices' => [
-                    'With selected lines...' => '',
-                    'Edit status and location' => 'status',
-                    'Print barcodes' => 'barcodes',
-                    'Print price cards' => 'pricecards',
-                    'Print checklists' => 'checklists'
-                ],
+                'choices' => $choices,
                 'choice_attr' => function($key, $val, $index) {
                     return !$key ? ['disabled' => 'disabled'] : [];
                 },
