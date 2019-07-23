@@ -187,10 +187,6 @@ class PublicController extends Controller
 
             return new Response("Pickup added successfully", Response::HTTP_OK); 
         }
-        catch (InvalidFormException $exception)
-        {
-            return $exception->getForm();
-        }
         catch (\Exception $exception)
         {
             return new Response($exception->getMessage(), 500);
@@ -354,10 +350,6 @@ class PublicController extends Controller
             }
 
             return new Response("Sales order added successfully", Response::HTTP_OK);
-        }
-        catch (InvalidFormException $exception)
-        {
-            return $exception->getForm();
         }
         catch (\Exception $exception)
         {
