@@ -111,9 +111,41 @@ class SalesOrderController extends Controller
                 'success' => $success
             ));
         }
-
-        return false;
+        else {
+            return $this->bulkPrint($action, $orders);
+        }
     }
+
+    /**
+     * @param string $object
+     * @param SalesOrder[] $orders
+     */
+    private function bulkPrint($object, $orders) {
+
+        $html = array();
+        $mPdfConfiguration = ['', 'A4' ,'','',10,10,10,10,0,0,'P'];
+
+        if (!count($orders)) {
+            $html = "No (valid) orders to print";
+        }
+        else
+        {
+            foreach ($orders as $order)
+            {
+                /** @var SalesOrder $order */
+
+                switch ($object) {
+                    case "orders":
+                        $html[] = $this->render('AppBundle:SalesOrder:print.html.twig', array('order' => $order));
+                        break;                
+                }
+            }
+        }
+
+        //return new Response($html[0]);
+
+        return $this->getPdfResponse("Bulk print", $html, $mPdfConfiguration);
+    }  
 
     /**
      * @Route("/new/{productId}/{isRepair}", name="salesorder_new")
@@ -309,6 +341,20 @@ class SalesOrderController extends Controller
         $em->flush();
 
         return $this->redirectToRoute('salesorder_edit', ['id' => $orderId, 'success' => true]);
+    }
+
+    /**
+     * @Route("/print/{id}", name="salesorder_print")
+     */
+    public function printAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $order = $em->getRepository('AppBundle:SalesOrder')->find($id);
+
+        $html = $this->render('AppBundle:SalesOrder:print.html.twig', array('order' => $order));
+        $mPdfConfiguration = ['', 'A4' ,'','',10,10,10,10,0,0,'P'];
+
+        return $this->getPdfResponse("Nexxus sales order", $html, $mPdfConfiguration);
     }
 
     /**

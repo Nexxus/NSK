@@ -105,9 +105,41 @@ class PurchaseOrderController extends Controller
                 'success' => $success
             ));
         }
-
-        return false;
+        else {
+            return $this->bulkPrint($action, $orders);
+        }
     }
+
+    /**
+     * @param string $object
+     * @param PurchaseOrder[] $orders
+     */
+    private function bulkPrint($object, $orders) {
+
+        $html = array();
+        $mPdfConfiguration = ['', 'A4' ,'','',10,10,10,10,0,0,'P'];
+
+        if (!count($orders)) {
+            $html = "No (valid) orders to print";
+        }
+        else
+        {
+            foreach ($orders as $order)
+            {
+                /** @var PurchaseOrder $order */
+
+                switch ($object) {
+                    case "orders":
+                        $html[] = $this->render('AppBundle:PurchaseOrder:print.html.twig', array('order' => $order));
+                        break;                
+                }
+            }
+        }
+
+        //return new Response($html[0]);
+
+        return $this->getPdfResponse("Bulk print", $html, $mPdfConfiguration);
+    }    
 
     /**
      * @Route("/edit/{id}/{success}", name="purchaseorder_edit")
