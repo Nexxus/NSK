@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek ï¿½ info@copiatek.nl ï¿½ Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Entity;
@@ -37,12 +37,45 @@ class Customer extends ACompany
         $this->orders = new ArrayCollection();
     }
 
+    const PARTNER = 1;
+    const OWNING_PARTNER = 2;
+    const HAS_PARTNER = -1;
+
+    /**
+     * @var int Use constants
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $isPartner;
+
     /**
      * @var ArrayCollection|SalesOrder[] Sales orders that this customer bought
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\SalesOrder", mappedBy="customer", fetch="LAZY")
      */
     private $orders;
+
+
+    /**
+     * @param int $partner Use constants
+     *
+     * @return Customer
+     */
+    public function setIsPartner($isPartner)
+    {
+        $this->isPartner = $isPartner;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getIsPartner()
+    {
+        return $this->isPartner;
+    }
+
 
     /**
      * @param SalesOrder $salesOrder

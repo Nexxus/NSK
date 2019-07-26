@@ -79,98 +79,98 @@ abstract class ACompany
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $phone;
+    protected $phone;
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $phone2;
+    protected $phone2;
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $street;
+    protected $street;
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $streetExtra;
+    protected $streetExtra;
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $city;
+    protected $city;
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $country;
+    protected $country;
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $state;
+    protected $state;
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $zip;
+    protected $zip;
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $street2;
+    protected $street2;
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $streetExtra2;
+    protected $streetExtra2;
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $city2;
+    protected $city2;
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $country2;
+    protected $country2;
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $state2;
+    protected $state2;
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $zip2;
+    protected $zip2;
 
     /**
      * @var Location
@@ -179,6 +179,14 @@ abstract class ACompany
      * @ORM\JoinColumn(name="location_id", referencedColumnName="id")
      */
     protected $location;
+
+    /**
+     * @var Customer Partner
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Customer", fetch="EAGER")
+     * @ORM\JoinColumn(name="partner_id", referencedColumnName="id")
+     */
+    protected $partner;
 
     /**
      * Get id
@@ -565,6 +573,24 @@ abstract class ACompany
     {
         return $this->location;
     }
+
+    /**
+     * @return ACompany
+     */
+    public function setPartner(Customer $partner)
+    {
+        $this->partner = $partner;
+
+        return $this;
+    }
+
+    /**
+     * @return Customer
+     */
+    public function getPartner()
+    {
+        return $this->partner;
+    }     
 
     /**
      * @return string for use in views tooltips

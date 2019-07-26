@@ -33,7 +33,7 @@ class IndexBulkEditForm extends AbstractType
     {
         $index = $builder->getData();
 
-        if (count($index) && gettype($index[0]) == Product::class)
+        if (count($index) && get_class($index[0]) == Product::class)
         {
             $choices = [
                 'With selected lines...' => '',
