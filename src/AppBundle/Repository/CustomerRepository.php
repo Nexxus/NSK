@@ -115,4 +115,43 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
             }
         }
     }
+
+    /**
+     * @param string $origin
+     * @return Customer|null
+     */
+    public function checkPartnerExists($origin)
+    {
+        // First: strict comparision, loose result count
+
+        $q = $this->getEntityManager()
+            ->createQuery("SELECT c FROM AppBundle:Customer c WHERE c.name = :name AND partner > 0")
+            ->setParameter("name", $origin);
+
+        $result = $q->getResult();
+
+        if (count($result) > 0)
+        {
+            return $result[0];
+        }
+        else
+        {
+            // Second: loose comparision, strict result count
+
+            $q = $this->getEntityManager()
+                ->createQuery("SELECT c FROM AppBundle:Customer c WHERE SOUNDEX(c.name) like SOUNDEX(:name) AND partner > 0")
+                ->setParameter("name", $origin);
+
+            $result = $q->getResult();
+
+            if (count($result) == 1)
+            {
+                return $result[0];
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }    
 }

@@ -81,10 +81,10 @@
         <tbody>
             {% for r in order.productRelations %}
             <tr>
-                <td>{{ r.product.sku }}</td>
-                <td>{{ r.product.name }}</td>
-                <td>{{ r.product.type.name|default("") }}</td>
-                <td>&euro; {{ r.price|number_format(2, ',', '.') }}</td>
+                <td>{{ r.product.sku }}                             &nbsp;&nbsp;&nbsp;</td>
+                <td>{{ r.product.name }}                            &nbsp;&nbsp;&nbsp;</td>
+                <td>{{ r.product.type.name|default("") }}           &nbsp;&nbsp;&nbsp;</td>
+                <td>&euro; {{ r.price|number_format(2, ',', '.') }} &nbsp;&nbsp;&nbsp;</td>
                 <td>{{ r.quantity }}</td>
             </tr>
             {% endfor %}

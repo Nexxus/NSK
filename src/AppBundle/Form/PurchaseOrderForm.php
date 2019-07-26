@@ -97,6 +97,17 @@ class PurchaseOrderForm extends AbstractType
                     'New' => 'new',
                 ]
             ])
+            ->add('partner',  EntityType::class, [
+                'class' => 'AppBundle:Customer',
+                'choice_label' => 'name',
+                'required' => false,
+                'placeholder' => "",
+                'query_builder' => function (EntityRepository $er) { 
+                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC")
+                        ->where('x.isPartner > 0'); 
+                    return $qb;
+                }
+            ])            
             ->add('newProduct',  EntityType::class, [
                 'required' => false,
                 'mapped' => false,

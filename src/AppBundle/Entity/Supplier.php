@@ -41,20 +41,6 @@ class Supplier extends ACompany
     }
 
     /**
-     * @var bool
-     *
-     * @ORM\Column(type="boolean")
-     */
-    private $isPartner;
-
-    /**
-     * @var bool
-     *
-     * @ORM\Column(type="boolean")
-     */
-    private $isOwner;
-
-    /**
      * @var ArrayCollection|Product[] Products that this supplier owns
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\Product", mappedBy="owner", fetch="LAZY")
      * @JMS\Exclude()
@@ -67,46 +53,6 @@ class Supplier extends ACompany
      * @JMS\Exclude()
      */
     private $orders;
-
-    /**
-     * @param bool $name
-     *
-     * @return Supplier
-     */
-    public function setIsPartner($isPartner)
-    {
-        $this->isPartner = $isPartner;
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getIsPartner()
-    {
-        return $this->isPartner;
-    }
-
-    /**
-     * @param bool $name
-     *
-     * @return Supplier
-     */
-    public function setIsOwner($isOwner)
-    {
-        $this->isOwner = $isOwner;
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getIsOwner()
-    {
-        return $this->isOwner;
-    }
 
     /**
      * @param PurchaseOrder $purchaseOrder

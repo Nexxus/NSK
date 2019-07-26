@@ -185,6 +185,12 @@ class PurchaseOrderController extends Controller
                 $order->setSupplier($newSupplier);
             }
             
+            // Copy partner from supplier
+            if ($id == 0 && !$order->getPartner() && $order->getSupplier() && $order->getSupplier()->getPartner())
+            {
+                $order->setPartner($order->getSupplier()->getPartner());
+            }
+
             if ($form->isValid())
             {
                 $em->persist($order);

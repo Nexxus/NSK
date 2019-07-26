@@ -59,9 +59,7 @@ class SupplierForm extends AbstractType
             ->add('city2', TextType::class, ['required' => false, 'label' => 'City'])
             ->add('zip2', TextType::class, ['required' => false, 'label' => 'Zip'])
             ->add('state2', TextType::class, ['required' => false, 'label' => 'State'])
-            ->add('country2', TextType::class, ['required' => false, 'label' => 'Country'])
-            ->add('isPartner', CheckboxType::class, ['required' => false, 'label' => 'This supplier should be rewarded as partner'])
-            ->add('isOwner', CheckboxType::class, ['required' => false, 'label' => 'This supplier should be rewarded as owner']);
+            ->add('country2', TextType::class, ['required' => false, 'label' => 'Country']);
 
             if ($user) 
             {
@@ -80,7 +78,19 @@ class SupplierForm extends AbstractType
                 ]);
             } 
 
-            $builder->add('save', SubmitType::class, ['attr' => ['class' => 'btn-success btn-120']]);
+            $builder
+                ->add('partner',  EntityType::class, [
+                    'class' => 'AppBundle:Customer',
+                    'choice_label' => 'name',
+                    'required' => false,
+                    'placeholder' => "",
+                    'query_builder' => function (EntityRepository $er) { 
+                        $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC")
+                            ->where('x.isPartner > 0'); 
+                        return $qb;
+                    }
+                ])
+                ->add('save', SubmitType::class, ['attr' => ['class' => 'btn-success btn-120']]);
    
     }
 
