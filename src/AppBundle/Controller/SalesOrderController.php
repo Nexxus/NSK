@@ -204,6 +204,12 @@ class SalesOrderController extends Controller
                 $em->persist($newCustomer);
                 $order->setCustomer($newCustomer);
             }
+          
+            // Copy partner from customer
+            if ($id == 0 && !$order->getPartner() && $order->getCustomer() && $order->getCustomer()->getPartner())
+            {
+                $order->setPartner($order->getCustomer()->getPartner());
+            }
 
             if ($form->isValid())
             {

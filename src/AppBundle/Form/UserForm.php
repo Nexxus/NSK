@@ -86,7 +86,8 @@ class UserForm extends AbstractType
                     'Admin' => 'ROLE_ADMIN',
                     'Manager' => 'ROLE_MANAGER',
                     'Logistics' => 'ROLE_LOGISTICS',
-                    'Local' => 'ROLE_LOCAL'
+                    'Local' => 'ROLE_LOCAL',
+                    'Partner' => 'ROLE_PARTNER'
                 ]])
             ->add('enabled', CheckboxType::class, ['required' => false])
             ->add('save', SubmitType::class, ['attr' => ['class' => 'btn-success btn-120']]);

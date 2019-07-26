@@ -31,6 +31,7 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class CustomerForm extends AbstractType
 {
@@ -42,6 +43,9 @@ class CustomerForm extends AbstractType
         /** @var \AppBundle\Entity\User */
         $user = $options['user'];
 
+        /** @var Customer */
+        $customer = $builder->getData();
+        
         $builder
             ->add('kvkNr', TextType::class, ['required' => false])
             ->add('representative', TextType::class, ['required' => false])
@@ -73,7 +77,44 @@ class CustomerForm extends AbstractType
                     return $qb;
                 }
             ])
-            ->add('save', SubmitType::class, ['attr' => ['class' => 'btn-success btn-120']]);
+            ->add('location',  EntityType::class, [
+                'class' => 'AppBundle:Location',
+                'choice_label' => 'name',
+                'required' => true,
+                'placeholder' => "",
+                'query_builder' => function (EntityRepository $er) use ($user) { 
+                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
+                    /** @var \AppBundle\Entity\User $user */
+                    if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
+                        $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
+                    return $qb;
+                }
+            ])
+            ->add('isPartner', ChoiceType::class, array(
+                'choices' => [
+                    'No' => 0,
+                    'No, has partner' => Customer::HAS_PARTNER,                    
+                    'Yes, is partner' => Customer::PARTNER,
+                    'Yes, is owning partner' => Customer::OWNING_PARTNER
+            ]));    
+            
+            if ($customer->getIsPartner() == Customer::HAS_PARTNER) {
+
+                // Is not partner, but has partner
+                $builder->add('partner',  EntityType::class, [
+                    'class' => 'AppBundle:Customer',
+                    'choice_label' => 'name',
+                    'required' => true,
+                    'placeholder' => "",
+                    'query_builder' => function (EntityRepository $er) { 
+                        $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC")
+                            ->where('x.isPartner > 0'); 
+                        return $qb;
+                    }
+                ]);
+            }
+            
+            $builder->add('save', SubmitType::class, ['attr' => ['class' => 'btn-success btn-120']]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
