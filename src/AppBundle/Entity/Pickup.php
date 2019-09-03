@@ -107,15 +107,14 @@ class Pickup
     /**
      * @var ArrayCollection|PickupImageFile[]
      *
-     * @ORM\OneToMany(targetEntity="PickupImageFile", mappedBy="pickup", fetch="EAGER")
+     * @ORM\OneToMany(targetEntity="PickupImageFile", mappedBy="pickup", fetch="EAGER", cascade={"all"}, orphanRemoval=true)
      */
     private $images;
 
     /**
      * @var PickupAgreementFile
      *
-     * @ORM\OneToOne(targetEntity="PickupAgreementFile", mappedBy="pickup", fetch="EAGER")
-     * @ORM\JoinColumn(name="agreement_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="PickupAgreementFile", mappedBy="pickup", fetch="EAGER", cascade={"all"}, orphanRemoval=true)
      */
     private $agreement;
 
