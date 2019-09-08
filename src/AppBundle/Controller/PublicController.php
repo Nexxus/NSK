@@ -130,7 +130,9 @@ class PublicController extends Controller
             $pickup->getOrder()->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), true, false));
 
             if ($pickup->getOrigin()) {
-                $pickup->getOrder()->setPartner($em->getRepository('AppBundle:Customer')->checkPartnerExists($pickup->getOrigin()));
+                $partner = $em->getRepository('AppBundle:Customer')->checkPartnerExists($pickup->getOrigin());
+                if ($partner)
+                    $pickup->getOrder()->setPartner($partner);
             }
 
             // Images
