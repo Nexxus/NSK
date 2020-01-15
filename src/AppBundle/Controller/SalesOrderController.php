@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\Repair;
 use AppBundle\Entity\SalesService;
@@ -17,6 +18,7 @@ use AppBundle\Entity\ProductOrderRelation;
 use AppBundle\Form\IndexSearchForm;
 use AppBundle\Form\IndexBulkEditForm;
 use AppBundle\Form\SalesOrderForm;
+use AppBundle\Form\SalesOrderImportForm;
 use AppBundle\Form\SalesOrderBulkEditForm;
 use Symfony\Component\Form\FormError;
 
@@ -32,13 +34,13 @@ class SalesOrderController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $repo = $this->getDoctrine()->getRepository(SalesOrder::class);
+        $repo = $this->getDoctrine()->getRepository(SalesOrder::class );
 
         $orders = array();
 
-        $container = new \AppBundle\Helper\IndexSearchContainer($this->getUser(), SalesOrder::class);
+        $container = new \AppBundle\Helper\IndexSearchContainer($this->getUser(), SalesOrder::class );
 
-        $form = $this->createForm(IndexSearchForm::class, $container);
+        $form = $this->createForm(IndexSearchForm::class , $container);
 
         $form->handleRequest($request);
 
@@ -59,8 +61,8 @@ class SalesOrderController extends Controller
         return $this->render('AppBundle:SalesOrder:index.html.twig', array(
             'orders' => $ordersPage,
             'form' => $form->createView(),
-            'formBulkEdit' => $this->createForm(IndexBulkEditForm::class, $orders)->createView()
-            ));
+            'formBulkEdit' => $this->createForm(IndexBulkEditForm::class , $orders)->createView()
+        ));
     }
 
     /**
@@ -73,11 +75,11 @@ class SalesOrderController extends Controller
         // Get variables from IndexBulkEditForm
         $action = $request->query->get('index_bulk_edit_form')['action'];
         $orderIds = $request->query->get('index_bulk_edit_form')['index'];
-        $orders = $em->getRepository(SalesOrder::class)->findById($orderIds);
+        $orders = $em->getRepository(SalesOrder::class )->findById($orderIds);
 
         if ($action == "status")
         {
-            $form = $this->createForm(SalesOrderBulkEditForm::class, $orders, array('user' => $this->getUser()));
+            $form = $this->createForm(SalesOrderBulkEditForm::class , $orders, array('user' => $this->getUser()));
 
             $form->handleRequest($request);
 
@@ -85,10 +87,10 @@ class SalesOrderController extends Controller
             {
                 $location = $form->get("location")->getData();
                 $status = $form->get("status")->getData();
-                
+
                 foreach ($orders as $order)
                 {
-                     /** @var SalesOrder $order */
+                    /** @var SalesOrder $order */
 
                     if ($location)
                         $order->setLocation($location);
@@ -96,7 +98,7 @@ class SalesOrderController extends Controller
                     if ($status)
                         $order->setStatus($status);
                 }
-                
+
                 $em->flush();
 
                 return $this->redirectToRoute("salesorder_bulkedit", array('index_bulk_edit_form[action]' => $action, 'index_bulk_edit_form[index]' => $orderIds, 'success' => true));
@@ -123,7 +125,7 @@ class SalesOrderController extends Controller
     private function bulkPrint($object, $orders) {
 
         $html = array();
-        $mPdfConfiguration = ['', 'A4' ,'','',10,10,10,10,0,0,'P'];
+        $mPdfConfiguration = ['', 'A4', '', '', 10, 10, 10, 10, 0, 0, 'P'];
 
         if (!count($orders)) {
             $html = "No (valid) orders to print";
@@ -137,7 +139,7 @@ class SalesOrderController extends Controller
                 switch ($object) {
                     case "orders":
                         $html[] = $this->render('AppBundle:SalesOrder:print.html.twig', array('order' => $order));
-                        break;                
+                        break;
                 }
             }
         }
@@ -145,7 +147,7 @@ class SalesOrderController extends Controller
         //return new Response($html[0]);
 
         return $this->getPdfResponse("Bulk print", $html, $mPdfConfiguration);
-    }  
+    }
 
     /**
      * @Route("/new/{productId}/{isRepair}", name="salesorder_new")
@@ -168,7 +170,7 @@ class SalesOrderController extends Controller
 
             if ($productId > 0)
             {
-                $sellProduct = $em->find(Product::class, $productId);
+                $sellProduct = $em->find(Product::class , $productId);
                 $r = new ProductOrderRelation($sellProduct, $order);
                 $r->setPrice($sellProduct->getPrice());
                 $r->setQuantity(1);
@@ -182,7 +184,7 @@ class SalesOrderController extends Controller
             $stock = $em->getRepository('AppBundle:Product')->findStockAndNotYetInOrder($this->getUser(), $order);
         }
 
-        $form = $this->createForm(SalesOrderForm::class, $order, array('user' => $this->getUser(), 'stock' => $stock, 'isRepair' => $isRepair));
+        $form = $this->createForm(SalesOrderForm::class , $order, array('user' => $this->getUser(), 'stock' => $stock, 'isRepair' => $isRepair));
 
         $form->handleRequest($request);
 
@@ -204,7 +206,7 @@ class SalesOrderController extends Controller
                 $em->persist($newCustomer);
                 $order->setCustomer($newCustomer);
             }
-          
+
             // Copy partner from customer
             if ($id == 0 && !$order->getPartner() && $order->getCustomer() && $order->getCustomer()->getPartner())
             {
@@ -248,7 +250,7 @@ class SalesOrderController extends Controller
 
                             $remarks = $order->getRemarks() ? $order->getRemarks() : "Created by backorder";
                             $purchase->setRemarks($remarks);
-                            
+
                             $em->persist($purchase);
                             $order->setBackingPurchaseOrder($purchase);
                         }
@@ -302,10 +304,10 @@ class SalesOrderController extends Controller
         }
 
         return $this->render('AppBundle:SalesOrder:edit.html.twig', array(
-                'order' => $order,
-                'form' => $form->createView(),
-                'success' => $success,
-            ));
+            'order' => $order,
+            'form' => $form->createView(),
+            'success' => $success,
+        ));
 
     }
 
@@ -315,7 +317,7 @@ class SalesOrderController extends Controller
     public function deleteAction($id)
     {
         $em = $this->getDoctrine()->getManager();
-        $order = $em->find(SalesOrder::class, $id);
+        $order = $em->find(SalesOrder::class , $id);
         $em->remove($order);
         $em->flush();
 
@@ -329,7 +331,7 @@ class SalesOrderController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         /** @var ProductOrderRelation */
-        $relation = $em->find(ProductOrderRelation::class, $id);
+        $relation = $em->find(ProductOrderRelation::class , $id);
         $em->remove($relation);
         $em->flush();
 
@@ -342,7 +344,7 @@ class SalesOrderController extends Controller
     public function deleteServiceAction($id, $orderId)
     {
         $em = $this->getDoctrine()->getManager();
-        $service = $em->find(SalesService::class, $id);
+        $service = $em->find(SalesService::class , $id);
         $em->remove($service);
         $em->flush();
 
@@ -358,7 +360,7 @@ class SalesOrderController extends Controller
         $order = $em->getRepository('AppBundle:SalesOrder')->find($id);
 
         $html = $this->render('AppBundle:SalesOrder:print.html.twig', array('order' => $order));
-        $mPdfConfiguration = ['', 'A4' ,'','',10,10,10,10,0,0,'P'];
+        $mPdfConfiguration = ['', 'A4', '', '', 10, 10, 10, 10, 0, 0, 'P'];
 
         return $this->getPdfResponse("Nexxus sales order", $html, $mPdfConfiguration);
     }
@@ -371,11 +373,11 @@ class SalesOrderController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         /** @var Repair */
-        $repair = $em->find(Repair::class, $id);
-        $relation = $em->find(ProductOrderRelation::class, $relationId);
+        $repair = $em->find(Repair::class , $id);
+        $relation = $em->find(ProductOrderRelation::class , $relationId);
 
         $html = $this->render('AppBundle:SalesOrder:printrepair.html.twig', array('repair' => $repair, 'relation' => $relation));
-        $mPdfConfiguration = ['', 'A4' ,'','',10,10,10,10,0,0,'P'];
+        $mPdfConfiguration = ['', 'A4', '', '', 10, 10, 10, 10, 0, 0, 'P'];
 
         return $this->getPdfResponse("Repair", $html, $mPdfConfiguration);
     }
@@ -388,11 +390,110 @@ class SalesOrderController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         /** @var SalesOrder */
-        $order = $em->find(SalesOrder::class, $id);
+        $order = $em->find(SalesOrder::class , $id);
 
         $html = $this->render('AppBundle:SalesOrder:invoice.html.twig', array('order' => $order));
-        $mPdfConfiguration = ['', 'A4' ,'','',10,10,10,10,0,0,'P'];
+        $mPdfConfiguration = ['', 'A4', '', '', 10, 10, 10, 10, 0, 0, 'P'];
 
         return $this->getPdfResponse("Invoice", $html, $mPdfConfiguration);
     }
+
+    /**
+     * @Route("/import/{success}", name="salesorder_import")
+     */
+    public function importAction(Request $request, $success = null)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var \AppBundle\Repository\SalesOrderRepository */
+        $repo = $em->getRepository('AppBundle:SalesOrder');
+
+        $form = $this->createForm(SalesOrderImportForm::class , null, array('user' => $this->getUser()));
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted())
+        {
+            set_time_limit(3600);
+
+            $data = $form->getData();
+
+            /** @var UploadedFile */
+            $file = $data['import'];
+
+            if (!$file)
+            {
+                $form->addError(new FormError('The file is invalid'));
+            }
+
+            if ($form->isValid())
+            {
+                $content = file_get_contents($file->getRealPath());
+                $lines = preg_split("/((\r?\n)|(\r\n?))/", $content);
+
+                // Referentie;Bedrijfsnaam;Voornaam;Achternaam;Straatnaam;Huisnummer;Huisnummer toevoeging;Postcode;Plaatsnaam;Landcode;Email;Telefoon;Mobiel nummer;
+                // Gebouw;Verdieping;Afdeling;Deurcode;Aflever referentie
+                $keys = explode(";", array_shift($lines));
+
+                foreach ($lines as $line)
+                {
+                    $values = explode(";", $line);
+
+                    if (count($values) != count($keys)) continue;
+
+                    $orderInput = array_combine($keys, $values);
+
+                    $remarks = 
+                        "Referentie: " . $orderInput['Referentie'] . "\r\n" .
+                        "Gebouw: " . $orderInput['Gebouw'] . "\r\n" .
+                        "Verdieping: " . $orderInput['Verdieping'] . "\r\n" .
+                        "Afdeling: " . $orderInput['Afdeling'] . "\r\n" .
+                        "Deurcode: " . $orderInput['Deurcode'] . "\r\n" .
+                        "Aflever referentie: " . $orderInput['Aflever referentie'];
+
+                    $order = new SalesOrder();
+                    $order->setOrderDate(new \DateTime());
+                    $order->setIsGift(false);
+                    $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate("Products to assign", false, true));
+                    $order->setRemarks($remarks);
+
+                    $customer = new Customer();
+                    $customer->setName($orderInput['Bedrijfsnaam']);
+                    $customer->setRepresentative($orderInput['Voornaam'] . " " . $orderInput['Achternaam']);
+                    $customer->setStreet(trim($orderInput['Straatnaam'] . " " . $orderInput['Huisnummer'] . " " . $orderInput['Huisnummer toevoeging']));
+                    $customer->setZip($orderInput['Postcode']);
+                    $customer->setCity($orderInput['Plaatsnaam']);
+                    $customer->setCountry($orderInput['Landcode']);
+                    $customer->setEmail($orderInput['Email']);
+                    $customer->setPhone($orderInput['Telefoon']);
+                    $customer->setPhone2($orderInput['Mobiel nummer']);
+
+                    if ($data['partner'])
+                    {
+                        $order->setPartner($data['partner']);
+                        $customer->setPartner($data['partner']);
+                    }
+
+                    $order->setCustomer($em->getRepository('AppBundle:Customer')->checkExists($customer));
+
+                    $em->persist($order);
+                    $em->persist($customer);
+                }
+
+                $em->flush();
+
+                return $this->redirectToRoute("salesorder_import", array('success' => true));
+            }
+      
+            $success = false;
+        }
+
+        return $this->render('AppBundle:SalesOrder:import.html.twig', array(
+            'form' => $form->createView(),
+            'success' => $success,
+        ));
+
+    }
+
+
 }
