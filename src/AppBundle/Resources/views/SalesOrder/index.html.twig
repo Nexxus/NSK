@@ -31,8 +31,9 @@
         <div class="col-sm-3 col-xs-9">
             {{ form_widget(formBulkEdit.action) }}
         </div>
-        <div class="col-sm-3 col-sm-offset-5 col-xs-12">
+        <div class="col-sm-8 col-xs-12">
             <a href="{{ path('salesorder_new') }}" class="btn btn-primary pull-right" role="button">Create new sales</a>
+            <a href="{{ path('salesorder_import') }}" class="btn btn-default pull-right" role="button" style="margin-right: 4px">Import new sales</a>
         </div>        
     </div>
 

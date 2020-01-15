@@ -95,7 +95,8 @@ class SalesOrderForm extends AbstractType
             ])
             ->add('newCustomer', CustomerForm::class, [
                 'mapped' => false,
-                'user' => $user
+                'user' => $user,
+                'customer' => $order->getCustomer()
             ])
             ->add('newOrExistingCustomer', ChoiceType::class, [
                 'label' => false,

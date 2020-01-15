@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Sales Order Import</h1>
+
+    {% if success %}
+    <div class="alert alert-success" role="alert">The orders are created successfully.</div>
+    {% elseif success is same as(false) %}
+    <div class="alert alert-danger" role="alert">The orders could not be created. Please check details below.</div>
+    {% endif %}
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+    {{ form_end(form) }}
+
+    <ul>
+        <li>
+            <a href="{{ path('salesorder_index') }}">Back to the list</a>
+        </li>
+    </ul>
+{% endblock %}

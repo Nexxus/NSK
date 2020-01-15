@@ -241,7 +241,10 @@ class PurchaseOrderController extends Controller
     public function deleteAction($id)
     {
         $em = $this->getDoctrine()->getManager();
+
+        /** @var PurchaseOrder */
         $order = $em->getRepository('AppBundle:PurchaseOrder')->find($id);
+
         $em->remove($order);
         $em->flush();
 

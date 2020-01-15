@@ -44,7 +44,7 @@ class CustomerForm extends AbstractType
         $user = $options['user'];
 
         /** @var Customer */
-        $customer = $builder->getData();
+        $customer = $builder->getData() ?? $options['customer'];
         
         $builder
             ->add('kvkNr', TextType::class, ['required' => false])
@@ -98,7 +98,7 @@ class CustomerForm extends AbstractType
                     'Yes, is owning partner' => Customer::OWNING_PARTNER
             ]));    
             
-            if ($customer->getIsPartner() == Customer::HAS_PARTNER) {
+            if ($customer && $customer->getIsPartner() == Customer::HAS_PARTNER) {
 
                 // Is not partner, but has partner
                 $builder->add('partner',  EntityType::class, [
@@ -124,7 +124,8 @@ class CustomerForm extends AbstractType
             'csrf_protection' => true,
             'csrf_field_name' => '_token',
             'csrf_token_id'   => 'customer',
-            'user' => null
+            'user' => null,
+            'customer' => null
         ));
     }
 }

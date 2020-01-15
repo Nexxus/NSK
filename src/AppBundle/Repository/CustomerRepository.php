@@ -125,7 +125,7 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
         // First: strict comparision, loose result count
 
         $q = $this->getEntityManager()
-            ->createQuery("SELECT c FROM AppBundle:Customer c WHERE c.name = :name AND partner > 0")
+            ->createQuery("SELECT c FROM AppBundle:Customer c WHERE c.name = :name AND c.isPartner > 0")
             ->setParameter("name", $origin);
 
         $result = $q->getResult();
@@ -139,7 +139,7 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
             // Second: loose comparision, strict result count
 
             $q = $this->getEntityManager()
-                ->createQuery("SELECT c FROM AppBundle:Customer c WHERE SOUNDEX(c.name) like SOUNDEX(:name) AND partner > 0")
+                ->createQuery("SELECT c FROM AppBundle:Customer c WHERE SOUNDEX(c.name) like SOUNDEX(:name) AND c.isPartner > 0")
                 ->setParameter("name", $origin);
 
             $result = $q->getResult();

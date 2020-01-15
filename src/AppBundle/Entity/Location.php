@@ -66,7 +66,7 @@ class Location
 
     /**
      * @var string Comma separated list of zipcodes
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      * @JMS\Expose
      */
     private $zipcodes;
