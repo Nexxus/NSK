@@ -77,12 +77,18 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
     {
         // First: strict comparision, loose result count
 
-        $q = $this->getEntityManager()
-            ->createQuery("SELECT c FROM AppBundle:Customer c WHERE c.name = :name OR c.email = :email")
-            ->setParameter("name", $newCustomer->getName())
-            ->setParameter("email", $newCustomer->getEmail());
+        $qb = $this->getEntityManager()->createQueryBuilder()
+            ->from("AppBundle:Customer", "c")->select("c"); 
+            
+        if ($newCustomer->getName() && strlen($newCustomer->getName()) > 2) {
+            $qb = $qb->orWhere("c.name = :name")->setParameter("name", $newCustomer->getName());
+        }
 
-        $result = $q->getResult();
+        if ($newCustomer->getEmail() && strlen($newCustomer->getEmail()) > 5) {
+            $qb = $qb->orWhere("c.email = :email")->setParameter("email", $newCustomer->getEmail());
+        }
+
+        $result = $qb->getQuery()->getResult();
 
         if (count($result) > 0)
         {
@@ -94,13 +100,19 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
         {
             // Second: loose comparision, strict result count
 
-            $q = $this->getEntityManager()
-                ->createQuery("SELECT c FROM AppBundle:Customer c WHERE SOUNDEX(c.name) like SOUNDEX(:name) or REPLACE(c.phone, '-', '') = :phone OR REPLACE(c.phone2, '-', '') = :phone OR c.email = :email")
-                ->setParameter("name", $newCustomer->getName())
-                ->setParameter("phone", str_replace($newCustomer->getPhone(), "-", ""))
-                ->setParameter("email", $newCustomer->getEmail());
+            $qb = $this->getEntityManager()->createQueryBuilder()
+                ->from("AppBundle:Customer", "c")->select("c"); 
+            
+            if ($newCustomer->getName() && strlen($newCustomer->getName()) > 2) {
+                $qb = $qb->orWhere("SOUNDEX(c.name) like SOUNDEX(:name)")->setParameter("name", $newCustomer->getName());
+            }
 
-            $result = $q->getResult();
+            if ($newCustomer->getPhone() && strlen($newCustomer->getPhone()) > 5) {
+                $qb = $qb->orWhere("REPLACE(c.phone, '-', '') = :phone")->setParameter("phone", str_replace($newCustomer->getPhone(), "-", ""));
+                $qb = $qb->orWhere("REPLACE(c.phone2, '-', '') = :phone")->setParameter("phone", str_replace($newCustomer->getPhone(), "-", ""));
+            }
+
+            $result = $qb->getQuery()->getResult();
 
             if (count($result) == 1)
             {
