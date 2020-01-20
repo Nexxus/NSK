@@ -85,12 +85,18 @@ class SupplierRepository extends \Doctrine\ORM\EntityRepository
     {
         // First: strict comparision, loose result count
 
-        $q = $this->getEntityManager()
-            ->createQuery("SELECT s FROM AppBundle:Supplier s WHERE s.name = :name OR s.email = :email")
-            ->setParameter("name", $newSupplier->getName())
-            ->setParameter("email", $newSupplier->getEmail());
+        $qb = $this->getEntityManager()->createQueryBuilder()
+            ->from("AppBundle:Supplier", "s")->select("s"); 
+            
+        if ($newSupplier->getName() && strlen($newSupplier->getName()) > 2) {
+            $qb = $qb->orWhere("s.name = :name")->setParameter("name", $newSupplier->getName());
+        }
 
-        $result = $q->getResult();
+        if ($newSupplier->getEmail() && strlen($newSupplier->getEmail()) > 5) {
+            $qb = $qb->orWhere("s.email = :email")->setParameter("email", $newSupplier->getEmail());
+        }
+
+        $result = $qb->getQuery()->getResult();
 
         if (count($result) > 0)
         {
@@ -102,13 +108,19 @@ class SupplierRepository extends \Doctrine\ORM\EntityRepository
         {
             // Second: loose comparision, strict result count
 
-            $q = $this->getEntityManager()
-                ->createQuery("SELECT s FROM AppBundle:Supplier s WHERE SOUNDEX(s.name) like SOUNDEX(:name) or REPLACE(s.phone, '-', '') = :phone OR REPLACE(s.phone2, '-', '') = :phone OR s.email = :email")
-                ->setParameter("name", $newSupplier->getName())
-                ->setParameter("phone", str_replace($newSupplier->getPhone(), "-", ""))
-                ->setParameter("email", $newSupplier->getEmail());
+            $qb = $this->getEntityManager()->createQueryBuilder()
+                ->from("AppBundle:Supplier", "s")->select("s"); 
+            
+            if ($newSupplier->getName() && strlen($newSupplier->getName()) > 2) {
+                $qb = $qb->orWhere("SOUNDEX(s.name) like SOUNDEX(:name)")->setParameter("name", $newSupplier->getName());
+            }
 
-            $result = $q->getResult();
+            if ($newSupplier->getPhone() && strlen($newSupplier->getPhone()) > 5) {
+                $qb = $qb->orWhere("REPLACE(s.phone, '-', '') = :phone")->setParameter("phone", str_replace($newSupplier->getPhone(), "-", ""));
+                $qb = $qb->orWhere("REPLACE(s.phone2, '-', '') = :phone")->setParameter("phone", str_replace($newSupplier->getPhone(), "-", ""));
+            }
+
+            $result = $qb->getQuery()->getResult();
 
             if (count($result) == 1)
             {
