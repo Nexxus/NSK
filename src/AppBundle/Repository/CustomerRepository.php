@@ -31,6 +31,14 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
         return $this->findBy(array(), array('id' => 'DESC'));
     }
 
+    public function findMine(User $user)
+    {
+        if ($user->hasRole("ROLE_PARTNER"))
+            return $this->findBy(array("partner" => $user->getPartner() ?? -1), array('id' => 'DESC'));
+        else
+            return $this->findAll();
+    }
+
     /**
      * This function searches in fields: Id, Kvk, Email, Name
      */
@@ -53,14 +61,18 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
             $qb = $qb->setParameter("query", $search->query)->setParameter("queryLike", '%'.$search->query.'%');
         }
 
+        if ($search->user->hasRole("ROLE_PARTNER"))
+            $qb = $qb->andWhere('o.partner = :partner')->setParameter('partner', $search->user->getPartner() ?? -1); 
+
         return $qb->getQuery()->getResult();
     }
 
     /**
      * @param Customer $newCustomer
+     * @param string $origin
      * @return Customer
      */
-    public function checkExists(Customer $newCustomer)
+    public function checkExists(Customer $newCustomer, $origin = null)
     {
         // First: strict comparision, loose result count
 
@@ -113,44 +125,5 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
                 return $newCustomer;
             }
         }
-    }
-
-    /**
-     * @param string $origin
-     * @return Customer|null
-     */
-    public function checkPartnerExists($origin)
-    {
-        // First: strict comparision, loose result count
-
-        $q = $this->getEntityManager()
-            ->createQuery("SELECT c FROM AppBundle:Customer c WHERE c.name = :name AND c.isPartner > 0")
-            ->setParameter("name", $origin);
-
-        $result = $q->getResult();
-
-        if (count($result) > 0)
-        {
-            return $result[0];
-        }
-        else
-        {
-            // Second: loose comparision, strict result count
-
-            $q = $this->getEntityManager()
-                ->createQuery("SELECT c FROM AppBundle:Customer c WHERE SOUNDEX(c.name) like SOUNDEX(:name) AND c.isPartner > 0")
-                ->setParameter("name", $origin);
-
-            $result = $q->getResult();
-
-            if (count($result) == 1)
-            {
-                return $result[0];
-            }
-            else
-            {
-                return null;
-            }
-        }
-    }    
+    }   
 }

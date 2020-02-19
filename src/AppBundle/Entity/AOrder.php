@@ -86,14 +86,6 @@ abstract class AOrder
     protected $status;
 
     /**
-     * @var Customer Partner
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Customer", fetch="EAGER")
-     * @ORM\JoinColumn(name="partner_id", referencedColumnName="id")
-     */
-    protected $partner;    
-
-    /**
      * @var int Discount price, in eurocents
      *
      * @ORM\Column(type="integer", nullable=true)
@@ -307,24 +299,6 @@ abstract class AOrder
     {
         return $this->status;
     }
-
-    /**
-     * @return AOrder
-     */
-    public function setPartner(Customer $partner)
-    {
-        $this->partner = $partner;
-
-        return $this;
-    }
-
-    /**
-     * @return Customer
-     */
-    public function getPartner()
-    {
-        return $this->partner;
-    }    
 
     /**
      * Total actual price of this order

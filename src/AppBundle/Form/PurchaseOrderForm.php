@@ -75,7 +75,11 @@ class PurchaseOrderForm extends AbstractType
                 'required' => false,
                 'attr' => ['class' => 'combobox'],
                 'query_builder' => function (EntityRepository $er) use ($user) { 
-                    return $er->createQueryBuilder('x')->orderBy("x.name", "ASC");                    
+                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); 
+                    /** @var \AppBundle\Entity\User $user */
+                    if ($user->hasRole("ROLE_PARTNER"))
+                        $qb = $qb->where('x.partner = :partner')->setParameter('partner', $user->getPartner() ?? -1); 
+                    return $qb;                 
                 }
             ])
             ->add('newSupplier', SupplierForm::class, [
@@ -92,18 +96,7 @@ class PurchaseOrderForm extends AbstractType
                     'Existing' => 'existing',
                     'New' => 'new',
                 ]
-            ])
-            ->add('partner',  EntityType::class, [
-                'class' => 'AppBundle:Customer',
-                'choice_label' => 'name',
-                'required' => false,
-                'placeholder' => "",
-                'query_builder' => function (EntityRepository $er) { 
-                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC")
-                        ->where('x.isPartner > 0'); 
-                    return $qb;
-                }
-            ])            
+            ])         
             ->add('newProduct',  EntityType::class, [
                 'required' => false,
                 'mapped' => false,

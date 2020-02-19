@@ -81,7 +81,7 @@ class PublicController extends Controller
         {
             if (!$this->captchaVerify($request->request->get('g-recaptcha-response')))
             {
-                //return new Response("reCaptcha is not valid", Response::HTTP_NOT_ACCEPTABLE);
+                return new Response("reCaptcha is not valid", Response::HTTP_NOT_ACCEPTABLE);
             }
 
             $em = $this->getDoctrine()->getEntityManager();
@@ -116,11 +116,7 @@ class PublicController extends Controller
 
             $pickup->getOrder()->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), true, false));
 
-            if ($pickup->getOrigin()) {
-                $partner = $em->getRepository('AppBundle:Customer')->checkPartnerExists($pickup->getOrigin());
-                if ($partner)
-                    $pickup->getOrder()->setPartner($partner);
-            }
+            // TODO: $pickup->getOrigin() did connect pickup form to partner, but orders have no partner field no more
 
             // Images
             $imageNames = UploadifiveController::splitFilenames($form->get('imagesNames')->getData());

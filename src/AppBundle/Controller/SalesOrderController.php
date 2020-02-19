@@ -51,7 +51,7 @@ class SalesOrderController extends Controller
         }
         else
         {
-            $orders = $repo->findAll();
+            $orders = $repo->findMine($this->getUser());
             $pageLength = 20;
         }
 
@@ -198,12 +198,6 @@ class SalesOrderController extends Controller
                 $newCustomer->addSalesOrder($order);
                 $em->persist($newCustomer);
                 $order->setCustomer($newCustomer);
-            }
-
-            // Copy partner from customer
-            if ($id == 0 && !$order->getPartner() && $order->getCustomer() && $order->getCustomer()->getPartner())
-            {
-                $order->setPartner($order->getCustomer()->getPartner());
             }
 
             if ($form->isValid())
@@ -462,7 +456,6 @@ class SalesOrderController extends Controller
 
                     if ($data['partner'])
                     {
-                        $order->setPartner($data['partner']);
                         $customer->setPartner($data['partner']);
                     }
 

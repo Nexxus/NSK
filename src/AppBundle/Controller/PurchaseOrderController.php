@@ -43,7 +43,7 @@ class PurchaseOrderController extends Controller
         }
         else
         {
-            $orders = $repo->findAll();
+            $orders = $repo->findMine($this->getUser());
             $pageLength = 20;
         }
 
@@ -176,12 +176,6 @@ class PurchaseOrderController extends Controller
                 $newSupplier->addPurchaseOrder($order);
                 $em->persist($newSupplier);
                 $order->setSupplier($newSupplier);
-            }
-            
-            // Copy partner from supplier
-            if ($id == 0 && !$order->getPartner() && $order->getSupplier() && $order->getSupplier()->getPartner())
-            {
-                $order->setPartner($order->getSupplier()->getPartner());
             }
 
             if ($form->isValid())

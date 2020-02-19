@@ -38,6 +38,14 @@ class SupplierRepository extends \Doctrine\ORM\EntityRepository
         return $this->findBy(array(), array('id' => 'DESC'));
     }
 
+    public function findMine(User $user)
+    {
+        if ($user->hasRole("ROLE_PARTNER"))
+            return $this->findBy(array("partner" => $user->getPartner() ?? -1), array('id' => 'DESC'));
+        else
+            return $this->findAll();
+    }
+
     /**
      * This function searches in fields: Id, Kvk, Email, Name
      */
@@ -59,6 +67,9 @@ class SupplierRepository extends \Doctrine\ORM\EntityRepository
 
             $qb = $qb->setParameter("query", $search->query)->setParameter("queryLike", '%'.$search->query.'%');
         }
+
+        if ($search->user->hasRole("ROLE_PARTNER"))
+            $qb = $qb->andWhere('o.partner = :partner')->setParameter('partner', $search->user->getPartner() ?? -1); 
 
         return $qb->getQuery()->getResult();
     }

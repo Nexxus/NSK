@@ -38,16 +38,32 @@ class PurchaseOrderRepository extends \Doctrine\ORM\EntityRepository
         return $this->findOneBy(array("id" => $id));
     }
 
+    public function findMine(User $user)
+    {
+        if ($user->hasRole("ROLE_PARTNER"))
+        {
+            return $this->getEntityManager()->createQueryBuilder()
+                ->from("AppBundle:PurchaseOrder", "o")->join("o.supplier", "s")->select("o")->orderBy("o.id", "DESC")
+                ->where("s.partner = :partner")->setParameter("partner", $user->getPartner() ?? -1)
+                ->getQuery()->getResult();
+        }
+        else
+            return $this->findAll();
+    }    
+
     public function findBySearchQuery(\AppBundle\Helper\IndexSearchContainer $search)
     {
         $qb = $this->getEntityManager()->createQueryBuilder()
-            ->from("AppBundle:PurchaseOrder", "o")->select("o")->orderBy("o.id", "DESC");
+            ->from("AppBundle:PurchaseOrder", "o")->join("o.supplier", "s")->select("o")->orderBy("o.id", "DESC");
 
         if ($search->query)
             $qb = $qb->andWhere("o.orderNr = :query")->setParameter("query", $search->query);
 
         if ($search->status)
             $qb = $qb->andWhere("o.status = :status")->setParameter("status", $search->status);
+
+        if ($search->user->hasRole("ROLE_PARTNER"))
+            $qb = $qb->andWhere('s.partner = :partner')->setParameter('partner', $search->user->getPartner() ?? -1); 
 
         return $qb->getQuery()->getResult();
     }
