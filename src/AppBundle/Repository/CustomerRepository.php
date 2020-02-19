@@ -33,10 +33,10 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
 
     public function findMine(User $user)
     {
-        if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
-            return $this->findBy(array("location" => $user->getLocationIds()), array('id' => 'DESC'));
+        if ($user->hasRole("ROLE_PARTNER"))
+            return $this->findBy(array("partner" => $user->getPartner() ?? -1), array('id' => 'DESC'));
         else
-            return $this->findBy(array(), array('id' => 'DESC'));
+            return $this->findAll();
     }
 
     /**
@@ -61,109 +61,83 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
             $qb = $qb->setParameter("query", $search->query)->setParameter("queryLike", '%'.$search->query.'%');
         }
 
-        if ($search->location)
-            $qb = $qb->andWhere("o.location = :location")->setParameter("location", $search->location);
-        elseif ($search->user->hasRole("ROLE_LOCAL") || $search->user->hasRole("ROLE_LOGISTICS"))
-            $qb = $qb->andWhere('IDENTITY(o.location) IN (:locationIds)')->setParameter('locationIds', $search->user->getLocationIds()); 
+        if ($search->user->hasRole("ROLE_PARTNER"))
+            $qb = $qb->andWhere('o.partner = :partner')->setParameter('partner', $search->user->getPartner() ?? -1); 
 
         return $qb->getQuery()->getResult();
     }
 
     /**
      * @param Customer $newCustomer
+     * @param string $origin
      * @return Customer
      */
     public function checkExists(Customer $newCustomer)
     {
-        // First: strict comparision, loose result count
+        $zip = strtolower(str_replace(" ", "", $newCustomer->getZip() ?? $newCustomer->getZip2()));
 
+        if (!$zip) return $newCustomer;
+        
         $qb = $this->getEntityManager()->createQueryBuilder()
-            ->from("AppBundle:Customer", "c")->select("c"); 
+            ->from("AppBundle:Customer", "c")->select("c")
+            ->where("LOWER(REPLACE(c.zip, ' ', '')) = :zip")->setParameter("zip", $zip);
             
-        if ($newCustomer->getName() && strlen($newCustomer->getName()) > 2) {
-            $qb = $qb->orWhere("c.name = :name")->setParameter("name", $newCustomer->getName());
+        if ($newCustomer->getName() && strlen($newCustomer->getName()) > 2) 
+        {
+            $result = $qb
+                ->andWhere("c.name = :name")->setParameter("name", $newCustomer->getName())
+                ->getQuery()->getResult();
+
+            if (count($result) > 0)
+            {
+                $this->_em->detach($newCustomer);
+                $newCustomer = null;
+                return $result[0];
+            }                
         }
 
         if ($newCustomer->getEmail() && strlen($newCustomer->getEmail()) > 5) {
-            $qb = $qb->orWhere("c.email = :email")->setParameter("email", $newCustomer->getEmail());
+            $result = $qb
+                ->andWhere("c.email = :email")->setParameter("email", $newCustomer->getEmail())
+                ->getQuery()->getResult();
+
+            if (count($result) > 0)
+            {
+                $this->_em->detach($newCustomer);
+                $newCustomer = null;
+                return $result[0];
+            }  
         }
 
-        $result = $qb->getQuery()->getResult();
+        if ($newCustomer->getPhone() && strlen($newCustomer->getPhone()) > 5) {
+            $result = $qb
+                ->andWhere("REPLACE(c.phone, '-', '') = :phone")->setParameter("phone", str_replace($newCustomer->getPhone(), "-", ""))
+                ->getQuery()->getResult();
 
-        if (count($result) > 0)
-        {
-            $this->_em->detach($newCustomer);
-            $newCustomer = null;
-            return $result[0];
+            if (count($result) > 0)
+            {
+                $this->_em->detach($newCustomer);
+                $newCustomer = null;
+                return $result[0];
+            }  
         }
-        else
+        
+        // loose comparision, strict result count
+        if ($newCustomer->getName() && strlen($newCustomer->getName()) > 4) 
         {
-            // Second: loose comparision, strict result count
-
-            $qb = $this->getEntityManager()->createQueryBuilder()
-                ->from("AppBundle:Customer", "c")->select("c"); 
-            
-            if ($newCustomer->getName() && strlen($newCustomer->getName()) > 2) {
-                $qb = $qb->orWhere("SOUNDEX(c.name) like SOUNDEX(:name)")->setParameter("name", $newCustomer->getName());
-            }
-
-            if ($newCustomer->getPhone() && strlen($newCustomer->getPhone()) > 5) {
-                $qb = $qb->orWhere("REPLACE(c.phone, '-', '') = :phone")->setParameter("phone", str_replace($newCustomer->getPhone(), "-", ""));
-                $qb = $qb->orWhere("REPLACE(c.phone2, '-', '') = :phone")->setParameter("phone", str_replace($newCustomer->getPhone(), "-", ""));
-            }
-
-            $result = $qb->getQuery()->getResult();
+            $result = $qb
+                ->andWhere("SOUNDEX(c.name) like SOUNDEX(:name)")->setParameter("name", $newCustomer->getName())
+                ->getQuery()->getResult();
 
             if (count($result) == 1)
             {
                 $this->_em->detach($newCustomer);
                 $newCustomer = null;
                 return $result[0];
-            }
-            else
-            {
-                $this->_em->persist($newCustomer);
-                return $newCustomer;
-            }
+            }                
         }
-    }
 
-    /**
-     * @param string $origin
-     * @return Customer|null
-     */
-    public function checkPartnerExists($origin)
-    {
-        // First: strict comparision, loose result count
-
-        $q = $this->getEntityManager()
-            ->createQuery("SELECT c FROM AppBundle:Customer c WHERE c.name = :name AND c.isPartner > 0")
-            ->setParameter("name", $origin);
-
-        $result = $q->getResult();
-
-        if (count($result) > 0)
-        {
-            return $result[0];
-        }
-        else
-        {
-            // Second: loose comparision, strict result count
-
-            $q = $this->getEntityManager()
-                ->createQuery("SELECT c FROM AppBundle:Customer c WHERE SOUNDEX(c.name) like SOUNDEX(:name) AND c.isPartner > 0")
-                ->setParameter("name", $origin);
-
-            $result = $q->getResult();
-
-            if (count($result) == 1)
-            {
-                return $result[0];
-            }
-            else
-            {
-                return null;
-            }
-        }
-    }    
+        $this->_em->persist($newCustomer);
+        return $newCustomer;
+    }   
 }

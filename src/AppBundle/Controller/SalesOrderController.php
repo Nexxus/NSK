@@ -85,16 +85,10 @@ class SalesOrderController extends Controller
 
             if ($form->isSubmitted() && $form->isValid())
             {
-                $location = $form->get("location")->getData();
                 $status = $form->get("status")->getData();
 
                 foreach ($orders as $order)
                 {
-                    /** @var SalesOrder $order */
-
-                    if ($location)
-                        $order->setLocation($location);
-
                     if ($status)
                         $order->setStatus($status);
                 }
@@ -202,15 +196,8 @@ class SalesOrderController extends Controller
                 /** @var Customer */
                 $newCustomer = $form->get('newCustomer')->getData();
                 $newCustomer->addSalesOrder($order);
-                $newCustomer->setLocation($order->getLocation());
                 $em->persist($newCustomer);
                 $order->setCustomer($newCustomer);
-            }
-
-            // Copy partner from customer
-            if ($id == 0 && !$order->getPartner() && $order->getCustomer() && $order->getCustomer()->getPartner())
-            {
-                $order->setPartner($order->getCustomer()->getPartner());
             }
 
             if ($form->isValid())
@@ -244,7 +231,6 @@ class SalesOrderController extends Controller
                         if ($backorder) // new sales order being backorder
                         {
                             $purchase = new PurchaseOrder();
-                            $purchase->setLocation($order->getLocation());
                             $purchase->setOrderDate(new \DateTime());
                             $purchase->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate("Backorder", true, false));
 
@@ -470,7 +456,6 @@ class SalesOrderController extends Controller
 
                     if ($data['partner'])
                     {
-                        $order->setPartner($data['partner']);
                         $customer->setPartner($data['partner']);
                     }
 

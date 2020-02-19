@@ -16,3 +16,39 @@
     {{ form_end(form) }}
 
 {% endblock %}
+{% block javascripts %}
+       
+    <script>
+
+        RoleFields();
+
+        $('#user_form_role').change(function() {
+            RoleFields();
+        });
+
+        function RoleFields() {
+
+            if ($('#user_form_role').val() == "ROLE_PARTNER")
+            {
+                $('#user_form_locations').closest('.form-group').hide();
+                $('#user_form_locations').val("");
+                $('#user_form_partner').closest('.form-group').show();
+            }
+            else if ($('#user_form_role').val() == "ROLE_LOCAL" || $('#user_form_role').val() == "ROLE_LOGISTICS")
+            {
+                $('#user_form_locations').closest('.form-group').show();
+                $('#user_form_partner').closest('.form-group').hide();
+                $('#user_form_partner').val("");
+            }
+            else 
+            {
+                $('#user_form_locations').closest('.form-group').hide();
+                $('#user_form_locations').val("");
+                $('#user_form_partner').closest('.form-group').hide();
+                $('#user_form_partner').val("");
+            }
+        }
+
+    </script>
+
+{% endblock %}

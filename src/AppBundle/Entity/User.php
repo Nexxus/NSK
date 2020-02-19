@@ -82,6 +82,14 @@ class User extends BaseUser
     private $locations;
 
     /**
+     * @var Customer Partner
+     *
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Customer", fetch="EAGER")
+     * @ORM\JoinColumn(name="partner_id", referencedColumnName="id")
+     */
+    private $partner;    
+
+    /**
      * Get id
      *
      * @return int
@@ -252,5 +260,23 @@ class User extends BaseUser
             $locationIds[] = $location->getId();
         return $locationIds;
     }
+
+    /**
+     * @return User
+     */
+    public function setPartner(Customer $partner)
+    {
+        $this->partner = $partner;
+
+        return $this;
+    }
+
+    /**
+     * @return Customer
+     */
+    public function getPartner()
+    {
+        return $this->partner;
+    }      
 }
 

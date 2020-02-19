@@ -37,7 +37,7 @@ class IndexBulkEditForm extends AbstractType
         {
             $choices = [
                 'With selected lines...' => '',
-                'Edit status and location' => 'status',
+                'Edit status' => 'status',
                 'Print barcodes' => 'barcodes',
                 'Print price cards' => 'pricecards',
                 'Print checklists' => 'checklists'
@@ -47,7 +47,7 @@ class IndexBulkEditForm extends AbstractType
         {
             $choices = [
                 'With selected lines...' => '',
-                'Edit status and location' => 'status',
+                'Edit status' => 'status',
                 'Print orders' => 'orders'
             ];
         }

@@ -5,20 +5,17 @@
 
     {{ form_start(form) }}
     <div class="row">
-        <div class="col-sm-7">
+        <div class="col-sm-9">
             {{ form_widget(form.query, {'attr': {'placeholder': 'Zoeken op ordernummer'} }) }}
         </div>
         <div class="col-sm-2">
             {{ form_widget(form.status) }}
         </div>
-        <div class="col-sm-2">
-            {{ form_widget(form.location) }}
-        </div>
         <div class="col-sm-1">
             {{ form_widget(form.submit) }}
         </div>
     </div>
-    {{ form_end(form) }}
+    {{ form_end(form, {'render_rest': false}) }}
 
     <hr />
 
@@ -45,7 +42,6 @@
                 <th{% if orders.isSorted('orderDate') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Order date', 'orderDate') }}</th>
                 <th{% if orders.isSorted('customer.name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Customer', 'customer.name') }}</th>
                 <th{% if orders.isSorted('status') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Status', 'status') }}</th>
-                <th{% if orders.isSorted('location.name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Location', 'location.name') }}</th>
                 <th width="1%"></th>
             </tr>
             <tr>
@@ -59,7 +55,6 @@
                 <td>{{ order.orderDate|date("Y-m-d") }}</td>
                 <td><a class="inlist" href="{{ path('customer_edit', { 'id': order.customer.id|default(0) }) }}" data-toggle="tooltip" title="{{ order.customer.getAddressString()|default("") }}">{{ order.customer.name|default("") }}</a></td>
                 <td>{{ order.status.name|default("") }}</td>
-                <td>{{ order.location.name|default("") }}</td>
                 <td nowrap>
                     <a class="btn btn-success" href="{{ path('salesorder_edit', { 'id': order.id }) }}"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
                     <a class="btn btn-danger btn-delete" href="{{ path('salesorder_delete', { 'id': order.id }) }}" data-class="sales order" data-name="Order {{ order.orderNr }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>

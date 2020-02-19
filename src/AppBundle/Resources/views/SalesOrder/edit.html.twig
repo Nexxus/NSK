@@ -37,7 +37,6 @@
 
                     {{ form_row(form.orderDate) }} 
                     {{ form_row(form.status) }} 
-                    {{ form_row(form.location) }} 
                     {{ form_row(form.remarks) }} 
                     {% if (order.id == 0) %}
                     {{ form_row(form.backorder) }} 
@@ -114,8 +113,6 @@
                         {{ form_row(form.newCustomer.state) }} 
                         {{ form_row(form.newCustomer.country) }} 
                     </div>
-                    {{ form_row(form.partner) }} 
-
                 </div>
             </div>
 
