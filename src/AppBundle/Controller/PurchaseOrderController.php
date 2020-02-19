@@ -43,7 +43,7 @@ class PurchaseOrderController extends Controller
         }
         else
         {
-            $orders = $repo->findMine($this->getUser());
+            $orders = $repo->findAll();
             $pageLength = 20;
         }
 
@@ -77,16 +77,10 @@ class PurchaseOrderController extends Controller
 
             if ($form->isSubmitted() && $form->isValid())
             {
-                $location = $form->get("location")->getData();
                 $status = $form->get("status")->getData();
                 
                 foreach ($orders as $order)
                 {
-                     /** @var PurchaseOrder $order */
-
-                    if ($location)
-                        $order->setLocation($location);
-
                     if ($status)
                         $order->setStatus($status);
                 }
@@ -180,7 +174,6 @@ class PurchaseOrderController extends Controller
                 /** @var Supplier */
                 $newSupplier = $form->get('newSupplier')->getData();
                 $newSupplier->addPurchaseOrder($order);
-                //$newSupplier->setLocation($order->getLocation());
                 $em->persist($newSupplier);
                 $order->setSupplier($newSupplier);
             }

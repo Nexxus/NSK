@@ -86,11 +86,7 @@ class SalesOrderForm extends AbstractType
                 'required' => false,
                 'attr' => ['class' => 'combobox'],
                 'query_builder' => function (EntityRepository $er) use ($user) { 
-                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); 
-                    /** @var \AppBundle\Entity\User $user */
-                    if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
-                        $qb = $qb->where('x.location IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
-                    return $qb;
+                    return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); 
                 }
             ])
             ->add('newCustomer', CustomerForm::class, [
@@ -135,19 +131,6 @@ class SalesOrderForm extends AbstractType
                     },
                 ])
             ->add('backorder', CheckboxType::class, ['required' => false, 'mapped' => false, 'label' => 'Back order: This creates empty purchase order too']) // new
-            ->add('repairorder', CheckboxType::class, ['required' => false, 'mapped' => false, 'label' => 'Repair order: These products are not purchased', 'data' => $options['isRepair']]) // new
-            ->add('location',  EntityType::class, [
-                'class' => 'AppBundle:Location',
-                'choice_label' => 'name',
-                'required' => true,
-                'query_builder' => function (EntityRepository $er) use ($user) { 
-                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
-                    /** @var \AppBundle\Entity\User $user */
-                    if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
-                        $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
-                    return $qb;
-                }
-            ])             
             ->add('save', SubmitType::class, [
                 'attr' => ['class' => 'btn-success btn-120']
             ]);

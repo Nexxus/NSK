@@ -24,7 +24,6 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
-use AppBundle\Entity\Location;
 
 /**
  * Company
@@ -171,14 +170,6 @@ abstract class ACompany
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $zip2;
-
-    /**
-     * @var Location
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Location", inversedBy="companies")
-     * @ORM\JoinColumn(name="location_id", referencedColumnName="id")
-     */
-    protected $location;
 
     /**
      * @var Customer Partner
@@ -549,31 +540,6 @@ abstract class ACompany
         return $this->phone2;
     }
 
-
-    /**
-     * Set location
-     *
-     * @param Location $location
-     *
-     * @return ACompany
-     */
-    public function setLocation(Location $location)
-    {
-        $this->location = $location;
-
-        return $this;
-    }
-
-    /**
-     * Get location
-     *
-     * @return Location
-     */
-    public function getLocation()
-    {
-        return $this->location;
-    }
-
     /**
      * @return ACompany
      */
@@ -590,19 +556,16 @@ abstract class ACompany
     public function getPartner()
     {
         return $this->partner;
-    }     
-
+    }  
+    
     /**
      * @return string for use in views tooltips
      */
     public function getAddressString() {
         $address = $this->street . "<br />" .
             $this->zip . " " . $this->city;
-            
-        if ($this->location)    
-        $address .= "<br />Your location: " . $this->location->getName();
 
         return $address;
-    }
+    }    
 }
 

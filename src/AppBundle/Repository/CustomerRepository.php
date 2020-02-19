@@ -31,14 +31,6 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
         return $this->findBy(array(), array('id' => 'DESC'));
     }
 
-    public function findMine(User $user)
-    {
-        if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
-            return $this->findBy(array("location" => $user->getLocationIds()), array('id' => 'DESC'));
-        else
-            return $this->findBy(array(), array('id' => 'DESC'));
-    }
-
     /**
      * This function searches in fields: Id, Kvk, Email, Name
      */
@@ -60,11 +52,6 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
 
             $qb = $qb->setParameter("query", $search->query)->setParameter("queryLike", '%'.$search->query.'%');
         }
-
-        if ($search->location)
-            $qb = $qb->andWhere("o.location = :location")->setParameter("location", $search->location);
-        elseif ($search->user->hasRole("ROLE_LOCAL") || $search->user->hasRole("ROLE_LOGISTICS"))
-            $qb = $qb->andWhere('IDENTITY(o.location) IN (:locationIds)')->setParameter('locationIds', $search->user->getLocationIds()); 
 
         return $qb->getQuery()->getResult();
     }

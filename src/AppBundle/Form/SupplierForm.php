@@ -59,27 +59,8 @@ class SupplierForm extends AbstractType
             ->add('city2', TextType::class, ['required' => false, 'label' => 'City'])
             ->add('zip2', TextType::class, ['required' => false, 'label' => 'Zip'])
             ->add('state2', TextType::class, ['required' => false, 'label' => 'State'])
-            ->add('country2', TextType::class, ['required' => false, 'label' => 'Country']);
-
-            if ($user) 
-            {
-                $builder->add('location',  EntityType::class, [
-                    'class' => 'AppBundle:Location',
-                    'choice_label' => 'name',
-                    'required' => true,
-                    'placeholder' => '',
-                    'query_builder' => function (EntityRepository $er) use ($user) { 
-                        $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
-                        /** @var \AppBundle\Entity\User $user */
-                        if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
-                            $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
-                        return $qb;
-                    }
-                ]);
-            } 
-
-            $builder
-                ->add('partner',  EntityType::class, [
+            ->add('country2', TextType::class, ['required' => false, 'label' => 'Country'])
+            ->add('partner',  EntityType::class, [
                     'class' => 'AppBundle:Customer',
                     'choice_label' => 'name',
                     'required' => false,

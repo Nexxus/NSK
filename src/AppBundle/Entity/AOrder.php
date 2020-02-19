@@ -86,14 +86,6 @@ abstract class AOrder
     protected $status;
 
     /**
-     * @var Location
-     *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Location", inversedBy="orders")
-     * @ORM\JoinColumn(name="location_id", referencedColumnName="id")
-     */
-    protected $location;
-
-    /**
      * @var Customer Partner
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Customer", fetch="EAGER")
@@ -314,28 +306,6 @@ abstract class AOrder
     public function getStatus()
     {
         return $this->status;
-    }
-
-    /**
-     * Set location
-     *
-     * @param Location $location
-     */
-    public function setLocation($location)
-    {
-        $this->location = $location;
-
-        return $this;
-    }
-
-    /**
-     * Get location
-     *
-     * @return Location
-     */
-    public function getLocation()
-    {
-        return $this->location;
     }
 
     /**

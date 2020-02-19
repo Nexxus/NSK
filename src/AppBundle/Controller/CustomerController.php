@@ -56,7 +56,7 @@ class CustomerController extends Controller
         }
         else
         {
-            $customers = $repo->findMine($this->getUser());
+            $customers = $repo->findAll();
         }
 
         $paginator = $this->get('knp_paginator');

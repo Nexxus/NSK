@@ -114,19 +114,6 @@ class PublicController extends Controller
 
             $pickup->getOrder()->setSupplier($em->getRepository('AppBundle:Supplier')->checkExists($pickup->getOrder()->getSupplier()));
 
-            $locationId = $form->get('locationId')->getData();
-            $location = null;
-            $zipcode = $pickup->getOrder()->getSupplier()->getZip();
-            
-            if ($locationId)
-                $location = $em->getRepository(Location::class)->find($locationId);
-            elseif ($zipcode)
-                $location = $em->getRepository(Location::class)->findOneByZipcode($zipcode);
-            if (!$location) 
-                $location = $em->getRepository(Location::class)->find(1);
-
-            $pickup->getOrder()->setLocation($location);
-
             $pickup->getOrder()->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), true, false));
 
             if ($pickup->getOrigin()) {
@@ -152,6 +139,9 @@ class PublicController extends Controller
             }
 
             // Products
+            $locationId = $form->get('locationId')->getData();
+            $location = $locationId ? $em->getRepository(Location::class)->find($locationId) : null;
+
             $count = 0;
             foreach ($allProductTypes as $productType)
             {
@@ -231,8 +221,6 @@ class PublicController extends Controller
             {
                 try
                 {
-                    $location = $em->getReference("AppBundle:Location", $form->get('locationId')->getData());
-                    $order->setLocation($location);
                     $order->setCustomer($em->getRepository('AppBundle:Customer')->checkExists($order->getCustomer()));
                     $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), false, true));
                     $remarks = "";
@@ -323,9 +311,6 @@ class PublicController extends Controller
             {
                 return new Response($form->getErrors()->current()->getMessage(), Response::HTTP_NOT_ACCEPTABLE);
             }
-
-            $location = $em->getReference("AppBundle:Location", $form->get('locationId')->getData());
-            $order->setLocation($location);
 
             $order->setCustomer($em->getRepository('AppBundle:Customer')->checkExists($order->getCustomer()));
             $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), false, true));

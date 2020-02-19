@@ -19,7 +19,6 @@
                 <tr><td width="50%">Order nr</td><td>{{ order.orderNr }}</td></tr>
                 <tr><td>Order date</td><td>{{ order.orderDate|date("d-m-Y")|default("Unknown") }}</td></tr>
                 <tr><td>Status</td><td>{{ order.status.name|default("Unknown") }}</td></tr>
-                <tr><td>Location</td><td>{{ order.location.name|default("Unknown") }}</td></tr>
                 <tr><td>Remarks</td><td>{{ order.remarks|default("None") }}</td></tr>
             </table>
         </div>

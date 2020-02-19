@@ -75,11 +75,7 @@ class PurchaseOrderForm extends AbstractType
                 'required' => false,
                 'attr' => ['class' => 'combobox'],
                 'query_builder' => function (EntityRepository $er) use ($user) { 
-                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); 
-                    /** @var \AppBundle\Entity\User $user */
-                    if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
-                        $qb = $qb->where('x.location IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
-                    return $qb;                    
+                    return $er->createQueryBuilder('x')->orderBy("x.name", "ASC");                    
                 }
             ])
             ->add('newSupplier', SupplierForm::class, [
@@ -118,19 +114,7 @@ class PurchaseOrderForm extends AbstractType
             ])
             ->add('productRelations', CollectionType::class, [
                 'entry_type' => ProductOrderRelationForm::class
-            ])
-            ->add('location',  EntityType::class, [
-                'class' => 'AppBundle:Location',
-                'choice_label' => 'name',
-                'required' => true,
-                'query_builder' => function (EntityRepository $er) use ($user) { 
-                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
-                    /** @var \AppBundle\Entity\User $user */
-                    if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
-                        $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
-                    return $qb;
-                }
-            ])            
+            ])           
             ->add('save', SubmitType::class, [
                 'attr' => ['class' => 'btn-success btn-120']
             ]);

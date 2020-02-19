@@ -57,7 +57,7 @@ class SupplierController extends Controller
         }
         else
         {
-            $suppliers = $repo->findMine($this->getUser());
+            $suppliers = $repo->findAll();
         }
 
         $paginator = $this->get('knp_paginator');
