@@ -80,55 +80,70 @@ class SupplierRepository extends \Doctrine\ORM\EntityRepository
      */
     public function checkExists(Supplier $newSupplier)
     {
-        // First: strict comparision, loose result count
+        $zip = strtolower(str_replace(" ", "", $newSupplier->getZip() ?? $newSupplier->getZip2()));
 
+        if (!$zip) return $newSupplier;
+        
         $qb = $this->getEntityManager()->createQueryBuilder()
-            ->from("AppBundle:Supplier", "s")->select("s"); 
+            ->from("AppBundle:Supplier", "s")->select("s")
+            ->where("LOWER(REPLACE(s.zip, ' ', '')) = :zip")->setParameter("zip", $zip);
             
-        if ($newSupplier->getName() && strlen($newSupplier->getName()) > 2) {
-            $qb = $qb->orWhere("s.name = :name")->setParameter("name", $newSupplier->getName());
+        if ($newSupplier->getName() && strlen($newSupplier->getName()) > 2) 
+        {
+            $result = $qb
+                ->andWhere("s.name = :name")->setParameter("name", $newSupplier->getName())
+                ->getQuery()->getResult();
+
+            if (count($result) > 0)
+            {
+                $this->_em->detach($newSupplier);
+                $newSupplier = null;
+                return $result[0];
+            }                
         }
 
         if ($newSupplier->getEmail() && strlen($newSupplier->getEmail()) > 5) {
-            $qb = $qb->orWhere("s.email = :email")->setParameter("email", $newSupplier->getEmail());
+            $result = $qb
+                ->andWhere("s.email = :email")->setParameter("email", $newSupplier->getEmail())
+                ->getQuery()->getResult();
+
+            if (count($result) > 0)
+            {
+                $this->_em->detach($newSupplier);
+                $newSupplier = null;
+                return $result[0];
+            }  
         }
 
-        $result = $qb->getQuery()->getResult();
+        if ($newSupplier->getPhone() && strlen($newSupplier->getPhone()) > 5) {
+            $result = $qb
+                ->andWhere("REPLACE(s.phone, '-', '') = :phone")->setParameter("phone", str_replace($newSupplier->getPhone(), "-", ""))
+                ->getQuery()->getResult();
 
-        if (count($result) > 0)
-        {
-            $this->_em->detach($newSupplier);
-            $newSupplier = null;
-            return $result[0];
+            if (count($result) > 0)
+            {
+                $this->_em->detach($newSupplier);
+                $newSupplier = null;
+                return $result[0];
+            }  
         }
-        else
+        
+        // loose comparision, strict result count
+        if ($newSupplier->getName() && strlen($newSupplier->getName()) > 4) 
         {
-            // Second: loose comparision, strict result count
-
-            $qb = $this->getEntityManager()->createQueryBuilder()
-                ->from("AppBundle:Supplier", "s")->select("s"); 
-            
-            if ($newSupplier->getName() && strlen($newSupplier->getName()) > 2) {
-                $qb = $qb->orWhere("SOUNDEX(s.name) like SOUNDEX(:name)")->setParameter("name", $newSupplier->getName());
-            }
-
-            if ($newSupplier->getPhone() && strlen($newSupplier->getPhone()) > 5) {
-                $qb = $qb->orWhere("REPLACE(s.phone, '-', '') = :phone")->setParameter("phone", str_replace($newSupplier->getPhone(), "-", ""));
-                $qb = $qb->orWhere("REPLACE(s.phone2, '-', '') = :phone")->setParameter("phone", str_replace($newSupplier->getPhone(), "-", ""));
-            }
-
-            $result = $qb->getQuery()->getResult();
+            $result = $qb
+                ->andWhere("SOUNDEX(s.name) like SOUNDEX(:name)")->setParameter("name", $newSupplier->getName())
+                ->getQuery()->getResult();
 
             if (count($result) == 1)
             {
                 $this->_em->detach($newSupplier);
                 $newSupplier = null;
                 return $result[0];
-            }
-            else
-            {
-                return $newSupplier;
-            }
+            }                
         }
+
+        $this->_em->persist($newSupplier);
+        return $newSupplier;
     }
 }

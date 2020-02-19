@@ -72,58 +72,72 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
      * @param string $origin
      * @return Customer
      */
-    public function checkExists(Customer $newCustomer, $origin = null)
+    public function checkExists(Customer $newCustomer)
     {
-        // First: strict comparision, loose result count
+        $zip = strtolower(str_replace(" ", "", $newCustomer->getZip() ?? $newCustomer->getZip2()));
 
+        if (!$zip) return $newCustomer;
+        
         $qb = $this->getEntityManager()->createQueryBuilder()
-            ->from("AppBundle:Customer", "c")->select("c"); 
+            ->from("AppBundle:Customer", "c")->select("c")
+            ->where("LOWER(REPLACE(c.zip, ' ', '')) = :zip")->setParameter("zip", $zip);
             
-        if ($newCustomer->getName() && strlen($newCustomer->getName()) > 2) {
-            $qb = $qb->orWhere("c.name = :name")->setParameter("name", $newCustomer->getName());
+        if ($newCustomer->getName() && strlen($newCustomer->getName()) > 2) 
+        {
+            $result = $qb
+                ->andWhere("c.name = :name")->setParameter("name", $newCustomer->getName())
+                ->getQuery()->getResult();
+
+            if (count($result) > 0)
+            {
+                $this->_em->detach($newCustomer);
+                $newCustomer = null;
+                return $result[0];
+            }                
         }
 
         if ($newCustomer->getEmail() && strlen($newCustomer->getEmail()) > 5) {
-            $qb = $qb->orWhere("c.email = :email")->setParameter("email", $newCustomer->getEmail());
+            $result = $qb
+                ->andWhere("c.email = :email")->setParameter("email", $newCustomer->getEmail())
+                ->getQuery()->getResult();
+
+            if (count($result) > 0)
+            {
+                $this->_em->detach($newCustomer);
+                $newCustomer = null;
+                return $result[0];
+            }  
         }
 
-        $result = $qb->getQuery()->getResult();
+        if ($newCustomer->getPhone() && strlen($newCustomer->getPhone()) > 5) {
+            $result = $qb
+                ->andWhere("REPLACE(c.phone, '-', '') = :phone")->setParameter("phone", str_replace($newCustomer->getPhone(), "-", ""))
+                ->getQuery()->getResult();
 
-        if (count($result) > 0)
-        {
-            $this->_em->detach($newCustomer);
-            $newCustomer = null;
-            return $result[0];
+            if (count($result) > 0)
+            {
+                $this->_em->detach($newCustomer);
+                $newCustomer = null;
+                return $result[0];
+            }  
         }
-        else
+        
+        // loose comparision, strict result count
+        if ($newCustomer->getName() && strlen($newCustomer->getName()) > 4) 
         {
-            // Second: loose comparision, strict result count
-
-            $qb = $this->getEntityManager()->createQueryBuilder()
-                ->from("AppBundle:Customer", "c")->select("c"); 
-            
-            if ($newCustomer->getName() && strlen($newCustomer->getName()) > 2) {
-                $qb = $qb->orWhere("SOUNDEX(c.name) like SOUNDEX(:name)")->setParameter("name", $newCustomer->getName());
-            }
-
-            if ($newCustomer->getPhone() && strlen($newCustomer->getPhone()) > 5) {
-                $qb = $qb->orWhere("REPLACE(c.phone, '-', '') = :phone")->setParameter("phone", str_replace($newCustomer->getPhone(), "-", ""));
-                $qb = $qb->orWhere("REPLACE(c.phone2, '-', '') = :phone")->setParameter("phone", str_replace($newCustomer->getPhone(), "-", ""));
-            }
-
-            $result = $qb->getQuery()->getResult();
+            $result = $qb
+                ->andWhere("SOUNDEX(c.name) like SOUNDEX(:name)")->setParameter("name", $newCustomer->getName())
+                ->getQuery()->getResult();
 
             if (count($result) == 1)
             {
                 $this->_em->detach($newCustomer);
                 $newCustomer = null;
                 return $result[0];
-            }
-            else
-            {
-                $this->_em->persist($newCustomer);
-                return $newCustomer;
-            }
+            }                
         }
+
+        $this->_em->persist($newCustomer);
+        return $newCustomer;
     }   
 }
