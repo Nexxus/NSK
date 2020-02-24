@@ -443,9 +443,11 @@ class SalesOrderController extends Controller
                     $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate("Products to assign", false, true));
                     $order->setRemarks($remarks);
 
+                    $name = $orderInput['Bedrijfsnaam'] ?? trim($orderInput['Voornaam'] . " " . $orderInput['Achternaam']) ?? "Unknown";
+
                     $customer = new Customer();
-                    $customer->setName($orderInput['Bedrijfsnaam']);
-                    $customer->setRepresentative($orderInput['Voornaam'] . " " . $orderInput['Achternaam']);
+                    $customer->setName($name);
+                    $customer->setRepresentative(trim($orderInput['Voornaam'] . " " . $orderInput['Achternaam']));
                     $customer->setStreet(trim($orderInput['Straatnaam'] . " " . $orderInput['Huisnummer'] . " " . $orderInput['Huisnummer toevoeging']));
                     $customer->setZip($orderInput['Postcode']);
                     $customer->setCity($orderInput['Plaatsnaam']);
