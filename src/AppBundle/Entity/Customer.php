@@ -57,7 +57,7 @@ class Customer extends ACompany
 
 
     /**
-     * @param int $partner Use constants
+     * @param int $isPartner Use constants
      *
      * @return Customer
      */

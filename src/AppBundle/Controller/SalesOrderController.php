@@ -431,7 +431,7 @@ class SalesOrderController extends Controller
 
                     $orderInput = array_combine($keys, $values);
 
-                    if (!$orderInput['Aflever referentie'] && !$orderInput['Bedrijfsnaam'] && !$orderInput['Achternaam']) continue;
+                    if (!$orderInput['Bedrijfsnaam'] && !$orderInput['Voornaam'] && !$orderInput['Achternaam']) continue;
 
                     try {
                         $remarks = 
@@ -446,9 +446,11 @@ class SalesOrderController extends Controller
                         $order->setOrderDate(new \DateTime());
                         $order->setIsGift(false);
                         $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate("Products to assign", false, true));
+                        $order->setOrderNr($repo->generateOrderNr($order));
                         $order->setRemarks($remarks);
 
-                        if ($orderInput['Bedrijfsnaam'])
+                        // Leergeld puts partner name in field Bedrijfsnaam :-(
+                        if ($orderInput['Bedrijfsnaam'] && strpos($orderInput['Bedrijfsnaam'], "Leergeld") === false)
                             $name = $orderInput['Bedrijfsnaam'];
                         else
                             $name = trim($orderInput['Voornaam'] . " " . $orderInput['Achternaam']);
@@ -474,6 +476,7 @@ class SalesOrderController extends Controller
                     if ($data['partner'])
                     {
                         $customer->setPartner($data['partner']);
+                        $customer->setIsPartner(Customer::HAS_PARTNER);
                     }
 
                     $order->setCustomer($em->getRepository('AppBundle:Customer')->checkExists($customer));
