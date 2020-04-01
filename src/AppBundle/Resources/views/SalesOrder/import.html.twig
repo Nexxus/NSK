@@ -6,7 +6,7 @@
     {% if success %}
     <div class="alert alert-success" role="alert">The orders are created successfully.</div>
     {% elseif success is same as(false) %}
-    <div class="alert alert-danger" role="alert">The orders could not be created. Please check details below.</div>
+    <div class="alert alert-danger" role="alert">The orders could not be imported. Possibly the content of the CSV file is corrupt; please check.</div>
     {% endif %}
 
     {{ form_start(form) }}

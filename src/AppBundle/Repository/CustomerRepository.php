@@ -68,6 +68,8 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /**
+     * This function also persists or detaches newCustomer object
+     * 
      * @param Customer $newCustomer
      * @param string $origin
      * @return Customer
@@ -76,65 +78,66 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
     {
         $zip = strtolower(str_replace(" ", "", $newCustomer->getZip() ?? $newCustomer->getZip2()));
 
-        if (!$zip) return $newCustomer;
-        
-        $qb = $this->getEntityManager()->createQueryBuilder()
-            ->from("AppBundle:Customer", "c")->select("c")
-            ->where("LOWER(REPLACE(c.zip, ' ', '')) = :zip")->setParameter("zip", $zip);
+        if ($zip) 
+        {
+            $qb = $this->getEntityManager()->createQueryBuilder()
+                ->from("AppBundle:Customer", "c")->select("c")
+                ->where("LOWER(REPLACE(c.zip, ' ', '')) = :zip")->setParameter("zip", $zip);
+                
+            if ($newCustomer->getName() && strlen($newCustomer->getName()) > 2) 
+            {
+                $result = $qb
+                    ->andWhere("c.name = :name")->setParameter("name", $newCustomer->getName())
+                    ->getQuery()->getResult();
+
+                if (count($result) > 0)
+                {
+                    $this->_em->detach($newCustomer);
+                    $newCustomer = null;
+                    return $result[0];
+                }                
+            }
+
+            if ($newCustomer->getEmail() && strlen($newCustomer->getEmail()) > 5) {
+                $result = $qb
+                    ->andWhere("c.email = :email")->setParameter("email", $newCustomer->getEmail())
+                    ->getQuery()->getResult();
+
+                if (count($result) > 0)
+                {
+                    $this->_em->detach($newCustomer);
+                    $newCustomer = null;
+                    return $result[0];
+                }  
+            }
+
+            if ($newCustomer->getPhone() && strlen($newCustomer->getPhone()) > 5) {
+                $result = $qb
+                    ->andWhere("REPLACE(c.phone, '-', '') = :phone")->setParameter("phone", str_replace($newCustomer->getPhone(), "-", ""))
+                    ->getQuery()->getResult();
+
+                if (count($result) > 0)
+                {
+                    $this->_em->detach($newCustomer);
+                    $newCustomer = null;
+                    return $result[0];
+                }
+            }
             
-        if ($newCustomer->getName() && strlen($newCustomer->getName()) > 2) 
-        {
-            $result = $qb
-                ->andWhere("c.name = :name")->setParameter("name", $newCustomer->getName())
-                ->getQuery()->getResult();
-
-            if (count($result) > 0)
+            // loose comparision, strict result count
+            if ($newCustomer->getName() && strlen($newCustomer->getName()) > 4) 
             {
-                $this->_em->detach($newCustomer);
-                $newCustomer = null;
-                return $result[0];
-            }                
-        }
+                $result = $qb
+                    ->andWhere("SOUNDEX(c.name) like SOUNDEX(:name)")->setParameter("name", $newCustomer->getName())
+                    ->getQuery()->getResult();
 
-        if ($newCustomer->getEmail() && strlen($newCustomer->getEmail()) > 5) {
-            $result = $qb
-                ->andWhere("c.email = :email")->setParameter("email", $newCustomer->getEmail())
-                ->getQuery()->getResult();
-
-            if (count($result) > 0)
-            {
-                $this->_em->detach($newCustomer);
-                $newCustomer = null;
-                return $result[0];
-            }  
-        }
-
-        if ($newCustomer->getPhone() && strlen($newCustomer->getPhone()) > 5) {
-            $result = $qb
-                ->andWhere("REPLACE(c.phone, '-', '') = :phone")->setParameter("phone", str_replace($newCustomer->getPhone(), "-", ""))
-                ->getQuery()->getResult();
-
-            if (count($result) > 0)
-            {
-                $this->_em->detach($newCustomer);
-                $newCustomer = null;
-                return $result[0];
-            }  
-        }
-        
-        // loose comparision, strict result count
-        if ($newCustomer->getName() && strlen($newCustomer->getName()) > 4) 
-        {
-            $result = $qb
-                ->andWhere("SOUNDEX(c.name) like SOUNDEX(:name)")->setParameter("name", $newCustomer->getName())
-                ->getQuery()->getResult();
-
-            if (count($result) == 1)
-            {
-                $this->_em->detach($newCustomer);
-                $newCustomer = null;
-                return $result[0];
-            }                
+                if (count($result) == 1)
+                {
+                    $this->_em->detach($newCustomer);
+                    $newCustomer = null;
+                    return $result[0];
+                }                
+            }
         }
 
         $this->_em->persist($newCustomer);

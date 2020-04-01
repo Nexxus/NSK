@@ -45,7 +45,6 @@ class PublicController extends Controller
 {
     /**
      * @Route("/public/pickup", name="pickup")
-     * @Route("/ophaaldienst", name="ophaaldienst")
      * @Method({"GET"})
      */
     public function pickupAction(Request $request)
@@ -192,70 +191,6 @@ class PublicController extends Controller
         $productTypeName = str_replace(" ", "_", $productTypeName);
         $idx = $idx ? $idx : ""; // replace zero with empty
         return 'q' . $idx . $productTypeName;
-    }
-
-    /**
-     * @Route("/leergeld-bestelling", name="leergeld_bestelling")
-     * @Method({"GET", "POST"})
-     */
-    public function salesOrderOldAction(Request $request)
-    {
-        $success = null;
-        $em = $this->getDoctrine()->getEntityManager();
-        $order = new SalesOrder();
-        $order->setOrderDate(new \DateTime());
-        $order->setIsGift(false);
-        $customer = new Customer();
-        $em->persist($order);
-        $em->persist($customer);
-        $order->setCustomer($customer);
-        $form = $this->createForm(PublicSalesOrderForm::class, $order);
-        $form->handleRequest($request);
-        if ($request->isMethod('POST') && $form->isSubmitted() && $this->captchaVerify($request->request->get('g-recaptcha-response')))
-        {
-            if ($form->isValid())
-            {
-                try
-                {
-                    $order->setCustomer($em->getRepository('AppBundle:Customer')->checkExists($order->getCustomer()));
-                    $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), false, true));
-                    $remarks = "";
-                    foreach ($request->request->all()["public_sales_order_form"] as $fld => $q)
-                    {
-                        if (substr($fld, 0, 1) == "q" && $q)
-                        {
-                            $remarks .= ", " . substr($fld, 1). ": " . $q;
-                        }
-                    }
-                    if (strlen($remarks) > 2)
-                        $remarks = substr($remarks, 2);
-                    else
-                        $remarks = "No quantities entered...";
-                    $order->setRemarks($remarks);
-                    $em->flush();
-                    if (!$order->getOrderNr())
-                    {
-                        $orderNr = $em->getRepository('AppBundle:SalesOrder')->generateOrderNr($order);
-                        $order->setOrderNr($orderNr);
-                        $em->flush();
-                    }
-                    $success = true;
-                }
-                catch (\Exception $ex)
-                {
-                    $success = false;
-                }
-            }
-            else
-            {
-                $success = false;
-            }
-        }
-
-        return $this->render('AppBundle:Public:salesorder_old.html.twig', array(
-                'form' => $form->createView(),
-                'success' => $success,
-            ));
     }
 
     /**

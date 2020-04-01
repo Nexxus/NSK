@@ -423,38 +423,50 @@ class SalesOrderController extends Controller
 
                 foreach ($lines as $line)
                 {
+                    if (strpos($line, ";;;;;;;;;;;;") !== false) continue;
+                    
                     $values = explode(";", $line);
 
                     if (count($values) != count($keys)) continue;
 
                     $orderInput = array_combine($keys, $values);
 
-                    $remarks = 
-                        "Referentie: " . $orderInput['Referentie'] . "\r\n" .
-                        "Gebouw: " . $orderInput['Gebouw'] . "\r\n" .
-                        "Verdieping: " . $orderInput['Verdieping'] . "\r\n" .
-                        "Afdeling: " . $orderInput['Afdeling'] . "\r\n" .
-                        "Deurcode: " . $orderInput['Deurcode'] . "\r\n" .
-                        "Aflever referentie: " . $orderInput['Aflever referentie'];
+                    if (!$orderInput['Aflever referentie'] && !$orderInput['Bedrijfsnaam'] && !$orderInput['Achternaam']) continue;
 
-                    $order = new SalesOrder();
-                    $order->setOrderDate(new \DateTime());
-                    $order->setIsGift(false);
-                    $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate("Products to assign", false, true));
-                    $order->setRemarks($remarks);
+                    try {
+                        $remarks = 
+                            "Referentie: " . $orderInput['Referentie'] . "\r\n" .
+                            "Gebouw: " . $orderInput['Gebouw'] . "\r\n" .
+                            "Verdieping: " . $orderInput['Verdieping'] . "\r\n" .
+                            "Afdeling: " . $orderInput['Afdeling'] . "\r\n" .
+                            "Deurcode: " . $orderInput['Deurcode'] . "\r\n" .
+                            "Aflever referentie: " . $orderInput['Aflever referentie'];
 
-                    $name = $orderInput['Bedrijfsnaam'] ?? trim($orderInput['Voornaam'] . " " . $orderInput['Achternaam']) ?? "Unknown";
+                        $order = new SalesOrder();
+                        $order->setOrderDate(new \DateTime());
+                        $order->setIsGift(false);
+                        $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate("Products to assign", false, true));
+                        $order->setRemarks($remarks);
 
-                    $customer = new Customer();
-                    $customer->setName($name);
-                    $customer->setRepresentative(trim($orderInput['Voornaam'] . " " . $orderInput['Achternaam']));
-                    $customer->setStreet(trim($orderInput['Straatnaam'] . " " . $orderInput['Huisnummer'] . " " . $orderInput['Huisnummer toevoeging']));
-                    $customer->setZip($orderInput['Postcode']);
-                    $customer->setCity($orderInput['Plaatsnaam']);
-                    $customer->setCountry($orderInput['Landcode']);
-                    $customer->setEmail($orderInput['Email']);
-                    $customer->setPhone($orderInput['Telefoon']);
-                    $customer->setPhone2($orderInput['Mobiel nummer']);
+                        $name = $orderInput['Bedrijfsnaam'] ?? trim($orderInput['Voornaam'] . " " . $orderInput['Achternaam']) ?? "Unknown";
+
+                        $customer = new Customer();
+                        $customer->setName($name);
+                        $customer->setRepresentative(trim($orderInput['Voornaam'] . " " . $orderInput['Achternaam']));
+                        $customer->setStreet(trim($orderInput['Straatnaam'] . " " . $orderInput['Huisnummer'] . " " . $orderInput['Huisnummer toevoeging']));
+                        $customer->setZip($orderInput['Postcode']);
+                        $customer->setCity($orderInput['Plaatsnaam']);
+                        $customer->setCountry($orderInput['Landcode']);
+                        $customer->setEmail($orderInput['Email']);
+                        $customer->setPhone($orderInput['Telefoon']);
+                        $customer->setPhone2($orderInput['Mobiel nummer']);
+                    }
+                    catch (\Exception $ex) {
+                        return $this->render('AppBundle:SalesOrder:import.html.twig', array(
+                            'form' => $form->createView(),
+                            'success' => false,
+                        ));                            
+                    }
 
                     if ($data['partner'])
                     {
@@ -464,7 +476,6 @@ class SalesOrderController extends Controller
                     $order->setCustomer($em->getRepository('AppBundle:Customer')->checkExists($customer));
 
                     $em->persist($order);
-                    $em->persist($customer);
                 }
 
                 $em->flush();
