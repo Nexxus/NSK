@@ -49,6 +49,14 @@ class PublicController extends Controller
      */
     public function pickupAction(Request $request)
     {
+        if ($this->container->has('profiler'))
+        {
+            $this->container->get('profiler')->disable();
+        }
+
+        $recaptchaKey = $request->get("recaptchaKey");
+        $orderStatusName = $request->get("orderStatusName");
+
         $success = null;
 
         $em = $this->getDoctrine()->getEntityManager();
@@ -62,12 +70,15 @@ class PublicController extends Controller
         $supplier = new Supplier();
         $order->setSupplier($supplier);
 
-        $form = $this->createForm(PickupForm::class, $pickup, array('productTypes' => $allProductTypes));
+        $form = $this->createForm(PickupForm::class, $pickup, array('productTypes' => $allProductTypes, 'orderStatusName' => $orderStatusName));
 
-        return $this->render('AppBundle:Public:pickup.html.twig', array(
+        $response = $this->render('AppBundle:Public:pickup.html.twig', array(
                 'form' => $form->createView(),
                 'success' => $success,
+                'recaptchaKey' => $recaptchaKey,
             ));
+
+        return $response;
     }
 
     /**
