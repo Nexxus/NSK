@@ -54,4 +54,5 @@ security:
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/admin/, role: ROLE_ADMIN }
         - { path: ^/logistics/, role: ROLE_LOGISTICS }
-        - { path: ^/, role: ROLE_LOCAL }
+        - { path: ^/product/, role: ROLE_LOCAL }
+        - { path: ^/, role: [ROLE_LOCAL, ROLE_PARTNER] }

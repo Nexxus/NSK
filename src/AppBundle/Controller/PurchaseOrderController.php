@@ -77,16 +77,10 @@ class PurchaseOrderController extends Controller
 
             if ($form->isSubmitted() && $form->isValid())
             {
-                $location = $form->get("location")->getData();
                 $status = $form->get("status")->getData();
                 
                 foreach ($orders as $order)
                 {
-                     /** @var PurchaseOrder $order */
-
-                    if ($location)
-                        $order->setLocation($location);
-
                     if ($status)
                         $order->setStatus($status);
                 }
@@ -180,15 +174,8 @@ class PurchaseOrderController extends Controller
                 /** @var Supplier */
                 $newSupplier = $form->get('newSupplier')->getData();
                 $newSupplier->addPurchaseOrder($order);
-                //$newSupplier->setLocation($order->getLocation());
                 $em->persist($newSupplier);
                 $order->setSupplier($newSupplier);
-            }
-            
-            // Copy partner from supplier
-            if ($id == 0 && !$order->getPartner() && $order->getSupplier() && $order->getSupplier()->getPartner())
-            {
-                $order->setPartner($order->getSupplier()->getPartner());
             }
 
             if ($form->isValid())

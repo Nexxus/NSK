@@ -37,7 +37,6 @@
 
                     {{ form_row(form.orderDate) }} 
                     {{ form_row(form.status) }} 
-                    {{ form_row(form.location) }} 
                     {{ form_row(form.remarks) }} 
                     {% if (order.id == 0) %}
                     {{ form_row(form.backorder) }} 
@@ -114,8 +113,12 @@
                         {{ form_row(form.newCustomer.state) }} 
                         {{ form_row(form.newCustomer.country) }} 
                     </div>
-                    {{ form_row(form.partner) }} 
-
+                    {% if form.customer.vars.data and form.customer.vars.data.partner %}
+                    <div class="row" id="partner" style="margin-top: 20px">
+                        <div class="col-sm-3" style="text-align: right"><b>Partner</b></div>
+                        <div class="col-sm-9">{{ form.customer.vars.data.partner.name }}</div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
 
@@ -253,15 +256,21 @@
              if (val == 'new') {
                  $('div#newCustomer').show();
                  $('div#existingCustomer').hide();
+                 $('div#partner').hide();
              }
              else {
                  $('div#newCustomer').hide();
                  $('div#existingCustomer').show();
+                 $('div#partner').show();
              }
          }
 
          $('[required]').prop('required', function () {
              return $(this).is(':visible');
+         });
+
+         $('#sales_order_form_customer').change(function () {
+             $('div#partner').hide();
          });
 
          /* New service */

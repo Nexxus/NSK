@@ -1,219 +1,155 @@
-﻿<!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Nexxus pickup form</title>
-        
-        <link href="{{ asset('bootstrap/stylesheet/bootstrap.css') }}" rel="stylesheet"/>
-        <link href="{{ asset('stylesheet/uploadifive.css') }}" rel="stylesheet"/>  
-        <link href="{{ asset('stylesheet/override_style.css') }}" rel="stylesheet"/>  
-        <!-- <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" /> -->
-        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-    </head>
-    <body>
-        <div class="container">
+﻿{{form_start(form, {'multipart': false})}}
 
-            {#
-            <h1>Welcome to the Nexxus pickup form</h1>
-            This form can be used for pickup creation.<br />
-            It is an example for webdesigners. <br />
-            The form is submittable from other websites and domains.<br />
-            The form can be applied as an API call too (reCaptcha must be disabled).<br />
-            Webmaster, please note the hidden form fields.<br /><br />
-            #}
-
-            {{form_start(form, {'multipart': false})}}
-
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Your details{% endtrans %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Your details{% endtrans %}
+    </div>
+    <div class="panel-body">
+        <div class="col-sm-6">
+            <div class="form-group">
+                <div class="col-sm-6">
+                    {{ form_label(form.supplier.name) }} 
                 </div>
-                <div class="panel-body">
-                    <div class="col-sm-6">
-                        <div class="form-group">
-                            <div class="col-sm-6">
-                                {{ form_label(form.supplier.name) }} 
-                            </div>
-                            <div class="col-sm-6">
-                                {{ form_widget(form.supplier.name) }} 
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-sm-6">
-                                {{ form_label(form.supplier.representative) }} 
-                            </div>
-                            <div class="col-sm-6">
-                                {{ form_widget(form.supplier.representative) }} 
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-sm-6">
-                                {{ form_label(form.supplier.email) }} 
-                            </div>
-                            <div class="col-sm-6">
-                                {{ form_widget(form.supplier.email) }} 
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-sm-6">
-                                {{ form_label(form.supplier.phone) }} 
-                            </div>
-                            <div class="col-sm-6">
-                                {{ form_widget(form.supplier.phone) }} 
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        {{ form_row(form.supplier.street) }} 
-                        {{ form_row(form.supplier.streetExtra) }} 
-                        <div class="form-group">
-                            <div class="col-sm-3">
-                                {{ form_label(form.supplier.zip) }} 
-                            </div>
-                            <div class="col-sm-3">
-                                {{ form_widget(form.supplier.zip) }} 
-                            </div>
-                            <div class="col-sm-3">
-                                {{ form_label(form.supplier.state) }} 
-                            </div>
-                            <div class="col-sm-3">
-                                {{ form_widget(form.supplier.state) }} 
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-sm-3">
-                                {{ form_label(form.supplier.city) }} 
-                            </div>
-                            <div class="col-sm-3">
-                                {{ form_widget(form.supplier.city) }} 
-                            </div>
-                            <div class="col-sm-3">
-                                {{ form_label(form.supplier.country) }} 
-                            </div>
-                            <div class="col-sm-3">
-                                {{ form_widget(form.supplier.country) }} 
-                            </div>
-                        </div>
-                    </div>
+                <div class="col-sm-6">
+                    {{ form_widget(form.supplier.name) }} 
                 </div>
             </div>
-
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}About the materials{% endtrans %}
+            <div class="form-group">
+                <div class="col-sm-6">
+                    {{ form_label(form.supplier.representative) }} 
                 </div>
-                <div class="panel-body">
-                    {{ form_row(form.address0) }} 
-                    {{ form_row(form.address1) }} 
-                    {{ form_row(form.address2) }} 
-                    {{ form_row(form.address3) }} 
-                    {{ form_row(form.address4) }} 
-                    <hr />
-
-                    <!-- Only known product types are allowed. Not all product types are allowed. -->
-                    {% for q in form if q.vars.name starts with 'q' %}
-                    {{ form_row(q) }} 
-                    {% endfor %}
+                <div class="col-sm-6">
+                    {{ form_widget(form.supplier.representative) }} 
                 </div>
             </div>
-
-                        <div class="panel panel-default">
-                <div class="panel-heading">
-                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Additional info{% endtrans %}
+            <div class="form-group">
+                <div class="col-sm-6">
+                    {{ form_label(form.supplier.email) }} 
                 </div>
-                <div class="panel-body">
-                    {{ form_row(form.origin) }} 
-                    {{ form_row(form.pickupDate) }} 
-                    {{ form_row(form.description) }} 
-                    {{ form_row(form.dataDestruction) }} 
-                    <hr />
-                    {{ form_row(form.imagesInput) }} 
-                    {{ form_row(form.agreementInput) }} 
+                <div class="col-sm-6">
+                    {{ form_widget(form.supplier.email) }} 
                 </div>
             </div>
-
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="g-recaptcha" data-sitekey="6LdzW4QUAAAAANRAfkgl8Cz4-QNUcNEJomOj5wgX"></div>
-                        </div>
-                        <div class="col-md-4">
-                            {{ form_widget(form.save) }}
-                        </div>
-                    </div>
+            <div class="form-group">
+                <div class="col-sm-6">
+                    {{ form_label(form.supplier.phone) }} 
+                </div>
+                <div class="col-sm-6">
+                    {{ form_widget(form.supplier.phone) }} 
                 </div>
             </div>
-
-            {{ form_widget(form.imagesNames) }}
-            {{ form_widget(form.agreementName) }}
-            {# form_widget(form.locationId) #}
-            {{ form_widget(form.orderStatusName) }}
-            {{ form_end(form, {'render_rest': false}) }}
-
-            <div id="errorContainer" style="color: red"></div>
         </div>
+        <div class="col-sm-6">
+            {{ form_row(form.supplier.street) }} 
+            {{ form_row(form.supplier.streetExtra) }} 
+            <div class="form-group">
+                <div class="col-sm-3">
+                    {{ form_label(form.supplier.zip) }} 
+                </div>
+                <div class="col-sm-3">
+                    {{ form_widget(form.supplier.zip) }} 
+                </div>
+                <div class="col-sm-3">
+                    {{ form_label(form.supplier.state) }} 
+                </div>
+                <div class="col-sm-3">
+                    {{ form_widget(form.supplier.state) }} 
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-3">
+                    {{ form_label(form.supplier.city) }} 
+                </div>
+                <div class="col-sm-3">
+                    {{ form_widget(form.supplier.city) }} 
+                </div>
+                <div class="col-sm-3">
+                    {{ form_label(form.supplier.country) }} 
+                </div>
+                <div class="col-sm-3">
+                    {{ form_widget(form.supplier.country) }} 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-        <script src="{{ asset('bootstrap/js/jquery.min.js') }}"></script>
-        <script src="{{ asset('bootstrap/js/bootstrap.min.js') }}"></script>
-        <script src="{{ asset('js/jquery.uploadifive.min.js') }}"></script>
-	    <script type="text/javascript">
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}About the materials{% endtrans %}
+    </div>
+    <div class="panel-body">
+        {{ form_row(form.address0) }} 
+        {{ form_row(form.address1) }} 
+        {{ form_row(form.address2) }} 
+        {{ form_row(form.address3) }} 
+        {{ form_row(form.address4) }} 
+        <hr />
 
-            $("form").submit(function (e) {
+        <!-- Only known product types are allowed. Not all product types are allowed. -->
+        {% for q in form if q.vars.name starts with 'q' %}
+        {{ form_row(q) }} 
+        {% endfor %}
+    </div>
+</div>
 
-                var form = $('form')
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Additional info{% endtrans %}
+    </div>
+    <div class="panel-body">
+        {{ form_row(form.pickupDate) }} 
+        {{ form_row(form.description) }} 
+        {{ form_row(form.dataDestruction) }} 
+        <hr />
+        {{ form_row(form.imagesInput) }} 
+        {{ form_row(form.agreementInput) }} 
+    </div>
+</div>
 
-                $.ajax({
-                    type: "POST",
-                    url: '{{ app.request.uri|replace({"/public/pickup": "/public/pickup/post"}) }}',
-                    data: form.serialize()
-                })
-                .done(function (response) {
-                    alert(response);
-                })
-                .fail(function (xhr, err) {
-                    $("#errorContainer").text(xhr.responseText);   
-                });
+<div class="panel panel-default">
+    <div class="panel-body">
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="g-recaptcha" data-sitekey="{{ recaptchaKey }}"></div>
+            </div>
+            <div class="col-md-4">
+                {{ form_widget(form.save) }}
+            </div>
+        </div>
+    </div>
+</div>
 
-                e.preventDefault(); 
-                e.stopPropagation();
+{{ form_widget(form.imagesNames) }}
+{{ form_widget(form.agreementName) }}
+{{ form_widget(form.orderStatusName) }}
+{{ form_end(form, {'render_rest': false}) }}
 
-                return false;
-            });
+<div id="errorContainer" style="color: red"></div>
+  
 
-            $('#pickup_form_imagesInput').uploadifive({
-				'checkScript': '{{ path('uploadifive_checkexists') }}',
-				'formData': {},
-				'uploadScript': '{{ path('uploadifive') }}',
-            	'multi': true,
-            	'onUploadComplete': function (file, data) {
-            	    if (data.substring(0, 5) == 'Error') {
-            	        alert(data)
-            	    }
-            	    else {
-            	        $('#pickup_form_imagesNames').val($('#pickup_form_imagesNames').val() + ',' + data);
-            	    }
-            	}
-            });
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="{{ absolute_url(asset('js/jquery.uploadifive.min.js')) }}"></script>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script type="text/javascript">
 
-            $('#pickup_form_agreementInput').uploadifive({
-				'checkScript': '{{ path('uploadifive_checkexists') }}',
-				'formData': {},
-				'uploadScript': '{{ path('uploadifive') }}',
-            	'multi': false,
-            	'onUploadComplete': function (file, data) {
-            	    if (data.substring(0, 5) == 'Error') {
-            	        alert(data)
-            	    }
-            	    else {
-            	        $('#pickup_form_agreementName').val(data);
-            	    }
-            	}
-            });
+    loadCSS("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css");
+    loadCSS("{{ absolute_url(asset('stylesheet/uploadifive.css')) }}");
+    loadCSS("{{ absolute_url(asset('stylesheet/override_style.css')) }}");
 
-	    </script>
-    </body>
-</html>
+    function loadCSS(href) {
+
+        var cssLink = $("<link>");
+        $("head").append(cssLink); //IE hack: append before setting href
+
+        cssLink.attr({
+            rel:  "stylesheet",
+            type: "text/css",
+            href: href
+        });
+
+    };
+
+</script>
+

@@ -51,17 +51,17 @@ class UserForm extends AbstractType
         }
 
         $builder
-            ->add('username', TextType::class)
-            ->add('firstname', TextType::class, ['required' => false])
-            ->add('lastname', TextType::class, ['required' => false])
-            ->add('email', EmailType::class);
+            ->add('username', TextType::class )
+            ->add('firstname', TextType::class , ['required' => false])
+            ->add('lastname', TextType::class , ['required' => false])
+            ->add('email', EmailType::class );
 
         if ($authCheck->isGranted('ROLE_SUPER_ADMIN'))
         {
-            $builder->add('plainPassword', RepeatedType::class, array(
+            $builder->add('plainPassword', RepeatedType::class , array(
                 'required' => true, // see below
-                'type' => PasswordType::class,
-                'first_options'  => array('label' => 'New password'),
+                'type' => PasswordType::class ,
+                'first_options' => array('label' => 'New password'),
                 'second_options' => array('label' => 'Repeat password'),
             ));
 
@@ -72,15 +72,8 @@ class UserForm extends AbstractType
         }
 
         $builder
-            ->add('locations',  EntityType::class, array(
-                'class' => 'AppBundle:Location',
-                'choice_label' => 'name',
-                'attr' => ['class' => 'multiselect'],
-                'multiple' => true,
-                'expanded' => false,
-                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
-            ))
-            ->add('role', ChoiceType::class, ['mapped' => false,
+            ->add('role', ChoiceType::class , [
+                'mapped' => false,
                 'choices' => [
                     'Super_admin' => 'ROLE_SUPER_ADMIN',
                     'Admin' => 'ROLE_ADMIN',
@@ -89,17 +82,39 @@ class UserForm extends AbstractType
                     'Local' => 'ROLE_LOCAL',
                     'Partner' => 'ROLE_PARTNER'
                 ]])
-            ->add('enabled', CheckboxType::class, ['required' => false])
-            ->add('save', SubmitType::class, ['attr' => ['class' => 'btn-success btn-120']]);
+            ->add('locations', EntityType::class , [
+                    'class' => 'AppBundle:Location',
+                    'choice_label' => 'name',
+                    'attr' => ['class' => 'multiselect'],
+                    'required' => false,
+                    'multiple' => true,
+                    'expanded' => false,
+                    'query_builder' => function (EntityRepository $er) {
+                        return $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
+                    }
+                ])
+            ->add('partner', EntityType::class , [
+                'class' => 'AppBundle:Customer',
+                'choice_label' => 'name',
+                'required' => false,
+                'placeholder' => "",
+                'query_builder' => function (EntityRepository $er) {
+                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC")
+                        ->where('x.isPartner > 0');
+                    return $qb;
+                }
+                ])
+            ->add('enabled', CheckboxType::class , ['required' => false])
+            ->add('save', SubmitType::class , ['attr' => ['class' => 'btn-success btn-120']]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => User::class,
+            'data_class' => User::class ,
             'csrf_protection' => true,
             'csrf_field_name' => '_token',
-            'csrf_token_id'   => 'user'
+            'csrf_token_id' => 'user'
         ));
 
         $resolver->setRequired(array('authCheck'));

@@ -40,12 +40,11 @@ class SupplierRepository extends \Doctrine\ORM\EntityRepository
 
     public function findMine(User $user)
     {
-        if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
-            return $this->findBy(array("location" => $user->getLocationIds()), array('id' => 'DESC'));
+        if ($user->hasRole("ROLE_PARTNER"))
+            return $this->findBy(array("partner" => $user->getPartner() ?? -1), array('id' => 'DESC'));
         else
-            return $this->findBy(array(), array('id' => 'DESC'));
+            return $this->findAll();
     }
-
 
     /**
      * This function searches in fields: Id, Kvk, Email, Name
@@ -69,57 +68,85 @@ class SupplierRepository extends \Doctrine\ORM\EntityRepository
             $qb = $qb->setParameter("query", $search->query)->setParameter("queryLike", '%'.$search->query.'%');
         }
 
-        if ($search->location)
-            $qb = $qb->andWhere("o.location = :location")->setParameter("location", $search->location);
-        elseif ($search->user->hasRole("ROLE_LOCAL") || $search->user->hasRole("ROLE_LOGISTICS"))
-            $qb = $qb->andWhere('IDENTITY(o.location) IN (:locationIds)')->setParameter('locationIds', $search->user->getLocationIds()); 
+        if ($search->user->hasRole("ROLE_PARTNER"))
+            $qb = $qb->andWhere('o.partner = :partner')->setParameter('partner', $search->user->getPartner() ?? -1); 
 
         return $qb->getQuery()->getResult();
     }
 
     /**
+     * This function also persists or detaches newSupplier object
+     *  
      * @param Supplier $newSupplier
      * @return Supplier
      */
     public function checkExists(Supplier $newSupplier)
     {
-        // First: strict comparision, loose result count
+        $zip = strtolower(str_replace(" ", "", $newSupplier->getZip() ?? $newSupplier->getZip2()));
 
-        $q = $this->getEntityManager()
-            ->createQuery("SELECT s FROM AppBundle:Supplier s WHERE s.name = :name OR s.email = :email")
-            ->setParameter("name", $newSupplier->getName())
-            ->setParameter("email", $newSupplier->getEmail());
-
-        $result = $q->getResult();
-
-        if (count($result) > 0)
+        if ($zip)
         {
-            $this->_em->detach($newSupplier);
-            $newSupplier = null;
-            return $result[0];
-        }
-        else
-        {
-            // Second: loose comparision, strict result count
-
-            $q = $this->getEntityManager()
-                ->createQuery("SELECT s FROM AppBundle:Supplier s WHERE SOUNDEX(s.name) like SOUNDEX(:name) or REPLACE(s.phone, '-', '') = :phone OR REPLACE(s.phone2, '-', '') = :phone OR s.email = :email")
-                ->setParameter("name", $newSupplier->getName())
-                ->setParameter("phone", str_replace($newSupplier->getPhone(), "-", ""))
-                ->setParameter("email", $newSupplier->getEmail());
-
-            $result = $q->getResult();
-
-            if (count($result) == 1)
+            $qb = $this->getEntityManager()->createQueryBuilder()
+                ->from("AppBundle:Supplier", "s")->select("s")
+                ->where("LOWER(REPLACE(s.zip, ' ', '')) = :zip")->setParameter("zip", $zip);
+                
+            if ($newSupplier->getName() && strlen($newSupplier->getName()) > 2) 
             {
-                $this->_em->detach($newSupplier);
-                $newSupplier = null;
-                return $result[0];
+                $result = $qb
+                    ->andWhere("s.name = :name")->setParameter("name", $newSupplier->getName())
+                    ->getQuery()->getResult();
+
+                if (count($result) > 0)
+                {
+                    $this->_em->detach($newSupplier);
+                    $newSupplier = null;
+                    return $result[0];
+                }                
             }
-            else
+
+            if ($newSupplier->getEmail() && strlen($newSupplier->getEmail()) > 5) {
+                $result = $qb
+                    ->andWhere("s.email = :email")->setParameter("email", $newSupplier->getEmail())
+                    ->getQuery()->getResult();
+
+                if (count($result) > 0)
+                {
+                    $this->_em->detach($newSupplier);
+                    $newSupplier = null;
+                    return $result[0];
+                }               
+            }
+
+            if ($newSupplier->getPhone() && strlen($newSupplier->getPhone()) > 5) {
+                $result = $qb
+                    ->andWhere("REPLACE(s.phone, '-', '') = :phone")->setParameter("phone", str_replace($newSupplier->getPhone(), "-", ""))
+                    ->getQuery()->getResult();
+
+                if (count($result) > 0)
+                {
+                    $this->_em->detach($newSupplier);
+                    $newSupplier = null;
+                    return $result[0];
+                }  
+            }
+            
+            // loose comparision, strict result count
+            if ($newSupplier->getName() && strlen($newSupplier->getName()) > 4) 
             {
-                return $newSupplier;
+                $result = $qb
+                    ->andWhere("SOUNDEX(s.name) like SOUNDEX(:name)")->setParameter("name", $newSupplier->getName())
+                    ->getQuery()->getResult();
+
+                if (count($result) == 1)
+                {
+                    $this->_em->detach($newSupplier);
+                    $newSupplier = null;
+                    return $result[0];
+                }                
             }
         }
+        
+        $this->_em->persist($newSupplier);
+        return $newSupplier;
     }
 }

@@ -38,7 +38,6 @@ class RepairRepository extends \Doctrine\ORM\EntityRepository
         $product = new Product();
         $product->setName("Product to repair");
         $product->setSku(time());
-        if ($order->getLocation()) $product->setLocation($order->getLocation());
         $this->_em->persist($product);
 
         $productOrderRelation = new ProductOrderRelation($product, $order);

@@ -25,7 +25,7 @@
             <td>{{ l.name }}</td>
             <td nowrap>
                 <a class="btn btn-success" href="{{ path('admin_location_edit', {'id': l.id}) }}">Edit</a>
-                {% if l.products|length == 0 and l.orders|length == 0 and l.companies|length == 0 and l.users|length == 0 %}
+                {% if l.products|length == 0 and l.users|length == 0 %}
                 <a class="btn btn-danger btn-delete" href="{{ path('admin_location_delete', { 'id': l.id }) }}" data-class="location" data-name="{{ l.name }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
                 {% endif %}
             </td>

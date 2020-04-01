@@ -40,14 +40,17 @@ class Builder implements ContainerAwareInterface
         $menu->setChildrenAttribute('class', 'nav navbar-nav');
 
         // add user menu items
-        if($role->isGranted('ROLE_LOCAL')) {
+        if($role->isGranted('ROLE_LOCAL') || $role->isGranted('ROLE_PARTNER')) {
             $menu->addChild('Dashboard', array('route' => 'home'));
 
             if($role->isGranted('ROLE_LOGISTICS')) {
                 $menu->addChild('Logistiek', array('route' => 'logistics_calendar'));
             }
 
-            $menu->addChild('Voorraad', array('route' => 'product_index'));
+            if($role->isGranted('ROLE_LOCAL')) {
+                $menu->addChild('Voorraad', array('route' => 'product_index'));
+            }
+
             $menu->addChild('Inkoop', array('route' => 'purchaseorder_index'));
             $menu->addChild('Verkoop', array('route' => 'salesorder_index'));
             $menu->addChild('Klanten', array('route' => 'customer_index'));
@@ -73,7 +76,7 @@ class Builder implements ContainerAwareInterface
             $menu->addChild('Admin', array('route' => 'admin_index'));
         }
 
-        if($role->isGranted('ROLE_LOCAL'))
+        if($role->isGranted('ROLE_LOCAL') || $role->isGranted('ROLE_PARTNER'))
         {
             $menu->addChild('Help', array('route' => 'underconstruction'));
             $menu->addChild(strtoupper($user->getUsername()) . ': Logout', array('route' => 'fos_user_security_logout'));

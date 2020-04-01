@@ -17,58 +17,50 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek � info@copiatek.nl � Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Doctrine\ORM\EntityRepository;
-use AppBundle\Entity\SalesOrder;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 
-class SalesOrderBulkEditForm extends AbstractType
+class SalesOrderImportForm extends AbstractType
 {
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        /** @var \AppBundle\Entity\User */
         $user = $options['user'];
-        $orders = $builder->getData();
-        
+
         $builder
-            ->add('orders', EntityType::class, [
-                'class' => SalesOrder::class,
-                'choice_label' => 'orderNr',
-                'choices' => $orders,
-                'data' => $orders,
-                'multiple' => true, 
-                'expanded' => false, 
-                'attr' => ['class' => 'multiselect'],
-                'required' => true])
-            ->add('status',  EntityType::class, [
-                'class' => 'AppBundle:OrderStatus',
+            ->add('import', FileType::class , array('label' => 'Verzendlijst', 'required' => true))
+            ->add('partner',  EntityType::class, [
+                'class' => 'AppBundle:Customer',
                 'choice_label' => 'name',
                 'required' => false,
-                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
-            ])          
-            ->add('save', SubmitType::class, [
-                'attr' => ['class' => 'btn-success btn-120']
-            ]);
+                'placeholder' => "",
+                'query_builder' => function (EntityRepository $er) { 
+                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC")
+                        ->where('x.isPartner > 0'); 
+                    return $qb;
+                }
+            ])  
+            ->add('save', SubmitType::class , ['attr' => ['class' => 'btn-success btn-120']]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
+            'data_class' => null,
             'csrf_protection' => true,
             'csrf_field_name' => '_token',
-            'csrf_token_id'   => 'sobulkedit',
+            'csrf_token_id' => 'salesorderimport',
+            'user' => null
         ));
-
-        $resolver->setRequired(array('user'));
     }
 }

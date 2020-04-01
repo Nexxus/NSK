@@ -45,11 +45,18 @@ class PublicController extends Controller
 {
     /**
      * @Route("/public/pickup", name="pickup")
-     * @Route("/ophaaldienst", name="ophaaldienst")
      * @Method({"GET"})
      */
     public function pickupAction(Request $request)
     {
+        if ($this->container->has('profiler'))
+        {
+            $this->container->get('profiler')->disable();
+        }
+
+        $recaptchaKey = $request->get("recaptchaKey");
+        $orderStatusName = $request->get("orderStatusName");
+
         $success = null;
 
         $em = $this->getDoctrine()->getEntityManager();
@@ -63,12 +70,15 @@ class PublicController extends Controller
         $supplier = new Supplier();
         $order->setSupplier($supplier);
 
-        $form = $this->createForm(PickupForm::class, $pickup, array('productTypes' => $allProductTypes));
+        $form = $this->createForm(PickupForm::class, $pickup, array('productTypes' => $allProductTypes, 'orderStatusName' => $orderStatusName));
 
-        return $this->render('AppBundle:Public:pickup.html.twig', array(
+        $response = $this->render('AppBundle:Public:pickup.html.twig', array(
                 'form' => $form->createView(),
                 'success' => $success,
+                'recaptchaKey' => $recaptchaKey,
             ));
+
+        return $response;
     }
 
     /**
@@ -81,7 +91,7 @@ class PublicController extends Controller
         {
             if (!$this->captchaVerify($request->request->get('g-recaptcha-response')))
             {
-                //return new Response("reCaptcha is not valid", Response::HTTP_NOT_ACCEPTABLE);
+                return new Response("reCaptcha is not valid", Response::HTTP_NOT_ACCEPTABLE);
             }
 
             $em = $this->getDoctrine()->getEntityManager();
@@ -114,24 +124,9 @@ class PublicController extends Controller
 
             $pickup->getOrder()->setSupplier($em->getRepository('AppBundle:Supplier')->checkExists($pickup->getOrder()->getSupplier()));
 
-            $locationId = $form->get('locationId')->getData();
-            $location = null;
-            $zipcode = $pickup->getOrder()->getSupplier()->getZip();
-            
-            if ($locationId)
-                $location = $em->getRepository(Location::class)->find($locationId);
-            elseif ($zipcode)
-                $location = $em->getRepository(Location::class)->findOneByZipcode($zipcode);
-            if (!$location) 
-                $location = $em->getRepository(Location::class)->find(1);
-
-            $pickup->getOrder()->setLocation($location);
-
             $pickup->getOrder()->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), true, false));
 
-            if ($pickup->getOrigin()) {
-                $pickup->getOrder()->setPartner($em->getRepository('AppBundle:Customer')->checkPartnerExists($pickup->getOrigin()));
-            }
+            // TODO: $pickup->getOrigin() did connect pickup form to partner, but orders have no partner field no more
 
             // Images
             $imageNames = UploadifiveController::splitFilenames($form->get('imagesNames')->getData());
@@ -150,6 +145,9 @@ class PublicController extends Controller
             }
 
             // Products
+            $locationId = $form->get('locationId')->getData();
+            $location = $locationId ? $em->getRepository(Location::class)->find($locationId) : null;
+
             $count = 0;
             foreach ($allProductTypes as $productType)
             {
@@ -207,72 +205,6 @@ class PublicController extends Controller
     }
 
     /**
-     * @Route("/leergeld-bestelling", name="leergeld_bestelling")
-     * @Method({"GET", "POST"})
-     */
-    public function salesOrderOldAction(Request $request)
-    {
-        $success = null;
-        $em = $this->getDoctrine()->getEntityManager();
-        $order = new SalesOrder();
-        $order->setOrderDate(new \DateTime());
-        $order->setIsGift(false);
-        $customer = new Customer();
-        $em->persist($order);
-        $em->persist($customer);
-        $order->setCustomer($customer);
-        $form = $this->createForm(PublicSalesOrderForm::class, $order);
-        $form->handleRequest($request);
-        if ($request->isMethod('POST') && $form->isSubmitted() && $this->captchaVerify($request->request->get('g-recaptcha-response')))
-        {
-            if ($form->isValid())
-            {
-                try
-                {
-                    $location = $em->getReference("AppBundle:Location", $form->get('locationId')->getData());
-                    $order->setLocation($location);
-                    $order->setCustomer($em->getRepository('AppBundle:Customer')->checkExists($order->getCustomer()));
-                    $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), false, true));
-                    $remarks = "";
-                    foreach ($request->request->all()["public_sales_order_form"] as $fld => $q)
-                    {
-                        if (substr($fld, 0, 1) == "q" && $q)
-                        {
-                            $remarks .= ", " . substr($fld, 1). ": " . $q;
-                        }
-                    }
-                    if (strlen($remarks) > 2)
-                        $remarks = substr($remarks, 2);
-                    else
-                        $remarks = "No quantities entered...";
-                    $order->setRemarks($remarks);
-                    $em->flush();
-                    if (!$order->getOrderNr())
-                    {
-                        $orderNr = $em->getRepository('AppBundle:SalesOrder')->generateOrderNr($order);
-                        $order->setOrderNr($orderNr);
-                        $em->flush();
-                    }
-                    $success = true;
-                }
-                catch (\Exception $ex)
-                {
-                    $success = false;
-                }
-            }
-            else
-            {
-                $success = false;
-            }
-        }
-
-        return $this->render('AppBundle:Public:salesorder_old.html.twig', array(
-                'form' => $form->createView(),
-                'success' => $success,
-            ));
-    }
-
-    /**
      * @Route("/public/salesorder")
      * @Method({"GET"})
      */
@@ -321,9 +253,6 @@ class PublicController extends Controller
             {
                 return new Response($form->getErrors()->current()->getMessage(), Response::HTTP_NOT_ACCEPTABLE);
             }
-
-            $location = $em->getReference("AppBundle:Location", $form->get('locationId')->getData());
-            $order->setLocation($location);
 
             $order->setCustomer($em->getRepository('AppBundle:Customer')->checkExists($order->getCustomer()));
             $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), false, true));

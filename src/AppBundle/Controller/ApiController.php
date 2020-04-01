@@ -11,6 +11,7 @@ use FOS\RestBundle\View\View;
 use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Entity\OrderStatus;
 use AppBundle\Entity\Product;
+use AppBundle\Entity\ProductOrderRelation;
 use AppBundle\Entity\ProductAttributeRelation;
 use AppBundle\Entity\ProductAttributeFile;
 use AppBundle\Entity\Attribute;
@@ -26,7 +27,7 @@ class ApiController extends FOSRestController
     {
         $repo = $this->getDoctrine()->getRepository(PurchaseOrder::class);
 
-        $orders = $repo->findMineByStatus($this->getUser(), $statusId);
+        $orders = $repo->findBy(array("status" => $statusId), array('id' => 'DESC'));
 
         if ($orders === null)
         {
@@ -48,7 +49,7 @@ class ApiController extends FOSRestController
         $repo = $this->getDoctrine()->getRepository(PurchaseOrder::class);
 
         /** @var PurchaseOrder */
-        $order = $repo->findMineById($this->getUser(), $purchaseOrderId);
+        $order = $repo->findById($purchaseOrderId);
 
         if ($order === null)
         {
@@ -151,7 +152,7 @@ class ApiController extends FOSRestController
         $repo = $this->getDoctrine()->getRepository(Product::class);
 
         $type = $em->getReference(\AppBundle\Entity\ProductType::class, $typeId);
-        $purchaseOrder = $this->getDoctrine()->getRepository(PurchaseOrder::class)->findMineById($this->getUser(), $purchaseOrderId);
+        $purchaseOrder = $this->getDoctrine()->getRepository(PurchaseOrder::class)->findById($purchaseOrderId);
         $status = $statusId ? $em->getReference(\AppBundle\Entity\ProductStatus::class, $statusId) : null;
 
         if (!$type || !$purchaseOrder)
@@ -160,10 +161,9 @@ class ApiController extends FOSRestController
         }
 
         if (!$locationId)
-            $location = $purchaseOrder->getLocation();
+            $location = null;
         else {
             $location = $em->getReference(\AppBundle\Entity\Location::class, $locationId);
-            if (!$location) $location = $purchaseOrder->getLocation();
         }
         
         if (!$sku) $sku = time();
@@ -198,15 +198,19 @@ class ApiController extends FOSRestController
         $repo = $this->getDoctrine()->getRepository(PurchaseOrder::class);
 
         /** @var PurchaseOrder */
-        $order = $repo->findMineById($this->getUser(), $purchaseOrderId);
+        $order = $repo->findById($purchaseOrderId);
 
         if ($order === null)
         {
             return new View("No order found", Response::HTTP_NO_CONTENT);
         }
 
-        $order->setLocation($em->getReference(\AppBundle\Entity\Location::class, $locationId));
-
+        foreach ($order->getProductRelations as $r)
+        {
+            /** @var ProductOrderRelation $r */
+            $r->getProduct()->setLocation($em->getReference(\AppBundle\Entity\Location::class, $locationId));
+        }
+        
         $em->flush();
 
         return new View("Order updated successfully", Response::HTTP_OK);
@@ -230,7 +234,7 @@ class ApiController extends FOSRestController
         $repo = $this->getDoctrine()->getRepository(PurchaseOrder::class);
 
         /** @var PurchaseOrder */
-        $order = $repo->findMineById($this->getUser(), $purchaseOrderId);
+        $order = $repo->findById($purchaseOrderId);
      
         if ($order === null)
         {

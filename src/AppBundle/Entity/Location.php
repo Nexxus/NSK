@@ -25,8 +25,6 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 use Doctrine\Common\Collections\ArrayCollection;
-use AppBundle\Entity\AOrder;
-use AppBundle\Entity\ACompany;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Product;
 
@@ -44,8 +42,6 @@ class Location
     public function __construct() {
         $this->products = new ArrayCollection();
         $this->users = new ArrayCollection();
-        $this->orders = new ArrayCollection();
-        $this->companies = new ArrayCollection();
     }
 
     /**
@@ -66,7 +62,7 @@ class Location
 
     /**
      * @var string Comma separated list of zipcodes
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      * @JMS\Expose
      */
     private $zipcodes;
@@ -83,20 +79,6 @@ class Location
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\User", mappedBy="locations", fetch="LAZY")
      */
     private $users;
-
-    /**
-     * @var ArrayCollection|AOrder[]
-     *
-     * @ORM\OneToMany(targetEntity="AOrder", mappedBy="location", fetch="LAZY")
-     */
-    private $orders;
-
-    /**
-     * @var ArrayCollection|ACompany[]
-     *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\ACompany", mappedBy="location", fetch="LAZY")
-     */
-    private $companies;
 
     /**
      * Get id
@@ -194,74 +176,6 @@ class Location
     public function getProducts()
     {
         return $this->products;
-    }
-
-    /**
-     * Add order
-     *
-     * @param AOrder $order
-     *
-     * @return Location
-     */
-    public function addOrder(AOrder $order)
-    {
-        $this->orders[] = $order;
-
-        return $this;
-    }
-
-    /**
-     * Remove order
-     *
-     * @param AOrder $order
-     */
-    public function removeOrder(AOrder $order)
-    {
-        $this->orders->removeElement($order);
-    }
-
-    /**
-     * Get orders
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getOrders()
-    {
-        return $this->orders;
-    }
-
-    /**
-     * Add company
-     *
-     * @param ACompany $company
-     *
-     * @return Location
-     */
-    public function addCompany(ACompany $company)
-    {
-        $this->companies[] = $company;
-
-        return $this;
-    }
-
-    /**
-     * Remove company
-     *
-     * @param ACompany $company
-     */
-    public function removeCompany(ACompany $company)
-    {
-        $this->companies->removeElement($company);
-    }
-
-    /**
-     * Get companies
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getCompanies()
-    {
-        return $this->companies;
     }
 
     /**

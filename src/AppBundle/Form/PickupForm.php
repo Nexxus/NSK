@@ -55,7 +55,6 @@ class PickupForm extends AbstractType
                     ]
                 ])
                 ->add('description', TextareaType::class, ['required' => false])
-                ->add('origin', TextType::class, ['required' => false])
                 ->add('address0', TextType::class, ['required' => false, 'mapped' => false])
                 ->add('address1', TextType::class, ['required' => false, 'mapped' => false])
                 ->add('address2', TextType::class, ['required' => false, 'mapped' => false])
@@ -84,8 +83,7 @@ class PickupForm extends AbstractType
             $builder
                 ->add('imagesNames', HiddenType::class, ['mapped' => false, 'required' => false])
                 ->add('agreementName', HiddenType::class, ['mapped' => false, 'required' => false])
-                ->add('orderStatusName', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => "To plan and pickup"])
-                ->add('locationId', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => 1])
+                ->add('orderStatusName', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => $options['orderStatusName']])
                 ->add('save', SubmitType::class, [
                     'label' => 'Send',
                     'attr' => [
@@ -102,7 +100,7 @@ class PickupForm extends AbstractType
             'csrf_protection' => false
         ));
 
-        $resolver->setRequired(array('productTypes'));
+        $resolver->setRequired(array('productTypes', 'orderStatusName'));
     }
 
     // Duplicate exists in PublicController
