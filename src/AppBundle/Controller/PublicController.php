@@ -44,6 +44,15 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 class PublicController extends Controller
 {
     /**
+     * @Route("/public/pickuptest")
+     * @Method({"GET"})
+     */
+    public function pickupTestAction(Request $request)
+    {
+        return $this->render('AppBundle:Public:pickuptest.html.twig');
+    }
+
+    /**
      * @Route("/public/pickup", name="pickup")
      * @Method({"GET"})
      */
@@ -55,7 +64,9 @@ class PublicController extends Controller
         }
 
         $recaptchaKey = $request->get("recaptchaKey");
+        $locationId = $request->get("locationId");
         $orderStatusName = $request->get("orderStatusName");
+        $maxAddresses = $request->get("maxAddresses");
 
         $success = null;
 
@@ -70,12 +81,18 @@ class PublicController extends Controller
         $supplier = new Supplier();
         $order->setSupplier($supplier);
 
-        $form = $this->createForm(PickupForm::class, $pickup, array('productTypes' => $allProductTypes, 'orderStatusName' => $orderStatusName));
+        $form = $this->createForm(PickupForm::class, $pickup, array(
+            'productTypes' => $allProductTypes, 
+            'maxAddresses' => $maxAddresses,
+            'locationId' => $locationId,
+            'orderStatusName' => $orderStatusName));
 
         $response = $this->render('AppBundle:Public:pickup.html.twig', array(
                 'form' => $form->createView(),
                 'success' => $success,
+                'allProductTypes' => $allProductTypes,
                 'recaptchaKey' => $recaptchaKey,
+                'maxAddresses' => $maxAddresses,
             ));
 
         return $response;
@@ -94,6 +111,10 @@ class PublicController extends Controller
                 return new Response("reCaptcha is not valid", Response::HTTP_NOT_ACCEPTABLE);
             }
 
+            $locationId = $request->request->get("pickup_form")['locationId'];
+            $orderStatusName = $request->request->get("pickup_form")['orderStatusName'];
+            $maxAddresses = $request->request->get("pickup_form")['maxAddresses'];
+
             $em = $this->getDoctrine()->getEntityManager();
 
             $allProductTypes = $em->getRepository(ProductType::class)->findAll();
@@ -109,7 +130,11 @@ class PublicController extends Controller
             $em->persist($pickup);
             $em->persist($supplier);
     
-            $form = $this->createForm(PickupForm::class, $pickup, array('productTypes' => $allProductTypes));
+            $form = $this->createForm(PickupForm::class, $pickup, array(
+                'productTypes' => $allProductTypes, 
+                'maxAddresses' => $maxAddresses,
+                'locationId' => $locationId,
+                'orderStatusName' => $orderStatusName));
 
             $form->handleRequest($request); 
 
@@ -124,9 +149,7 @@ class PublicController extends Controller
 
             $pickup->getOrder()->setSupplier($em->getRepository('AppBundle:Supplier')->checkExists($pickup->getOrder()->getSupplier()));
 
-            $pickup->getOrder()->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), true, false));
-
-            // TODO: $pickup->getOrigin() did connect pickup form to partner, but orders have no partner field no more
+            $pickup->getOrder()->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($orderStatusName, true, false));
 
             // Images
             $imageNames = UploadifiveController::splitFilenames($form->get('imagesNames')->getData());
@@ -145,26 +168,34 @@ class PublicController extends Controller
             }
 
             // Products
-            $locationId = $form->get('locationId')->getData();
-            $location = $locationId ? $em->getRepository(Location::class)->find($locationId) : null;
-
             $count = 0;
+            $countAddresses = $form->get('countAddresses')->getData();
+            if (!$countAddresses) $countAddresses = 1;
             foreach ($allProductTypes as $productType)
             {
-                for ($i = 0; $i <= 4; $i++) 
+                for ($i = 1; $i <= $countAddresses; $i++) 
                 {
-                    $productTypeName = $productType->getName();
                     $address = $form->get('address'.$i)->getData();
-                    $address = $address ? 'Pickup address: ' . $address : "Address " . $i;
 
-                    $quantity = $form->get($this->toFieldname($productTypeName, $i))->getData();
+                    if (!$address && $i == 1) {
+                        $address = $pickup->getOrder()->getSupplier()->getAddressString(false);
+                    }
+                    else if (!$address) {
+                        $address = "Address " . $i;
+                    }
+                    else {
+                        $address = 'Pickup address: ' . $address;
+                    }
+
+                    $quantity = $form->get('quantity_' . $i . '_' . $productType->getId())->getData();
+
                     if ($quantity)
                     {
                         $product = new Product();
                         $product->setName($address);
                         $product->setDescription("Created by application");
                         $product->setType($productType);
-                        if ($location) $product->setLocation($location);
+                        $product->setLocation($em->getRepository(Location::class)->find($locationId));
                         $product->setSku(time() + $count);
                         $em->persist($product);
 
@@ -193,15 +224,6 @@ class PublicController extends Controller
         {
             return new Response($exception->getMessage(), 500);
         }
-    }
-
-    // Duplicate exists in PickupForm
-    private function toFieldname($productTypeName, $idx = "") {
-        $productTypeName = str_replace("'", "_quote_", $productTypeName);
-        $productTypeName = str_replace("/", "_slash_", $productTypeName);
-        $productTypeName = str_replace(" ", "_", $productTypeName);
-        $idx = $idx ? $idx : ""; // replace zero with empty
-        return 'q' . $idx . $productTypeName;
     }
 
     /**

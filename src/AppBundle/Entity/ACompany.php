@@ -561,9 +561,10 @@ abstract class ACompany
     /**
      * @return string for use in views tooltips
      */
-    public function getAddressString() {
-        $address = $this->street . "<br />" .
-            $this->zip . " " . $this->city;
+    public function getAddressString($html = true) {
+        $separator = $html ? "<br />" : ", ";
+        $address = $this->street . $separator .
+            trim($this->zip . " " . $this->city);
 
         return $address;
     }    
