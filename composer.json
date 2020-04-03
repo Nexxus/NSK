@@ -35,7 +35,7 @@
     "knplabs/knp-paginator-bundle": "^2.8",
     "friendsofsymfony/rest-bundle": "^2.4",
     "jms/serializer-bundle": "^2.4",
-    "nelmio/cors-bundle": "^1.5",
+    "nelmio/cors-bundle": "^2.0",
     "lexik/jwt-authentication-bundle": "2.4.4",
 	  "beberlei/doctrineextensions": "1.*"
   },

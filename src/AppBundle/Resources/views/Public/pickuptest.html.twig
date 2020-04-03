@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <title>Nexxus pickup form test</title>
+  </head>
+  <body>
+  
+	<div id="pickupform" style="margin: 50px; width: 800px"></div>
+  
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="{{ absolute_url(asset("js/jquery.nexxus-pickup.js")) }}"></script>
+    <!-- script src="https://nexxus.eco/nsk/js/jquery.nexxus-pickup.js"></script -->
+	<script>
+	
+	    $("#pickupform").nexxusPickup({
+			      recaptchaKey: '6LdzW4QUAAAAANRAfkgl8Cz4-QNUcNEJomOj5wgX'
+        });
+	
+	</script>
+  </body>
+</html>

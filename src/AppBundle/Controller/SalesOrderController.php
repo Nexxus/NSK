@@ -423,46 +423,65 @@ class SalesOrderController extends Controller
 
                 foreach ($lines as $line)
                 {
+                    if (strpos($line, ";;;;;;;;;;;;") !== false) continue;
+                    
                     $values = explode(";", $line);
 
                     if (count($values) != count($keys)) continue;
 
                     $orderInput = array_combine($keys, $values);
 
-                    $remarks = 
-                        "Referentie: " . $orderInput['Referentie'] . "\r\n" .
-                        "Gebouw: " . $orderInput['Gebouw'] . "\r\n" .
-                        "Verdieping: " . $orderInput['Verdieping'] . "\r\n" .
-                        "Afdeling: " . $orderInput['Afdeling'] . "\r\n" .
-                        "Deurcode: " . $orderInput['Deurcode'] . "\r\n" .
-                        "Aflever referentie: " . $orderInput['Aflever referentie'];
+                    if (!$orderInput['Bedrijfsnaam'] && !$orderInput['Voornaam'] && !$orderInput['Achternaam']) continue;
 
-                    $order = new SalesOrder();
-                    $order->setOrderDate(new \DateTime());
-                    $order->setIsGift(false);
-                    $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate("Products to assign", false, true));
-                    $order->setRemarks($remarks);
+                    try {
+                        $remarks = 
+                            "Referentie: " . $orderInput['Referentie'] . "\r\n" .
+                            "Gebouw: " . $orderInput['Gebouw'] . "\r\n" .
+                            "Verdieping: " . $orderInput['Verdieping'] . "\r\n" .
+                            "Afdeling: " . $orderInput['Afdeling'] . "\r\n" .
+                            "Deurcode: " . $orderInput['Deurcode'] . "\r\n" .
+                            "Aflever referentie: " . $orderInput['Aflever referentie'];
 
-                    $customer = new Customer();
-                    $customer->setName($orderInput['Bedrijfsnaam']);
-                    $customer->setRepresentative($orderInput['Voornaam'] . " " . $orderInput['Achternaam']);
-                    $customer->setStreet(trim($orderInput['Straatnaam'] . " " . $orderInput['Huisnummer'] . " " . $orderInput['Huisnummer toevoeging']));
-                    $customer->setZip($orderInput['Postcode']);
-                    $customer->setCity($orderInput['Plaatsnaam']);
-                    $customer->setCountry($orderInput['Landcode']);
-                    $customer->setEmail($orderInput['Email']);
-                    $customer->setPhone($orderInput['Telefoon']);
-                    $customer->setPhone2($orderInput['Mobiel nummer']);
+                        $order = new SalesOrder();
+                        $order->setOrderDate(new \DateTime());
+                        $order->setIsGift(false);
+                        $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate("Products to assign", false, true));
+                        $order->setOrderNr($repo->generateOrderNr($order));
+                        $order->setRemarks($remarks);
+
+                        // Leergeld puts partner name in field Bedrijfsnaam :-(
+                        if ($orderInput['Bedrijfsnaam'] && strpos($orderInput['Bedrijfsnaam'], "Leergeld") === false)
+                            $name = $orderInput['Bedrijfsnaam'];
+                        else
+                            $name = trim($orderInput['Voornaam'] . " " . $orderInput['Achternaam']);
+
+                        $customer = new Customer();
+                        $customer->setName($name);
+                        $customer->setRepresentative(trim($orderInput['Voornaam'] . " " . $orderInput['Achternaam']));
+                        $customer->setStreet(trim($orderInput['Straatnaam'] . " " . $orderInput['Huisnummer'] . " " . $orderInput['Huisnummer toevoeging']));
+                        $customer->setZip($orderInput['Postcode']);
+                        $customer->setCity($orderInput['Plaatsnaam']);
+                        $customer->setCountry($orderInput['Landcode']);
+                        $customer->setEmail($orderInput['Email']);
+                        $customer->setPhone($orderInput['Telefoon']);
+                        $customer->setPhone2($orderInput['Mobiel nummer']);
+                    }
+                    catch (\Exception $ex) {
+                        return $this->render('AppBundle:SalesOrder:import.html.twig', array(
+                            'form' => $form->createView(),
+                            'success' => false,
+                        ));                            
+                    }
 
                     if ($data['partner'])
                     {
                         $customer->setPartner($data['partner']);
+                        $customer->setIsPartner(Customer::HAS_PARTNER);
                     }
 
                     $order->setCustomer($em->getRepository('AppBundle:Customer')->checkExists($customer));
 
                     $em->persist($order);
-                    $em->persist($customer);
                 }
 
                 $em->flush();

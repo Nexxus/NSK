@@ -44,12 +44,30 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 class PublicController extends Controller
 {
     /**
+     * @Route("/public/pickuptest")
+     * @Method({"GET"})
+     */
+    public function pickupTestAction(Request $request)
+    {
+        return $this->render('AppBundle:Public:pickuptest.html.twig');
+    }
+
+    /**
      * @Route("/public/pickup", name="pickup")
-     * @Route("/ophaaldienst", name="ophaaldienst")
      * @Method({"GET"})
      */
     public function pickupAction(Request $request)
     {
+        if ($this->container->has('profiler'))
+        {
+            $this->container->get('profiler')->disable();
+        }
+
+        $recaptchaKey = $request->get("recaptchaKey");
+        $locationId = $request->get("locationId");
+        $orderStatusName = $request->get("orderStatusName");
+        $maxAddresses = $request->get("maxAddresses");
+
         $success = null;
 
         $em = $this->getDoctrine()->getEntityManager();
@@ -63,12 +81,21 @@ class PublicController extends Controller
         $supplier = new Supplier();
         $order->setSupplier($supplier);
 
-        $form = $this->createForm(PickupForm::class, $pickup, array('productTypes' => $allProductTypes));
+        $form = $this->createForm(PickupForm::class, $pickup, array(
+            'productTypes' => $allProductTypes, 
+            'maxAddresses' => $maxAddresses,
+            'locationId' => $locationId,
+            'orderStatusName' => $orderStatusName));
 
-        return $this->render('AppBundle:Public:pickup.html.twig', array(
+        $response = $this->render('AppBundle:Public:pickup.html.twig', array(
                 'form' => $form->createView(),
                 'success' => $success,
+                'allProductTypes' => $allProductTypes,
+                'recaptchaKey' => $recaptchaKey,
+                'maxAddresses' => $maxAddresses,
             ));
+
+        return $response;
     }
 
     /**
@@ -83,6 +110,10 @@ class PublicController extends Controller
             {
                 return new Response("reCaptcha is not valid", Response::HTTP_NOT_ACCEPTABLE);
             }
+
+            $locationId = $request->request->get("pickup_form")['locationId'];
+            $orderStatusName = $request->request->get("pickup_form")['orderStatusName'];
+            $maxAddresses = $request->request->get("pickup_form")['maxAddresses'];
 
             $em = $this->getDoctrine()->getEntityManager();
 
@@ -99,7 +130,11 @@ class PublicController extends Controller
             $em->persist($pickup);
             $em->persist($supplier);
     
-            $form = $this->createForm(PickupForm::class, $pickup, array('productTypes' => $allProductTypes));
+            $form = $this->createForm(PickupForm::class, $pickup, array(
+                'productTypes' => $allProductTypes, 
+                'maxAddresses' => $maxAddresses,
+                'locationId' => $locationId,
+                'orderStatusName' => $orderStatusName));
 
             $form->handleRequest($request); 
 
@@ -114,9 +149,7 @@ class PublicController extends Controller
 
             $pickup->getOrder()->setSupplier($em->getRepository('AppBundle:Supplier')->checkExists($pickup->getOrder()->getSupplier()));
 
-            $pickup->getOrder()->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), true, false));
-
-            // TODO: $pickup->getOrigin() did connect pickup form to partner, but orders have no partner field no more
+            $pickup->getOrder()->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($orderStatusName, true, false));
 
             // Images
             $imageNames = UploadifiveController::splitFilenames($form->get('imagesNames')->getData());
@@ -135,26 +168,34 @@ class PublicController extends Controller
             }
 
             // Products
-            $locationId = $form->get('locationId')->getData();
-            $location = $locationId ? $em->getRepository(Location::class)->find($locationId) : null;
-
             $count = 0;
+            $countAddresses = $form->get('countAddresses')->getData();
+            if (!$countAddresses) $countAddresses = 1;
             foreach ($allProductTypes as $productType)
             {
-                for ($i = 0; $i <= 4; $i++) 
+                for ($i = 1; $i <= $countAddresses; $i++) 
                 {
-                    $productTypeName = $productType->getName();
                     $address = $form->get('address'.$i)->getData();
-                    $address = $address ? 'Pickup address: ' . $address : "Address " . $i;
 
-                    $quantity = $form->get($this->toFieldname($productTypeName, $i))->getData();
+                    if (!$address && $i == 1) {
+                        $address = $pickup->getOrder()->getSupplier()->getAddressString(false);
+                    }
+                    else if (!$address) {
+                        $address = "Address " . $i;
+                    }
+                    else {
+                        $address = 'Pickup address: ' . $address;
+                    }
+
+                    $quantity = $form->get('quantity_' . $i . '_' . $productType->getId())->getData();
+
                     if ($quantity)
                     {
                         $product = new Product();
                         $product->setName($address);
                         $product->setDescription("Created by application");
                         $product->setType($productType);
-                        if ($location) $product->setLocation($location);
+                        $product->setLocation($em->getRepository(Location::class)->find($locationId));
                         $product->setSku(time() + $count);
                         $em->persist($product);
 
@@ -183,79 +224,6 @@ class PublicController extends Controller
         {
             return new Response($exception->getMessage(), 500);
         }
-    }
-
-    // Duplicate exists in PickupForm
-    private function toFieldname($productTypeName, $idx = "") {
-        $productTypeName = str_replace("'", "_quote_", $productTypeName);
-        $productTypeName = str_replace("/", "_slash_", $productTypeName);
-        $productTypeName = str_replace(" ", "_", $productTypeName);
-        $idx = $idx ? $idx : ""; // replace zero with empty
-        return 'q' . $idx . $productTypeName;
-    }
-
-    /**
-     * @Route("/leergeld-bestelling", name="leergeld_bestelling")
-     * @Method({"GET", "POST"})
-     */
-    public function salesOrderOldAction(Request $request)
-    {
-        $success = null;
-        $em = $this->getDoctrine()->getEntityManager();
-        $order = new SalesOrder();
-        $order->setOrderDate(new \DateTime());
-        $order->setIsGift(false);
-        $customer = new Customer();
-        $em->persist($order);
-        $em->persist($customer);
-        $order->setCustomer($customer);
-        $form = $this->createForm(PublicSalesOrderForm::class, $order);
-        $form->handleRequest($request);
-        if ($request->isMethod('POST') && $form->isSubmitted() && $this->captchaVerify($request->request->get('g-recaptcha-response')))
-        {
-            if ($form->isValid())
-            {
-                try
-                {
-                    $order->setCustomer($em->getRepository('AppBundle:Customer')->checkExists($order->getCustomer()));
-                    $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), false, true));
-                    $remarks = "";
-                    foreach ($request->request->all()["public_sales_order_form"] as $fld => $q)
-                    {
-                        if (substr($fld, 0, 1) == "q" && $q)
-                        {
-                            $remarks .= ", " . substr($fld, 1). ": " . $q;
-                        }
-                    }
-                    if (strlen($remarks) > 2)
-                        $remarks = substr($remarks, 2);
-                    else
-                        $remarks = "No quantities entered...";
-                    $order->setRemarks($remarks);
-                    $em->flush();
-                    if (!$order->getOrderNr())
-                    {
-                        $orderNr = $em->getRepository('AppBundle:SalesOrder')->generateOrderNr($order);
-                        $order->setOrderNr($orderNr);
-                        $em->flush();
-                    }
-                    $success = true;
-                }
-                catch (\Exception $ex)
-                {
-                    $success = false;
-                }
-            }
-            else
-            {
-                $success = false;
-            }
-        }
-
-        return $this->render('AppBundle:Public:salesorder_old.html.twig', array(
-                'form' => $form->createView(),
-                'success' => $success,
-            ));
     }
 
     /**

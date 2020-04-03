@@ -41,11 +41,12 @@ class PickupForm extends AbstractType
     {
             // First the mapped fields
             $builder
-                ->add('supplier', SupplierForm::class, ['property_path' => 'order.supplier'])
-                ->add('pickupDate', DateType::class, ['required' => false])
+                ->add('supplier', PickupSupplierForm::class, ['property_path' => 'order.supplier'])
+                ->add('pickupDate', DateType::class, ['required' => false, 'label' => 'Gewenste ophaaldatum'])
                 ->add('dataDestruction', ChoiceType::class, [
                     'expanded' => false,
                     'multiple' => false,
+                    'label' => 'Vernietiging data',
                     'choices' => [
                         'Format is voldoende (gratis)' => Pickup::DATADESTRUCTION_FORMAT,
                         'Geen HDD aangeleverd' =>  Pickup::DATADESTRUCTION_NONE,
@@ -54,42 +55,57 @@ class PickupForm extends AbstractType
                         'HDD wipe report KillDisk a €3,50' => Pickup::DATADESTRUCTION_KILLDISK
                     ]
                 ])
-                ->add('description', TextareaType::class, ['required' => false])
-                ->add('origin', TextType::class, ['required' => false])
-                ->add('address0', TextType::class, ['required' => false, 'mapped' => false])
-                ->add('address1', TextType::class, ['required' => false, 'mapped' => false])
-                ->add('address2', TextType::class, ['required' => false, 'mapped' => false])
-                ->add('address3', TextType::class, ['required' => false, 'mapped' => false])
-                ->add('address4', TextType::class, ['required' => false, 'mapped' => false]);
+                ->add('description', TextareaType::class, ['required' => false, 'label' => 'Toelichting']);
 
             // Then the unmapped fields for quantities
-            for ($i = 0; $i <= 4; $i++) 
+            $builder->add('countAddresses', IntegerType::class, [
+                'required' => true, 
+                'mapped' => false, 
+                'label' => 'Aantal ophaaladressen', 
+                'data' => 0]);
+            
+            for ($i = 1; $i <= $options['maxAddresses']; $i++) 
             {
+                $builder->add('address' . $i, TextType::class, [
+                    'required' => false, 
+                    'mapped' => false, 
+                    'label' => 'Ophaaladres ' . $i,
+                    'attr' => ['class' => 'pickup_form_address']]);
+                
                 foreach ($options['productTypes'] as $productType)
                 {
-                    $builder->add($this->toFieldname($productType->getName(), $i), IntegerType::class, [
+                    $builder->add('quantity_' . $i . '_' . $productType->getId(), IntegerType::class, [
                         'mapped' => false,
                         'required' => false,
-                        'label' => $productType->getName() . " aantal voor adres " . $i,
-                        'attr' => ['placeholder' => '0']]);
+                        'label' => $productType->getName(),
+                        'attr' => [
+                            'style' => 'max-width: 100px;',
+                            'class' => 'pickup_form_quantity pickup_form_quantity_' . $i,
+                            'placeholder' => '0',
+                            'data-toggle' => "tooltip",
+                            'title'=> 'Aantal voor adres ' . $i
+                        ]]);
                 }
             }
 
             // Then the unmapped fields for files
             $builder
-                ->add('imagesInput', FileType::class, ['mapped' => false, 'required' => false, 'label' => 'Images'])
-                ->add('agreementInput', FileType::class, ['mapped' => false, 'required' => false, 'label' => 'Processing Agreement']);
+                ->add('imagesInput', FileType::class, ['mapped' => false, 'required' => false, 'label' => 'Afbeeldingen'])
+                ->add('agreementInput', FileType::class, ['mapped' => false, 'required' => false, 'label' => 'Verwerkingsovereenkomst']);
 
             // Finally the hidden fields
             $builder
                 ->add('imagesNames', HiddenType::class, ['mapped' => false, 'required' => false])
                 ->add('agreementName', HiddenType::class, ['mapped' => false, 'required' => false])
-                ->add('orderStatusName', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => "To plan and pickup"])
-                ->add('locationId', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => 1])
+                ->add('origin', HiddenType::class, ['mapped' => true, 'required' => false])
+                ->add('orderStatusName', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => $options['orderStatusName']])
+                ->add('maxAddresses', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => $options['maxAddresses']])
+                ->add('locationId', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => $options['locationId']])
                 ->add('save', SubmitType::class, [
                     'label' => 'Send',
                     'attr' => [
                         'class' => 'btn-success',
+                        'style' => 'width: 150px;',
                     ]
                 ]);
     }
@@ -99,18 +115,9 @@ class PickupForm extends AbstractType
         $resolver->setDefaults(array(
             'data_class' => Pickup::class,
             'allow_extra_fields' => true,
-            'csrf_protection' => false
+            'csrf_protection' => false,
         ));
 
-        $resolver->setRequired(array('productTypes'));
-    }
-
-    // Duplicate exists in PublicController
-    private function toFieldname($productTypeName, $idx = "") {
-        $productTypeName = str_replace("'", "_quote_", $productTypeName);
-        $productTypeName = str_replace("/", "_slash_", $productTypeName);
-        $productTypeName = str_replace(" ", "_", $productTypeName);
-        $idx = $idx ? $idx : ""; // replace zero with empty
-        return 'q' . $idx . $productTypeName;
+        $resolver->setRequired(array('productTypes', 'orderStatusName', 'maxAddresses', 'locationId'));
     }
 }

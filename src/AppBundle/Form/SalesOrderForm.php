@@ -124,6 +124,7 @@ class SalesOrderForm extends AbstractType
                     },
                 ])
             ->add('backorder', CheckboxType::class, ['required' => false, 'mapped' => false, 'label' => 'Back order: This creates empty purchase order too']) // new
+            ->add('repairorder', CheckboxType::class, ['required' => false, 'mapped' => false, 'label' => 'Repair order: These products are not purchased', 'data' => $options['isRepair']]) // new
             ->add('save', SubmitType::class, [
                 'attr' => ['class' => 'btn-success btn-120']
             ]);
@@ -132,11 +133,6 @@ class SalesOrderForm extends AbstractType
         {
             $builder
                 ->add('repair', RepairForm::class, ['label' => false]);
-        }
-
-        if ($order->getRepair())
-        {
-            $builder->add('repair', RepairForm::class, ['label' => false]);
         }
 
         if ($order->getBackingPurchaseOrder() || $order->getRepair())
