@@ -5,72 +5,37 @@
         <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Your details{% endtrans %}
     </div>
     <div class="panel-body">
-        <div class="col-sm-6">
-            <div class="form-group">
-                <div class="col-sm-6">
-                    {{ form_label(form.supplier.name) }} 
-                </div>
-                <div class="col-sm-6">
-                    {{ form_widget(form.supplier.name) }} 
-                </div>
+    {{ form_row(form.supplier.name) }} 
+    {{ form_row(form.supplier.representative) }} 
+    {{ form_row(form.supplier.email) }} 
+    {{ form_row(form.supplier.phone) }} 
+    {{ form_row(form.supplier.street) }} 
+    {{ form_row(form.supplier.zip) }} 
+    {{ form_row(form.supplier.city) }} 
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Pickup addresses{% endtrans %}
+    </div>
+    <div class="panel-body">
+
+        <div class="form-group">
+            {{ form_label(form.countAddresses) }}
+            <div class="col-sm-2">
+                {{ form_widget(form.countAddresses) }}
             </div>
-            <div class="form-group">
-                <div class="col-sm-6">
-                    {{ form_label(form.supplier.representative) }} 
-                </div>
-                <div class="col-sm-6">
-                    {{ form_widget(form.supplier.representative) }} 
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-6">
-                    {{ form_label(form.supplier.email) }} 
-                </div>
-                <div class="col-sm-6">
-                    {{ form_widget(form.supplier.email) }} 
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-6">
-                    {{ form_label(form.supplier.phone) }} 
-                </div>
-                <div class="col-sm-6">
-                    {{ form_widget(form.supplier.phone) }} 
-                </div>
+            <div class="col-sm-7" style="margin-top: 7px">
+                Zet op 0 indien ophaaladres gelijk is aan adres hierboven.
             </div>
         </div>
-        <div class="col-sm-6">
-            {{ form_row(form.supplier.street) }} 
-            {{ form_row(form.supplier.streetExtra) }} 
-            <div class="form-group">
-                <div class="col-sm-3">
-                    {{ form_label(form.supplier.zip) }} 
-                </div>
-                <div class="col-sm-3">
-                    {{ form_widget(form.supplier.zip) }} 
-                </div>
-                <div class="col-sm-3">
-                    {{ form_label(form.supplier.state) }} 
-                </div>
-                <div class="col-sm-3">
-                    {{ form_widget(form.supplier.state) }} 
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-3">
-                    {{ form_label(form.supplier.city) }} 
-                </div>
-                <div class="col-sm-3">
-                    {{ form_widget(form.supplier.city) }} 
-                </div>
-                <div class="col-sm-3">
-                    {{ form_label(form.supplier.country) }} 
-                </div>
-                <div class="col-sm-3">
-                    {{ form_widget(form.supplier.country) }} 
-                </div>
-            </div>
-        </div>
+
+        {% for i in 1..maxAddresses %}
+        {{ form_row(form['address' ~ i]) }} 
+        {% endfor %} 
+
+
     </div>
 </div>
 
@@ -78,17 +43,18 @@
     <div class="panel-heading">
         <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}About the materials{% endtrans %}
     </div>
-    <div class="panel-body">
-        {{ form_row(form.address0) }} 
-        {{ form_row(form.address1) }} 
-        {{ form_row(form.address2) }} 
-        {{ form_row(form.address3) }} 
-        {{ form_row(form.address4) }} 
-        <hr />
-
-        <!-- Only known product types are allowed. Not all product types are allowed. -->
-        {% for q in form if q.vars.name starts with 'q' %}
-        {{ form_row(q) }} 
+    <div class="panel-body">         
+        {% for productType in allProductTypes %}
+            {{ form_label(form['quantity_1_' ~ productType.id]) }}
+            <div class="col-sm-9">
+                <table>
+                    <tr>
+                        {% for i in 1..maxAddresses %}
+                            <td style="display:none">{{ form_widget(form['quantity_' ~ i ~ '_' ~ productType.id]) }}</td>
+                        {% endfor %}                 
+                    </tr>
+                </table>
+            </div>
         {% endfor %}
     </div>
 </div>
@@ -111,45 +77,29 @@
     <div class="panel-body">
         
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-sm-9 col-sm-offset-3">
                 <div class="g-recaptcha" data-sitekey="{{ recaptchaKey }}"></div>
             </div>
-            <div class="col-md-4">
+        </div>
+
+        <div class="row" style="margin-top: 10px">
+            <div class="col-sm-9 col-sm-offset-3">
                 {{ form_widget(form.save) }}
             </div>
-        </div>
+        </div>        
     </div>
 </div>
 
 {{ form_widget(form.imagesNames) }}
 {{ form_widget(form.agreementName) }}
 {{ form_widget(form.orderStatusName) }}
+{{ form_widget(form.locationId) }}
+{{ form_widget(form.origin) }} 
+{{ form_widget(form.maxAddresses) }} 
 {{ form_end(form, {'render_rest': false}) }}
 
 <div id="errorContainer" style="color: red"></div>
-  
 
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-<script src="{{ absolute_url(asset('js/jquery.uploadifive.min.js')) }}"></script>
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-<script type="text/javascript">
 
-    loadCSS("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css");
-    loadCSS("{{ absolute_url(asset('stylesheet/uploadifive.css')) }}");
-    loadCSS("{{ absolute_url(asset('stylesheet/override_style.css')) }}");
-
-    function loadCSS(href) {
-
-        var cssLink = $("<link>");
-        $("head").append(cssLink); //IE hack: append before setting href
-
-        cssLink.attr({
-            rel:  "stylesheet",
-            type: "text/css",
-            href: href
-        });
-
-    };
-
-</script>
 
