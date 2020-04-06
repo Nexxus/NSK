@@ -29,29 +29,35 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use AppBundle\Entity\SalesOrder;
+use AppBundle\Entity\Customer;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
-class PublicSalesOrderForm extends AbstractType
+class PublicOrderForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
 
             // First the mapped fields
-            ->add('customer', CustomerForm::class)
+            ->add('customer', PublicCompanyForm::class, ['data_class' => Customer::class]);
 
-            // Then the unmapped fields: quantities and files
-            ->add('qComputer', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Computers'])
-            ->add('qLaptopBasis', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Laptops basis'])
-            ->add('qLaptopAdvanced', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Laptops geavanceerd'])
-            ->add('qLaptopNew', IntegerType::class, ['mapped' => false, 'required' => false, 'label' => 'Laptops nieuw'])
+            // Then the unmapped fields: products
+            $builder->add('products', CollectionType::class, [
+                'entry_type' => PublicOrderProductForm::class,
+                'mapped' => false,
+                'allow_add' => true,
+                'data' => $options['products']
+            ]);
 
             // Finally the hidden fields
-            ->add('orderStatusName', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => "Products to assign"])
-            ->add('locationId', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => 1])
+            $builder
+            ->add('orderStatusName', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => $options['orderStatusName']])
+            ->add('locationId', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => $options['locationId']])
             ->add('save', SubmitType::class, [
                 'label' => 'Send',
                 'attr' => [
                     'class' => 'btn-success',
+                    'style' => 'width: 150px;',
                 ]
             ]);
     }
@@ -61,7 +67,9 @@ class PublicSalesOrderForm extends AbstractType
         $resolver->setDefaults(array(
             'data_class' => SalesOrder::class,
             'csrf_protection' => false,
-            'allow_extra_fields' => true
+            'products' => null,
         ));
+
+        $resolver->setRequired(array('orderStatusName', 'locationId'));
     }
 }
