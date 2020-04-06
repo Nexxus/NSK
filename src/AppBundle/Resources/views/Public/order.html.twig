@@ -1,0 +1,63 @@
+﻿{{form_start(form, {'multipart': false})}}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Your details{% endtrans %}
+    </div>
+    <div class="panel-body">
+    {{ form_row(form.customer.name) }} 
+    {{ form_row(form.customer.representative) }} 
+    {{ form_row(form.customer.email) }} 
+    {{ form_row(form.customer.phone) }} 
+    {{ form_row(form.customer.street) }} 
+    {{ form_row(form.customer.zip) }} 
+    {{ form_row(form.customer.city) }} 
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Products{% endtrans %}
+    </div>
+    <div class="panel-body">
+
+        {% for formProduct in form.products %}
+            <div class="form-group">
+                <div class="col-sm-3" style="margin-top: 8px"><b>{{ formProduct.vars.data.name }}</b></div>
+                <div class="col-sm-6" style="margin-top: 8px">{{ formProduct.vars.data.remark }}</div>
+                <div class="col-sm-1" style="margin-top: 8px">€ {{ formProduct.vars.data.price }}</div>                
+                <div class="col-sm-2">{{ form_widget(formProduct.quantity) }}</div>
+            </div>  
+            {{ form_widget(formProduct.name) }}  
+        {% endfor %}
+       
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        
+        <div class="row">
+            <div class="col-sm-9 col-sm-offset-3">
+                <div class="g-recaptcha" data-sitekey="{{ recaptchaKey }}"></div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 10px">
+            <div class="col-sm-9 col-sm-offset-3">
+                {{ form_widget(form.save) }}
+            </div>
+        </div>        
+    </div>
+</div>
+
+
+{{ form_widget(form.orderStatusName) }}
+{{ form_widget(form.locationId) }} 
+{{ form_end(form, {'render_rest': false}) }}
+
+<div id="errorContainer" style="color: red"></div>
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+

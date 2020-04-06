@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <title>Nexxus order form test</title>
+  </head>
+  <body>
+  
+	<div id="orderform" style="margin: 50px; width: 800px"></div>
+  
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="{{ absolute_url(asset("js/jquery.nexxus-order.js")) }}"></script>
+    <!-- script src="https://nexxus.eco/nsk/js/jquery.nexxus-order.js"></script -->
+	<script>
+	
+	    $("#orderform").nexxusOrder({
+            recaptchaKey: '6LdzW4QUAAAAANRAfkgl8Cz4-QNUcNEJomOj5wgX',
+            products: [
+              {
+                name: 'Desktop computers',
+                remark: null,
+                price: 149
+              },
+              {
+                name: 'Basis laptops',
+                remark: '(langere levertijd)',
+                price: 225
+              },
+              {
+                name: 'Geavanceerde laptops',
+                remark: '(bij einde voorraad leveren we een vergelijkbare kwaliteit)',
+                price: 349
+              },
+              {
+                name: 'Nieuwe laptops',
+                remark: '(bij einde voorraad leveren we een vergelijkbare kwaliteit)',
+                price: 549
+              },
+            ]
+        });
+	
+	</script>
+  </body>
+</html>
