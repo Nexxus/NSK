@@ -67,6 +67,7 @@ class PublicController extends Controller
         $locationId = $request->get("locationId");
         $orderStatusName = $request->get("orderStatusName");
         $maxAddresses = $request->get("maxAddresses");
+        $origin = $request->get("origin");
 
         $success = null;
 
@@ -78,6 +79,7 @@ class PublicController extends Controller
         $order->setOrderDate(new \DateTime());
         $order->setIsGift(true);
         $pickup = new Pickup($order);
+        $pickup->setOrigin($origin);
         $supplier = new Supplier();
         $order->setSupplier($supplier);
 
@@ -175,22 +177,23 @@ class PublicController extends Controller
             {
                 for ($i = 1; $i <= $countAddresses; $i++) 
                 {
-                    $address = $form->get('address'.$i)->getData();
-
-                    if (!$address && $i == 1) {
-                        $address = $pickup->getOrder()->getSupplier()->getAddressString(false);
-                    }
-                    else if (!$address) {
-                        $address = "Address " . $i;
-                    }
-                    else {
-                        $address = 'Pickup address: ' . $address;
-                    }
-
                     $quantity = $form->get('quantity_' . $i . '_' . $productType->getId())->getData();
 
                     if ($quantity)
                     {
+                        $address = $form->get('address'.$i)->getData() . ", " .
+                            trim($form->get('address_zip_'.$i)->getData() . " " . $form->get('address_city_'.$i)->getData());
+
+                        if ($address == ", " && $i == 1) {
+                            $address = $pickup->getOrder()->getSupplier()->getAddressString(false);
+                        }
+                        else if ($address == ", ") {
+                            $address = "Address " . $i;
+                        }
+                        else {
+                            $address = 'Pickup address: ' . $address;
+                        }
+
                         $product = new Product();
                         $product->setName($address);
                         $product->setDescription("Created by application");

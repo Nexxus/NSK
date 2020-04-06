@@ -32,7 +32,12 @@
         </div>
 
         {% for i in 1..maxAddresses %}
-        {{ form_row(form['address' ~ i]) }} 
+        <div class="form-group" style="">
+            {{ form_label(form['address' ~ i]) }}
+            <div class="col-sm-4">{{ form_widget(form['address' ~ i]) }}</div>
+            <div class="col-sm-2">{{ form_widget(form['address_zip_' ~ i]) }}</div>
+            <div class="col-sm-3">{{ form_widget(form['address_city_' ~ i]) }}</div>
+        </div>
         {% endfor %} 
 
 
@@ -47,10 +52,10 @@
         {% for productType in allProductTypes %}
             {{ form_label(form['quantity_1_' ~ productType.id]) }}
             <div class="col-sm-9">
-                <table>
+                <table style="width: 0">
                     <tr>
                         {% for i in 1..maxAddresses %}
-                            <td style="display:none">{{ form_widget(form['quantity_' ~ i ~ '_' ~ productType.id]) }}</td>
+                            <td style="display:none; padding: 0">{{ form_widget(form['quantity_' ~ i ~ '_' ~ productType.id]) }}</td>
                         {% endfor %}                 
                     </tr>
                 </table>
