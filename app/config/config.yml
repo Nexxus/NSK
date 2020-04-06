@@ -109,6 +109,16 @@ nelmio_cors:
             allow_headers: ['*']
             allow_methods: ['POST', 'GET']
             max_age: 3600
+        '^/upload':
+            allow_origin: ['*']
+            allow_headers: ['*']
+            allow_methods: ['POST']
+            max_age: 3600
+        '^/uploadexists':
+            allow_origin: ['*']
+            allow_headers: ['*']
+            allow_methods: ['POST']
+            max_age: 3600
 
 # FOSRest Configuration
 fos_rest:
