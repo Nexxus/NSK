@@ -66,12 +66,21 @@ class PickupForm extends AbstractType
             
             for ($i = 1; $i <= $options['maxAddresses']; $i++) 
             {
-                $builder->add('address' . $i, TextType::class, [
-                    'required' => false, 
-                    'mapped' => false, 
-                    'label' => 'Ophaaladres ' . $i,
-                    'attr' => ['class' => 'pickup_form_address']]);
-                
+                $builder
+                    ->add('address' . $i, TextType::class, [
+                        'required' => false, 
+                        'mapped' => false, 
+                        'label' => 'Ophaaladres ' . $i,
+                        'attr' => ['class' => 'pickup_form_address', 'placeholder' => 'Straat + nr *']])
+                    ->add('address_zip_' . $i, TextType::class, [
+                        'required' => false, 
+                        'mapped' => false, 
+                        'attr' => ['placeholder' => 'Postcode']])
+                    ->add('address_city_' . $i, TextType::class, [
+                        'required' => false, 
+                        'mapped' => false, 
+                        'attr' => ['placeholder' => 'Woonplaats']]);
+                            
                 foreach ($options['productTypes'] as $productType)
                 {
                     $builder->add('quantity_' . $i . '_' . $productType->getId(), IntegerType::class, [
