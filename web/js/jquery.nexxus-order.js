@@ -20,7 +20,7 @@
 
 (function ( $ ) {
  
-    var debug = true;
+    var debug = false;
     var thisElement;
     
     $.fn.nexxusOrder = function( options ) {

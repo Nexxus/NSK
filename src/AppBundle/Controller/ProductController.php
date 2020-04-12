@@ -80,7 +80,7 @@ class ProductController extends Controller
         return $this->render('AppBundle:Product:index.html.twig', array(
             'products' => $productsPage,
             'form' => $form->createView(),
-            'formBulkEdit' => $this->createForm(IndexBulkEditForm::class, $products)->createView()
+            'formBulkEdit' => $this->createForm(IndexBulkEditForm::class, $products, ['index_class' => Product::class])->createView()
             ));
     }
 
