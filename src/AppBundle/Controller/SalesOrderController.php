@@ -446,7 +446,6 @@ class SalesOrderController extends Controller
                         $order->setOrderDate(new \DateTime());
                         $order->setIsGift(false);
                         $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate("Products to assign", false, true));
-                        $order->setOrderNr($repo->generateOrderNr($order));
                         $order->setRemarks($remarks);
 
                         // Leergeld puts partner name in field Bedrijfsnaam :-(
@@ -482,9 +481,11 @@ class SalesOrderController extends Controller
                     $order->setCustomer($em->getRepository('AppBundle:Customer')->checkExists($customer));
 
                     $em->persist($order);
-                }
+                    $em->flush();
 
-                $em->flush();
+                    $order->setOrderNr($repo->generateOrderNr($order));
+                    $em->flush();                    
+                }
 
                 return $this->redirectToRoute("salesorder_import", array('success' => true));
             }
