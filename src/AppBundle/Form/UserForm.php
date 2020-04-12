@@ -52,13 +52,13 @@ class UserForm extends AbstractType
 
         $builder
             ->add('username', TextType::class )
-            ->add('firstname', TextType::class , ['required' => false])
-            ->add('lastname', TextType::class , ['required' => false])
+            ->add('firstname', TextType::class, ['required' => false])
+            ->add('lastname', TextType::class, ['required' => false])
             ->add('email', EmailType::class );
 
         if ($authCheck->isGranted('ROLE_SUPER_ADMIN'))
         {
-            $builder->add('plainPassword', RepeatedType::class , array(
+            $builder->add('plainPassword', RepeatedType::class, array(
                 'required' => true, // see below
                 'type' => PasswordType::class ,
                 'first_options' => array('label' => 'New password'),
@@ -72,7 +72,7 @@ class UserForm extends AbstractType
         }
 
         $builder
-            ->add('role', ChoiceType::class , [
+            ->add('role', ChoiceType::class, [
                 'mapped' => false,
                 'choices' => [
                     'Super_admin' => 'ROLE_SUPER_ADMIN',
@@ -82,7 +82,7 @@ class UserForm extends AbstractType
                     'Local' => 'ROLE_LOCAL',
                     'Partner' => 'ROLE_PARTNER'
                 ]])
-            ->add('locations', EntityType::class , [
+            ->add('locations', EntityType::class, [
                     'class' => 'AppBundle:Location',
                     'choice_label' => 'name',
                     'attr' => ['class' => 'multiselect'],
@@ -93,7 +93,7 @@ class UserForm extends AbstractType
                         return $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
                     }
                 ])
-            ->add('partner', EntityType::class , [
+            ->add('partner', EntityType::class, [
                 'class' => 'AppBundle:Customer',
                 'choice_label' => 'name',
                 'required' => false,
@@ -104,8 +104,8 @@ class UserForm extends AbstractType
                     return $qb;
                 }
                 ])
-            ->add('enabled', CheckboxType::class , ['required' => false])
-            ->add('save', SubmitType::class , ['attr' => ['class' => 'btn-success btn-120']]);
+            ->add('enabled', CheckboxType::class, ['required' => false])
+            ->add('save', SubmitType::class, ['attr' => ['class' => 'btn-success btn-120']]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
