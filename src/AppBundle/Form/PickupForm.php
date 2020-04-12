@@ -34,6 +34,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use AppBundle\Entity\Supplier;
 
 class PickupForm extends AbstractType
 {
@@ -41,7 +42,7 @@ class PickupForm extends AbstractType
     {
             // First the mapped fields
             $builder
-                ->add('supplier', PickupSupplierForm::class, ['property_path' => 'order.supplier'])
+                ->add('supplier', PublicCompanyForm::class, ['data_class' => Supplier::class, 'property_path' => 'order.supplier'])
                 ->add('pickupDate', DateType::class, ['required' => false, 'label' => 'Gewenste ophaaldatum'])
                 ->add('dataDestruction', ChoiceType::class, [
                     'expanded' => false,

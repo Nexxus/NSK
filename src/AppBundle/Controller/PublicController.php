@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek � info@copiatek.nl � Postbus 547 2501 CM Den Haag
+ * Copiatek - info@copiatek.nl - Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Controller;
@@ -34,7 +34,7 @@ use AppBundle\Entity\PickupAgreementFile;
 use AppBundle\Entity\ProductOrderRelation;
 use AppBundle\Entity\Location;
 use AppBundle\Form\PickupForm;
-use AppBundle\Form\PublicSalesOrderForm;
+use AppBundle\Form\PublicOrderForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -69,9 +69,7 @@ class PublicController extends Controller
         $maxAddresses = $request->get("maxAddresses");
         $origin = $request->get("origin");
 
-        $success = null;
-
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
 
         $allProductTypes = $em->getRepository(ProductType::class)->findAll();
 
@@ -91,7 +89,7 @@ class PublicController extends Controller
 
         $response = $this->render('AppBundle:Public:pickup.html.twig', array(
                 'form' => $form->createView(),
-                'success' => $success,
+                'success' => null,
                 'allProductTypes' => $allProductTypes,
                 'recaptchaKey' => $recaptchaKey,
                 'maxAddresses' => $maxAddresses,
@@ -117,7 +115,7 @@ class PublicController extends Controller
             $orderStatusName = $request->request->get("pickup_form")['orderStatusName'];
             $maxAddresses = $request->request->get("pickup_form")['maxAddresses'];
 
-            $em = $this->getDoctrine()->getEntityManager();
+            $em = $this->getDoctrine()->getManager();
 
             $allProductTypes = $em->getRepository(ProductType::class)->findAll();
 
@@ -147,10 +145,7 @@ class PublicController extends Controller
 
             #region Form data processing
 
-            // Create full order
-
             $pickup->getOrder()->setSupplier($em->getRepository('AppBundle:Supplier')->checkExists($pickup->getOrder()->getSupplier()));
-
             $pickup->getOrder()->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($orderStatusName, true, false));
 
             // Images
@@ -214,6 +209,7 @@ class PublicController extends Controller
             #endregion
 
             $em->flush();
+
             if (!$pickup->getOrder()->getOrderNr())
             {
                 $orderNr = $em->getRepository('AppBundle:PurchaseOrder')->generateOrderNr($pickup->getOrder());
@@ -230,19 +226,61 @@ class PublicController extends Controller
     }
 
     /**
-     * @Route("/public/salesorder")
+     * @Route("/public/ordertest")
      * @Method({"GET"})
      */
-    public function salesOrderAction(Request $request)
+    public function orderTestAction(Request $request)
     {
-        return $this->render('AppBundle:Public:salesorder.html.twig');
+        return $this->render('AppBundle:Public:ordertest.html.twig');
     }
 
     /**
-     * @Route("/public/salesorder/post")
+     * @Route("/public/order")
+     * @Method({"GET"})
+     */
+    public function orderAction(Request $request)
+    {
+        if ($this->container->has('profiler'))
+        {
+            $this->container->get('profiler')->disable();
+        }
+
+        $recaptchaKey = $request->get("recaptchaKey");
+        $locationId = $request->get("locationId");
+        $orderStatusName = $request->get("orderStatusName");
+        $products = $request->get("products");
+
+        $em = $this->getDoctrine()->getManager();
+
+        $order = new SalesOrder();
+        $order->setOrderDate(new \DateTime());
+        $order->setIsGift(false);
+        $customer = new Customer();
+
+        $em->persist($order);
+        $em->persist($customer);
+
+        $order->setCustomer($customer);
+
+        $form = $this->createForm(PublicOrderForm::class, $order, array(
+            'products' => $products, 
+            'locationId' => $locationId,
+            'orderStatusName' => $orderStatusName));
+
+        $response = $this->render('AppBundle:Public:order.html.twig', array(
+                'form' => $form->createView(),
+                'success' => null,
+                'recaptchaKey' => $recaptchaKey
+            ));
+
+        return $response;
+    }
+
+    /**
+     * @Route("/public/order/post")
      * @Method({"POST"})
      */
-    public function postSalesOrderAction(Request $request)
+    public function postOrderAction(Request $request)
     {
         try
         {
@@ -251,52 +289,52 @@ class PublicController extends Controller
                 return new Response("reCaptcha is not valid", Response::HTTP_NOT_ACCEPTABLE);
             }
 
-            $em = $this->getDoctrine()->getEntityManager();
+            $locationId = $request->request->get("public_order_form")['locationId'];
+            $orderStatusName = $request->request->get("public_order_form")['orderStatusName'];
+
+            $em = $this->getDoctrine()->getManager();
 
             $order = new SalesOrder();
             $order->setOrderDate(new \DateTime());
             $order->setIsGift(false);
             $customer = new Customer();
+            $order->setCustomer($customer);
 
             $em->persist($order);
             $em->persist($customer);
 
-            $order->setCustomer($customer);
+            $form = $this->createForm(PublicOrderForm::class, $order, array(
+                'locationId' => $locationId,
+                'orderStatusName' => $orderStatusName));
 
-            $form = $this->createForm(PublicSalesOrderForm::class, $order);
-
-            //$form->handleRequest($request); goes by submit as seen below
-            $parameters = $request->request->all();
-            $form->submit($parameters);
-
-            if (!$order->getCustomer()->getName() || !$order->getCustomer()->getEmail())
-            {
-                return new Response("Customer name and email are required fields", Response::HTTP_NOT_ACCEPTABLE);
-            }
+            $form->handleRequest($request); 
 
             if (!$form->isValid())
             {
                 return new Response($form->getErrors()->current()->getMessage(), Response::HTTP_NOT_ACCEPTABLE);
             }
 
+            #region Form data processing
+
             $order->setCustomer($em->getRepository('AppBundle:Customer')->checkExists($order->getCustomer()));
-            $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($form->get('orderStatusName')->getData(), false, true));
+            $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($orderStatusName, false, true));
 
             $remarks = "";
-            foreach ($parameters as $fld => $q)
+            $products = $form->get('products')->getData();
+            foreach ($products as $product)
             {
-                if (substr($fld, 0, 1) == "q" && $q)
+                if ($product['quantity'] > 0)
                 {
-                    $remarks .= ", " . substr($fld, 1). ": " . $q;
+                    $remarks .= $product['name'] . ": " . $product['quantity'] . "x\r\n";
                 }
             }
 
-            if (strlen($remarks) > 2)
-                $remarks = substr($remarks, 2);
-            else
-                return new Response("No quantities entered", Response::HTTP_NOT_ACCEPTABLE);
+            if (strlen($remarks) < 4)
+                $remarks = "No quantities entered...";
 
             $order->setRemarks($remarks);
+
+            #endregion
 
             $em->flush();
 

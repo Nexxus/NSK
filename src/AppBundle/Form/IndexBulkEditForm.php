@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek � info@copiatek.nl � Postbus 547 2501 CM Den Haag
+ * Copiatek - info@copiatek.nl - Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Form;
@@ -26,6 +26,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use AppBundle\Entity\Product;
+use AppBundle\Entity\AOrder;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class IndexBulkEditForm extends AbstractType
 {
@@ -33,7 +35,7 @@ class IndexBulkEditForm extends AbstractType
     {
         $index = $builder->getData();
 
-        if (count($index) && get_class($index[0]) == Product::class)
+        if ($options['index_class'] == Product::class)
         {
             $choices = [
                 'With selected lines...' => '',
@@ -74,4 +76,11 @@ class IndexBulkEditForm extends AbstractType
 
         // Or with hardcoded HTML input: <input type="checkbox" id="index_bulk_edit_form_index_23" name="index_bulk_edit_form[index][]" value="23">
     }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults(array(
+            'index_class' => AOrder::class,
+        ));
+    }    
 }

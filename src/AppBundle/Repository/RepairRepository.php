@@ -24,6 +24,7 @@ namespace AppBundle\Repository;
 
 use AppBundle\Entity\Repair;
 use AppBundle\Entity\SalesService;
+use AppBundle\Entity\Location;
 use AppBundle\Entity\Product;
 use AppBundle\Entity\ProductOrderRelation;
 
@@ -38,6 +39,7 @@ class RepairRepository extends \Doctrine\ORM\EntityRepository
         $product = new Product();
         $product->setName("Product to repair");
         $product->setSku(time());
+        $product->setLocation($this->_em->find(Location::class, 1));
         $this->_em->persist($product);
 
         $productOrderRelation = new ProductOrderRelation($product, $order);
