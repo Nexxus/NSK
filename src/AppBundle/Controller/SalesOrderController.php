@@ -38,9 +38,9 @@ class SalesOrderController extends Controller
 
         $orders = array();
 
-        $container = new \AppBundle\Helper\IndexSearchContainer($this->getUser(), SalesOrder::class );
+        $container = new \AppBundle\Helper\IndexSearchContainer($this->getUser(), SalesOrder::class);
 
-        $form = $this->createForm(IndexSearchForm::class , $container);
+        $form = $this->createForm(IndexSearchForm::class, $container);
 
         $form->handleRequest($request);
 
@@ -61,7 +61,7 @@ class SalesOrderController extends Controller
         return $this->render('AppBundle:SalesOrder:index.html.twig', array(
             'orders' => $ordersPage,
             'form' => $form->createView(),
-            'formBulkEdit' => $this->createForm(IndexBulkEditForm::class , $orders)->createView()
+            'formBulkEdit' => $this->createForm(IndexBulkEditForm::class, $orders)->createView()
         ));
     }
 
@@ -79,7 +79,7 @@ class SalesOrderController extends Controller
 
         if ($action == "status")
         {
-            $form = $this->createForm(SalesOrderBulkEditForm::class , $orders, array('user' => $this->getUser()));
+            $form = $this->createForm(SalesOrderBulkEditForm::class, $orders, array('user' => $this->getUser()));
 
             $form->handleRequest($request);
 
@@ -164,7 +164,7 @@ class SalesOrderController extends Controller
 
             if ($productId > 0)
             {
-                $sellProduct = $em->find(Product::class , $productId);
+                $sellProduct = $em->find(Product::class, $productId);
                 $r = new ProductOrderRelation($sellProduct, $order);
                 $r->setPrice($sellProduct->getPrice());
                 $r->setQuantity(1);
@@ -178,7 +178,7 @@ class SalesOrderController extends Controller
             $stock = $em->getRepository('AppBundle:Product')->findStockAndNotYetInOrder($this->getUser(), $order);
         }
 
-        $form = $this->createForm(SalesOrderForm::class , $order, array('user' => $this->getUser(), 'stock' => $stock, 'isRepair' => $isRepair));
+        $form = $this->createForm(SalesOrderForm::class, $order, array('user' => $this->getUser(), 'stock' => $stock, 'isRepair' => $isRepair));
 
         $form->handleRequest($request);
 
@@ -303,7 +303,7 @@ class SalesOrderController extends Controller
     public function deleteAction($id)
     {
         $em = $this->getDoctrine()->getManager();
-        $order = $em->find(SalesOrder::class , $id);
+        $order = $em->find(SalesOrder::class, $id);
         $em->remove($order);
         $em->flush();
 
@@ -317,7 +317,7 @@ class SalesOrderController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         /** @var ProductOrderRelation */
-        $relation = $em->find(ProductOrderRelation::class , $id);
+        $relation = $em->find(ProductOrderRelation::class, $id);
         $em->remove($relation);
         $em->flush();
 
@@ -330,7 +330,7 @@ class SalesOrderController extends Controller
     public function deleteServiceAction($id, $orderId)
     {
         $em = $this->getDoctrine()->getManager();
-        $service = $em->find(SalesService::class , $id);
+        $service = $em->find(SalesService::class, $id);
         $em->remove($service);
         $em->flush();
 
@@ -359,8 +359,8 @@ class SalesOrderController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         /** @var Repair */
-        $repair = $em->find(Repair::class , $id);
-        $relation = $em->find(ProductOrderRelation::class , $relationId);
+        $repair = $em->find(Repair::class, $id);
+        $relation = $em->find(ProductOrderRelation::class, $relationId);
 
         $html = $this->render('AppBundle:SalesOrder:printrepair.html.twig', array('repair' => $repair, 'relation' => $relation));
         $mPdfConfiguration = ['', 'A4', '', '', 10, 10, 10, 10, 0, 0, 'P'];
@@ -376,7 +376,7 @@ class SalesOrderController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         /** @var SalesOrder */
-        $order = $em->find(SalesOrder::class , $id);
+        $order = $em->find(SalesOrder::class, $id);
 
         $html = $this->render('AppBundle:SalesOrder:invoice.html.twig', array('order' => $order));
         $mPdfConfiguration = ['', 'A4', '', '', 10, 10, 10, 10, 0, 0, 'P'];
@@ -394,7 +394,7 @@ class SalesOrderController extends Controller
         /** @var \AppBundle\Repository\SalesOrderRepository */
         $repo = $em->getRepository('AppBundle:SalesOrder');
 
-        $form = $this->createForm(SalesOrderImportForm::class , null, array('user' => $this->getUser()));
+        $form = $this->createForm(SalesOrderImportForm::class, null, array('user' => $this->getUser()));
 
         $form->handleRequest($request);
 
@@ -446,7 +446,6 @@ class SalesOrderController extends Controller
                         $order->setOrderDate(new \DateTime());
                         $order->setIsGift(false);
                         $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate("Products to assign", false, true));
-                        $order->setOrderNr($repo->generateOrderNr($order));
                         $order->setRemarks($remarks);
 
                         // Leergeld puts partner name in field Bedrijfsnaam :-(
@@ -482,9 +481,11 @@ class SalesOrderController extends Controller
                     $order->setCustomer($em->getRepository('AppBundle:Customer')->checkExists($customer));
 
                     $em->persist($order);
-                }
+                    $em->flush();
 
-                $em->flush();
+                    $order->setOrderNr($repo->generateOrderNr($order));
+                    $em->flush();                    
+                }
 
                 return $this->redirectToRoute("salesorder_import", array('success' => true));
             }

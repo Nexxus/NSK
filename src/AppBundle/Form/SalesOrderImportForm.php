@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek � info@copiatek.nl � Postbus 547 2501 CM Den Haag
+ * Copiatek - info@copiatek.nl - Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Form;
@@ -38,7 +38,7 @@ class SalesOrderImportForm extends AbstractType
         $user = $options['user'];
 
         $builder
-            ->add('import', FileType::class , array('label' => 'Verzendlijst', 'required' => true))
+            ->add('import', FileType::class, array('label' => 'Verzendlijst', 'required' => true))
             ->add('partner',  EntityType::class, [
                 'class' => 'AppBundle:Customer',
                 'choice_label' => 'name',
@@ -50,7 +50,7 @@ class SalesOrderImportForm extends AbstractType
                     return $qb;
                 }
             ])  
-            ->add('save', SubmitType::class , ['attr' => ['class' => 'btn-success btn-120']]);
+            ->add('save', SubmitType::class, ['attr' => ['class' => 'btn-success btn-120']]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
