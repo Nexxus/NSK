@@ -56,6 +56,10 @@ class DashboardController extends Controller
 
         if ($form->isSubmitted() && $form->isValid() && $container->isSearchable()) {
 
+            $session = $request->getSession();
+            $session->set('dashboard_search_query', $container->query);
+            $session->set('dashboard_search_type', $container->type);
+
             if ($container->type == 'barcode')
             {
                 $repo = $this->getDoctrine()->getRepository('AppBundle:Product');
@@ -65,6 +69,14 @@ class DashboardController extends Controller
             {
                 return $this->redirectToRoute($container->type . '_index', ['index_search_form[query]' => $container->query ]);
             }
+        }
+        else if (!$form->isSubmitted()) {
+            $session = $request->getSession();
+            $searchQuery = $session->get('dashboard_search_query');
+            $searchType = $session->get('dashboard_search_type');
+
+            $form->get('query')->setData($searchQuery);
+            $form->get('type')->setData($searchType);
         }
 
         return $this->render('AppBundle:Dashboard:index.html.twig', array(

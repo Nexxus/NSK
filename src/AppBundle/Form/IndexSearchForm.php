@@ -49,7 +49,7 @@ class IndexSearchForm extends AbstractType
                 'label' => false,
                 'expanded' => true,
                 'multiple' => false,
-                'data' => 'barcode',
+                'empty_data' => 'barcode',
                 'choices' => [
                     'Barcodes' => 'barcode',
                     'Productnamen' => 'product',
