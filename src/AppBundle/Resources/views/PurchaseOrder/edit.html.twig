@@ -161,7 +161,7 @@
             <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Products{% endtrans %}
         </div>
         {% if ( order.id > 0) %}
-        <table class="table table-bordered">
+        <table class="table table-bordered" id="poProducts">
             <thead>
                 <tr>
                     <th width="5%">Id</th>
@@ -172,8 +172,6 @@
                     <th width="15%">Purchase<br />price p.u.</th>
                     <th width="10%">Purchase<br />quantity</th>
                     <th width="1%"></th>
-                </tr>
-                <tr>
                 </tr>
             </thead>
             <tbody>
@@ -273,6 +271,10 @@
          });
 
          {% endif %}
+
+        $(document).ready( function () {
+            $('#poProducts').DataTable();
+        } );
 
      </script>
  {% endblock %}
