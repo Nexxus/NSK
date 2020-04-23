@@ -75,7 +75,7 @@ class SalesOrderController extends Controller
         // Get variables from IndexBulkEditForm
         $action = $request->query->get('index_bulk_edit_form')['action'];
         $orderIds = $request->query->get('index_bulk_edit_form')['index'];
-        $orders = $em->getRepository(SalesOrder::class )->findById($orderIds);
+        $orders = $em->getRepository(SalesOrder::class)->findBy(['id' => $orderIds]);
 
         if ($action == "status")
         {

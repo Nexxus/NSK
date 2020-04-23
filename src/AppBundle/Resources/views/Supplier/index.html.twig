@@ -15,6 +15,7 @@
             <a href="{{ path('supplier_edit', { 'id': 0 }) }}" class="btn btn-primary pull-right" role="button">Create new supplier</a>
         </div>
     </div>
+    {{ form_widget(form._token) }}
     {{ form_end(form, {'render_rest': false}) }}
 
     <table class="table table-striped">
