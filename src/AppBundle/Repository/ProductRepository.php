@@ -119,15 +119,15 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         foreach ($this->_em->getRepository(\AppBundle\Entity\SalesOrder::class)->findBySearchQuery($search) as $salesOrder)
         {
             /** @var \AppBundle\Entity\SalesOrder $salesOrder */
-            $result["salesorder-".$salesOrder->getId()] = sprintf("Sales order with nr %s, dated %s, to customer %s, at location %s",
-                $salesOrder->getOrderNr(), $salesOrder->getOrderDate()->format("M j, Y"), $salesOrder->getCustomer()->getName(), $salesOrder->getLocation()->getName());
+            $result["salesorder-".$salesOrder->getId()] = sprintf("Sales order with nr %s, dated %s, to customer %s",
+                $salesOrder->getOrderNr(), $salesOrder->getOrderDate()->format("M j, Y"), $salesOrder->getCustomer()->getName());
         }
 
         foreach ($this->_em->getRepository(\AppBundle\Entity\PurchaseOrder::class)->findBySearchQuery($search) as $purchaseOrder)
         {
             /** @var \AppBundle\Entity\PurchaseOrder $purchaseOrder */
-            $result["purchaseorder-".$purchaseOrder->getId()] = sprintf("Purchase order with nr %s, dated %s, from supplier %s, at location %s",
-                $purchaseOrder->getOrderNr(), $purchaseOrder->getOrderDate()->format("M j, Y"), $purchaseOrder->getSupplier()->getName(), $purchaseOrder->getLocation()->getName());
+            $result["purchaseorder-".$purchaseOrder->getId()] = sprintf("Purchase order with nr %s, dated %s, from supplier %s",
+                $purchaseOrder->getOrderNr(), $purchaseOrder->getOrderDate()->format("M j, Y"), $purchaseOrder->getSupplier()->getName());
         }
 
         return $result;
