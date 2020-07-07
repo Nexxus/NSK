@@ -68,6 +68,7 @@ class PublicController extends Controller
         $orderStatusName = $request->get("orderStatusName");
         $maxAddresses = $request->get("maxAddresses");
         $origin = $request->get("origin");
+        $confirmPage = $request->get("confirmPage");
 
         $em = $this->getDoctrine()->getManager();
 
@@ -85,6 +86,7 @@ class PublicController extends Controller
             'productTypes' => $allProductTypes, 
             'maxAddresses' => $maxAddresses,
             'locationId' => $locationId,
+            'confirmPage' => $confirmPage,
             'orderStatusName' => $orderStatusName));
 
         $response = $this->render('AppBundle:Public:pickup.html.twig', array(
@@ -114,6 +116,7 @@ class PublicController extends Controller
             $locationId = $request->request->get("pickup_form")['locationId'];
             $orderStatusName = $request->request->get("pickup_form")['orderStatusName'];
             $maxAddresses = $request->request->get("pickup_form")['maxAddresses'];
+            $confirmPage = $request->request->get("pickup_form")['confirmPage'];
 
             $em = $this->getDoctrine()->getManager();
 
@@ -134,6 +137,7 @@ class PublicController extends Controller
                 'productTypes' => $allProductTypes, 
                 'maxAddresses' => $maxAddresses,
                 'locationId' => $locationId,
+                'confirmPage' => $confirmPage,
                 'orderStatusName' => $orderStatusName));
 
             $form->handleRequest($request); 
@@ -217,7 +221,9 @@ class PublicController extends Controller
                 $em->flush();
             }
 
-            return new Response("Pickup added successfully", Response::HTTP_OK); 
+            $message = $confirmPage ? $confirmPage : "Pickup added successfully";
+
+            return new Response($message, Response::HTTP_OK); 
         }
         catch (\Exception $exception)
         {
@@ -247,6 +253,7 @@ class PublicController extends Controller
 
         $recaptchaKey = $request->get("recaptchaKey");
         $locationId = $request->get("locationId");
+        $confirmPage = $request->get("confirmPage");
         $orderStatusName = $request->get("orderStatusName");
         $products = $request->get("products");
 
@@ -265,6 +272,7 @@ class PublicController extends Controller
         $form = $this->createForm(PublicOrderForm::class, $order, array(
             'products' => $products, 
             'locationId' => $locationId,
+            'confirmPage' => $confirmPage,
             'orderStatusName' => $orderStatusName));
 
         $response = $this->render('AppBundle:Public:order.html.twig', array(
@@ -291,6 +299,7 @@ class PublicController extends Controller
 
             $locationId = $request->request->get("public_order_form")['locationId'];
             $orderStatusName = $request->request->get("public_order_form")['orderStatusName'];
+            $confirmPage = $request->request->get("public_order_form")['confirmPage'];
 
             $em = $this->getDoctrine()->getManager();
 
@@ -305,6 +314,7 @@ class PublicController extends Controller
 
             $form = $this->createForm(PublicOrderForm::class, $order, array(
                 'locationId' => $locationId,
+                'confirmPage' => $confirmPage,
                 'orderStatusName' => $orderStatusName));
 
             $form->handleRequest($request); 
@@ -345,7 +355,9 @@ class PublicController extends Controller
                 $em->flush();
             }
 
-            return new Response("Sales order added successfully", Response::HTTP_OK);
+            $message = $confirmPage ? $confirmPage : "Sales order added successfully";
+
+            return new Response($message, Response::HTTP_OK);
         }
         catch (\Exception $exception)
         {

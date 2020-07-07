@@ -53,6 +53,7 @@ class PublicOrderForm extends AbstractType
             $builder
             ->add('orderStatusName', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => $options['orderStatusName']])
             ->add('locationId', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => $options['locationId']])
+            ->add('confirmPage', HiddenType::class, ['mapped' => false, 'required' => false, 'data' => $options['confirmPage']])
             ->add('save', SubmitType::class, [
                 'label' => 'Send',
                 'attr' => [
@@ -70,6 +71,6 @@ class PublicOrderForm extends AbstractType
             'products' => null,
         ));
 
-        $resolver->setRequired(array('orderStatusName', 'locationId'));
+        $resolver->setRequired(array('orderStatusName', 'locationId', 'confirmPage'));
     }
 }
