@@ -111,6 +111,7 @@ class PickupForm extends AbstractType
                 ->add('orderStatusName', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => $options['orderStatusName']])
                 ->add('maxAddresses', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => $options['maxAddresses']])
                 ->add('locationId', HiddenType::class, ['mapped' => false, 'required' => true, 'data' => $options['locationId']])
+                ->add('confirmPage', HiddenType::class, ['mapped' => false, 'required' => false, 'data' => $options['confirmPage']])
                 ->add('save', SubmitType::class, [
                     'label' => 'Send',
                     'attr' => [
@@ -128,6 +129,6 @@ class PickupForm extends AbstractType
             'csrf_protection' => false,
         ));
 
-        $resolver->setRequired(array('productTypes', 'orderStatusName', 'maxAddresses', 'locationId'));
+        $resolver->setRequired(array('productTypes', 'orderStatusName', 'maxAddresses', 'locationId', 'confirmPage'));
     }
 }

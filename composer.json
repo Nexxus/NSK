@@ -3,6 +3,9 @@
   "license": "proprietary",
   "type": "project",
   "autoload": {
+    "files": [
+      "vendor/prestashop/prestashop-webservice-lib/PSWebServiceLibrary.php"
+    ],
     "psr-4": {
       "": "src/"
     },
@@ -10,11 +13,6 @@
       "app/AppKernel.php",
       "app/AppCache.php"
     ]
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Tests\\": "tests/"
-    }
   },
   "require": {
     "php": "7.0.*",
@@ -35,9 +33,10 @@
     "knplabs/knp-paginator-bundle": "^2.8",
     "friendsofsymfony/rest-bundle": "^2.4",
     "jms/serializer-bundle": "^2.4",
-    "nelmio/cors-bundle": "^2.0",
+    "nelmio/cors-bundle": "^1.5",
     "lexik/jwt-authentication-bundle": "2.4.4",
-	  "beberlei/doctrineextensions": "1.*"
+    "beberlei/doctrineextensions": "1.*",
+    "prestashop/prestashop-webservice-lib": "dev-master"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",
