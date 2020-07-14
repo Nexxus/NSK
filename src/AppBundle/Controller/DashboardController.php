@@ -34,6 +34,7 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Product controller.
@@ -108,10 +109,10 @@ class DashboardController extends Controller
         ]);
 
         $output = new BufferedOutput();
-        //$output = new NullOutput();
         $application->run($input, $output);
 
-        return new \Symfony\Component\HttpFoundation\Response("Done!");
+        $content = $output->fetch();
+        return new Response($content);
     }
 }
 
