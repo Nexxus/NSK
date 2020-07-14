@@ -76,7 +76,7 @@ class PrestaShopCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $isDebug = $this->getContainer()->get('kernel')->isDebug();
+        $isDebug = true; // $this->getContainer()->get('kernel')->isDebug();
 
         if ($isDebug) {
             $this->key = "2UA45ZCDGECH3XPTWEHSBS14TM2I5QEC";
