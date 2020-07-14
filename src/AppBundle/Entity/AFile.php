@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek ï¿½ info@copiatek.nl ï¿½ Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Entity;
@@ -59,6 +59,13 @@ abstract class AFile
     private $originalClientFilename;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $externalId;   
+
+    /**
      * Get id
      *
      * @return integer
@@ -84,5 +91,29 @@ abstract class AFile
     {
         return $this->uniqueServerFilename;
     }
+
+    /**
+     * Set external id like from webshop
+     *
+     * @param integer $name
+     *
+     * @return AFile
+     */
+    public function setExternalId($externalId)
+    {
+        $this->externalId = $externalId;
+
+        return $this;
+    }
+
+    /**
+     * Set external id like from webshop
+     *
+     * @return int
+     */
+    public function getExternalId()
+    {
+        return $this->externalId;
+    }  
 }
 

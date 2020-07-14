@@ -67,7 +67,7 @@ class PurchaseOrderController extends Controller
         // Get variables from IndexBulkEditForm
         $action = $request->query->get('index_bulk_edit_form')['action'];
         $orderIds = $request->query->get('index_bulk_edit_form')['index'];
-        $orders = $em->getRepository(PurchaseOrder::class)->findById($orderIds);
+        $orders = $em->getRepository(PurchaseOrder::class)->findBy(['id' => $orderIds]);
 
         if ($action == "status")
         {
@@ -183,6 +183,7 @@ class PurchaseOrderController extends Controller
                 $em->persist($order);
 
                 $pickup = $order->getPickup();
+
                 if ($pickup) {
                     $em->persist($pickup);
                     $pickup->setRealPickupDate($form->get("pickupDate")->getData());

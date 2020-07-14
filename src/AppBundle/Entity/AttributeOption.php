@@ -48,6 +48,13 @@ class AttributeOption
     private $id;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $externalId;       
+
+    /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, unique=false)
@@ -79,6 +86,30 @@ class AttributeOption
     {
         return $this->id;
     }
+
+    /**
+     * Set external id like from webshop
+     *
+     * @param integer $name
+     *
+     * @return AttributeOption
+     */
+    public function setExternalId($externalId)
+    {
+        $this->externalId = $externalId;
+
+        return $this;
+    }
+
+    /**
+     * Set external id like from webshop
+     *
+     * @return int
+     */
+    public function getExternalId()
+    {
+        return $this->externalId;
+    }     
 
     /**
      * Set name

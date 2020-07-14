@@ -31,6 +31,7 @@
             orderStatusName: "To plan and pickup",
             locationId: 1,
             maxAddresses: 10,
+            confirmPage: null,
             origin: null
         }, options);
 
@@ -126,7 +127,12 @@
                 data: form.serialize()
             })
             .done(function (response) {
-                thisElement.html(response);
+                if (response.substring(0, 4) == "http") {
+                    window.location.replace(response); 
+                }
+                else {                
+                    thisElement.html(response);
+                }
             })
             .fail(function (xhr, err) {
                 thisElement.find("#errorContainer").text(xhr.responseText);   

@@ -94,7 +94,7 @@ class ProductController extends Controller
         // Get variables from IndexBulkEditForm
         $action = $request->query->get('index_bulk_edit_form')['action'];
         $productIds = $request->query->get('index_bulk_edit_form')['index'];
-        $products = $em->getRepository(Product::class)->findById($productIds);
+        $products = $em->getRepository(Product::class)->findBy(['id' => $productIds]);
 
         if ($action == "status")
         {

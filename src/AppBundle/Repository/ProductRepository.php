@@ -68,14 +68,12 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         {
             if (is_numeric($search->query))
             {
-                $qb = $qb->andWhere("o.id = :query OR o.sku = :query");
+                $qb = $qb->andWhere("o.id = :query OR o.sku = :query")->setParameter("query", $search->query);
             }
             else
             {
-                $qb = $qb->andWhere("o.name LIKE :queryLike OR o.sku = :query")->setParameter("queryLike", '%'.$search->query.'%');
+                $qb = $qb->andWhere("o.name LIKE :queryLike OR o.sku = :query")->setParameter("query", $search->query)->setParameter("queryLike", '%'.$search->query.'%');
             }
-
-            $qb = $qb->setParameter("query", $search->query);
         }
 
         if ($search->location)
@@ -119,15 +117,15 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         foreach ($this->_em->getRepository(\AppBundle\Entity\SalesOrder::class)->findBySearchQuery($search) as $salesOrder)
         {
             /** @var \AppBundle\Entity\SalesOrder $salesOrder */
-            $result["salesorder-".$salesOrder->getId()] = sprintf("Sales order with nr %s, dated %s, to customer %s, at location %s",
-                $salesOrder->getOrderNr(), $salesOrder->getOrderDate()->format("M j, Y"), $salesOrder->getCustomer()->getName(), $salesOrder->getLocation()->getName());
+            $result["salesorder-".$salesOrder->getId()] = sprintf("Sales order with nr %s, dated %s, to customer %s",
+                $salesOrder->getOrderNr(), $salesOrder->getOrderDate()->format("M j, Y"), $salesOrder->getCustomer()->getName());
         }
 
         foreach ($this->_em->getRepository(\AppBundle\Entity\PurchaseOrder::class)->findBySearchQuery($search) as $purchaseOrder)
         {
             /** @var \AppBundle\Entity\PurchaseOrder $purchaseOrder */
-            $result["purchaseorder-".$purchaseOrder->getId()] = sprintf("Purchase order with nr %s, dated %s, from supplier %s, at location %s",
-                $purchaseOrder->getOrderNr(), $purchaseOrder->getOrderDate()->format("M j, Y"), $purchaseOrder->getSupplier()->getName(), $purchaseOrder->getLocation()->getName());
+            $result["purchaseorder-".$purchaseOrder->getId()] = sprintf("Purchase order with nr %s, dated %s, from supplier %s",
+                $purchaseOrder->getOrderNr(), $purchaseOrder->getOrderDate()->format("M j, Y"), $purchaseOrder->getSupplier()->getName());
         }
 
         return $result;
@@ -175,6 +173,22 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
             $qb = $qb->andWhere('IDENTITY(o.location) IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
 
         return $qb->getQuery()->getResult();
+    }
+
+    public function findWebshopSelection($productStatusId) {
+
+        $qb = $this->getEntityManager()->createQueryBuilder()
+            ->where("p.status = :status")->setParameter("status", $productStatusId)
+            ->andWhere("p.externalId IS NULL")
+            ->from("AppBundle:Product", "p")->select("p")->orderBy("p.id", "DESC");
+
+        $products = $qb->getQuery()->getResult();
+
+        $products = array_filter($products, function (Product $product) {
+            return $product->getQuantitySaleable() > 0;
+        });
+
+        return $products;
     }
 
     public function generateProductAttributeRelations(Product $product)

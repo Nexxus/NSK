@@ -30,6 +30,10 @@ use AppBundle\Form\IndexSearchForm;
 use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\Product;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 /**
  * Product controller.
@@ -86,6 +90,28 @@ class DashboardController extends Controller
     public function underConstructionAction()
     {
         return $this->render('AppBundle::underconstruction.html.twig');
+    }
+
+    /**
+     * @Route("/prestashopcommand", name="prestashopcommand")
+     * @Method({"GET"})
+     */
+    public function prestashopcommandAction(Request $request)
+    { 
+        $kernel = $this->container->get('kernel');       
+        $application = new Application($kernel);
+        $application->setAutoExit(false);
+
+        $input = new ArrayInput([
+            'command' => 'nexxus:prestashop',
+            'productStatusIdFilter' => 4,
+        ]);
+
+        $output = new BufferedOutput();
+        //$output = new NullOutput();
+        $application->run($input, $output);
+
+        return new \Symfony\Component\HttpFoundation\Response("Done!");
     }
 }
 
