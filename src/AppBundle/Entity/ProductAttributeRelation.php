@@ -77,7 +77,38 @@ class ProductAttributeRelation
      */
     private $quantity;
 
+    /**
+     * @var int
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $externalId;       
+
     #region db getters and setters
+
+    /**
+     * Set external id like from webshop
+     *
+     * @param integer $name
+     *
+     * @return ProductAttributeRelation
+     */
+    public function setExternalId($externalId)
+    {
+        $this->externalId = $externalId;
+
+        return $this;
+    }
+
+    /**
+     * Set external id like from webshop
+     *
+     * @return int
+     */
+    public function getExternalId()
+    {
+        return $this->externalId;
+    }  
 
     /**
      * Set value
