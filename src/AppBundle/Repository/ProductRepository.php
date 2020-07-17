@@ -72,7 +72,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
             }
             else
             {
-                $qb = $qb->andWhere("o.name LIKE :queryLike OR o.sku = :query")->setParameter("queryLike", '%'.$search->query.'%');
+                $qb = $qb->andWhere("o.name LIKE :queryLike OR o.sku = :query")->setParameter("query", $search->query)->setParameter("queryLike", '%'.$search->query.'%');
             }
         }
 
@@ -179,6 +179,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
 
         $qb = $this->getEntityManager()->createQueryBuilder()
             ->where("p.status = :status")->setParameter("status", $productStatusId)
+            ->andWhere("p.externalId IS NULL")
             ->from("AppBundle:Product", "p")->select("p")->orderBy("p.id", "DESC");
 
         $products = $qb->getQuery()->getResult();

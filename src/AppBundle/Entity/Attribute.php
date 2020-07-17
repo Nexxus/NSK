@@ -55,6 +55,13 @@ class Attribute
     private $id;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $externalId;      
+
+    /**
      * @var string
      *
      * @ORM\Column(type="string", length=11, unique=false)
@@ -128,6 +135,30 @@ class Attribute
     {
         return $this->id;
     }
+
+    /**
+     * Set external id like from webshop
+     *
+     * @param integer $name
+     *
+     * @return Attribute
+     */
+    public function setExternalId($externalId)
+    {
+        $this->externalId = $externalId;
+
+        return $this;
+    }
+
+    /**
+     * Set external id like from webshop
+     *
+     * @return int
+     */
+    public function getExternalId()
+    {
+        return $this->externalId;
+    }      
 
     /**
      * Set attrCode

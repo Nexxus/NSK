@@ -31,9 +31,10 @@ use AppBundle\Entity\PurchaseOrder;
 use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\Product;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Product controller.
@@ -48,8 +49,6 @@ class DashboardController extends Controller
      */
     public function indexAction(Request $request)
     {
-        //$this->RunPrestaShopCommand();
-        
         $em = $this->getDoctrine()->getManager();
         
         $result = null;
@@ -94,20 +93,26 @@ class DashboardController extends Controller
         return $this->render('AppBundle::underconstruction.html.twig');
     }
 
-    private function RunPrestaShopCommand() {
-        
+    /**
+     * @Route("/prestashopcommand", name="prestashopcommand")
+     * @Method({"GET"})
+     */
+    public function prestashopcommandAction(Request $request)
+    { 
         $kernel = $this->container->get('kernel');       
         $application = new Application($kernel);
         $application->setAutoExit(false);
 
         $input = new ArrayInput([
             'command' => 'nexxus:prestashop',
-            'productStatusIdFilter' => 1,
+            'productStatusIdFilter' => 5,
         ]);
 
-        // You can use NullOutput() if you don't need the output
         $output = new BufferedOutput();
         $application->run($input, $output);
+
+        $content = $output->fetch();
+        return new Response($content);
     }
 }
 
