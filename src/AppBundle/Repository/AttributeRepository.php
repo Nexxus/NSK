@@ -21,6 +21,7 @@
  */
 
 namespace AppBundle\Repository;
+use AppBundle\Entity\AttributeOption;
 
 class AttributeRepository extends \Doctrine\ORM\EntityRepository
 {
@@ -40,5 +41,19 @@ class AttributeRepository extends \Doctrine\ORM\EntityRepository
                 ->setParameter(2, '%' . $query . '%');
 
         return $q->getResult();
+    }
+
+    public function findAttributeOptionsWithoutExternalId()
+    {
+        $q = $this->getEntityManager()
+                ->createQuery("SELECT a FROM AppBundle:AttributeOption a WHERE a.externalId IS NULL");
+
+        $options = $q->getResult();
+
+        $options = array_filter($options, function (AttributeOption $option) {
+            return $option->getAttribute()->getExternalId() > 0;
+        });
+
+        return $options;
     }
 }

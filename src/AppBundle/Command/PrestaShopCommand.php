@@ -37,15 +37,18 @@ class PrestaShopCommand extends ContainerAwareCommand
                     'name' => 'name',
                     'description' => 'comment',
                     'position' => 'pindex',
-                    'id_parent' => function () { return 2; },
+                    'id_parent' => function () { return 2; }, // shop dependent
                     'active' => function (ProductType $productType) { return 1; },
-                    'link_rewrite' => function (ProductType $productType) { return urlencode(str_replace('/', '_', str_replace(' ', '_', strtolower($productType->getName())))); },
+                    'link_rewrite' => function (ProductType $productType) { return urlencode(str_replace([' ','/'], '_', strtolower($productType->getName()))); },
                 ],
                 'product_features' => [
                     'name' => 'name'
                 ],
                 'product_feature_values' => [
-                    'value' => function ($o) { return is_a($o, AttributeOption::class) ? $o->getName() : $o->getValue(); },
+                    'value' => function ($o) { 
+                        $value = is_a($o, AttributeOption::class) ? $o->getName() : $o->getValue(); 
+                        return str_replace(['=', '>', '<'], '_', $value);
+                    },
                     'custom' => function ($o) { return is_a($o, AttributeOption::class) ? 0 : 1; },
                     'id_feature' => function ($o) { return $o->getAttribute()->getExternalId(); },
                 ],
@@ -53,13 +56,14 @@ class PrestaShopCommand extends ContainerAwareCommand
                     'name' => 'name',
                     'description_short' => 'name',
                     'description' => 'description',
-                    'price' => function (Product $p) { return ($p->getPrice() / 1.21); },
+                    'price' => function (Product $p) { return round(($p->getPrice() / 1.21), 6); },
                     'reference' => function (Product $p) { return 'NSK-' . $p->getSku(); },
                     'type' => function (Product $p) { return 'simple'; },
                     'state' => function (Product $p) { return 1; },
                     'active' => function (Product $p) { return 1; },
                     'id_tax_rules_group' => function (Product $p) { return 1; },
                     'id_shop_default' => function (Product $p) { return 1; },
+                    'id_category_default' => function (Product $p) { return $p->getType()->getExternalId(); },
                 ],
                 'stock_availables' => [
                     'id_product' => 'externalId',
@@ -76,6 +80,14 @@ class PrestaShopCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /*
+        To clear database:
+        1. update attribute set external_id=null;update attribute_option set external_id=null;update product_type set external_id=null;update product set external_id=null;update product_attribute set external_id=null;
+        2. Prestahop cleaner module
+        3. Publish this file
+        3. https://nexxus.eco/nsk-test/prestashopcommand
+        */
+        
         $isDebug = true; // $this->getContainer()->get('kernel')->isDebug();
 
         if ($isDebug) {
@@ -94,7 +106,7 @@ class PrestaShopCommand extends ContainerAwareCommand
 
         $this->createResources("categories", $em->getRepository('AppBundle:ProductType')->findBy(['externalId' => null]));
         $this->createResources("product_features", $em->getRepository('AppBundle:Attribute')->findBy(['externalId' => null, 'type' => [0,1]]));
-        $this->createResources("product_feature_values", $em->getRepository('AppBundle:AttributeOption')->findBy(['externalId' => null]));
+        $this->createResources("product_feature_values", $em->getRepository('AppBundle:Attribute')->findAttributeOptionsWithoutExternalId());
 
         $productStatusId = $input->getArgument('productStatusIdFilter');
         $products = $em->getRepository('AppBundle:Product')->findWebshopSelection($productStatusId);
@@ -110,17 +122,17 @@ class PrestaShopCommand extends ContainerAwareCommand
     private function createResources($resourceName, array $collection)
     {
         if (!count($collection)) return;
-        
-        // if you get vague error when getting, debug function executeRequest in PSWebServiceLibrary.php
-        $blankXml = $this->webService->get(['url' => $this->baseUrl . 'api/' . $resourceName . '?schema=blank']);
 
         $resourceSingularName = $resourceName == "categories" ? "category" : substr($resourceName, 0, -1);
-        $xmlFields = $blankXml->{$resourceSingularName}->children();
 
         foreach ($collection as $object)
         {
             try
             {
+                // if you get vague error when getting, debug function executeRequest in PSWebServiceLibrary.php
+                $blankXml = $this->webService->get(['url' => $this->baseUrl . 'api/' . $resourceName . '?schema=blank']);
+                $xmlFields = $blankXml->{$resourceSingularName}->children();
+
                 foreach ($this->mappings[$resourceName] as $xmlFieldName => $objectFieldName)
                 {
                     if (is_callable($objectFieldName))
@@ -153,12 +165,16 @@ class PrestaShopCommand extends ContainerAwareCommand
                         {
                             case Attribute::TYPE_SELECT:
                                 if (!$par->getSelectedOption()) continue;
-                                $xmlFields->associations->product_option_values->addChild('product_option_value')->id = $par->getSelectedOption()->getExternalId();
+                                $feature = $xmlFields->associations->product_features->addChild('product_feature');
+                                $feature->id = $par->getAttribute()->getExternalId();
+                                $feature->id_feature_value = $par->getSelectedOption()->getExternalId();
                                 break;
                             case Attribute::TYPE_TEXT:
                                 if (!$par->getValue()) continue;
                                 $this->createResources("product_feature_values", array($par));
-                                $xmlFields->associations->product_option_values->addChild('product_option_value')->id = $par->getExternalId();
+                                $feature = $xmlFields->associations->product_features->addChild('product_feature');
+                                $feature->id = $par->getAttribute()->getExternalId();
+                                $feature->id_feature_value = $par->getExternalId();
                                 break;                            
                             default:
                         }                   
