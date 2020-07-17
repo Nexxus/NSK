@@ -37,7 +37,7 @@ class PrestaShopCommand extends ContainerAwareCommand
                     'name' => 'name',
                     'description' => 'comment',
                     'position' => 'pindex',
-                    'id_parent' => function () { return 2; }, // shop dependent
+                    'id_parent' => function () { return 2; },
                     'active' => function (ProductType $productType) { return 1; },
                     'link_rewrite' => function (ProductType $productType) { return urlencode(str_replace([' ','/'], '_', strtolower($productType->getName()))); },
                 ],
@@ -88,7 +88,7 @@ class PrestaShopCommand extends ContainerAwareCommand
         3. https://nexxus.eco/nsk-test/prestashopcommand
         */
         
-        $isDebug = true; // $this->getContainer()->get('kernel')->isDebug();
+        $isDebug = $this->getContainer()->get('kernel')->isDebug();
 
         if ($isDebug) {
             $this->key = "2UA45ZCDGECH3XPTWEHSBS14TM2I5QEC";
@@ -96,7 +96,7 @@ class PrestaShopCommand extends ContainerAwareCommand
         }
         else {
             $this->key = 'ZAZIIVE5M7XC8C22NDTLE7UJ26T9LCIV';
-            $this->baseUrl = 'https://www.mediapoints.nl/';
+            $this->baseUrl = 'http://www.mediapoints.nl/';
         }
 
         $this->webService = new \PrestaShopWebservice($this->baseUrl, $this->key, $isDebug);

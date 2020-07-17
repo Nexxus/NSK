@@ -105,7 +105,7 @@ class DashboardController extends Controller
 
         $input = new ArrayInput([
             'command' => 'nexxus:prestashop',
-            'productStatusIdFilter' => 1,
+            'productStatusIdFilter' => 5,
         ]);
 
         $output = new BufferedOutput();
