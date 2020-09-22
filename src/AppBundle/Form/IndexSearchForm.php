@@ -59,9 +59,24 @@ class IndexSearchForm extends AbstractType
                     'Leveranciers' => 'supplier'
                 ]]);
         }
-        else
+        elseif ($container->className == \AppBundle\Entity\Product::class)
         {
-            $builder->add('location',  EntityType::class, [
+            $builder
+            ->add('status',  EntityType::class, [
+                'class' => 'AppBundle:ProductStatus',
+                'choice_label' => 'name',
+                'placeholder' => 'All statuses',
+                'required' => false,
+                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
+            ])
+            ->add('producttype',  EntityType::class, [
+                'class' => 'AppBundle:ProductType',
+                'choice_label' => 'name',
+                'placeholder' => 'All types',
+                'required' => false,
+                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
+            ])
+            ->add('location',  EntityType::class, [
                 'class' => 'AppBundle:Location',
                 'choice_label' => 'name',
                 'placeholder' => 'All locations',
@@ -73,37 +88,34 @@ class IndexSearchForm extends AbstractType
                         $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $container->user->getLocationIds()); 
                     return $qb;
                 }
+            ])
+            ->add('availability', ChoiceType::class, array(
+                'placeholder' => 'All availability',
+                'required' => false,
+                'choices' => [
+                    'In stock' => 'InStock',
+                    'On hold' => 'OnHold',
+                    'For sale' => 'Saleable',
+                    'Sold' => 'Sold'
+            ]));
+        }
+        else
+        {
+            $builder->add('partner',  EntityType::class, [
+                'class' => 'AppBundle:Customer',
+                'choice_label' => 'name',
+                'placeholder' => 'All partners',
+                'required' => false,
+                'query_builder' => function (EntityRepository $er) use ($container) { 
+                    $qb = $er->createQueryBuilder('x')->where("x.isPartner > 0")->orderBy("x.name", "ASC");
+                    /** @var IndexSearchContainer $container */
+                    if ($container->user->hasRole("ROLE_PARTNER"))
+                        $qb = $qb->andWhere('x.id = :partner')->setParameter('partner', $container->user->getPartner()->getId() ?? -1); 
+                    return $qb;
+                }
             ]);
 
-            if ($container->className == \AppBundle\Entity\Product::class)
-            {
-                $builder->add('status',  EntityType::class, [
-                    'class' => 'AppBundle:ProductStatus',
-                    'choice_label' => 'name',
-                    'placeholder' => 'All statuses',
-                    'required' => false,
-                    'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
-                ]);
-    
-                $builder->add('producttype',  EntityType::class, [
-                    'class' => 'AppBundle:ProductType',
-                    'choice_label' => 'name',
-                    'placeholder' => 'All types',
-                    'required' => false,
-                    'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
-                ]);
-
-                $builder->add('availability', ChoiceType::class, array(
-                    'placeholder' => 'All availability',
-                    'required' => false,
-                    'choices' => [
-                        'In stock' => 'InStock',
-                        'On hold' => 'OnHold',
-                        'For sale' => 'Saleable',
-                        'Sold' => 'Sold'
-                ]));
-            }
-            elseif ($container->className == \AppBundle\Entity\SalesOrder::class)
+            if ($container->className == \AppBundle\Entity\SalesOrder::class)
             {
                 $builder->add('status', EntityType::class, [
                     'class' => 'AppBundle:OrderStatus',

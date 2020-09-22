@@ -64,6 +64,8 @@ class PurchaseOrderRepository extends \Doctrine\ORM\EntityRepository
 
         if ($search->user->hasRole("ROLE_PARTNER"))
             $qb = $qb->andWhere('s.partner = :partner')->setParameter('partner', $search->user->getPartner() ?? -1); 
+        elseif ($search->partner)
+            $qb = $qb->andWhere("s.partner = :partner")->setParameter("partner", $search->partner);
 
         return $qb->getQuery()->getResult();
     }

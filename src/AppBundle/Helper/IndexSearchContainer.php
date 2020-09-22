@@ -49,6 +49,9 @@ class IndexSearchContainer
     /** @var \AppBundle\Entity\Location */
     public $location;
 
+    /** @var \AppBundle\Entity\Customer */
+    public $partner;    
+
     /** @var User */
     public $user;
 
@@ -57,7 +60,7 @@ class IndexSearchContainer
 
     /** @return bool */
     public function isSearchable() {
-        if ($this->location || $this->status || $this->producttype || $this->query || $this->availability)
+        if ($this->partner || $this->location || $this->status || $this->producttype || $this->query || $this->availability)
             return true;
         else
             return false;
