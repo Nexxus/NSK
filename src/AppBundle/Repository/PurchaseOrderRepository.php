@@ -76,7 +76,7 @@ class PurchaseOrderRepository extends \Doctrine\ORM\EntityRepository
             ->from("AppBundle:Pickup", "p")
             ->join("AppBundle:PurchaseOrder", "o")
             ->where("p.realPickupDate BETWEEN :start AND :end")
-            ->setParameter("start", new \DateTime("first day of last month"))
+            ->setParameter("start", new \DateTime("-1 year"))
             ->setParameter("end", (new \DateTime())->modify('+1 year'))
             ->select("p");
 

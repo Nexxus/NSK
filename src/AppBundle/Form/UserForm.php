@@ -42,6 +42,7 @@ class UserForm extends AbstractType
     {
         /** @var User */
         $user = $builder->getData();
+        $roles = $user->getRoles();
 
         $authCheck = $options['authCheck'];
 
@@ -71,9 +72,12 @@ class UserForm extends AbstractType
             }
         }
 
+
+
         $builder
             ->add('role', ChoiceType::class, [
                 'mapped' => false,
+                'data' => count($roles) ? reset($roles) : null,
                 'choices' => [
                     'Super_admin' => 'ROLE_SUPER_ADMIN',
                     'Admin' => 'ROLE_ADMIN',
