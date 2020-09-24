@@ -63,6 +63,8 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
 
         if ($search->user->hasRole("ROLE_PARTNER"))
             $qb = $qb->andWhere('o.partner = :partner')->setParameter('partner', $search->user->getPartner() ?? -1); 
+        elseif ($search->partner)
+            $qb = $qb->andWhere("o.partner = :partner")->setParameter("partner", $search->partner);
 
         return $qb->getQuery()->getResult();
     }

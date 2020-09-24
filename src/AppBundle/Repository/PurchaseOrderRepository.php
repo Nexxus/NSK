@@ -64,6 +64,8 @@ class PurchaseOrderRepository extends \Doctrine\ORM\EntityRepository
 
         if ($search->user->hasRole("ROLE_PARTNER"))
             $qb = $qb->andWhere('s.partner = :partner')->setParameter('partner', $search->user->getPartner() ?? -1); 
+        elseif ($search->partner)
+            $qb = $qb->andWhere("s.partner = :partner")->setParameter("partner", $search->partner);
 
         return $qb->getQuery()->getResult();
     }
@@ -74,7 +76,7 @@ class PurchaseOrderRepository extends \Doctrine\ORM\EntityRepository
             ->from("AppBundle:Pickup", "p")
             ->join("AppBundle:PurchaseOrder", "o")
             ->where("p.realPickupDate BETWEEN :start AND :end")
-            ->setParameter("start", new \DateTime("first day of last month"))
+            ->setParameter("start", new \DateTime("-1 year"))
             ->setParameter("end", (new \DateTime())->modify('+1 year'))
             ->select("p");
 

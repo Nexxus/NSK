@@ -37,7 +37,7 @@ class PrestaShopCommand extends ContainerAwareCommand
                     'name' => 'name',
                     'description' => 'comment',
                     'position' => 'pindex',
-                    'id_parent' => function () { return 2; },
+                    'id_parent' => function () { return 2; }, // 1=root, 2=Home
                     'active' => function (ProductType $productType) { return 1; },
                     'link_rewrite' => function (ProductType $productType) { return urlencode(str_replace([' ','/'], '_', strtolower($productType->getName()))); },
                 ],

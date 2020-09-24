@@ -5,9 +5,13 @@
 
     {{ form_start(form) }}
     <div class="row" style="margin-bottom: 20px">
-        <div class="col-sm-8">
+        <div class="col-sm-6">
             {{ form_widget(form.query, {'attr': {'placeholder': 'Zoeken op Id, KvK, e-mail of (deel van) naam'} }) }}
         </div>
+        <div class="col-sm-2">
+            {{ form_widget(form.partner) }}
+        </div>        
+
         <div class="col-sm-1">
             {{ form_widget(form.submit) }}
         </div>
