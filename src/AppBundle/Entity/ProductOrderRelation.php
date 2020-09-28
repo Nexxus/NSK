@@ -61,7 +61,7 @@ class ProductOrderRelation
     /**
      * @var AOrder|PurchaseOrder|SalesOrder
      *
-     * @ORM\ManyToOne(targetEntity="AOrder", inversedBy="productRelations")
+     * @ORM\ManyToOne(targetEntity="AOrder", inversedBy="productRelations", fetch="EAGER")
      * @ORM\JoinColumn(name="order_id", referencedColumnName="id", nullable=false)
      */
     private $order;

@@ -137,7 +137,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
 
         $products = array_filter($products,
             function(Product $product) {
-                return $product->getQuantityInStock(true) != 0;
+                return $product->getQuantityInStock() != 0;
             });
 
         return $products;
