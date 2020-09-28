@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek ï¿½ info@copiatek.nl ï¿½ Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Entity;
@@ -53,7 +53,7 @@ class ProductOrderRelation
     /**
      * @var Product
      *
-     * @ORM\ManyToOne(targetEntity="Product", inversedBy="orderRelations", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="Product", inversedBy="orderRelations")
      * @ORM\JoinColumn(name="product_id", referencedColumnName="id", nullable=false)
      */
     private $product;
@@ -61,7 +61,7 @@ class ProductOrderRelation
     /**
      * @var AOrder|PurchaseOrder|SalesOrder
      *
-     * @ORM\ManyToOne(targetEntity="AOrder", inversedBy="productRelations", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="AOrder", inversedBy="productRelations")
      * @ORM\JoinColumn(name="order_id", referencedColumnName="id", nullable=false)
      */
     private $order;
@@ -86,7 +86,7 @@ class ProductOrderRelation
      * TaskServices in case of PurchaseOrder
      *
      * @var ArrayCollection|AService[]
-     * @ORM\OneToMany(targetEntity="AService", mappedBy="productOrderRelation", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="AService", mappedBy="productOrderRelation", cascade={"all"}, orphanRemoval=true)
      */
     private $services;
 

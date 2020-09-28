@@ -69,14 +69,14 @@ class Location
 
     /**
      * @var ArrayCollection|Product[]
-     * @ORM\OneToMany(targetEntity="Product", mappedBy="location", fetch="LAZY")
+     * @ORM\OneToMany(targetEntity="Product", mappedBy="location")
      */
     private $products;
 
     /**
      * @var ArrayCollection|User[]
      *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\User", mappedBy="locations", fetch="LAZY")
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\User", mappedBy="locations")
      */
     private $users;
 

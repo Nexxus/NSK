@@ -77,7 +77,7 @@ class Pickup
     /**
      * @var User Driver that will pick up the order
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
      * @ORM\JoinColumn(name="logistics_id", referencedColumnName="id")
      * @JMS\MaxDepth(depth=1)
      */
@@ -107,14 +107,14 @@ class Pickup
     /**
      * @var ArrayCollection|PickupImageFile[]
      *
-     * @ORM\OneToMany(targetEntity="PickupImageFile", mappedBy="pickup", fetch="EAGER", cascade={"all"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="PickupImageFile", mappedBy="pickup", cascade={"all"}, orphanRemoval=true)
      */
     private $images;
 
     /**
      * @var PickupAgreementFile
      *
-     * @ORM\OneToOne(targetEntity="PickupAgreementFile", mappedBy="pickup", fetch="EAGER", cascade={"all"}, orphanRemoval=true)
+     * @ORM\OneToOne(targetEntity="PickupAgreementFile", mappedBy="pickup", cascade={"all"}, orphanRemoval=true)
      */
     private $agreement;
 

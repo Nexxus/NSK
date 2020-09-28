@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek ï¿½ info@copiatek.nl ï¿½ Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Entity;
@@ -64,7 +64,7 @@ abstract class AService
     /**
      * @var ProductOrderRelation
      *
-     * @ORM\ManyToOne(targetEntity="ProductOrderRelation", inversedBy="services", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="ProductOrderRelation", inversedBy="services")
      * @ORM\JoinColumn(name="relation_id", referencedColumnName="id"),
      */
     protected $productOrderRelation;

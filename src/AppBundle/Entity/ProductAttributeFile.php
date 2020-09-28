@@ -33,7 +33,7 @@ class ProductAttributeFile extends AFile
     }
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Product", inversedBy="files", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Product", inversedBy="files")
      * @ORM\JoinColumn(name="product_id", referencedColumnName="id")
      */
     private $product;

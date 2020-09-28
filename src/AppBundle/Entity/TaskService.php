@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek ï¿½ info@copiatek.nl ï¿½ Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Entity;
@@ -48,7 +48,7 @@ class TaskService extends AService
     /**
      * @var Task Task that will be or is applied in this Service
      *
-     * @ORM\ManyToOne(targetEntity="Task", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="Task")
      * @ORM\JoinColumn(name="task_id", referencedColumnName="id", nullable=true)
      */
     private $task;

@@ -107,7 +107,7 @@ class Attribute
 
     /**
      * @var ArrayCollection|ProductAttributeRelation[] Which products have this attribute
-     * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="attribute", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="attribute", cascade={"all"}, orphanRemoval=true)
      * @JMS\Exclude()
      */
     private $productRelations;
@@ -115,7 +115,7 @@ class Attribute
     /**
      * @var ArrayCollection|AttributeOption[] To use when type is SELECT
      *
-     * @ORM\OneToMany(targetEntity="AttributeOption", mappedBy="attribute", fetch="EAGER", cascade={"all"})
+     * @ORM\OneToMany(targetEntity="AttributeOption", mappedBy="attribute", cascade={"all"})
      */
     private $options;
 
