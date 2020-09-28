@@ -29,6 +29,7 @@
                 <th{% if suppliers.isSorted('name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(suppliers, 'Name', 'name') }}</th>
                 <th>Representative</th>
                 <th{% if suppliers.isSorted('email') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(suppliers, 'E-mail', 'email') }}</th>
+                <th{% if suppliers.isSorted('partner') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(suppliers, 'Partner', 'partner') }}</th>
                 <th width="1%"></th>
             </tr>
             <tr>
@@ -41,6 +42,7 @@
                 <td><a class="inlist" href="{{ path('supplier_edit', { 'id': supplier.id }) }}" data-toggle="tooltip" title="{{ supplier.getAddressString() }}">{{ supplier.name }}</a></td>
                 <td>{{ supplier.representative }}</td>
                 <td>{{ supplier.email }}</td>
+                <td>{{ supplier.partner.name|default("") }}</td>
                 <td nowrap>
                     <a class="btn btn-success" href="{{ path('supplier_edit', { 'id': supplier.id }) }}"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
                     {% if supplier.purchaseOrders|length == 0 %}
