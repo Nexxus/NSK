@@ -133,7 +133,7 @@ class Product
     /**
      * @var ProductStatus
      *
-     * @ORM\ManyToOne(targetEntity="ProductStatus")
+     * @ORM\ManyToOne(targetEntity="ProductStatus", fetch="EAGER")
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
      */
     private $status;
@@ -156,7 +156,7 @@ class Product
 
     /**
      * @var ArrayCollection|ProductOrderRelation[]
-     * @ORM\OneToMany(targetEntity="ProductOrderRelation", mappedBy="product", cascade={"all"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="ProductOrderRelation", mappedBy="product", fetch="EAGER", cascade={"all"}, orphanRemoval=true)
      * @JMS\Exclude
      */
     private $orderRelations;
