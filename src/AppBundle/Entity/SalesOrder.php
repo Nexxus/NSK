@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek ï¿½ info@copiatek.nl ï¿½ Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Entity;
@@ -35,7 +35,7 @@ class SalesOrder extends AOrder
     /**
      * @var Customer Buyer of this order
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Customer", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Customer")
      * @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
      */
     private $customer;

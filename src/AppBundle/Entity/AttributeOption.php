@@ -72,7 +72,7 @@ class AttributeOption
     /**
      * @var Attribute
      *
-     * @ORM\ManyToOne(targetEntity="Attribute", inversedBy="options", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="Attribute", inversedBy="options")
      * @ORM\JoinColumn(name="attribute_id", referencedColumnName="id", nullable=false)
      */
     private $attribute;

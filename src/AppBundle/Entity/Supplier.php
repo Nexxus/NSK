@@ -42,14 +42,14 @@ class Supplier extends ACompany
 
     /**
      * @var ArrayCollection|Product[] Products that this supplier owns
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Product", mappedBy="owner", fetch="LAZY")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Product", mappedBy="owner")
      * @JMS\Exclude()
      */
     private $products;
 
     /**
      * @var ArrayCollection|PurchaseOrder[] Purchase orders that this supplier supplied
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\PurchaseOrder", mappedBy="supplier", fetch="LAZY")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\PurchaseOrder", mappedBy="supplier")
      * @JMS\Exclude()
      */
     private $orders;

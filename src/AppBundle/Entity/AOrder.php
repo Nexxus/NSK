@@ -80,7 +80,7 @@ abstract class AOrder
     /**
      * @var OrderStatus
      *
-     * @ORM\ManyToOne(targetEntity="OrderStatus", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="OrderStatus")
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
      */
     protected $status;

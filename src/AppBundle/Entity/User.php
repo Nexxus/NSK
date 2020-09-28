@@ -84,7 +84,7 @@ class User extends BaseUser
     /**
      * @var Customer Partner
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Customer", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Customer")
      * @ORM\JoinColumn(name="partner_id", referencedColumnName="id")
      */
     private $partner;    

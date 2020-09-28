@@ -111,7 +111,7 @@ class Product
     /**
      * @var Location
      *
-     * @ORM\ManyToOne(targetEntity="Location", inversedBy="products", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="Location", inversedBy="products")
      * @ORM\JoinColumn(name="location_id", referencedColumnName="id", nullable=false)
      */
     private $location;
@@ -133,14 +133,14 @@ class Product
     /**
      * @var ProductStatus
      *
-     * @ORM\ManyToOne(targetEntity="ProductStatus", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="ProductStatus")
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
      */
     private $status;
 
     /**
      * @var ArrayCollection|ProductAttributeRelation[]
-     * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="product", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="product", cascade={"all"}, orphanRemoval=true)
      */
     private $attributeRelations;
 
@@ -149,14 +149,14 @@ class Product
      * KEEP THIS PROPERTY PRIVATE
      *
      * @var ArrayCollection|ProductAttributeRelation[]
-     * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="valueProduct", fetch="LAZY", cascade={"all"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="valueProduct", cascade={"all"}, orphanRemoval=true)
      * @JMS\Exclude
      */
     private $attributedRelations;
 
     /**
      * @var ArrayCollection|ProductOrderRelation[]
-     * @ORM\OneToMany(targetEntity="ProductOrderRelation", mappedBy="product", fetch="EAGER", cascade={"all"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="ProductOrderRelation", mappedBy="product", cascade={"all"}, orphanRemoval=true)
      * @JMS\Exclude
      */
     private $orderRelations;
@@ -164,7 +164,7 @@ class Product
     /**
      * @var Supplier
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Supplier", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Supplier")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id")
      */
     private $owner;
@@ -172,7 +172,7 @@ class Product
     /**
      * @var ArrayCollection|ProductAttributeFile[]
      *
-     * @ORM\OneToMany(targetEntity="ProductAttributeFile", mappedBy="product", fetch="EAGER")
+     * @ORM\OneToMany(targetEntity="ProductAttributeFile", mappedBy="product")
      */
     private $files;
 
