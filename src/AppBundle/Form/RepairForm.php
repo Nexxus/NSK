@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek ï¿½ info@copiatek.nl ï¿½ Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Form;
@@ -44,7 +44,7 @@ class RepairForm extends AbstractType
                     'Delivery' => Repair::TYPE_DELIVERY,
                     'Shipping' => Repair::TYPE_SHIP
                 ]])
-            ->add('deliveryDate', DateType::class, ['required' => false])
+            ->add('deliveryDate', DateType::class, ['required' => false, 'widget' => 'single_text'])
             ->add('description', TextareaType::class, ['required' => false])
             ->add('damage', TextareaType::class, ['required' => false]);
     }

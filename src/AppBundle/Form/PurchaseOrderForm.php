@@ -56,7 +56,7 @@ class PurchaseOrderForm extends AbstractType
                 'attr'=> ['placeholder' => 'Keep empty for autogeneration', 'class' => 'focus'],
                 'required' => false
             ])
-            ->add('orderDate', DateType::class)           
+            ->add('orderDate', DateType::class, ['widget' => 'single_text'])           
             ->add('remarks', TextareaType::class, ['required' => false, 'attr' => ['rows' => '4']])
             ->add('transport', MoneyType::class, ['required' => false])
             ->add('discount', MoneyType::class, ['required' => false])
@@ -119,6 +119,7 @@ class PurchaseOrderForm extends AbstractType
                     ->add('pickupDate', DateTimeType::class, [
                         'required' => false, 
                         'mapped' => false,
+                        'widget' => 'single_text', 
                         'data' => $po->getPickup()->getRealPickupDate()
                     ]) 
                     ->add('logistics', EntityType::class, [

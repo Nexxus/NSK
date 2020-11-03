@@ -43,7 +43,7 @@ class PickupForm extends AbstractType
             // First the mapped fields
             $builder
                 ->add('supplier', PublicCompanyForm::class, ['data_class' => Supplier::class, 'property_path' => 'order.supplier'])
-                ->add('pickupDate', DateType::class, ['required' => false, 'label' => 'Gewenste ophaaldatum'])
+                ->add('pickupDate', DateType::class, ['required' => false, 'label' => 'Gewenste ophaaldatum', 'widget' => 'single_text'])
                 ->add('dataDestruction', ChoiceType::class, [
                     'expanded' => false,
                     'multiple' => false,
