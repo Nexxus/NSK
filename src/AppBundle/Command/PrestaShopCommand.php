@@ -22,6 +22,7 @@ class PrestaShopCommand extends ContainerAwareCommand
 
     private $baseUrl;
     private $key;
+    private $em;
     private $webService;
     private $mappings;
 
@@ -66,14 +67,7 @@ class PrestaShopCommand extends ContainerAwareCommand
                     'id_category_default' => function (Product $p) { return $p->getType()->getExternalId(); },
                 ],
                 'stock_availables' => [
-                    'id_product' => 'externalId',
-                    'id_product_attribute' => function (Product $p) { return 0; },
-                    'id_shop' => function (Product $p) { return 1; },
-                    'id_shop_group' => function (Product $p) { return 0; },
-                    'depends_on_stock' => function (Product $p) { return 0; },
-                    'out_of_stock' => function (Product $p) { return 2; },
                     'quantity' => function (Product $p) { return $p->getQuantitySaleable(); },
-                    'location' => function (Product $p) { return $p->getLocation() ? $p->getLocation()->getName() : ""; },
                 ]                                                               
             );
     }
@@ -85,7 +79,7 @@ class PrestaShopCommand extends ContainerAwareCommand
         1. update attribute set external_id=null;update attribute_option set external_id=null;update product_type set external_id=null;update product set external_id=null;update product_attribute set external_id=null;
         2. Prestahop cleaner module
         3. Publish this file
-        3. https://nexxus.eco/nsk-test/prestashopcommand
+        4. https://nexxus.eco/nsk-test/prestashopcommand
         */
         
         $isDebug = $this->getContainer()->get('kernel')->isDebug();
@@ -102,19 +96,19 @@ class PrestaShopCommand extends ContainerAwareCommand
         $this->webService = new \PrestaShopWebservice($this->baseUrl, $this->key, $isDebug);
 
         /** @var EntityManager */
-        $em = $this->getContainer()->get('doctrine')->getManager(); 
+        $this->em = $this->getContainer()->get('doctrine')->getManager(); 
 
-        $this->createResources("categories", $em->getRepository('AppBundle:ProductType')->findBy(['externalId' => null]));
-        $this->createResources("product_features", $em->getRepository('AppBundle:Attribute')->findBy(['externalId' => null, 'type' => [0,1]]));
-        $this->createResources("product_feature_values", $em->getRepository('AppBundle:Attribute')->findAttributeOptionsWithoutExternalId());
+        $this->createResources("categories", $this->em->getRepository('AppBundle:ProductType')->findBy(['externalId' => null]));
+        $this->createResources("product_features", $this->em->getRepository('AppBundle:Attribute')->findBy(['externalId' => null, 'type' => [0,1]]));
+        $this->createResources("product_feature_values", $this->em->getRepository('AppBundle:Attribute')->findAttributeOptionsWithoutExternalId());
 
         $productStatusId = $input->getArgument('productStatusIdFilter');
-        $products = $em->getRepository('AppBundle:Product')->findWebshopSelection($productStatusId);
-        $this->createResources("products", $products);
-        //$this->createResources("stock_availables", $products); dit moet met update/edit/put
-        $this->createImages($products);
+        $products = $this->em->getRepository('AppBundle:Product')->findBy(['status' => $productStatusId]);
+        $newProducts = array_filter($products, function (Product $product) { return $product->getExternalId() === null; });
 
-        $em->flush();
+        $this->createResources("products", $newProducts);
+        //$this->createImages($newProducts);
+        $this->updateStockResources($products);
 
         $output->writeln("Done!");
     }
@@ -197,6 +191,55 @@ class PrestaShopCommand extends ContainerAwareCommand
             $newExternalId = (int)$createdXml->{$resourceSingularName}->children()->id;
             
             $object->setExternalId($newExternalId);
+
+            $this->em->flush();
+        }
+    }
+
+    private function updateStockResources(array $productsCollection)
+    {
+        if (!count($productsCollection)) return;
+
+        foreach ($productsCollection as $product)
+        {
+            try
+            {
+                // if you get vague error when getting, debug function executeRequest in PSWebServiceLibrary.php
+                $productXml = $this->webService->get(['resource' => 'products', 'id' => $product->getExternalId()]);
+                $stockId = (int)$productXml->product->children()->associations->stock_availables->stock_available->id;
+                $stockXml = $this->webService->get(['resource' => 'stock_availables', 'id' => $stockId]);
+                $xmlFields = $stockXml->stock_available->children();
+
+                foreach ($this->mappings['stock_availables'] as $xmlFieldName => $objectFieldName)
+                {
+                    if (is_callable($objectFieldName))
+                    {
+                        $value = call_user_func($objectFieldName, $product);
+                    }
+                    else 
+                    {
+                        $getter = 'get' . ucfirst($objectFieldName);
+                        $value = $product->{$getter}();
+                    }
+
+                    if ($xmlFields->{$xmlFieldName}->language)
+                        $xmlFields->{$xmlFieldName}->language = $value;
+                    else 
+                        $xmlFields->{$xmlFieldName} = $value;
+                }
+
+                $this->webService->edit(['resource' => 'stock_availables', 'putXml' => $stockXml->asXML(), 'id' => $stockId]);
+            }
+            catch (\PrestaShopWebserviceException $e)
+            {
+                // If you want to know more about the error, change define('_PS_MODE_DEV_', true); in config/defines.inc.php in the shop. 
+                // And then look in the response in the body.
+                throw $e;
+            }
+            catch (\Exception $e)
+            {
+                throw $e;
+            }
         }
     }
 
@@ -252,6 +295,7 @@ class PrestaShopCommand extends ContainerAwareCommand
         $xml = new \SimpleXMLElement(substr($result, strpos($result, "<?xml")));
         $externalId = (int)$xml->image->id;
         $file->setExternalId($externalId);
+        $this->em->flush();
         return $externalId;
     }
 }

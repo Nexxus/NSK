@@ -175,22 +175,6 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findWebshopSelection($productStatusId) {
-
-        $qb = $this->getEntityManager()->createQueryBuilder()
-            ->where("p.status = :status")->setParameter("status", $productStatusId)
-            ->andWhere("p.externalId IS NULL")
-            ->from("AppBundle:Product", "p")->select("p")->orderBy("p.id", "DESC");
-
-        $products = $qb->getQuery()->getResult();
-
-        $products = array_filter($products, function (Product $product) {
-            return $product->getQuantitySaleable() > 0;
-        });
-
-        return $products;
-    }
-
     public function generateProductAttributeRelations(Product $product)
     {
         if (!$product->getType())
