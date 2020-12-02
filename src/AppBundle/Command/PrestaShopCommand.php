@@ -107,7 +107,7 @@ class PrestaShopCommand extends ContainerAwareCommand
         $newProducts = array_filter($products, function (Product $product) { return $product->getExternalId() === null; });
 
         $this->createResources("products", $newProducts);
-        //$this->createImages($newProducts);
+        $this->createImages($newProducts);
         $this->updateStockResources($products);
 
         $output->writeln("Done!");
