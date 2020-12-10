@@ -277,6 +277,21 @@ class User extends BaseUser
     public function getPartner()
     {
         return $this->partner;
-    }      
+    }    
+    
+    /**
+     * Get full name
+     *
+     * @return string
+     */
+    public function getFullName()
+    {
+        $fullName = trim($this->firstname . ' ' . $this->lastname);
+
+        if (!$fullName)
+            return $this->username;
+        
+        return $fullName;
+    }    
 }
 

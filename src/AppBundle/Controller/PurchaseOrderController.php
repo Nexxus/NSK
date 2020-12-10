@@ -179,12 +179,15 @@ class PurchaseOrderController extends Controller
             }
 
             if ($form->isValid())
-            {
+            {                
+                $statusChanged = $this->isChanged($order, 'status');
+
                 $em->persist($order);
 
                 $pickup = $order->getPickup();
 
                 if ($pickup) {
+                    $statusChanged = $statusChanged ? true : $this->isChanged($pickup, 'pickupDate');
                     $em->persist($pickup);
                     $pickup->setRealPickupDate($form->get("pickupDate")->getData());
                     $pickup->setLogistics($form->get("logistics")->getData());
@@ -206,6 +209,9 @@ class PurchaseOrderController extends Controller
                         $em->flush();
                     }
 
+                    if ($statusChanged)
+                        $this->sendChangedMail($order);
+
                     return $this->redirectToRoute("purchaseorder_edit", array('id' => $order->getId(), 'success' => true));
                 }
             }
@@ -222,6 +228,44 @@ class PurchaseOrderController extends Controller
             ));
 
     }
+
+    private function isChanged($object, $propertyName)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $uow = $em->getUnitOfWork();
+        $uow->computeChangeSets();
+        $changeSet = $uow->getEntityChangeSet($object);
+        return isset($changeSet[$propertyName]);
+    }
+
+    private function sendChangedMail(PurchaseOrder $order)
+    {
+        $body = $order->getStatus()->getMailbody();
+        $to = $order->getSupplier()->getEmail();
+        $to = "jorrit@steetskamp.nl";
+
+        if (!$to || !$body)
+            return;
+
+        $body = str_replace("%supplier.name%", $order->getSupplier()->getName() ?? "leverancier", $body);
+        $body = str_replace("%user.name%", $this->getUser()->getFullname(), $body);
+        $body = str_replace("%order.nr%", $order->getOrderNr(), $body);
+
+        if ($order->getPickup())
+        {
+            $body = str_replace("%pickup.datetime%", $order->getPickup()->getPickupDate()->format("j-n-Y G:i") ?? "(Pickupdatum onbekend)", $body);
+            $body = str_replace("%pickup.date%", $order->getPickup()->getPickupDate()->format("j-n-Y") ?? "(Pickupdatum onbekend)", $body);
+        }
+
+        $message = (new \Swift_Message('Status of datum van uw opdracht is gewijzigd'))
+            ->setFrom('logistiek@copiatek.nl')
+            ->setTo($to)
+            ->setBody($body, 'text/plain');
+
+        /** @var \Swift_Mailer */
+        $mailer = $this->get('mailer');
+        $mailer->send($message);
+    }    
 
     /**
      * @Route("/delete/{id}", name="purchaseorder_delete")
