@@ -25,7 +25,7 @@ namespace AppBundle\Repository;
 use AppBundle\Entity\OrderStatus;
 
 class OrderStatusRepository extends \Doctrine\ORM\EntityRepository
-{
+{       
     /**
      * @param string $name
      * @param bool $isPurchase

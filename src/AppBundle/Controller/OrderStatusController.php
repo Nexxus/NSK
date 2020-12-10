@@ -70,6 +70,7 @@ class OrderStatusController extends Controller
         $form = $this->createFormBuilder($status)
                 ->add('pindex', IntegerType::class, ['required' => false])
                 ->add('name')
+                ->add('mailbody')
                 ->add('color', ColorType::class, ['required' => false])
                 ->add('isSale', CheckboxType::class, ['required' => false])
                 ->add('isPurchase', CheckboxType::class, ['required' => false])

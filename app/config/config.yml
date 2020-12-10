@@ -74,11 +74,14 @@ doctrine:
 
 # Swiftmailer Configuration
 swiftmailer:
-    transport: "%mailer_transport%"
+    transport: smtp
     host:      "%mailer_host%"
     username:  "%mailer_user%"
     password:  "%mailer_password%"
-    spool:     { type: memory }
+    port:      583
+    encryption: ssl
+    auth_mode: login
+#    spool:     { type: memory }
 
 fos_user:
     db_driver: orm

@@ -47,6 +47,37 @@ class OrderStatus extends AStatus
     private $isPurchase;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $mailbody;
+
+    /**
+     * Set mailbody
+     *
+     * @param string $mailbody
+     *
+     * @return OrderStatus
+     */
+    public function setMailbody($mailbody)
+    {
+        $this->mailbody = $mailbody;
+
+        return $this;
+    }
+
+    /**
+     * Get mailbody
+     *
+     * @return string
+     */
+    public function getMailbody()
+    {
+        return trim($this->mailbody);
+    }
+
+    /**
      * @param bool $isSale
      * @return OrderStatus
      */
