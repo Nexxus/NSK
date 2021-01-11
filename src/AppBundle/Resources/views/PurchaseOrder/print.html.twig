@@ -94,7 +94,7 @@
                 <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Supplier{% endtrans %}
             </div>
             <div class="panel-body">
-                <barcode code="{{ order.supplier.name }}" type="C39" />
+                <barcode code="{{ order.supplier.name|slice(0, 50) }}" type="C39" />
             </div>            
             <table class="table">
                 <tr><td width="50%">Name</td><td>{{ order.supplier.name }}</td></tr>
