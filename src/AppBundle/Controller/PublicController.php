@@ -397,7 +397,6 @@ class PublicController extends Controller
             return;       
 
         $body = str_replace("%supplier.name%", $order->getSupplier()->getName() ?? "leverancier", $body);
-        $body = str_replace("%user.name%", $this->getUser()->getFullname(), $body);
         $body = str_replace("%order.nr%", $order->getOrderNr(), $body);
 
         if ($order->getPickup() && $order->getPickup()->getRealPickupDate())
