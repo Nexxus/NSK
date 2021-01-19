@@ -127,6 +127,13 @@ class Attribute
     private $hasQuantity = false;
 
     /**
+     * @var bool If true, the attribute can be published to webshop
+     *
+     * @ORM\Column(type="boolean", nullable=false, options={"default" : true})
+     */
+    private $isPublic = true;    
+
+    /**
      * Get id
      *
      * @return integer
@@ -433,6 +440,26 @@ class Attribute
     {
         return $this->hasQuantity;
     }
+
+    /**
+     * @param bool $isPublic
+     *
+     * @return Attribute
+     */
+    public function setIsPublic($isPublic)
+    {
+        $this->isPublic = $isPublic;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsPublic()
+    {
+        return $this->isPublic;
+    }    
 
     public function __toString()
     {

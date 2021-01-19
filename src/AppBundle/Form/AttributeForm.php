@@ -29,6 +29,7 @@ class AttributeForm extends AbstractType
         $builder
             ->add('attr_code')
             ->add('name')
+            ->add('isPublic')
             ->add('productTypes', EntityType::class, array(
                     'label' => 'Product types having this attribute',
                     'required' => false,

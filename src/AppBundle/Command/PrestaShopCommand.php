@@ -15,6 +15,10 @@ use AppBundle\Entity\Product;
 use AppBundle\Entity\ProductAttributeRelation;
 use AppBundle\Entity\ProductAttributeFile;
 
+/**
+ * This command syncs one direction: From NSK to PrestaShop
+ * Modifications of objects in Prestashop will be undone by NSK
+ */
 class PrestaShopCommand extends ContainerAwareCommand
 {
     // the name of the command (the part after "bin/console")
@@ -98,34 +102,50 @@ class PrestaShopCommand extends ContainerAwareCommand
         /** @var EntityManager */
         $this->em = $this->getContainer()->get('doctrine')->getManager(); 
 
-        $this->createResources("categories", $this->em->getRepository('AppBundle:ProductType')->findBy(['externalId' => null]));
-        $this->createResources("product_features", $this->em->getRepository('AppBundle:Attribute')->findBy(['externalId' => null, 'type' => [0,1]]));
-        $this->createResources("product_feature_values", $this->em->getRepository('AppBundle:Attribute')->findAttributeOptionsWithoutExternalId());
+        $this->createResources("categories", $this->em->getRepository('AppBundle:ProductType')->findAll());
+        $this->createResources("product_features", $this->em->getRepository('AppBundle:Attribute')->findBy(['type' => [0,1], 'isPublic' => true]));
+        $this->createResources("product_feature_values", $this->em->getRepository('AppBundle:Attribute')->findAttributeOptionsForApi());
 
         $productStatusId = $input->getArgument('productStatusIdFilter');
         $products = $this->em->getRepository('AppBundle:Product')->findBy(['status' => $productStatusId]);
-        $newProducts = array_filter($products, function (Product $product) { return $product->getExternalId() === null; });
 
-        $this->createResources("products", $newProducts);
-        $this->createImages($newProducts);
-        $this->updateStockResources($products);
+        $this->createResources("products", $products);
+        $this->createResources("stock_availables", $products, false);
+        $this->createImages($products);
 
         $output->writeln("Done!");
     }
 
-    private function createResources($resourceName, array $collection)
+    /**
+     * Creates or updates resources of all kinds 
+     */ 
+    private function createResources($resourceName, array $collection, $useBlankXmlOnUpdate = true)
     {
         if (!count($collection)) return;
 
-        $resourceSingularName = $resourceName == "categories" ? "category" : substr($resourceName, 0, -1);
+        $resourceSingularName = substr($resourceName, -3) == "ies" ? substr($resourceName, 0, -3)."y" : substr($resourceName, 0, -1);
 
         foreach ($collection as $object)
         {
             try
             {
+                $externalId = (int)$object->getExternalId();
+                
+                if ($resourceName == "stock_availables")
+                {
+                    if (!$externalId) throw new \Exception("When creating stocks, its product object should have external ID");
+                    $productXml = $this->webService->get(['resource' => 'products', 'id' => $externalId]);
+                    $externalId = (int)$productXml->product->children()->associations->stock_availables->stock_available->id;
+                    if (!$externalId) throw new \Exception("When creating stocks, the stock_available object should have external ID");
+                }   
+
                 // if you get vague error when getting, debug function executeRequest in PSWebServiceLibrary.php
-                $blankXml = $this->webService->get(['url' => $this->baseUrl . 'api/' . $resourceName . '?schema=blank']);
-                $xmlFields = $blankXml->{$resourceSingularName}->children();
+                if ($useBlankXmlOnUpdate || !$externalId)
+                    $xml = $this->webService->get(['url' => $this->baseUrl . 'api/' . $resourceName . '?schema=blank']);
+                else
+                    $xml = $this->webService->get(['resource' => $resourceName, 'id' => $externalId]);
+
+                $xmlFields = $xml->{$resourceSingularName}->children();             
 
                 foreach ($this->mappings[$resourceName] as $xmlFieldName => $objectFieldName)
                 {
@@ -148,34 +168,22 @@ class PrestaShopCommand extends ContainerAwareCommand
                 // product associations
                 if ($resourceName == "products")
                 {
-                    /** @var Product */
-                    $product = $object;
-                    $xmlFields->associations->categories->addChild('category')->id = $product->getType()->getExternalId();
-                    
-                    /** @var ProductAttributeRelation $par */
-                    foreach ($product->getAttributeRelations() as $par)
-                    {
-                        switch ($par->getAttribute()->getType())
-                        {
-                            case Attribute::TYPE_SELECT:
-                                if (!$par->getSelectedOption()) continue;
-                                $feature = $xmlFields->associations->product_features->addChild('product_feature');
-                                $feature->id = $par->getAttribute()->getExternalId();
-                                $feature->id_feature_value = $par->getSelectedOption()->getExternalId();
-                                break;
-                            case Attribute::TYPE_TEXT:
-                                if (!$par->getValue()) continue;
-                                $this->createResources("product_feature_values", array($par));
-                                $feature = $xmlFields->associations->product_features->addChild('product_feature');
-                                $feature->id = $par->getAttribute()->getExternalId();
-                                $feature->id_feature_value = $par->getExternalId();
-                                break;                            
-                            default:
-                        }                   
-                    }
+                    $this->createProductAssociations($object, $xmlFields);
                 }
 
-                $createdXml = $this->webService->add(['resource' => $resourceName, 'postXml' => $blankXml->asXML()]);
+                // edit or add on API
+                if ($externalId)
+                {
+                    $xmlFields->id = $externalId;
+                    $this->webService->edit(['resource' => $resourceName, 'putXml' => $xml->asXML(), 'id' => $externalId]);    
+                }
+                else
+                {
+                    $createdXml = $this->webService->add(['resource' => $resourceName, 'postXml' => $xml->asXML()]);           
+                    $externalId = (int)$createdXml->{$resourceSingularName}->children()->id;
+                    $object->setExternalId($externalId);
+                    $this->em->flush();
+                }
             }
             catch (\PrestaShopWebserviceException $e)
             {
@@ -187,59 +195,35 @@ class PrestaShopCommand extends ContainerAwareCommand
             {
                 throw $e;
             }
-            
-            $newExternalId = (int)$createdXml->{$resourceSingularName}->children()->id;
-            
-            $object->setExternalId($newExternalId);
-
-            $this->em->flush();
         }
     }
 
-    private function updateStockResources(array $productsCollection)
+    private function createProductAssociations(Product $product, \SimpleXMLElement $xmlFields)
     {
-        if (!count($productsCollection)) return;
-
-        foreach ($productsCollection as $product)
+        // set category of product
+        $xmlFields->associations->categories->addChild('category')->id = $product->getType()->getExternalId();
+                    
+        // set attributes cq product features of product
+        /** @var ProductAttributeRelation $par */
+        foreach ($product->getAttributeRelations() as $par)
         {
-            try
+            switch ($par->getAttribute()->getType())
             {
-                // if you get vague error when getting, debug function executeRequest in PSWebServiceLibrary.php
-                $productXml = $this->webService->get(['resource' => 'products', 'id' => $product->getExternalId()]);
-                $stockId = (int)$productXml->product->children()->associations->stock_availables->stock_available->id;
-                $stockXml = $this->webService->get(['resource' => 'stock_availables', 'id' => $stockId]);
-                $xmlFields = $stockXml->stock_available->children();
-
-                foreach ($this->mappings['stock_availables'] as $xmlFieldName => $objectFieldName)
-                {
-                    if (is_callable($objectFieldName))
-                    {
-                        $value = call_user_func($objectFieldName, $product);
-                    }
-                    else 
-                    {
-                        $getter = 'get' . ucfirst($objectFieldName);
-                        $value = $product->{$getter}();
-                    }
-
-                    if ($xmlFields->{$xmlFieldName}->language)
-                        $xmlFields->{$xmlFieldName}->language = $value;
-                    else 
-                        $xmlFields->{$xmlFieldName} = $value;
-                }
-
-                $this->webService->edit(['resource' => 'stock_availables', 'putXml' => $stockXml->asXML(), 'id' => $stockId]);
-            }
-            catch (\PrestaShopWebserviceException $e)
-            {
-                // If you want to know more about the error, change define('_PS_MODE_DEV_', true); in config/defines.inc.php in the shop. 
-                // And then look in the response in the body.
-                throw $e;
-            }
-            catch (\Exception $e)
-            {
-                throw $e;
-            }
+                case Attribute::TYPE_SELECT:
+                    if (!$par->getSelectedOption()) continue;
+                    $feature = $xmlFields->associations->product_features->addChild('product_feature');
+                    $feature->id = $par->getAttribute()->getExternalId();
+                    $feature->id_feature_value = $par->getSelectedOption()->getExternalId();
+                    break;
+                case Attribute::TYPE_TEXT:
+                    if (!$par->getValue()) continue;
+                    $this->createResources("product_feature_values", array($par));
+                    $feature = $xmlFields->associations->product_features->addChild('product_feature');
+                    $feature->id = $par->getAttribute()->getExternalId();
+                    $feature->id_feature_value = $par->getExternalId();
+                    break;                            
+                default:
+            }                   
         }
     }
 
@@ -254,7 +238,8 @@ class PrestaShopCommand extends ContainerAwareCommand
                 {
                     foreach ($par->getFiles() as $file)
                     {
-                        $this->uploadImage($file);
+                        if (!$file->getExternalId())
+                            $this->uploadImage($file);
                     }
                 }                    
             }

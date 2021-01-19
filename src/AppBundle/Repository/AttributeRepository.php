@@ -43,17 +43,11 @@ class AttributeRepository extends \Doctrine\ORM\EntityRepository
         return $q->getResult();
     }
 
-    public function findAttributeOptionsWithoutExternalId()
+    public function findAttributeOptionsForApi()
     {
         $q = $this->getEntityManager()
-                ->createQuery("SELECT a FROM AppBundle:AttributeOption a WHERE a.externalId IS NULL");
+                ->createQuery("SELECT ao FROM AppBundle:AttributeOption ao WHERE ao.attribute IN (SELECT a FROM AppBundle:Attribute a WHERE a.externalId IS NOT NULL AND a.isPublic = true)");
 
-        $options = $q->getResult();
-
-        $options = array_filter($options, function (AttributeOption $option) {
-            return $option->getAttribute()->getExternalId() > 0;
-        });
-
-        return $options;
+        return $q->getResult();
     }
 }
