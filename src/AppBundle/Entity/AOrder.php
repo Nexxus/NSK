@@ -107,6 +107,13 @@ abstract class AOrder
     protected $isGift;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    protected $externalId;      
+
+    /**
      * Get id
      *
      * @return integer
@@ -299,6 +306,30 @@ abstract class AOrder
     {
         return $this->status;
     }
+
+    /**
+     * Set external id like from webshop
+     *
+     * @param integer $name
+     *
+     * @return AOrder
+     */
+    public function setExternalId($externalId)
+    {
+        $this->externalId = $externalId;
+
+        return $this;
+    }
+
+    /**
+     * Set external id like from webshop
+     *
+     * @return int
+     */
+    public function getExternalId()
+    {
+        return $this->externalId;
+    }     
 
     /**
      * Total actual price of this order

@@ -6,14 +6,17 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManager;
-use AppBundle\Repository\ProductRepository;
 use AppBundle\Entity\ProductType;
 use AppBundle\Entity\Attribute;
 use AppBundle\Entity\AttributeOption;
 use AppBundle\Entity\Product;
 use AppBundle\Entity\ProductAttributeRelation;
 use AppBundle\Entity\ProductAttributeFile;
+use AppBundle\Entity\Customer;
+use AppBundle\Entity\SalesOrder;
+use AppBundle\Entity\ProductOrderRelation;
 
 /**
  * This command syncs one direction: From NSK to PrestaShop
@@ -26,6 +29,7 @@ class PrestaShopCommand extends ContainerAwareCommand
 
     private $baseUrl;
     private $key;
+    /** @var EntityManager */
     private $em;
     private $webService;
     private $mappings;
@@ -38,6 +42,7 @@ class PrestaShopCommand extends ContainerAwareCommand
             ->addArgument('productStatusIdFilter', InputArgument::REQUIRED, 'Products with this status id are send to PrestaShop');
 
         $this->mappings = array(
+                // XML TARGET => OBJECT SOURCE
                 'categories' => [
                     'name' => 'name',
                     'description' => 'comment',
@@ -51,7 +56,13 @@ class PrestaShopCommand extends ContainerAwareCommand
                 ],
                 'product_feature_values' => [
                     'value' => function ($o) { 
-                        $value = is_a($o, AttributeOption::class) ? $o->getName() : $o->getValue(); 
+                        if (is_a($o, AttributeOption::class))
+                            $value = $o->getName();
+                            // or $o is ProductAttributeRelation
+                        elseif ($o->getAttribute()->getType() == Attribute::TYPE_PRODUCT)
+                            $value = $o->valueProduct()->getName(); 
+                        else
+                            $value = $o->getValue(); 
                         return str_replace(['=', '>', '<'], '_', $value);
                     },
                     'custom' => function ($o) { return is_a($o, AttributeOption::class) ? 0 : 1; },
@@ -66,13 +77,48 @@ class PrestaShopCommand extends ContainerAwareCommand
                     'type' => function (Product $p) { return 'simple'; },
                     'state' => function (Product $p) { return 1; },
                     'active' => function (Product $p) { return 1; },
+                    'minimal_quantity' => function (Product $p) { return 1; },
+                    'available_for_order' => function (Product $p) { return 1; },
                     'id_tax_rules_group' => function (Product $p) { return 1; },
                     'id_shop_default' => function (Product $p) { return 1; },
                     'id_category_default' => function (Product $p) { return $p->getType()->getExternalId(); },
                 ],
                 'stock_availables' => [
                     'quantity' => function (Product $p) { return $p->getQuantitySaleable(); },
-                ]                                                               
+                    // other properties are loaded from API
+                ],
+
+                // OBJECT TARGET => XML SOURCE
+                'customers' => [
+                    'externalId' => 'id',
+                    'name' => 'A0_company',
+                    'representative' => function (\SimpleXMLElement $xml) { return trim($xml->firstname . ' ' . $xml->lastname); },
+                    'street' => function (\SimpleXMLElement $xml) { return trim($xml->A0_address1 . ' ' . $xml->A0_address2); },
+                    'zip' => 'A0_postcode',
+                    'city' => 'A0_city',
+                    'street2' => function (\SimpleXMLElement $xml) { return trim($xml->A1_address1 . ' ' . $xml->A1_address2); },
+                    'zip2' => 'A1_postcode',
+                    'city2' => 'A1_city',
+                    'phone' => 'phone',
+                    'phone2' => 'phone_mobile',
+                    'email' => 'email'
+                ],
+                'orders' => [
+                    'externalId' => 'id',
+                    'orderNr' => function (\SimpleXMLElement $xml) { return ('PS-'.$xml->reference); },
+                    'orderDate' => function (\SimpleXMLElement $xml) { return new \DateTime($xml->date_add); },
+                    'discount' => 'total_discounts',
+                    'transport' => 'total_shipping',
+                    'customer' => function (\SimpleXMLElement $xml) { return $this->em->getRepository(Customer::class)->findOneBy(['externalId' => $xml->id_customer]); },
+                    'remarks' => function (\SimpleXMLElement $xml) { return "Betalingswijze: ". $xml->payment; },
+                    'isGift' => function (\SimpleXMLElement $xml) { return $xml->gift === "1" ? true : false; },
+                    'status' => function (\SimpleXMLElement $xml) { return $this->em->getRepository('AppBundle:OrderStatus')->findOrCreate("Bestelling ingelezen uit webshop", false, true); },
+                ],
+                'order_details' => [
+                    'externalId' => 'id',
+                    'quantity' => 'product_quantity',
+                    'price' => 'unit_price_tax_incl'
+                ]                
             );
     }
 
@@ -80,7 +126,7 @@ class PrestaShopCommand extends ContainerAwareCommand
     {
         /*
         To clear database:
-        1. update attribute set external_id=null;update attribute_option set external_id=null;update product_type set external_id=null;update product set external_id=null;update product_attribute set external_id=null;
+        1. update acompany set external_id=null;update aorder set external_id=null;update product_order set external_id=null;update product_attribute set external_id=null;update attribute set external_id=null;update attribute_option set external_id=null;update product_type set external_id=null;update product set external_id=null;update product_attribute set external_id=null;
         2. Prestahop cleaner module
         3. Publish this file
         4. https://nexxus.eco/nsk-test/prestashopcommand
@@ -98,23 +144,34 @@ class PrestaShopCommand extends ContainerAwareCommand
         }
 
         $this->webService = new \PrestaShopWebservice($this->baseUrl, $this->key, $isDebug);
-
-        /** @var EntityManager */
         $this->em = $this->getContainer()->get('doctrine')->getManager(); 
 
-        $this->createResources("categories", $this->em->getRepository('AppBundle:ProductType')->findAll());
-        $this->createResources("product_features", $this->em->getRepository('AppBundle:Attribute')->findBy(['type' => [0,1], 'isPublic' => true]));
-        $this->createResources("product_feature_values", $this->em->getRepository('AppBundle:Attribute')->findAttributeOptionsForApi());
+        $xml = $this->webService->get(['resource' => 'addresses', 'id' => 7]);
+        $xmlFields = $xml->address->children();
+
+        $this->createResources("categories", $this->em->getRepository(ProductType::class)->findAll());
+        $this->createResources("product_features", $this->em->getRepository(Attribute::class)->findBy(['type' => [0,1], 'isPublic' => true]));
+        $this->createResources("product_feature_values", $this->em->getRepository(Attribute::class)->findAttributeOptionsForApi());
 
         $productStatusId = $input->getArgument('productStatusIdFilter');
-        $products = $this->em->getRepository('AppBundle:Product')->findBy(['status' => $productStatusId]);
+        $products = $this->em->getRepository(Product::class)->findBy(['status' => $productStatusId]);
 
         $this->createResources("products", $products);
         $this->createResources("stock_availables", $products, false);
         $this->createImages($products);
 
+        $this->cleanResources("categories", ProductType::class);
+        $this->cleanResources("product_features", Attribute::class);
+        $this->cleanResources("products", Product::class);
+
+        $this->loadResources("customers", Customer::class);
+        $this->loadResources("orders", SalesOrder::class);
+        $this->loadResources("order_details", ProductOrderRelation::class);
+
         $output->writeln("Done!");
     }
+
+    #region CREATE
 
     /**
      * Creates or updates resources of all kinds 
@@ -123,7 +180,7 @@ class PrestaShopCommand extends ContainerAwareCommand
     {
         if (!count($collection)) return;
 
-        $resourceSingularName = substr($resourceName, -3) == "ies" ? substr($resourceName, 0, -3)."y" : substr($resourceName, 0, -1);
+        $resourceSingularName = $this->getSingular($resourceName);
 
         foreach ($collection as $object)
         {
@@ -189,7 +246,7 @@ class PrestaShopCommand extends ContainerAwareCommand
             {
                 // If you want to know more about the error, change define('_PS_MODE_DEV_', true); in config/defines.inc.php in the shop. 
                 // And then look in the response in the body.
-                throw $e;
+                $this->logError("createResources", $e);
             }
             catch (\Exception $e)
             {
@@ -207,6 +264,9 @@ class PrestaShopCommand extends ContainerAwareCommand
         /** @var ProductAttributeRelation $par */
         foreach ($product->getAttributeRelations() as $par)
         {
+            if ($par->getExternalId() == 201)
+                $debug=true;
+            
             switch ($par->getAttribute()->getType())
             {
                 case Attribute::TYPE_SELECT:
@@ -217,11 +277,18 @@ class PrestaShopCommand extends ContainerAwareCommand
                     break;
                 case Attribute::TYPE_TEXT:
                     if (!$par->getValue()) continue;
-                    $this->createResources("product_feature_values", array($par));
+                    $this->createResources("product_feature_values", array($par), false);
                     $feature = $xmlFields->associations->product_features->addChild('product_feature');
                     $feature->id = $par->getAttribute()->getExternalId();
                     $feature->id_feature_value = $par->getExternalId();
-                    break;                            
+                    break;   
+                case Attribute::TYPE_PRODUCT:
+                    if (!$par->getValueProduct()) continue;
+                    $this->createResources("product_feature_values", array($par), false);
+                    $feature = $xmlFields->associations->product_features->addChild('product_feature');
+                    $feature->id = $par->getAttribute()->getExternalId();
+                    $feature->id_feature_value = $par->getExternalId();
+                    break;                                              
                 default:
             }                   
         }
@@ -282,5 +349,144 @@ class PrestaShopCommand extends ContainerAwareCommand
         $file->setExternalId($externalId);
         $this->em->flush();
         return $externalId;
+    }
+
+    #endregion
+
+    #region CLEAN AND LOAD
+
+    private function cleanResources($resourceName, $entityName)
+    {
+        try 
+        {
+            $xml = $this->webService->get(['resource' => $resourceName]);
+            $resources = $xml->{$resourceName}->children();
+
+            foreach ($resources as $resource) 
+            {
+                $attributes = $resource->attributes();
+                $externalId = (int)$attributes['id'];
+
+                if ($resourceName == "product_features")
+                    $object = $this->em->getRepository($entityName)->findOneBy(['externalId' => $externalId, 'isPublic' => true]);
+                else
+                    $object = $this->em->getRepository($entityName)->findOneBy(['externalId' => $externalId]);
+
+                if (!$object)
+                {
+                    $this->webService->delete(['resource' => $resourceName, 'id' => $externalId]);
+                }
+            }
+        } 
+        catch (\PrestaShopWebserviceException $ex) 
+        {
+            $this->logError("cleanResources", $ex);
+        }
+    }
+
+    private function loadResources($resourceName, $entityName)
+    {
+        $resourceSingularName = $this->getSingular($resourceName);
+
+        try 
+        {
+            $xmlList = $this->webService->get(['resource' => $resourceName]);
+            $resources = $xmlList->{$resourceName}->children();
+            $externalId = null;
+
+            foreach ($resources as $resource) 
+            {
+                $attributes = $resource->attributes();
+                $externalId = (int)$attributes['id'];
+                $updated = false;
+
+                $xml = $this->webService->get(['resource' => $resourceName, 'id' => $externalId]);
+                $xmlFields = $xml->{$resourceSingularName}->children();
+
+                if ($resourceName == "customers")
+                {
+                    $this->loadAddresses($xmlFields);
+                }
+
+                $object = $this->em->getRepository($entityName)->findOneBy(['externalId' => $externalId]);
+
+                if (!$object)
+                {
+                    if ($resourceName == "order_details")
+                    {
+                        $o = $this->em->getRepository(SalesOrder::class)->findOneBy(['externalId' => $xmlFields->id_order]);
+                        $p = $this->em->getRepository(Product::class)->findOneBy(['externalId' => $xmlFields->product_id]);
+                        if (!$p || !$o) continue;
+                        $object = new ProductOrderRelation($p, $o);
+                    }
+                    else
+                        $object = new $entityName();
+                    
+                    $this->em->persist($object);
+                }
+
+                foreach ($this->mappings[$resourceName] as $objectFieldName => $xmlFieldName)
+                {
+                    $getter = 'get' . ucfirst($objectFieldName);
+                    $oldValue = $object->{$getter}();
+                    
+                    if (is_callable($xmlFieldName))
+                    {
+                        $value = call_user_func($xmlFieldName, $xmlFields);
+                    }
+                    else 
+                    {
+                        if ($xmlFields->{$xmlFieldName}->language)
+                            $value = (string)$xmlFields->{$xmlFieldName}->language;
+                        else 
+                            $value = (string)$xmlFields->{$xmlFieldName};
+                    }
+
+                    if ($value != $oldValue)
+                    {
+                        $setter = 'set' . ucfirst($objectFieldName);
+                        $object->{$setter}($value);
+                        $updated = true;
+                    }
+                }
+
+                if ($updated)
+                    $this->em->flush();
+            }
+        } 
+        catch (\PrestaShopWebserviceException $ex) 
+        {
+            $this->logError("loadResources", $ex);
+        }
+    }
+
+    private function loadAddresses(\SimpleXMLElement $customerFields)
+    {
+        $xmlList = $this->webService->get(['resource' => 'addresses', 'display' => 'full', 'filter[id_customer]' => '['.$customerFields->id.']']);
+        $addresses = $xmlList->addresses->children();
+
+        for ($i = 0; $i <= 1; $i++) 
+        {
+            if (!is_a($addresses[$i], \SimpleXMLElement::class)) break;
+            
+            foreach ($addresses[$i] as $key => $val)
+            {
+                $customerFields->{'A' . $i . '_' . $key} = (string)$val[0];
+            }
+        }
+    }
+
+    #endregion
+
+    private function getSingular($word)
+    {
+        return substr($word, -3) == "ies" ? substr($word, 0, -3)."y" : substr($word, 0, -1);
+    }
+
+    private function logError($function, \Exception $ex)
+    {
+        /** @var $logger LoggerInterface */
+        $logger = $this->getContainer()->get('logger');
+        $logger->error("PrestaShopCommand error in function '" . $function . "' with exception: ". $ex->__toString());
     }
 }

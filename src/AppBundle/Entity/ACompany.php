@@ -46,6 +46,13 @@ abstract class ACompany
     protected $id;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    protected $externalId;   
+
+    /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
@@ -188,6 +195,30 @@ abstract class ACompany
     {
         return $this->id;
     }
+
+    /**
+     * Set external id like from webshop
+     *
+     * @param integer $name
+     *
+     * @return ACompany
+     */
+    public function setExternalId($externalId)
+    {
+        $this->externalId = $externalId;
+
+        return $this;
+    }
+
+    /**
+     * Set external id like from webshop
+     *
+     * @return int
+     */
+    public function getExternalId()
+    {
+        return $this->externalId;
+    }    
 
     /**
      * Set name
