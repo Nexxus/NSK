@@ -221,6 +221,8 @@ class PublicController extends Controller
                 $em->flush();
             }
 
+            $this->sendStatusMail($order);
+
             $message = $confirmPage ? $confirmPage : "Pickup added successfully";
 
             return new Response($message, Response::HTTP_OK); 
@@ -384,4 +386,37 @@ class PublicController extends Controller
 
         return $data->success;
     }
+
+    private function sendStatusMail(PurchaseOrder $order)
+    {
+        $body = $order->getStatus()->getMailbody();
+        $to = $order->getSupplier()->getEmail();
+        //$to = "ronald.debakker@copiatek.nl";
+
+        if (!$to || !$body)
+            return;       
+
+        $body = str_replace("%supplier.name%", $order->getSupplier()->getName() ?? "leverancier", $body);
+        $body = str_replace("%order.nr%", $order->getOrderNr(), $body);
+
+        if ($order->getPickup() && $order->getPickup()->getRealPickupDate())
+        {
+            $body = str_replace("%pickup.datetime%", $order->getPickup()->getRealPickupDate()->format("j-n-Y G:i"), $body);
+            $body = str_replace("%pickup.date%", $order->getPickup()->getRealPickupDate()->format("j-n-Y"), $body);
+        }        
+        elseif ($order->getPickup() && $order->getPickup()->getPickupDate())
+        {
+            $body = str_replace("%pickup.datetime%", $order->getPickup()->getPickupDate()->format("j-n-Y G:i"), $body);
+            $body = str_replace("%pickup.date%", $order->getPickup()->getPickupDate()->format("j-n-Y"), $body);
+        }
+
+        $message = (new \Swift_Message('Uw opdracht is ontvangen en zal worden ingepland'))
+            ->setFrom('logistiek@copiatek.nl')
+            ->setTo($to)
+            ->setBody($body, 'text/plain');
+
+        /** @var \Swift_Mailer */
+        $mailer = $this->get('mailer');
+        $mailer->send($message);
+    } 
 }

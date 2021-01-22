@@ -81,6 +81,13 @@ class ProductOrderRelation
     private $price;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    protected $externalId;       
+
+    /**
      * Services that are applied to this Product
      * SalesServices in case of SalesOrder
      * TaskServices in case of PurchaseOrder
@@ -114,6 +121,30 @@ class ProductOrderRelation
     {
         return $this->order;
     }
+
+    /**
+     * Set external id like from webshop
+     *
+     * @param integer $name
+     *
+     * @return ProductOrderRelation
+     */
+    public function setExternalId($externalId)
+    {
+        $this->externalId = $externalId;
+
+        return $this;
+    }
+
+    /**
+     * Set external id like from webshop
+     *
+     * @return int
+     */
+    public function getExternalId()
+    {
+        return $this->externalId;
+    }    
 
     /**
      * Set actual quantity of this product in this order
