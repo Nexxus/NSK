@@ -91,8 +91,20 @@ class PrestaShopCommand extends ContainerAwareCommand
                 // OBJECT TARGET => XML SOURCE
                 'customers' => [
                     'externalId' => 'id',
-                    'name' => 'A0_company',
-                    'representative' => function (\SimpleXMLElement $xml) { return trim($xml->firstname . ' ' . $xml->lastname); },
+                    'name' => function (\SimpleXMLElement $xml) { 
+                        if ($xml->A0_company)
+                            return $xml->A0_company;
+                        else if ($xml->A1_company)
+                            return $xml->A1_company;                          
+                        else
+                            return trim($xml->firstname . ' ' . $xml->lastname); 
+                    },
+                    'representative' => function (\SimpleXMLElement $xml) { 
+                        if ($xml->A0_company || $xml->A1_company)
+                            return trim($xml->firstname . ' ' . $xml->lastname);                        
+                        else
+                            return ""; 
+                    },
                     'street' => function (\SimpleXMLElement $xml) { return trim($xml->A0_address1 . ' ' . $xml->A0_address2); },
                     'zip' => 'A0_postcode',
                     'city' => 'A0_city',
@@ -126,7 +138,7 @@ class PrestaShopCommand extends ContainerAwareCommand
     {
         /*
         To clear database:
-        1. update acompany set external_id=null;update aorder set external_id=null;update product_order set external_id=null;update product_attribute set external_id=null;update attribute set external_id=null;update attribute_option set external_id=null;update product_type set external_id=null;update product set external_id=null;update product_attribute set external_id=null;
+        1. update acompany set external_id=null;update aorder set external_id=null;update product_order set external_id=null;update attribute set external_id=null;update attribute_option set external_id=null;update product_type set external_id=null;update product set external_id=null;update product_attribute set external_id=null;
         2. Prestahop cleaner module
         3. Publish this file
         4. https://nexxus.eco/nsk-test/prestashopcommand
@@ -145,9 +157,6 @@ class PrestaShopCommand extends ContainerAwareCommand
 
         $this->webService = new \PrestaShopWebservice($this->baseUrl, $this->key, $isDebug);
         $this->em = $this->getContainer()->get('doctrine')->getManager(); 
-
-        $xml = $this->webService->get(['resource' => 'addresses', 'id' => 7]);
-        $xmlFields = $xml->address->children();
 
         $this->createResources("categories", $this->em->getRepository(ProductType::class)->findAll());
         $this->createResources("product_features", $this->em->getRepository(Attribute::class)->findBy(['type' => [0,1], 'isPublic' => true]));
