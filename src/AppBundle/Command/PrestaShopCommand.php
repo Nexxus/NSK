@@ -103,7 +103,7 @@ class PrestaShopCommand extends ContainerAwareCommand
                     },
                     'representative' => function (\SimpleXMLElement $xml) { 
                         if ((string)$xml->A0_company || (string)$xml->A1_company)
-                            return trim((string)$xml->firstname . ' ' . (string)$xml->lastname);                        
+                            return trim($xml->firstname . ' ' . $xml->lastname);                        
                         else
                             return ""; 
                     },
@@ -163,11 +163,7 @@ class PrestaShopCommand extends ContainerAwareCommand
         $this->em = $this->getContainer()->get('doctrine')->getManager(); 
         $productStatusId = $input->getArgument('productStatusIdFilter');
 
-        $this->loadResources("customers", Customer::class);
-        //$x1 = $this->webService->get(['resource' => 'products', 'id' => 1]);
-        //$x2 = $this->webService->get(['resource' => 'products', 'id' => 2]);
-
-        $this->createResources("categories", $this->em->getRepository(ProductType::class)->findAll());
+        $this->createResources("categories", $this->em->getRepository(ProductType::class)->findAll(), false);
         $this->createResources("product_features", $this->em->getRepository(Attribute::class)->findBy(['type' => [0,1], 'isPublic' => true]));
         $this->createResources("product_feature_values", $this->em->getRepository(Attribute::class)->findAttributeOptionsForApi());
 
@@ -218,7 +214,18 @@ class PrestaShopCommand extends ContainerAwareCommand
                 if ($useBlankXmlOnUpdate || !$externalId)
                     $xml = $this->webService->get(['url' => $this->baseUrl . 'api/' . $resourceName . '?schema=blank']);
                 else
-                    $xml = $this->webService->get(['resource' => $resourceName, 'id' => $externalId]);
+                {
+                    try 
+                    {
+                        $xml = $this->webService->get(['resource' => $resourceName, 'id' => $externalId]);
+                    }
+                    catch (\PrestaShopWebserviceException $e)
+                    {
+                        // 404 error, so PrestaShop is cleaned!
+                        $externalId = null;
+                        $xml = $this->webService->get(['url' => $this->baseUrl . 'api/' . $resourceName . '?schema=blank']);
+                    }
+                }
 
                 $xmlFields = $xml->{$resourceSingularName}->children();             
 
