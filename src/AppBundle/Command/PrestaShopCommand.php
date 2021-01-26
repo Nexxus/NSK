@@ -94,16 +94,16 @@ class PrestaShopCommand extends ContainerAwareCommand
                 'customers' => [
                     'externalId' => 'id',
                     'name' => function (\SimpleXMLElement $xml) { 
-                        if ($xml->A0_company)
-                            return $xml->A0_company;
-                        else if ($xml->A1_company)
-                            return $xml->A1_company;                          
+                        if ((string)$xml->A0_company)
+                            return (string)$xml->A0_company;
+                        else if ((string)$xml->A1_company)
+                            return (string)$xml->A1_company;                          
                         else
                             return trim($xml->firstname . ' ' . $xml->lastname); 
                     },
                     'representative' => function (\SimpleXMLElement $xml) { 
-                        if ($xml->A0_company || $xml->A1_company)
-                            return trim($xml->firstname . ' ' . $xml->lastname);                        
+                        if ((string)$xml->A0_company || (string)$xml->A1_company)
+                            return trim((string)$xml->firstname . ' ' . (string)$xml->lastname);                        
                         else
                             return ""; 
                     },
@@ -148,7 +148,7 @@ class PrestaShopCommand extends ContainerAwareCommand
         
         //$isDebug = $this->getContainer()->get('kernel')->isDebug();
         $isDebug = gethostname() === "YOGA";
-        //$isDebug = false;
+        $isDebug = false;
 
         if ($isDebug) {
             $this->key = "2UA45ZCDGECH3XPTWEHSBS14TM2I5QEC";
@@ -163,6 +163,7 @@ class PrestaShopCommand extends ContainerAwareCommand
         $this->em = $this->getContainer()->get('doctrine')->getManager(); 
         $productStatusId = $input->getArgument('productStatusIdFilter');
 
+        $this->loadResources("customers", Customer::class);
         //$x1 = $this->webService->get(['resource' => 'products', 'id' => 1]);
         //$x2 = $this->webService->get(['resource' => 'products', 'id' => 2]);
 
@@ -173,7 +174,6 @@ class PrestaShopCommand extends ContainerAwareCommand
         $products = $this->em->getRepository(Product::class)->findBy(['status' => $productStatusId]);
 
         $this->createResources("products", $products);
-        $this->createResources("stock_availables", $products, false);
         $this->createImages($products);
 
         $this->cleanResources("categories", ProductType::class);
@@ -183,6 +183,8 @@ class PrestaShopCommand extends ContainerAwareCommand
         $this->loadResources("customers", Customer::class);
         $this->loadResources("orders", SalesOrder::class);
         $this->loadResources("order_details", ProductOrderRelation::class);
+
+        $this->createResources("stock_availables", $products, false);
 
         $output->writeln("Done!");
     }
