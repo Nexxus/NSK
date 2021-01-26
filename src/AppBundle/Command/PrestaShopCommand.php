@@ -49,7 +49,7 @@ class PrestaShopCommand extends ContainerAwareCommand
                     'position' => 'pindex',
                     'id_parent' => function () { return 2; }, // 1=root, 2=Home
                     'active' => function (ProductType $productType) { return 1; },
-                    'link_rewrite' => function (ProductType $productType) { return urlencode(str_replace([' ','/'], '_', strtolower($productType->getName()))); },
+                    'link_rewrite' => function (ProductType $productType) { return rawurlencode(str_replace([' ','/'], '_', strtolower($productType->getName()))); },
                 ],
                 'product_features' => [
                     'name' => 'name'
@@ -72,11 +72,13 @@ class PrestaShopCommand extends ContainerAwareCommand
                     'name' => 'name',
                     'description_short' => 'name',
                     'description' => 'description',
+                    'link_rewrite' => function (Product $p) { return rawurlencode(str_replace([' ','/'], '_', strtolower($p->getName()))); },
                     'price' => function (Product $p) { return round(($p->getPrice() / 1.21), 6); },
                     'reference' => function (Product $p) { return 'NSK-' . $p->getSku(); },
                     'type' => function (Product $p) { return 'simple'; },
                     'state' => function (Product $p) { return 1; },
                     'active' => function (Product $p) { return 1; },
+                    'show_price' => function (Product $p) { return 1; },
                     'minimal_quantity' => function (Product $p) { return 1; },
                     'available_for_order' => function (Product $p) { return 1; },
                     'id_tax_rules_group' => function (Product $p) { return 1; },
@@ -91,8 +93,20 @@ class PrestaShopCommand extends ContainerAwareCommand
                 // OBJECT TARGET => XML SOURCE
                 'customers' => [
                     'externalId' => 'id',
-                    'name' => 'A0_company',
-                    'representative' => function (\SimpleXMLElement $xml) { return trim($xml->firstname . ' ' . $xml->lastname); },
+                    'name' => function (\SimpleXMLElement $xml) { 
+                        if ((string)$xml->A0_company)
+                            return (string)$xml->A0_company;
+                        else if ((string)$xml->A1_company)
+                            return (string)$xml->A1_company;                          
+                        else
+                            return trim($xml->firstname . ' ' . $xml->lastname); 
+                    },
+                    'representative' => function (\SimpleXMLElement $xml) { 
+                        if ((string)$xml->A0_company || (string)$xml->A1_company)
+                            return trim((string)$xml->firstname . ' ' . (string)$xml->lastname);                        
+                        else
+                            return ""; 
+                    },
                     'street' => function (\SimpleXMLElement $xml) { return trim($xml->A0_address1 . ' ' . $xml->A0_address2); },
                     'zip' => 'A0_postcode',
                     'city' => 'A0_city',
@@ -126,13 +140,15 @@ class PrestaShopCommand extends ContainerAwareCommand
     {
         /*
         To clear database:
-        1. update acompany set external_id=null;update aorder set external_id=null;update product_order set external_id=null;update product_attribute set external_id=null;update attribute set external_id=null;update attribute_option set external_id=null;update product_type set external_id=null;update product set external_id=null;update product_attribute set external_id=null;
+        1. update update nexxus.afile set external_id=null;acompany set external_id=null;update aorder set external_id=null;update product_order set external_id=null;update attribute set external_id=null;update attribute_option set external_id=null;update product_type set external_id=null;update product set external_id=null;update product_attribute set external_id=null;
         2. Prestahop cleaner module
         3. Publish this file
         4. https://nexxus.eco/nsk-test/prestashopcommand
         */
         
-        $isDebug = $this->getContainer()->get('kernel')->isDebug();
+        //$isDebug = $this->getContainer()->get('kernel')->isDebug();
+        $isDebug = gethostname() === "YOGA";
+        $isDebug = false;
 
         if ($isDebug) {
             $this->key = "2UA45ZCDGECH3XPTWEHSBS14TM2I5QEC";
@@ -145,28 +161,30 @@ class PrestaShopCommand extends ContainerAwareCommand
 
         $this->webService = new \PrestaShopWebservice($this->baseUrl, $this->key, $isDebug);
         $this->em = $this->getContainer()->get('doctrine')->getManager(); 
+        $productStatusId = $input->getArgument('productStatusIdFilter');
 
-        $xml = $this->webService->get(['resource' => 'addresses', 'id' => 7]);
-        $xmlFields = $xml->address->children();
+        $this->loadResources("customers", Customer::class);
+        //$x1 = $this->webService->get(['resource' => 'products', 'id' => 1]);
+        //$x2 = $this->webService->get(['resource' => 'products', 'id' => 2]);
 
         $this->createResources("categories", $this->em->getRepository(ProductType::class)->findAll());
         $this->createResources("product_features", $this->em->getRepository(Attribute::class)->findBy(['type' => [0,1], 'isPublic' => true]));
         $this->createResources("product_feature_values", $this->em->getRepository(Attribute::class)->findAttributeOptionsForApi());
 
-        $productStatusId = $input->getArgument('productStatusIdFilter');
         $products = $this->em->getRepository(Product::class)->findBy(['status' => $productStatusId]);
 
         $this->createResources("products", $products);
-        $this->createResources("stock_availables", $products, false);
         $this->createImages($products);
 
         $this->cleanResources("categories", ProductType::class);
-        $this->cleanResources("product_features", Attribute::class);
-        $this->cleanResources("products", Product::class);
+        $this->cleanResources("product_features", Attribute::class, ['isPublic' => true]);
+        $this->cleanResources("products", Product::class, ['status' => $productStatusId]);
 
         $this->loadResources("customers", Customer::class);
         $this->loadResources("orders", SalesOrder::class);
         $this->loadResources("order_details", ProductOrderRelation::class);
+
+        $this->createResources("stock_availables", $products, false);
 
         $output->writeln("Done!");
     }
@@ -270,20 +288,20 @@ class PrestaShopCommand extends ContainerAwareCommand
             switch ($par->getAttribute()->getType())
             {
                 case Attribute::TYPE_SELECT:
-                    if (!$par->getSelectedOption()) continue;
+                    if (!$par->getSelectedOption()) break;
                     $feature = $xmlFields->associations->product_features->addChild('product_feature');
                     $feature->id = $par->getAttribute()->getExternalId();
                     $feature->id_feature_value = $par->getSelectedOption()->getExternalId();
                     break;
                 case Attribute::TYPE_TEXT:
-                    if (!$par->getValue()) continue;
+                    if (!$par->getValue()) break;
                     $this->createResources("product_feature_values", array($par), false);
                     $feature = $xmlFields->associations->product_features->addChild('product_feature');
                     $feature->id = $par->getAttribute()->getExternalId();
                     $feature->id_feature_value = $par->getExternalId();
                     break;   
                 case Attribute::TYPE_PRODUCT:
-                    if (!$par->getValueProduct()) continue;
+                    if (!$par->getValueProduct()) break;
                     $this->createResources("product_feature_values", array($par), false);
                     $feature = $xmlFields->associations->product_features->addChild('product_feature');
                     $feature->id = $par->getAttribute()->getExternalId();
@@ -355,7 +373,7 @@ class PrestaShopCommand extends ContainerAwareCommand
 
     #region CLEAN AND LOAD
 
-    private function cleanResources($resourceName, $entityName)
+    private function cleanResources($resourceName, $entityName, array $entityCriteria = [])
     {
         try 
         {
@@ -366,11 +384,9 @@ class PrestaShopCommand extends ContainerAwareCommand
             {
                 $attributes = $resource->attributes();
                 $externalId = (int)$attributes['id'];
+                $entityCriteria['externalId'] = $externalId;
 
-                if ($resourceName == "product_features")
-                    $object = $this->em->getRepository($entityName)->findOneBy(['externalId' => $externalId, 'isPublic' => true]);
-                else
-                    $object = $this->em->getRepository($entityName)->findOneBy(['externalId' => $externalId]);
+                $object = $this->em->getRepository($entityName)->findOneBy($entityCriteria);
 
                 if (!$object)
                 {
