@@ -71,6 +71,13 @@ class SalesOrderForm extends AbstractType
 
         $builder->add('remarks', TextareaType::class, ['required' => false, 'attr' => ['rows' => '4']])
             ->add('orderDate', DateType::class, ['widget' => 'single_text'])
+            ->add('deliveryDate', DateType::class, ['required' => false, 'widget' => 'single_text'])
+            ->add('deliveryType', ChoiceType::class, ['required' => false,
+                'choices' => [
+                    'Pickup' => SalesOrder::DELIVERYTYPE_PICKUP,
+                    'Delivery' => SalesOrder::DELIVERYTYPE_DELIVERY,
+                    'Shipping' => SalesOrder::DELIVERYTYPE_SHIP
+                ]])
             ->add('transport', MoneyType::class, ['required' => false])
             ->add('discount', MoneyType::class, ['required' => false])
             ->add('isGift', CheckboxType::class, ['required' => false])

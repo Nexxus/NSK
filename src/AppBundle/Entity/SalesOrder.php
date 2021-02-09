@@ -32,6 +32,24 @@ use AppBundle\Entity\Customer;
  */
 class SalesOrder extends AOrder
 {
+    const DELIVERYTYPE_PICKUP = 0;
+    const DELIVERYTYPE_DELIVERY = 1;
+    const DELIVERYTYPE_SHIP = 2;
+    
+    /**
+     * @var int Use constants
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $deliveryType;
+    
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $deliveryDate;
+
     /**
      * @var Customer Buyer of this order
      *
@@ -50,6 +68,28 @@ class SalesOrder extends AOrder
      * @ORM\OneToOne(targetEntity="Repair", mappedBy="order", cascade={"all"}, orphanRemoval=true)
      */
     private $repair;
+
+    public function getDeliveryDate()
+    {
+        return $this->deliveryDate;
+    }
+
+    public function setDeliveryDate($deliveryDate)
+    {
+        $this->deliveryDate = $deliveryDate;
+        return $this;
+    }
+
+    public function getDeliveryType()
+    {
+        return $this->deliveryType;
+    }
+
+    public function setDeliveryType($deliveryType)
+    {
+        $this->deliveryType = $deliveryType;
+        return $this;
+    }
 
     /**
      * @return SalesOrder

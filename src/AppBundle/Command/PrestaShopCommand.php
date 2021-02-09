@@ -1,5 +1,25 @@
 <?php
 
+/*
+ * Nexxus Stock Keeping (online voorraad beheer software)
+ * Copyright (C) 2018 Copiatek Scan & Computer Solution BV
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see licenses.
+ *
+ * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ */
+
 namespace AppBundle\Command;
 
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,6 +41,19 @@ use AppBundle\Entity\ProductOrderRelation;
 /**
  * This command syncs one direction: From NSK to PrestaShop
  * Modifications of objects in Prestashop will be undone by NSK
+ * 
+ * If you get vague error when getting from webservice, 
+ * debug function executeRequest in PSWebServiceLibrary.php
+ * 
+ * If you want to know more about a PrestaShopWebserviceException, 
+ * change define('_PS_MODE_DEV_', true); in config/defines.inc.php in the shop. 
+ * And then look in the response in the body.
+ *
+ * To clear database:
+ * 1. update afile set external_id=null;
+ * 2. Prestahop cleaner module
+ * 3. Publish this file
+ * 4. https://nexxus.eco/nsk-test/prestashopcommand
  */
 class PrestaShopCommand extends ContainerAwareCommand
 {
@@ -103,7 +136,7 @@ class PrestaShopCommand extends ContainerAwareCommand
                     },
                     'representative' => function (\SimpleXMLElement $xml) { 
                         if ((string)$xml->A0_company || (string)$xml->A1_company)
-                            return trim((string)$xml->firstname . ' ' . (string)$xml->lastname);                        
+                            return trim($xml->firstname . ' ' . $xml->lastname);                        
                         else
                             return ""; 
                     },
@@ -138,17 +171,9 @@ class PrestaShopCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /*
-        To clear database:
-        1. update update nexxus.afile set external_id=null;acompany set external_id=null;update aorder set external_id=null;update product_order set external_id=null;update attribute set external_id=null;update attribute_option set external_id=null;update product_type set external_id=null;update product set external_id=null;update product_attribute set external_id=null;
-        2. Prestahop cleaner module
-        3. Publish this file
-        4. https://nexxus.eco/nsk-test/prestashopcommand
-        */
-        
         //$isDebug = $this->getContainer()->get('kernel')->isDebug();
         $isDebug = gethostname() === "YOGA";
-        $isDebug = false;
+        //$isDebug = false;
 
         if ($isDebug) {
             $this->key = "2UA45ZCDGECH3XPTWEHSBS14TM2I5QEC";
@@ -162,10 +187,6 @@ class PrestaShopCommand extends ContainerAwareCommand
         $this->webService = new \PrestaShopWebservice($this->baseUrl, $this->key, $isDebug);
         $this->em = $this->getContainer()->get('doctrine')->getManager(); 
         $productStatusId = $input->getArgument('productStatusIdFilter');
-
-        $this->loadResources("customers", Customer::class);
-        //$x1 = $this->webService->get(['resource' => 'products', 'id' => 1]);
-        //$x2 = $this->webService->get(['resource' => 'products', 'id' => 2]);
 
         $this->createResources("categories", $this->em->getRepository(ProductType::class)->findAll());
         $this->createResources("product_features", $this->em->getRepository(Attribute::class)->findBy(['type' => [0,1], 'isPublic' => true]));
@@ -212,9 +233,21 @@ class PrestaShopCommand extends ContainerAwareCommand
                     $productXml = $this->webService->get(['resource' => 'products', 'id' => $externalId]);
                     $externalId = (int)$productXml->product->children()->associations->stock_availables->stock_available->id;
                     if (!$externalId) throw new \Exception("When creating stocks, the stock_available object should have external ID");
-                }   
+                } 
+                
+                // check if still exists
+                if ($externalId)
+                    try 
+                    {
+                        $xml = $this->webService->get(['resource' => $resourceName, 'id' => $externalId]);
+                    }
+                    catch (\PrestaShopWebserviceException $e)
+                    {
+                        // 404 error, so PrestaShop is cleaned!
+                        $externalId = null;
+                    }
 
-                // if you get vague error when getting, debug function executeRequest in PSWebServiceLibrary.php
+                // get the right xml start
                 if ($useBlankXmlOnUpdate || !$externalId)
                     $xml = $this->webService->get(['url' => $this->baseUrl . 'api/' . $resourceName . '?schema=blank']);
                 else
@@ -222,6 +255,7 @@ class PrestaShopCommand extends ContainerAwareCommand
 
                 $xmlFields = $xml->{$resourceSingularName}->children();             
 
+                // map object properties to xml fields
                 foreach ($this->mappings[$resourceName] as $xmlFieldName => $objectFieldName)
                 {
                     if (is_callable($objectFieldName))
@@ -262,8 +296,6 @@ class PrestaShopCommand extends ContainerAwareCommand
             }
             catch (\PrestaShopWebserviceException $e)
             {
-                // If you want to know more about the error, change define('_PS_MODE_DEV_', true); in config/defines.inc.php in the shop. 
-                // And then look in the response in the body.
                 $this->logError("createResources", $e);
             }
             catch (\Exception $e)
@@ -375,28 +407,29 @@ class PrestaShopCommand extends ContainerAwareCommand
 
     private function cleanResources($resourceName, $entityName, array $entityCriteria = [])
     {
-        try 
+        $xml = $this->webService->get(['resource' => $resourceName]);
+        $resources = $xml->{$resourceName}->children();
+
+        foreach ($resources as $resource) 
         {
-            $xml = $this->webService->get(['resource' => $resourceName]);
-            $resources = $xml->{$resourceName}->children();
+            $attributes = $resource->attributes();
+            $externalId = (int)$attributes['id'];
+            $entityCriteria['externalId'] = $externalId;
 
-            foreach ($resources as $resource) 
+            $object = $this->em->getRepository($entityName)->findOneBy($entityCriteria);
+
+            if (!$object)
             {
-                $attributes = $resource->attributes();
-                $externalId = (int)$attributes['id'];
-                $entityCriteria['externalId'] = $externalId;
-
-                $object = $this->em->getRepository($entityName)->findOneBy($entityCriteria);
-
-                if (!$object)
+                try 
                 {
                     $this->webService->delete(['resource' => $resourceName, 'id' => $externalId]);
+                } 
+                catch (\PrestaShopWebserviceException $ex) 
+                {
+                    $this->getContainer()->get('logger')
+                        ->error("cleanResources warning: ". $resourceName . $externalId);
                 }
             }
-        } 
-        catch (\PrestaShopWebserviceException $ex) 
-        {
-            $this->logError("cleanResources", $ex);
         }
     }
 
