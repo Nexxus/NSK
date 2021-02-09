@@ -32,6 +32,8 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -78,6 +80,7 @@ class SalesOrderForm extends AbstractType
                     'Delivery' => SalesOrder::DELIVERYTYPE_DELIVERY,
                     'Shipping' => SalesOrder::DELIVERYTYPE_SHIP
                 ]])
+            ->add('deliveryInstructions', TextareaType::class, ['required' => false, 'label' => 'Instructions'])
             ->add('transport', MoneyType::class, ['required' => false])
             ->add('discount', MoneyType::class, ['required' => false])
             ->add('isGift', CheckboxType::class, ['required' => false])

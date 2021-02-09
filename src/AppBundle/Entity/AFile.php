@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek � info@copiatek.nl � Postbus 547 2501 CM Den Haag
+ * Copiatek - info@copiatek.nl - Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Entity;
@@ -29,7 +29,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="afile")
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"pr" = "ProductAttributeFile", "pi" = "PickupImageFile", "pa" = "PickupAgreementFile" })
+ * @ORM\DiscriminatorMap({"pr" = "ProductAttributeFile", "pi" = "PickupImageFile", "pa" = "PickupAgreementFile", "di" = "DeliveryImageFile" })
  */
 abstract class AFile
 {
