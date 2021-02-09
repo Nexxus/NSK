@@ -10,7 +10,7 @@
     <div class="alert alert-danger" role="alert">The order could not be saved. Please check details below.</div>
     {% endif %}
 
-    {{ form_start(form) }}
+    {{ form_start(form, {'multipart': false}) }}
     
     <div class="row">
         <div class="col-md-6">
@@ -37,8 +37,6 @@
 
                     {{ form_row(form.orderDate) }} 
                     {{ form_row(form.status) }} 
-                    {{ form_row(form.deliveryDate) }} 
-                    {{ form_row(form.deliveryType) }} 
                     {{ form_row(form.remarks) }} 
                     {% if (order.id == 0) %}
                     {{ form_row(form.backorder) }} 
@@ -72,6 +70,17 @@
                 </div>
             </div>
             {% endif %}
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Delivery{% endtrans %}
+                </div>
+                <div class="panel-body">
+                    {{ form_row(form.deliveryDate) }} 
+                    {{ form_row(form.deliveryType) }} 
+                    {{ form_row(form.deliveryInstructions) }} 
+                </div>
+            </div>            
 
         </div>
 

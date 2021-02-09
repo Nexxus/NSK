@@ -51,6 +51,20 @@ class SalesOrder extends AOrder
     private $deliveryDate;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $deliveryInstructions;
+    
+    /**
+     * @var DeliveryImageFile For future use
+     *
+     * @ORM\OneToOne(targetEntity="DeliveryImageFile", mappedBy="salesOrder", cascade={"all"}, orphanRemoval=true)
+     */
+    private $deliveryImage;    
+
+    /**
      * @var Customer Buyer of this order
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Customer")
@@ -90,6 +104,29 @@ class SalesOrder extends AOrder
         $this->deliveryType = $deliveryType;
         return $this;
     }
+
+    public function setDeliveryInstructions($deliveryInstructions)
+    {
+        $this->deliveryInstructions = $deliveryInstructions;
+        return $this;
+    }
+
+    public function getDeliveryInstructions()
+    {
+        return $this->deliveryInstructions;
+    }
+    
+    public function setDeliveryImage(DeliveryImageFile $deliveryImage)
+    {
+        $this->deliveryImage = $deliveryImage;
+
+        return $this;
+    }
+
+    public function getDeliveryImage()
+    {
+        return $this->deliveryImage;
+    }    
 
     /**
      * @return SalesOrder

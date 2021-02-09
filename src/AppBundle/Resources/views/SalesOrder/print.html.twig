@@ -23,6 +23,21 @@
             </table>
         </div>
 
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Delivery{% endtrans %}
+            </div>
+            <table class="table">
+                <tr><td>Delivery date</td><td>{{ order.deliveryDate|date("d-m-Y")|default("Unknown") }}</td></tr>
+                <tr><td>Delivery type</td><td>
+                        {% if order.deliveryType == 0 %}Pickup
+                        {% elseif order.deliveryType == 1 %}Delivery
+                        {% elseif order.deliveryType == 2 %}Shipping
+                        {% else %}Unknown{% endif %}
+                    </td></tr>
+                <tr><td>Instructions</td><td>{{ order.deliveryInstructions|default("None") }}</td></tr>
+        </div>      
+
     </div>
 
     <div class="col-xs-5">
@@ -88,6 +103,17 @@
             </tr>
             {% endfor %}
         </tbody>
+    </table>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Sign for receipt{% endtrans %}
+    </div>
+    <table class="table">
+        <tr><td width="50%">{% trans %}Name{% endtrans %}:<br/><br/></td>
+            <td rowspan="2">{% trans %}Signature{% endtrans %}:</td></tr>
+        <tr><td>{% trans %}Date{% endtrans %}:<br/><br/></td></tr>
     </table>
 </div>
 
