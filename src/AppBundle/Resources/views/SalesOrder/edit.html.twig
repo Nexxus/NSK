@@ -37,6 +37,8 @@
 
                     {{ form_row(form.orderDate) }} 
                     {{ form_row(form.status) }} 
+                    {{ form_row(form.deliveryDate) }} 
+                    {{ form_row(form.deliveryType) }} 
                     {{ form_row(form.remarks) }} 
                     {% if (order.id == 0) %}
                     {{ form_row(form.backorder) }} 
@@ -65,8 +67,6 @@
                     <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Repair order{% endtrans %}
                 </div>
                 <div class="panel-body">
-                    {{ form_row(form.repair.deliveryDate) }} 
-                    {{ form_row(form.repair.deliveryType) }} 
                     {{ form_row(form.repair.description) }} 
                     {{ form_row(form.repair.damage) }}
                 </div>

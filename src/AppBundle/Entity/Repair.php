@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see licenses.
  *
- * Copiatek – info@copiatek.nl – Postbus 547 2501 CM Den Haag
+ * Copiatek ï¿½ info@copiatek.nl ï¿½ Postbus 547 2501 CM Den Haag
  */
 
 namespace AppBundle\Entity;
@@ -37,10 +37,6 @@ class Repair
         $order->setRepair($this);
     }
 
-    const TYPE_PICKUP = 0;
-    const TYPE_DELIVERY = 1;
-    const TYPE_SHIP = 2;
-
     /**
      * @var int
      *
@@ -57,20 +53,6 @@ class Repair
      * @ORM\JoinColumn(name="order_id", referencedColumnName="id")
      */
     private $order;
-
-    /**
-     * @var int Use constants
-     *
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $deliveryType;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    private $deliveryDate;
 
     /**
      * @var string
@@ -118,27 +100,5 @@ class Repair
     public function getDescription()
     {
         return $this->description;
-    }
-
-    public function getDeliveryDate()
-    {
-        return $this->deliveryDate;
-    }
-
-    public function setDeliveryDate($deliveryDate)
-    {
-        $this->deliveryDate = $deliveryDate;
-        return $this;
-    }
-
-    public function getDeliveryType()
-    {
-        return $this->deliveryType;
-    }
-
-    public function setDeliveryType($deliveryType)
-    {
-        $this->deliveryType = $deliveryType;
-        return $this;
     }
 }

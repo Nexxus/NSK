@@ -38,13 +38,6 @@ class RepairForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('deliveryType', ChoiceType::class, ['required' => false,
-                'choices' => [
-                    'Pickup' => Repair::TYPE_PICKUP,
-                    'Delivery' => Repair::TYPE_DELIVERY,
-                    'Shipping' => Repair::TYPE_SHIP
-                ]])
-            ->add('deliveryDate', DateType::class, ['required' => false, 'widget' => 'single_text'])
             ->add('description', TextareaType::class, ['required' => false])
             ->add('damage', TextareaType::class, ['required' => false]);
     }
