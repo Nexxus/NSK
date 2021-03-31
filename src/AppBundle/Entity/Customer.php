@@ -51,7 +51,7 @@ class Customer extends ACompany
     /**
      * @var ArrayCollection|SalesOrder[] Sales orders that this customer bought
      *
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\SalesOrder", mappedBy="customer")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\SalesOrder", mappedBy="customer", cascade={"persist"})
      */
     private $orders;
 

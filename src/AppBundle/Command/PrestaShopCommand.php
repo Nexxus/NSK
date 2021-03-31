@@ -50,7 +50,7 @@ use AppBundle\Entity\ProductOrderRelation;
  * And then look in the response in the body.
  *
  * To clear database:
- * 1. update afile set external_id=null;
+ * 1. update afile set external_id=null;update product set external_id=null;
  * 2. Prestahop cleaner module
  * 3. Publish this file
  * 4. https://nexxus.eco/nsk-test/prestashopcommand
@@ -82,7 +82,7 @@ class PrestaShopCommand extends ContainerAwareCommand
                     'position' => 'pindex',
                     'id_parent' => function () { return 2; }, // 1=root, 2=Home
                     'active' => function (ProductType $productType) { return 1; },
-                    'link_rewrite' => function (ProductType $productType) { return rawurlencode(str_replace([' ','/'], '_', strtolower($productType->getName()))); },
+                    'link_rewrite' => function (ProductType $productType) { return substr(rawurlencode(str_replace([' ','/', '.', '+'], '_', strtolower($productType->getName()))), 0, 128); },
                 ],
                 'product_features' => [
                     'name' => 'name'
@@ -93,7 +93,7 @@ class PrestaShopCommand extends ContainerAwareCommand
                             $value = $o->getName();
                             // or $o is ProductAttributeRelation
                         elseif ($o->getAttribute()->getType() == Attribute::TYPE_PRODUCT)
-                            $value = $o->valueProduct()->getName(); 
+                            $value = $o->getValueProduct()->getName(); 
                         else
                             $value = $o->getValue(); 
                         return str_replace(['=', '>', '<'], '_', $value);
@@ -105,12 +105,14 @@ class PrestaShopCommand extends ContainerAwareCommand
                     'name' => 'name',
                     'description_short' => 'name',
                     'description' => 'description',
-                    'link_rewrite' => function (Product $p) { return rawurlencode(str_replace([' ','/'], '_', strtolower($p->getName()))); },
+                    'link_rewrite' => function (Product $p) { return substr(rawurlencode(str_replace([' ','/', '.', '+'], '_', strtolower($p->getName()))), 0, 128); },
                     'price' => function (Product $p) { return round(($p->getPrice() / 1.21), 6); },
                     'reference' => function (Product $p) { return 'NSK-' . $p->getSku(); },
                     'type' => function (Product $p) { return 'simple'; },
                     'state' => function (Product $p) { return 1; },
                     'active' => function (Product $p) { return 1; },
+                    'condition' => function (Product $p) { return 'refurbished'; },
+                    'show_condition' => function (Product $p) { return 1; },
                     'show_price' => function (Product $p) { return 1; },
                     'minimal_quantity' => function (Product $p) { return 1; },
                     'available_for_order' => function (Product $p) { return 1; },
@@ -173,11 +175,12 @@ class PrestaShopCommand extends ContainerAwareCommand
     {
         //$isDebug = $this->getContainer()->get('kernel')->isDebug();
         $isDebug = gethostname() === "YOGA";
-        //$isDebug = false;
 
         if ($isDebug) {
-            $this->key = "2UA45ZCDGECH3XPTWEHSBS14TM2I5QEC";
-            $this->baseUrl = "http://shop.mediapoints.nl/";
+            $this->key = "ZA1UJPFTMBGJK7LZIDXB8MQHN7FVXT1K";
+            $this->baseUrl = "http://shop.mediapoints.nl/";   
+            $this->key = 'ZAZIIVE5M7XC8C22NDTLE7UJ26T9LCIV';
+            $this->baseUrl = 'http://www.mediapoints.nl/';                  
         }
         else {
             $this->key = 'ZAZIIVE5M7XC8C22NDTLE7UJ26T9LCIV';
@@ -188,8 +191,8 @@ class PrestaShopCommand extends ContainerAwareCommand
         $this->em = $this->getContainer()->get('doctrine')->getManager(); 
         $productStatusId = $input->getArgument('productStatusIdFilter');
 
-        $this->createResources("categories", $this->em->getRepository(ProductType::class)->findAll());
-        $this->createResources("product_features", $this->em->getRepository(Attribute::class)->findBy(['type' => [0,1], 'isPublic' => true]));
+        //$this->createResources("categories", $this->em->getRepository(ProductType::class)->findAll());
+        //$this->createResources("product_features", $this->em->getRepository(Attribute::class)->findBy(['type' => [0,1], 'isPublic' => true]));
         $this->createResources("product_feature_values", $this->em->getRepository(Attribute::class)->findAttributeOptionsForApi());
 
         $products = $this->em->getRepository(Product::class)->findBy(['status' => $productStatusId]);
@@ -200,6 +203,7 @@ class PrestaShopCommand extends ContainerAwareCommand
         $this->cleanResources("categories", ProductType::class);
         $this->cleanResources("product_features", Attribute::class, ['isPublic' => true]);
         $this->cleanResources("products", Product::class, ['status' => $productStatusId]);
+        $this->cleanResources("images/products", ProductAttributeFile::class);
 
         $this->loadResources("customers", Customer::class);
         $this->loadResources("orders", SalesOrder::class);
@@ -210,11 +214,8 @@ class PrestaShopCommand extends ContainerAwareCommand
         $output->writeln("Done!");
     }
 
-    #region CREATE
+    #region CREATE AND UPDATE
 
-    /**
-     * Creates or updates resources of all kinds 
-     */ 
     private function createResources($resourceName, array $collection, $useBlankXmlOnUpdate = true)
     {
         if (!count($collection)) return;
@@ -223,63 +224,74 @@ class PrestaShopCommand extends ContainerAwareCommand
 
         foreach ($collection as $object)
         {
+            $externalId = (int)$object->getExternalId();
+            if ($externalId === 0) $externalId = null;
+            
+            if ($resourceName == "stock_availables")
+            {
+                if (!$externalId) 
+                {
+                    $this->logError("createResources", $object, new \Exception("When creating stocks, its product object should have external ID"));   
+                    continue;
+                }
+
+                $productXml = $this->webService->get(['resource' => 'products', 'id' => $externalId]);
+                $externalId = (int)$productXml->product->children()->associations->stock_availables->stock_available->id;
+
+                if (!$externalId) 
+                {
+                    $this->logError("createResources", $object, new \Exception("When creating stocks, the stock_available object should have external ID"));   
+                    continue;
+                }                
+            } 
+            
+            // check if still exists
+            if ($externalId)
+                try 
+                {
+                    $xml = $this->webService->get(['resource' => $resourceName, 'id' => $externalId]);
+                }
+                catch (\PrestaShopWebserviceException $e)
+                {
+                    // 404 error, so PrestaShop is cleaned!
+                    $externalId = null;
+                }
+
+            // get the right xml start
+            if ($useBlankXmlOnUpdate || !$externalId)
+                $xml = $this->webService->get(['url' => $this->baseUrl . 'api/' . $resourceName . '?schema=blank']);
+            else
+                $xml = $this->webService->get(['resource' => $resourceName, 'id' => $externalId]);
+
+            $xmlFields = $xml->{$resourceSingularName}->children();             
+
+            // map object properties to xml fields
+            foreach ($this->mappings[$resourceName] as $xmlFieldName => $objectFieldName)
+            {
+                if (is_callable($objectFieldName))
+                {
+                    $value = call_user_func($objectFieldName, $object);
+                }
+                else 
+                {
+                    $getter = 'get' . ucfirst($objectFieldName);
+                    $value = $object->{$getter}();
+                }
+
+                if ($xmlFields->{$xmlFieldName}->language)
+                    $xmlFields->{$xmlFieldName}->language = $value;
+                else 
+                    $xmlFields->{$xmlFieldName} = $value;
+            }
+
+            // product associations
+            if ($resourceName == "products")
+            {
+                $this->createProductAssociations($object, $xmlFields);
+            }
+
             try
             {
-                $externalId = (int)$object->getExternalId();
-                
-                if ($resourceName == "stock_availables")
-                {
-                    if (!$externalId) throw new \Exception("When creating stocks, its product object should have external ID");
-                    $productXml = $this->webService->get(['resource' => 'products', 'id' => $externalId]);
-                    $externalId = (int)$productXml->product->children()->associations->stock_availables->stock_available->id;
-                    if (!$externalId) throw new \Exception("When creating stocks, the stock_available object should have external ID");
-                } 
-                
-                // check if still exists
-                if ($externalId)
-                    try 
-                    {
-                        $xml = $this->webService->get(['resource' => $resourceName, 'id' => $externalId]);
-                    }
-                    catch (\PrestaShopWebserviceException $e)
-                    {
-                        // 404 error, so PrestaShop is cleaned!
-                        $externalId = null;
-                    }
-
-                // get the right xml start
-                if ($useBlankXmlOnUpdate || !$externalId)
-                    $xml = $this->webService->get(['url' => $this->baseUrl . 'api/' . $resourceName . '?schema=blank']);
-                else
-                    $xml = $this->webService->get(['resource' => $resourceName, 'id' => $externalId]);
-
-                $xmlFields = $xml->{$resourceSingularName}->children();             
-
-                // map object properties to xml fields
-                foreach ($this->mappings[$resourceName] as $xmlFieldName => $objectFieldName)
-                {
-                    if (is_callable($objectFieldName))
-                    {
-                        $value = call_user_func($objectFieldName, $object);
-                    }
-                    else 
-                    {
-                        $getter = 'get' . ucfirst($objectFieldName);
-                        $value = $object->{$getter}();
-                    }
-
-                    if ($xmlFields->{$xmlFieldName}->language)
-                        $xmlFields->{$xmlFieldName}->language = $value;
-                    else 
-                        $xmlFields->{$xmlFieldName} = $value;
-                }
-
-                // product associations
-                if ($resourceName == "products")
-                {
-                    $this->createProductAssociations($object, $xmlFields);
-                }
-
                 // edit or add on API
                 if ($externalId)
                 {
@@ -296,11 +308,7 @@ class PrestaShopCommand extends ContainerAwareCommand
             }
             catch (\PrestaShopWebserviceException $e)
             {
-                $this->logError("createResources", $e);
-            }
-            catch (\Exception $e)
-            {
-                throw $e;
+                $this->logError("createResources", $object, $e);
             }
         }
     }
@@ -371,8 +379,10 @@ class PrestaShopCommand extends ContainerAwareCommand
 
         copy($myPath . $file->getUniqueServerFilename(), $myImagePath);
 
-        $myImageMime = explode('.', $myImagePath);
-        $myImageMime = 'image/' . end($myImageMime);
+        $myImageMimeArr = explode('.', $myImagePath);
+        $myImageMime = strtolower(end($myImageMimeArr));
+        if ($myImageMime == "jpg") $myImageMime = "jpeg";
+        $myImageMime = 'image/' . $myImageMime;
 
         $args['image'] = new \CurlFile($myImagePath, $myImageMime);
 
@@ -390,15 +400,21 @@ class PrestaShopCommand extends ContainerAwareCommand
 
         unlink($myImagePath);
 
-        if ($httpCode != 200) {
-            throw new \Exception("Image upload failed");
+        if ($httpCode == 400) {
+            $xml = new \SimpleXMLElement(substr($result, strpos($result, "<?xml")));
+            $e = new \Exception("uploadImage error: " . $xml->errors->error[0]->message->__toString());
+            $this->logError("uploadImage", $file, $e);
         }
-
-        $xml = new \SimpleXMLElement(substr($result, strpos($result, "<?xml")));
-        $externalId = (int)$xml->image->id;
-        $file->setExternalId($externalId);
-        $this->em->flush();
-        return $externalId;
+        elseif ($httpCode != 200) {
+            $e = new \Exception("uploadImage error with http code " . $httpCode);
+            $this->logError("uploadImage", $file, $e);
+        }
+        else {
+            $xml = new \SimpleXMLElement(substr($result, strpos($result, "<?xml")));
+            $externalId = (int)$xml->image->id;
+            $file->setExternalId($externalId);
+            $this->em->flush();
+        }
     }
 
     #endregion
@@ -408,13 +424,20 @@ class PrestaShopCommand extends ContainerAwareCommand
     private function cleanResources($resourceName, $entityName, array $entityCriteria = [])
     {
         $xml = $this->webService->get(['resource' => $resourceName]);
-        $resources = $xml->{$resourceName}->children();
+        
+        if ($resourceName == "images/products")
+            $resources = $xml->images->children();
+        else
+            $resources = $xml->{$resourceName}->children();
 
         foreach ($resources as $resource) 
         {
             $attributes = $resource->attributes();
             $externalId = (int)$attributes['id'];
             $entityCriteria['externalId'] = $externalId;
+
+            if ($resourceName == "categories" && $externalId < 3)
+                continue;
 
             $object = $this->em->getRepository($entityName)->findOneBy($entityCriteria);
 
@@ -505,7 +528,7 @@ class PrestaShopCommand extends ContainerAwareCommand
         } 
         catch (\PrestaShopWebserviceException $ex) 
         {
-            $this->logError("loadResources", $ex);
+            $this->logError("loadResources", $object, $ex);
         }
     }
 
@@ -532,10 +555,17 @@ class PrestaShopCommand extends ContainerAwareCommand
         return substr($word, -3) == "ies" ? substr($word, 0, -3)."y" : substr($word, 0, -1);
     }
 
-    private function logError($function, \Exception $ex)
+    private function logError($function, $entity, \Exception $ex)
     {
+        $entityName = (new \ReflectionClass($entity))->getShortName();
+        $entityId = $entity->getId() ?? "null";
+
         /** @var $logger LoggerInterface */
         $logger = $this->getContainer()->get('logger');
-        $logger->error("PrestaShopCommand error in function '" . $function . "' with exception: ". $ex->__toString());
+
+        $logger->error(
+            sprintf("PrestaShopCommand error in function '%s', entity %s, id %s, with exception: %s", 
+                $function, $entityName, $entityId, $ex->__toString())
+        );
     }
 }
