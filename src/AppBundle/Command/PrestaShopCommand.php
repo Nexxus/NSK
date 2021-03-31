@@ -179,8 +179,8 @@ class PrestaShopCommand extends ContainerAwareCommand
         if ($isDebug) {
             $this->key = "ZA1UJPFTMBGJK7LZIDXB8MQHN7FVXT1K";
             $this->baseUrl = "http://shop.mediapoints.nl/";   
-            $this->key = 'ZAZIIVE5M7XC8C22NDTLE7UJ26T9LCIV';
-            $this->baseUrl = 'http://www.mediapoints.nl/';                  
+            //$this->key = 'ZAZIIVE5M7XC8C22NDTLE7UJ26T9LCIV';
+            //$this->baseUrl = 'http://www.mediapoints.nl/';                  
         }
         else {
             $this->key = 'ZAZIIVE5M7XC8C22NDTLE7UJ26T9LCIV';
@@ -191,8 +191,8 @@ class PrestaShopCommand extends ContainerAwareCommand
         $this->em = $this->getContainer()->get('doctrine')->getManager(); 
         $productStatusId = $input->getArgument('productStatusIdFilter');
 
-        //$this->createResources("categories", $this->em->getRepository(ProductType::class)->findAll());
-        //$this->createResources("product_features", $this->em->getRepository(Attribute::class)->findBy(['type' => [0,1], 'isPublic' => true]));
+        $this->createResources("categories", $this->em->getRepository(ProductType::class)->findAll());
+        $this->createResources("product_features", $this->em->getRepository(Attribute::class)->findBy(['type' => [0,1], 'isPublic' => true]));
         $this->createResources("product_feature_values", $this->em->getRepository(Attribute::class)->findAttributeOptionsForApi());
 
         $products = $this->em->getRepository(Product::class)->findBy(['status' => $productStatusId]);
@@ -322,9 +322,6 @@ class PrestaShopCommand extends ContainerAwareCommand
         /** @var ProductAttributeRelation $par */
         foreach ($product->getAttributeRelations() as $par)
         {
-            if ($par->getExternalId() == 201)
-                $debug=true;
-            
             switch ($par->getAttribute()->getType())
             {
                 case Attribute::TYPE_SELECT:
@@ -558,13 +555,13 @@ class PrestaShopCommand extends ContainerAwareCommand
     private function logError($function, $entity, \Exception $ex)
     {
         $entityName = (new \ReflectionClass($entity))->getShortName();
-        $entityId = $entity->getId() ?? "null";
+        $entityId = method_exists($entity, "getId") ? $entity->getId() : "?";
 
         /** @var $logger LoggerInterface */
         $logger = $this->getContainer()->get('logger');
 
         $logger->error(
-            sprintf("PrestaShopCommand error in function '%s', entity %s, id %s, with exception: %s", 
+            sprintf("PrestaShopCommand error in function '%s', entity %s:%s, %s", 
                 $function, $entityName, $entityId, $ex->__toString())
         );
     }
