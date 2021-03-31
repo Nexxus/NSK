@@ -31,7 +31,7 @@
             <table class="table">
                 <tr>
                     <td width="50%">Pickup date</td>
-                    <td>{{ order.pickup.pickupDate|date("d-m-Y")|default("Unknown") }}</td>
+                    <td>{{ order.pickup.realPickupDate|date("d-m-Y")|default("Unknown") }}</td>
                 </tr>
                 <tr>
                     <td>Description</td>
@@ -94,7 +94,7 @@
                 <span class="glyphicon glyphicon-play" aria-hidden="true"></span> {% trans %}Supplier{% endtrans %}
             </div>
             <div class="panel-body">
-                <barcode code="{{ order.supplier.name|slice(0, 20) }}" type="C39" size="0.5" />
+                <barcode code="{{ supplierBarcode }}" type="C39" size="0.5" />
             </div>            
             <table class="table">
                 <tr><td width="50%">Name</td><td>{{ order.supplier.name }}</td></tr>
