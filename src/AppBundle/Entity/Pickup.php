@@ -61,7 +61,7 @@ class Pickup
     private $order;
 
     /**
-     * @var \DateTime
+     * @var \DateTime As proposed by supplier in public form
      *
      * @ORM\Column(type="datetime", nullable=true)
      */

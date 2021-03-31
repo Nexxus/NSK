@@ -49,7 +49,7 @@ class Supplier extends ACompany
 
     /**
      * @var ArrayCollection|PurchaseOrder[] Purchase orders that this supplier supplied
-     * @ORM\OneToMany(targetEntity="AppBundle\Entity\PurchaseOrder", mappedBy="supplier")
+     * @ORM\OneToMany(targetEntity="AppBundle\Entity\PurchaseOrder", mappedBy="supplier", cascade={"persist"})
      * @JMS\Exclude()
      */
     private $orders;
