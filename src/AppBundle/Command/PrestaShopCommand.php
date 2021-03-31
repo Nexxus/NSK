@@ -179,8 +179,8 @@ class PrestaShopCommand extends ContainerAwareCommand
         if ($isDebug) {
             $this->key = "ZA1UJPFTMBGJK7LZIDXB8MQHN7FVXT1K";
             $this->baseUrl = "http://shop.mediapoints.nl/";   
-            $this->key = 'ZAZIIVE5M7XC8C22NDTLE7UJ26T9LCIV';
-            $this->baseUrl = 'http://www.mediapoints.nl/';                  
+            //$this->key = 'ZAZIIVE5M7XC8C22NDTLE7UJ26T9LCIV';
+            //$this->baseUrl = 'http://www.mediapoints.nl/';                  
         }
         else {
             $this->key = 'ZAZIIVE5M7XC8C22NDTLE7UJ26T9LCIV';
@@ -191,8 +191,8 @@ class PrestaShopCommand extends ContainerAwareCommand
         $this->em = $this->getContainer()->get('doctrine')->getManager(); 
         $productStatusId = $input->getArgument('productStatusIdFilter');
 
-        //$this->createResources("categories", $this->em->getRepository(ProductType::class)->findAll());
-        //$this->createResources("product_features", $this->em->getRepository(Attribute::class)->findBy(['type' => [0,1], 'isPublic' => true]));
+        $this->createResources("categories", $this->em->getRepository(ProductType::class)->findAll());
+        $this->createResources("product_features", $this->em->getRepository(Attribute::class)->findBy(['type' => [0,1], 'isPublic' => true]));
         $this->createResources("product_feature_values", $this->em->getRepository(Attribute::class)->findAttributeOptionsForApi());
 
         $products = $this->em->getRepository(Product::class)->findBy(['status' => $productStatusId]);
