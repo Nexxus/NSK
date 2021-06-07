@@ -30,7 +30,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * Pickup
  *
  * @ORM\Entity
- * @ORM\Table(name="pickup")
+ * @ORM\Table(name="pickup",indexes={@ORM\Index(name="idx_realPickupDate", columns={"real_pickup_date"})})
  */
 class Pickup
 {

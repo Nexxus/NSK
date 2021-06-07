@@ -28,7 +28,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * AOrder
  *
- * @ORM\Table(name="aorder")
+ * @ORM\Table(name="aorder",indexes={@ORM\Index(name="idx_deliveryDate", columns={"delivery_date"})})
  * @ORM\Entity
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr", type="string")

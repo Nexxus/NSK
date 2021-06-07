@@ -107,4 +107,37 @@ class SalesOrderRepository extends \Doctrine\ORM\EntityRepository
 
         return $qb->getQuery()->getResult();        
     }
+
+    public function findDeliveryEvents($baseUrl)
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder()
+            ->from("AppBundle:SalesOrder", "o")
+            ->where("o.deliveryDate BETWEEN :start AND :end")
+            ->setParameter("start", new \DateTime("-1 year"))
+            ->setParameter("end", (new \DateTime())->modify('+1 year'))
+            ->select("o");
+
+        $salesOrders = $qb->getQuery()->getResult();
+
+        $events = array();
+
+        foreach ($salesOrders as $salesOrder) {
+            /** @var SalesOrder $salesOrder */
+            
+            $title = "Delivery of " . $salesOrder->getOrderNr();
+
+            $event = [
+                'title' => $title,
+                'id' => $salesOrder->getId(),
+                'url' => $baseUrl . '/' . $salesOrder->getId(),
+                'color' => $salesOrder->getStatus()->getColor(),
+                'start' => $salesOrder->getDeliveryDate()->format(\DateTime::ATOM),
+                'end' =>   $salesOrder->getDeliveryDate()->modify("+1 hour")->format(\DateTime::ATOM),
+            ];
+
+            $events[] = $event;
+        }
+
+        return $events;
+    }
 }

@@ -38,10 +38,11 @@ class LogisticsController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $events = $em->getRepository('AppBundle:PurchaseOrder')->findPickupEvents($this->getUser(), $this->generateUrl("purchaseorder_edit", ['id' => 0]));
+        $events1 = $em->getRepository('AppBundle:PurchaseOrder')->findPickupEvents($this->generateUrl("purchaseorder_edit", ['id' => 0]));
+        $events2 = $em->getRepository('AppBundle:SalesOrder')->findDeliveryEvents($this->generateUrl("salesorder_edit", ['id' => 0]));
         
         return $this->render('AppBundle:Logistics:calendar.html.twig', array(
-            'events' => $events,
+            'events' => array_merge($events1, $events2),
         ));
     }
 }
