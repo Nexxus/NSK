@@ -70,7 +70,7 @@ class PurchaseOrderRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findPickupEvents(User $user, $baseUrl)
+    public function findPickupEvents($baseUrl)
     {
         $qb = $this->getEntityManager()->createQueryBuilder()
             ->from("AppBundle:Pickup", "p")
@@ -94,7 +94,7 @@ class PurchaseOrderRepository extends \Doctrine\ORM\EntityRepository
 
             $event = [
                 'title' => $title,
-                'id' => $pickup->getId(),
+                'id' => $pickup->getOrder()->getId(),
                 'url' => $baseUrl . '/' . $pickup->getOrder()->getId(),
                 'color' => $pickup->getOrder()->getStatus()->getColor(),
                 'start' => $pickup->getRealPickupDate()->format(\DateTime::ATOM),

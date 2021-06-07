@@ -284,10 +284,18 @@ class PrestaShopCommand extends ContainerAwareCommand
                     $xmlFields->{$xmlFieldName} = $value;
             }
 
-            // product associations
             if ($resourceName == "products")
             {
+                // product associations
                 $this->createProductAssociations($object, $xmlFields);
+
+                // default image must be copied from existing resource
+                // workaround for bug https://github.com/PrestaShop/PrestaShop/issues/23777
+                if ($externalId)
+                {
+                    $productXml = $this->webService->get(['resource' => 'products', 'id' => $externalId]);
+                    $xmlFields->id_default_image = (int)$productXml->product->children()->id_default_image;
+                }
             }
 
             try
