@@ -22,7 +22,7 @@ Nexxus is tested with these versions. Higher versions of PHP could give undesira
 
 ## Installation
 
-In order to install Nexxus, you need to open a Windows command prompt, Linux terminal or SSH connection (like with Putty). Some steps below might require more user rights, ie. when you get permission denied errors. In that case prepend the command with the _sudo_ command. 
+In order to install Nexxus, you need to open a Windows command prompt, Linux terminal or SSH connection (like with Putty). Some steps below might require more user rights, ie. when you get permission denied errors. In that case prepend the command with the _sudo_ command. We advise not to install the Nexxus application using the _root_ user.
 
 If this manual is too brief for you, more than enough information can be found on the internet, as these steps are very regular for a Symfony 3 application.
 
@@ -59,17 +59,11 @@ mv web/* web/.* ../public_html/nsk
 ```
 Don't copy this line literally, but apply it to the situation of your web server. In this example, Nexxus will be available on URL http://www.yourdomain.com/nsk
 
-In _composer.json_ you should add or change the value for field _symfony-web-dir_.
-
-Then make sure the application root can find the source code from its new location. Open _app.php_ in a text editor and change lines 6 and 7 like so:
+When you would get an error about device or resource being busy, there is no problem. Just execute this extra command:
 ```
-$loader = require __DIR__.'/../../nexxus/app/autoload.php';
-include_once __DIR__.'/../../nexxus/var/bootstrap.php.cache';
+rm -rf web
 ```
-Finally, if you are installing an production environment, remove _app_dev.php_. In Linux:
-```
-rm web/app_dev.php
-```
+In _composer.json_ you should add or change the value for field _symfony-web-dir_. The file is in the current directory. You can change this file with a text editor like Nano. The line to change is somewhere at the bottom in the node named _extra_. In this example, the value should be changed from _web_ to _../public_html/nsk_.
 
 ### 4. Install dependencies
 
@@ -79,7 +73,7 @@ composer install
 ```
 This will take a while...
 
-After installation, some parameters will be asked. You can enter thru most of them. The database does not need to exist yet, but the database user does need to exist. For _database_user_ and _database_password_ you need to enter the appropiate values. For the _secret_ enter a random value of your liking.
+After installation, some parameters will be asked. You can enter thru most of them. The database does not need to exist yet, but the database user does need to exist. For _database_user_ and _database_password_ you need to enter the appropiate values. For the _secret_ enter a random value of your liking. These parameters can be edited later in file _./app/config/parameters.yml_.
 
 ### 5. Install the database
 
@@ -100,9 +94,30 @@ Don't copy these line literally, but change the name, email and password to your
 
 Now you can login and create other users in the Admin section.
 
-### 7. Use Nexxus
+### 7. Finishing installation
+
+Finally make sure the application root can find the source code from its new location. This happens in a different folder:
+```
+cd ../public_html/nsk
+```
+You are now in the public root. Open _app.php_ in a text editor and change lines 6 and 7 like so:
+```
+$loader = require __DIR__.'/../../nexxus/app/autoload.php';
+include_once __DIR__.'/../../nexxus/var/bootstrap.php.cache';
+```
+Finally, if you are installing an production environment, remove _app_dev.php_. In Linux:
+```
+rm app_dev.php
+```
+Please check if the commands are appropiate for your specific situation. For example, you might have installed the application in different folders then _nexxus_ and _nsk_.
+
+### 8. Use Nexxus
 
 Congratulations, Nexxus is now ready for use. To start with, go to the Admin section and configure all meta data: Users, Locations, Product types, Attributes, Product statuses, Order statuses, Tasks. Without  this meta data the application will not behave as desired.
 
+When your first visit to Nexxus gives an error 500, our first guess is that the write rights to the _var_ folder is not accurate. You could try to repeat this command from the application folder:
+```
+chmod -R 777 var
+```
 For more information, for example about upgrading installations or the API reference, go to the [Wiki](https://github.com/Nexxus/NSK/wiki).
 
