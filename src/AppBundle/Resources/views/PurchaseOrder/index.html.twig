@@ -43,6 +43,7 @@
                 <th></th>
                 <th{% if orders.isSorted('orderNr') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Order nr', 'orderNr') }}</th>
                 <th{% if orders.isSorted('orderDate') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Order date', 'orderDate') }}</th>
+                <th{% if orders.isSorted('pickup.realPickupDate') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Pickup date', 'pickup.realPickupDate') }}</th>
                 <th{% if orders.isSorted('supplier.name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Supplier', 'supplier.name') }}</th>
                 <th{% if orders.isSorted('supplier.partner.name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Partner', 'supplier.partner.name') }}</th>
                 <th{% if orders.isSorted('status') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(orders, 'Status', 'status') }}</th>
@@ -57,6 +58,7 @@
                 <td><input type="checkbox" id="index_bulk_edit_form_index_{{ order.id }}" name="index_bulk_edit_form[index][]" value="{{ order.id }}"></td>
                 <td><a href="{{ path('purchaseorder_edit', { 'id': order.id }) }}" data-toggle="tooltip" title="{{ order.getAttributesList() }}">{{ order.orderNr }}</a></td>
                 <td>{{ order.orderDate|date("Y-m-d") }}</td>
+                <td>{{ order.pickup.realPickupDate|default("")|date("Y-m-d") }}</td>
                 <td><a class="inlist" href="{{ path('supplier_edit', { 'id': order.supplier.id|default(0) }) }}" data-toggle="tooltip" title="{{ order.supplier.getAddressString()|default("") }}">{{ order.supplier.name|default("") }}</a></td>
                 <td>{{ order.supplier.partner.name|default("") }}</td>
                 <td>{{ order.status.name|default("") }}</td>
