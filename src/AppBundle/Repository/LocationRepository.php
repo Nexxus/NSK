@@ -26,7 +26,7 @@ use AppBundle\Entity\Location;
 
 class LocationRepository extends \Doctrine\ORM\EntityRepository
 {
-    /** @return Location */
+    /** @return Location|null */
     public function findOneByZipcode($zipcode)
     {
         $locations = $this->findAll();

@@ -82,7 +82,7 @@ class SupplierRepository extends \Doctrine\ORM\EntityRepository
      * @param Supplier $newSupplier
      * @return Supplier
      */
-    public function checkExists(Supplier $newSupplier)
+    public function checkSupplierExists(Supplier $newSupplier)
     {
         $zip = strtolower(str_replace(" ", "", $newSupplier->getZip() ?? $newSupplier->getZip2()));
 
@@ -100,7 +100,6 @@ class SupplierRepository extends \Doctrine\ORM\EntityRepository
 
                 if (count($result) > 0)
                 {
-                    $this->_em->detach($newSupplier);
                     $newSupplier = null;
                     return $result[0];
                 }                
@@ -113,7 +112,6 @@ class SupplierRepository extends \Doctrine\ORM\EntityRepository
 
                 if (count($result) > 0)
                 {
-                    $this->_em->detach($newSupplier);
                     $newSupplier = null;
                     return $result[0];
                 }               
@@ -126,7 +124,6 @@ class SupplierRepository extends \Doctrine\ORM\EntityRepository
 
                 if (count($result) > 0)
                 {
-                    $this->_em->detach($newSupplier);
                     $newSupplier = null;
                     return $result[0];
                 }  
@@ -141,7 +138,6 @@ class SupplierRepository extends \Doctrine\ORM\EntityRepository
 
                 if (count($result) == 1)
                 {
-                    $this->_em->detach($newSupplier);
                     $newSupplier = null;
                     return $result[0];
                 }                

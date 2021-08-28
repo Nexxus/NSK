@@ -64,7 +64,7 @@ class SalesOrderRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function generateOrderNr(SalesOrder $order)
+    public function generateSalesOrderNr(SalesOrder $order)
     {
         $orderNr = $order->getOrderDate()->format("Y") . sprintf('%06d', $order->getId());
         $order->setOrderNr($orderNr);

@@ -289,11 +289,11 @@ class SalesOrderController extends Controller
 
                         if (!$order->getOrderNr())
                         {
-                            $order->setOrderNr($repo->generateOrderNr($order));
+                            $order->setOrderNr($repo->generateSalesOrderNr($order));
 
                             if ($purchase)
                             {
-                                $purchase->setOrderNr($em->getRepository('AppBundle:PurchaseOrder')->generateOrderNr($purchase));
+                                $purchase->setOrderNr($em->getRepository('AppBundle:PurchaseOrder')->generatePurchaseOrderNr($purchase));
                             }
 
                             $em->flush();
@@ -498,12 +498,12 @@ class SalesOrderController extends Controller
                         $customer->setIsPartner(Customer::HAS_PARTNER);
                     }
 
-                    $order->setCustomer($em->getRepository('AppBundle:Customer')->checkExists($customer));
+                    $order->setCustomer($em->getRepository('AppBundle:Customer')->checkCustomerExists($customer));
 
                     $em->persist($order);
                     $em->flush();
 
-                    $order->setOrderNr($repo->generateOrderNr($order));
+                    $order->setOrderNr($repo->generateSalesOrderNr($order));
                     $em->flush();                    
                 }
 

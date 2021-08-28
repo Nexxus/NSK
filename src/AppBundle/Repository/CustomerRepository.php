@@ -76,7 +76,7 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
      * @param string $origin
      * @return Customer
      */
-    public function checkExists(Customer $newCustomer)
+    public function checkCustomerExists(Customer $newCustomer)
     {
         $zip = strtolower(str_replace(" ", "", $newCustomer->getZip() ?? $newCustomer->getZip2()));
 
@@ -94,7 +94,6 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
 
                 if (count($result) > 0)
                 {
-                    $this->_em->detach($newCustomer);
                     $newCustomer = null;
                     return $result[0];
                 }                
@@ -107,7 +106,6 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
 
                 if (count($result) > 0)
                 {
-                    $this->_em->detach($newCustomer);
                     $newCustomer = null;
                     return $result[0];
                 }  
@@ -120,7 +118,6 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
 
                 if (count($result) > 0)
                 {
-                    $this->_em->detach($newCustomer);
                     $newCustomer = null;
                     return $result[0];
                 }
@@ -135,7 +132,6 @@ class CustomerRepository extends \Doctrine\ORM\EntityRepository
 
                 if (count($result) == 1)
                 {
-                    $this->_em->detach($newCustomer);
                     $newCustomer = null;
                     return $result[0];
                 }                

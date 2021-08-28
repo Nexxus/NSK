@@ -40,6 +40,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use AppBundle\Repository\SupplierRepository;
 
 class PublicController extends Controller
 {
@@ -149,7 +150,7 @@ class PublicController extends Controller
 
             #region Form data processing
 
-            $pickup->getOrder()->setSupplier($em->getRepository('AppBundle:Supplier')->checkExists($pickup->getOrder()->getSupplier()));
+            $pickup->getOrder()->setSupplier($em->getRepository('AppBundle:Supplier')->checkSupplierExists($pickup->getOrder()->getSupplier()));
             $pickup->getOrder()->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($orderStatusName, true, false));
 
             // Images
@@ -216,7 +217,7 @@ class PublicController extends Controller
 
             if (!$pickup->getOrder()->getOrderNr())
             {
-                $orderNr = $em->getRepository('AppBundle:PurchaseOrder')->generateOrderNr($pickup->getOrder());
+                $orderNr = $em->getRepository('AppBundle:PurchaseOrder')->generatePurchaseOrderNr($pickup->getOrder());
                 $pickup->getOrder()->setOrderNr($orderNr);
                 $em->flush();
             }
@@ -328,7 +329,7 @@ class PublicController extends Controller
 
             #region Form data processing
 
-            $order->setCustomer($em->getRepository('AppBundle:Customer')->checkExists($order->getCustomer()));
+            $order->setCustomer($em->getRepository('AppBundle:Customer')->checkCustomerExists($order->getCustomer()));
             $order->setStatus($em->getRepository('AppBundle:OrderStatus')->findOrCreate($orderStatusName, false, true));
 
             $remarks = "";
@@ -352,7 +353,7 @@ class PublicController extends Controller
 
             if (!$order->getOrderNr())
             {
-                $orderNr = $em->getRepository('AppBundle:SalesOrder')->generateOrderNr($order);
+                $orderNr = $em->getRepository('AppBundle:SalesOrder')->generateSalesOrderNr($order);
                 $order->setOrderNr($orderNr);
                 $em->flush();
             }

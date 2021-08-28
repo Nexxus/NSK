@@ -114,16 +114,16 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
                 $product->getName(), $product->getSku(), $product->getQuantityInStock(true), $product->getLocation()->getName());
         }
 
-        foreach ($this->_em->getRepository(\AppBundle\Entity\SalesOrder::class)->findBySearchQuery($search) as $salesOrder)
+        foreach ($this->_em->getRepository(SalesOrder::class)->findBySearchQuery($search) as $salesOrder)
         {
-            /** @var \AppBundle\Entity\SalesOrder $salesOrder */
+            /** @var SalesOrder $salesOrder */
             $result["salesorder-".$salesOrder->getId()] = sprintf("Sales order with nr %s, dated %s, to customer %s",
                 $salesOrder->getOrderNr(), $salesOrder->getOrderDate()->format("M j, Y"), $salesOrder->getCustomer()->getName());
         }
 
-        foreach ($this->_em->getRepository(\AppBundle\Entity\PurchaseOrder::class)->findBySearchQuery($search) as $purchaseOrder)
+        foreach ($this->_em->getRepository(PurchaseOrder::class)->findBySearchQuery($search) as $purchaseOrder)
         {
-            /** @var \AppBundle\Entity\PurchaseOrder $purchaseOrder */
+            /** @var PurchaseOrder $purchaseOrder */
             $result["purchaseorder-".$purchaseOrder->getId()] = sprintf("Purchase order with nr %s, dated %s, from supplier %s",
                 $purchaseOrder->getOrderNr(), $purchaseOrder->getOrderDate()->format("M j, Y"), $purchaseOrder->getSupplier()->getName());
         }

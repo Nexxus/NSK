@@ -205,7 +205,7 @@ class PurchaseOrderController extends Controller
                 {
                     if (!$order->getOrderNr())
                     {
-                        $order->setOrderNr($repo->generateOrderNr($order));
+                        $order->setOrderNr($repo->generatePurchaseOrderNr($order));
                         $em->flush();
                     }
 
@@ -298,7 +298,7 @@ class PurchaseOrderController extends Controller
 
         $supplierBarcode = "";
         if ($order->getSupplier() && strlen($order->getSupplier()->getName()) > 20)
-            $supplierBarcode = substr($this->cleanString($order->getSupplier()->getName(), 0, 20));
+            $supplierBarcode = substr($this->cleanString($order->getSupplier()->getName()), 0, 20);
         elseif ($order->getSupplier())
             $supplierBarcode = $this->cleanString($order->getSupplier()->getName());
 

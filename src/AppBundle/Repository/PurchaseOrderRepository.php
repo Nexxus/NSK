@@ -132,7 +132,7 @@ class PurchaseOrderRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getResult();        
     }
 
-    public function generateOrderNr(PurchaseOrder $order)
+    public function generatePurchaseOrderNr(PurchaseOrder $order)
     {
         $orderNr = $order->getOrderDate()->format("Y") . sprintf('%06d', $order->getId());
         $order->setOrderNr($orderNr);
