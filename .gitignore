@@ -16,6 +16,9 @@
 /web/bundles/
 /nbproject/
 thumbs.db
+/node_modules/
+/web/js/build/
+package-lock.json
 
 *~
 .bash
