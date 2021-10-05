@@ -21,7 +21,7 @@ Encore
      * Each entry will result in one JavaScript file (e.g. app.js)
      * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
      */
-    .addEntry('product-index', './src/AppBundle/Resources/vue/ProductIndex/main.js')
+    .addEntry('product-stock', './src/AppBundle/Resources/vue/ProductStock/main.js')
     //.addEntry('order-products', './src/AppBundle/Resources/vue/OrderProducts/main.js')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
@@ -71,4 +71,12 @@ Encore
     })
 ;
 
-module.exports = Encore.getWebpackConfig();
+const config = Encore.getWebpackConfig();
+
+// Change the kind of source map generated in development mode
+if (!Encore.isProduction()) {
+    // config.devtool = 'cheap-eval-source-map';
+    config.output.devtoolModuleFilenameTemplate = 'file:///[absolute-resource-path]';
+}
+
+module.exports = config;

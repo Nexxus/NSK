@@ -9,6 +9,9 @@ services:
 #        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
     app.menubuilder:
         class: AppBundle\Menu\Builder
-     
+    app.encoretwig:
+        class: AppBundle\Helper\EncoreTwigExtension
+        tags:
+            - { name: twig.extension }     
 
 

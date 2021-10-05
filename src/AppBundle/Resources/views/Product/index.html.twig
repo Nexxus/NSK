@@ -42,63 +42,12 @@
         </div>        
     </div>
     
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th></th>
-                <th{% if products.isSorted('sku') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(products, 'SKU', 'sku') }}</th>
-                <th{% if products.isSorted('name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(products, 'Name', 'name') }}</th>
-                <th{% if products.isSorted('type.name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(products, 'Type', 'type.name') }}</th>
-                <th{% if products.isSorted('location.name') %} class="sorted"{% endif %}>{{ knp_pagination_sortable(products, 'Location', 'location.name') }}</th>
-                <th width="10%">Price</th>
-                <th width="5%">Purch</th>
-                <th width="5%">Stock</th>
-                <th width="5%">Hold</th>
-                <th width="5%">Sale</th>
-                <th width="5%">Sold</th>
-                <th width="1%"></th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for product in products %}
-            <tr>
-                <td><input type="checkbox" id="index_bulk_edit_form_index_{{ product.id }}" name="index_bulk_edit_form[index][]" value="{{ product.id }}"></td>
-                <td><a href="{{ path('product_edit', { 'id': product.id }) }}" data-target="#modalEditor" class="btn-modal" data-toggle="tooltip" title="{{ product.getAttributesList() }}">{{ product.sku }}</a></td>
-                <td><a href="{{ path('product_edit', { 'id': product.id }) }}" data-target="#modalEditor" class="btn-modal" data-toggle="tooltip" title="{{ product.getAttributesList() }}">{{ product.name }}</a></td>
-                <td>{{ product.type.name|default("") }}</td>
-                <td>{{ product.location.name|default("") }}</td>
-                <td>&euro; {{ product.price|number_format(2, ',', '.') }}</td>
-                <td>{{ product.getQuantityPurchased() }}</td>
-                <td>{{ product.getQuantityInStock() }}</td>
-                <td>{{ product.getQuantityOnHold() }}</td>
-                <td>{{ product.getQuantitySaleable() }}</td>
-                <td>{{ product.getQuantitySold() }}</td>
-                <td nowrap align="right">
-                    {% spaceless %}
-                    {% if product.purchaseOrderRelation and product.type and product.type.tasks|length > 0 %}
-                    <a class="btn btn-default btn-modal" href="{{ path('product_checklist', { 'relationId': product.purchaseOrderRelation.id }) }}" data-target="#modalEditor" title="Checklist of tasks">
-                        <span class="glyphicon glyphicon-check" aria-label="Checklist" style="margin-right: 3px"></span>
-                        {{ product.purchaseOrderRelation.servicesDone }} / {{ product.type.tasks|length }}
-                    </a>
-                    {% endif %}
-                    {% if product.getQuantityPurchased() > 1 %}
-                    <a class="btn btn-default btn-modal" href="{{ path('product_split', { 'id': product.id }) }}" data-target="#modalSplitter" title="Split bundle"><span class="glyphicon glyphicon-flash" aria-label="Split"></span></a>
-                    {% endif %}
-                    <a class="btn btn-success btn-modal" href="{{ path('product_edit', { 'id': product.id }) }}" data-target="#modalEditor" title="Edit"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
-                    <a class="btn btn-danger btn-delete btn-modal" href="{{ path('product_delete', { 'id': product.id }) }}" title="Delete" data-class="product" data-name="{{ product.name }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
-                    {% endspaceless %}
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="99">
-                    <h4>{% trans %}No records found{% endtrans %}</h4>
-                </td>
-            </tr>
-        {% endfor %}
-        
-        </tbody>
-    </table>
+
+
+    <div id="product-stock" data-products="{{ products.items|json_encode|escape('html_attr') }}"></div>
+
+    
+
 
     <div class="navigation">
         {{ knp_pagination_render(products) }}
@@ -106,4 +55,8 @@
 
     {{ form_end(formBulkEdit, {'render_rest': false}) }}
 
+{% endblock %}
+
+{% block javascripts %}
+    {{ encore_entry_script_tags('product-stock') }}
 {% endblock %}

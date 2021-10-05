@@ -497,11 +497,10 @@ class Product
     public function getQuantityInStock()
     {
         $isStock = $this->getStatus() ? $this->getStatus()->getIsStock() : true;
-        if (!$isStock)
-        {
-            $q = 0;
-        }
-        elseif ($r = $this->getPurchaseOrderRelation())
+        
+        if (!$isStock) return 0;
+        
+        if ($r = $this->getPurchaseOrderRelation())
         {
             $q = $r->getQuantity();
         }
@@ -514,7 +513,7 @@ class Product
         else
         {
             //throw new \Exception("Product has no purchase order and is not a repair, which should be impossible.");
-            $q = 0;
+            return 0;
         }
 
         return $q - $this->getQuantitySold();
