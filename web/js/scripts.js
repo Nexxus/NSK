@@ -1,6 +1,7 @@
 ﻿
 
 $(document).ready(function () {
+    enableAutoSelect();
 
     $('[data-toggle="tooltip"]').tooltip({
         placement: 'auto right',
@@ -57,4 +58,21 @@ function focusBarcodeInput() {
         $('input.focus:first').select();
         $('input.focus:first').focus();
     //}
+}
+
+function enableAutoSelect() {
+  pathname = window.location.pathname
+  // only apply this functionality in the product list
+  if(pathname.indexOf('/product/') === pathname.length-9) {
+    $("#index_search_form_query").bind("focus", function(event) {
+      // only select the value if input value looks like a SKU
+      if(looksLikeSKU(event.currentTarget.value)) {
+        event.currentTarget.select()
+      }
+    })
+  }
+}
+
+function looksLikeSKU(string) {
+  return string.length == 10 && parseInt(string).toString() == string
 }
