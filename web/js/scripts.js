@@ -74,5 +74,5 @@ function enableAutoSelect() {
 }
 
 function looksLikeSKU(string) {
-  return string.length == 10 && parseInt(string).toString() == string
+  return /^\d{10}$/.test(string)
 }
