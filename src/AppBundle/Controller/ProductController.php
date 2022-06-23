@@ -32,8 +32,6 @@ use AppBundle\Entity\ProductAttributeRelation;
 use AppBundle\Form\ProductForm;
 use AppBundle\Form\ProductSplitForm;
 use AppBundle\Form\ChecklistForm;
-use AppBundle\Form\IndexSearchForm;
-use AppBundle\Form\IndexBulkEditForm;
 use AppBundle\Form\ProductBulkEditForm;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -55,32 +53,14 @@ class ProductController extends Controller
     {
         $repo = $this->getDoctrine()->getRepository('AppBundle:Product');
 
-        $products = array();
-
-        $container = new \AppBundle\Helper\IndexSearchContainer($this->getUser(), Product::class);
-
-        $form = $this->createForm(IndexSearchForm::class, $container);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid() && $container->isSearchable())
-        {
-            $products = $repo->findBySearchQuery($container);
-            $pageLength = 200;
-        }
-        else
-        {
-            $products = $repo->findStock($this->getUser());
-            $pageLength = 20;
-        }
-
-        $paginator = $this->get('knp_paginator');
-        $productsPage = $paginator->paginate($products, $request->query->getInt('page', 1), $pageLength);
+        $productCount = $repo->queryStock($this->getUser())->select("count(p.id)")->getQuery()->getSingleScalarResult();
+        $pageLength = 20;
+        $pageCount = ceil($productCount / $pageLength);
 
         return $this->render('AppBundle:Product:index.html.twig', array(
-            'products' => $productsPage,
-            'form' => $form->createView(),
-            'formBulkEdit' => $this->createForm(IndexBulkEditForm::class, $products, ['index_class' => Product::class])->createView()
+            'productCount' => $productCount,
+            'pageLength' => $pageLength,
+            'pageCount' => $pageCount
             ));
     }
 
@@ -306,7 +286,7 @@ class ProductController extends Controller
         $product = $repo->find($id);
 
         $data = array('quantity' => 1, 'status' => $product->getStatus());
-        $options = array('stock' => $product->getQuantityInStock());
+        $options = array('stock' => $product->getStock()->getStock());
 
         $form = $this->createForm(ProductSplitForm::class, $data, $options);
 
@@ -328,10 +308,10 @@ class ProductController extends Controller
                         $quantity = $data['quantity'];
                         break;
                     case "individualize_stock":
-                        $quantity = $product->getQuantityInStock() - 1;
+                        $quantity = $product->getStock()->getStock() - 1;
                         break;                    
                     case "individualize_bundle":
-                        $quantity = $product->getQuantityPurchased() - 1;
+                        $quantity = $product->getStock()->getPurchased() - 1;
                         $sales = true;
                         break;
                 }

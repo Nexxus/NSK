@@ -3,57 +3,11 @@
 {% block body %}
     <h1>Stock</h1>
 
-    {{ form_start(form) }}
-    <div class="row">
-        <div class="col-sm-3">
-            {{ form_widget(form.query, {'attr': {'placeholder': 'Zoeken op Id, Sku of (deel van) naam'} }) }}
-        </div>
-        <div class="col-sm-2">
-            {{ form_widget(form.availability) }}
-        </div>
-        <div class="col-sm-2">
-            {{ form_widget(form.status) }}
-        </div>
-        <div class="col-sm-2">
-            {{ form_widget(form.producttype) }}
-        </div>
-        <div class="col-sm-2">
-            {{ form_widget(form.location) }}
-        </div>
-        <div class="col-sm-1">
-            {{ form_widget(form.submit) }}
-        </div>
-    </div>
-    {{ form_end(form) }}
-
-    <hr />
-
-    {{ form_start(formBulkEdit, {'action': path('product_bulkedit'), 'attr': { 'target': '_blank' }}) }}
-
-    <div class="row" style="margin-bottom: 20px; margin-top: 10px">
-        <div class="col-sm-1 col-xs-3">
-            <button type="button" class="btn btn-default btn-selectall">Select all</button>
-        </div>
-        <div class="col-sm-3 col-xs-9">
-            {{ form_widget(formBulkEdit.action) }}
-        </div>
-        <div class="col-sm-3 col-sm-offset-5 col-xs-12">
-            <a href="{{ path('purchaseorder_edit', { 'id': 0 }) }}" class="btn btn-primary pull-right" role="button">Create new purchase</a>
-        </div>        
-    </div>
-    
-
-
-    <div id="product-stock" data-products="{{ products.items|json_encode|escape('html_attr') }}"></div>
-
-    
-
-
-    <div class="navigation">
-        {{ knp_pagination_render(products) }}
-    </div>
-
-    {{ form_end(formBulkEdit, {'render_rest': false}) }}
+    <div id="product-stock" 
+        data-productcount="{{ productCount }}"
+        data-pagelength="{{ pageLength }}"
+        data-pagecount="{{ pageCount }}"
+    ></div>
 
 {% endblock %}
 

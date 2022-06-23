@@ -5,5 +5,10 @@
     "vue-loader": "^15.9.8",
     "vue-template-compiler": "^2.6.*",
     "webpack-notifier": "^1.6.0"
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "core-js": "^3.23.2",
+    "vue-axios": "^3.4.1"
   }
 }

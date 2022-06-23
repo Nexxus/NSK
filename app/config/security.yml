@@ -52,6 +52,7 @@ security:
         - { path: ^/public/, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/leergeld-bestelling, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/vue, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/admin/, role: ROLE_ADMIN }
         - { path: ^/logistics/, role: ROLE_LOGISTICS }
         - { path: ^/product/, role: ROLE_LOCAL }

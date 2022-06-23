@@ -44,6 +44,10 @@ Encore
     // enables hashed filenames (e.g. app.abc123.css)
     .enableVersioning(Encore.isProduction())
 
+    .configureBabel((config) => {
+        config.plugins.push('@babel/plugin-proposal-class-properties');
+    })
+
     // enables @babel/preset-env polyfills
     .configureBabelPresetEnv((config) => {
         config.useBuiltIns = 'usage';
@@ -71,12 +75,4 @@ Encore
     })
 ;
 
-const config = Encore.getWebpackConfig();
-
-// Change the kind of source map generated in development mode
-if (!Encore.isProduction()) {
-    // config.devtool = 'cheap-eval-source-map';
-    config.output.devtoolModuleFilenameTemplate = 'file:///[absolute-resource-path]';
-}
-
-module.exports = config;
+module.exports = Encore.getWebpackConfig();

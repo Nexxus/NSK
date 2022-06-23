@@ -127,6 +127,7 @@ nelmio_cors:
 fos_rest:
     zone:
         - { path: ^/api/* }
+        - { path: ^/vue/* }
     body_listener: true
     format_listener:
         rules:

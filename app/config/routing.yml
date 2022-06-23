@@ -3,6 +3,11 @@ api:
     type: rest
     prefix: /api
 
+vue_product:
+    resource: "@AppBundle/Controller/VueProductController.php"
+    type: rest
+    prefix: /vue/product
+
 app:
     resource: "@AppBundle/Controller/"
     type:     annotation
