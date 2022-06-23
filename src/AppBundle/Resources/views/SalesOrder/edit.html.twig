@@ -176,7 +176,7 @@
                     <td>{{ product.sku }}</td>
                     <td>{{ product.name }}</td>
                     <td>{{ product.type.name|default("") }}</td>
-                    <td>{{ product.getQuantityInStock() }}</td>
+                    <td>{{ product.getStock().getStock() }}</td>
                     <td>&euro; {{ product.price|number_format(2, ',', '.') }}</td>
                     <td>{{ form_widget(formRelation.price) }}</td>
                     <td>{{ form_widget(formRelation.quantity) }}</td>

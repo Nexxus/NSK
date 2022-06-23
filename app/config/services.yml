@@ -14,4 +14,9 @@ services:
         tags:
             - { name: twig.extension }     
 
+    # to exclude client_view from the schema updater
+    app.ignoretableslistener:
+        class: AppBundle\Helper\IgnoreTablesListener
+        tags:
+            - {name: doctrine.event_listener, event: postGenerateSchema }
 

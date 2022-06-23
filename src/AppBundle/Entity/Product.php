@@ -176,6 +176,13 @@ class Product
      */
     private $files;
 
+    /**
+     * @var Stock
+     * 
+     * @ORM\OneToOne(targetEntity="Stock", mappedBy="product")
+     */
+    private $stock;    
+
     #endregion
 
     #region Getters and setters
@@ -474,6 +481,11 @@ class Product
         return $this->orderRelations;
     }
 
+    public function getStock()
+    {
+        return $this->stock;
+    }  
+
     public function getCreatedAt()
     {
         return $this->updatedAt->format('d-m-Y H:i');
@@ -482,89 +494,6 @@ class Product
     public function getUpdatedAt()
     {
         return $this->updatedAt->format('d-m-Y H:i');
-    }
-
-    #endregion
-
-    #region Quantity calculators
-
-    public function getQuantityPurchased()
-    {
-        $r = $this->getPurchaseOrderRelation();
-        return $r ? $r->getQuantity() : 0;
-    }
-
-    public function getQuantityInStock()
-    {
-        $isStock = $this->getStatus() ? $this->getStatus()->getIsStock() : true;
-        
-        if (!$isStock) return 0;
-        
-        if ($r = $this->getPurchaseOrderRelation())
-        {
-            $q = $r->getQuantity();
-        }
-        elseif ($this->getSalesOrderRelations()->count() == 1 && $this->getSalesOrderRelations()->first()->getOrder()->getRepair())
-        {
-            // Repair
-            $r = $this->getSalesOrderRelations()->first();
-            $q = $r->getQuantity();
-        }
-        else
-        {
-            //throw new \Exception("Product has no purchase order and is not a repair, which should be impossible.");
-            return 0;
-        }
-
-        return $q - $this->getQuantitySold();
-    }
-
-    public function getQuantityOnHold()
-    {
-        $q = $this->getQuantityInStock() - $this->getQuantitySaleable();
-        return $q > 0 ? $q : 0;
-    }
-
-    public function getQuantitySaleable()
-    {
-        $isSaleable = $this->getStatus() ? $this->getStatus()->getIsSaleable() : false;
-        if (!$isSaleable)
-        {
-            $q = 0;
-        }
-        else
-        {
-            $r = $this->getPurchaseOrderRelation();
-            $q = $r ? $r->getQuantity() : 0;
-        }
-
-        return $q - $this->getQuantitySold();
-    }
-
-    public function getQuantitySold()
-    {
-        $isSaleable = $this->getStatus() ? $this->getStatus()->getIsSaleable() : false;
-
-        if (!$isSaleable)
-            return 0;
-
-        $q = 0;
-
-        foreach ($this->getSalesOrderRelations() as $r)
-        {
-            $q += $r->getQuantity();
-        }
-
-        // #173 count also sold attributed products
-        foreach ($this->attributedRelations as $attributedRelation)
-        {
-            $quantityPerUnit = $attributedRelation->getQuantity() ?? 1;
-            $parentProductQuantitySold = $attributedRelation->getProduct()->getQuantitySold() ?? 0;
-
-            $q += $quantityPerUnit * $parentProductQuantitySold;
-        }
-
-        return $q;
     }
 
     #endregion

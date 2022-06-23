@@ -93,10 +93,10 @@ class IndexSearchForm extends AbstractType
                 'placeholder' => 'All availability',
                 'required' => false,
                 'choices' => [
-                    'In stock' => 'InStock',
-                    'On hold' => 'OnHold',
-                    'For sale' => 'Saleable',
-                    'Sold' => 'Sold'
+                    'In stock' => 'stock',
+                    'On hold' => 'hold',
+                    'For sale' => 'saleable',
+                    'Sold' => 'sold'
             ]));
         }
         else

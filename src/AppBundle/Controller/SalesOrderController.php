@@ -180,7 +180,7 @@ class SalesOrderController extends Controller
         {
             $order = new SalesOrder();
             $order->setOrderDate(new \DateTime());
-            $stock = $em->getRepository('AppBundle:Product')->findStock($this->getUser());
+            $stock = $em->getRepository('AppBundle:Product')->findStock($this->getUser()); // Todo: slow
 
             if ($productId > 0)
             {
@@ -195,7 +195,7 @@ class SalesOrderController extends Controller
         {
             /** @var SalesOrder */
             $order = $repo->find($id);
-            $stock = $em->getRepository('AppBundle:Product')->findStockAndNotYetInOrder($this->getUser(), $order);
+            $stock = $em->getRepository('AppBundle:Product')->findStockAndNotYetInOrder($this->getUser(), $order); // Todo: slow and not tested
         }
 
         $form = $this->createForm(SalesOrderForm::class, $order, array('user' => $this->getUser(), 'stock' => $stock, 'isRepair' => $isRepair));

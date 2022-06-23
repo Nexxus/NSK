@@ -165,7 +165,7 @@
         {{ form_widget(form.save) }}
         {% if (product.id > 0) %}
         <a class="btn btn-default" role="button" href="{{ path('product_print', { 'id': product.id }) }}" target="_blank">Print</a>
-        {% if product.getQuantitySaleable() > 0 %}
+        {% if product.getStock().getSaleable() > 0 %}
         <a class="btn btn-default" role="button" href="{{ path('salesorder_new', { 'productId': product.id }) }}">Sell</a>
         {% endif %}
         {% endif %}

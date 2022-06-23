@@ -31,6 +31,7 @@ use AppBundle\Entity\SalesOrder;
 use AppBundle\Entity\TaskService;
 use AppBundle\Entity\ProductAttributeRelation;
 use AppBundle\Entity\ProductOrderRelation;
+use AppBundle\Entity\Stock;
 
 /**
  * ProductRepository
@@ -56,13 +57,21 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
     /**
      * This function searches in fields: Id, Sku, Name
      */
-    public function findBySearchQuery(\AppBundle\Helper\IndexSearchContainer $search)
+    /** @return \Doctrine\ORM\QueryBuilder */
+    public function querySearch(\AppBundle\Helper\IndexSearchContainer $search, $offset = 0, $limit = null)
     {
-        $qb = $this->getEntityManager()->createQueryBuilder()
-            ->from("AppBundle:Product", "o")->select("o")->orderBy("o.id", "DESC");
+        $qb = $this->_em->createQueryBuilder()
+            ->select('p')
+            ->from(Product::class, 'o')
+            ->join(Stock::class, 's', "WITH", "p.id=s.id")
+            ->orderBy("p.id", "DESC")
+            ->setFirstResult($offset);
+
+        if ($limit)
+            $qb = $qb->setMaxResults($limit);
 
         if ($search->user->hasRole("ROLE_LOCAL") || $search->user->hasRole("ROLE_LOGISTICS"))
-            $qb = $qb->where('IDENTITY(o.location) IN (:locationIds)')->setParameter('locationIds', $search->user->getLocationIds()); 
+            $qb = $qb->andWhere('IDENTITY(o.location) IN (:locationIds)')->setParameter('locationIds', $search->user->getLocationIds()); 
 
         if ($search->query)
         {
@@ -87,17 +96,69 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         if ($search->producttype)
             $qb = $qb->andWhere("o.type = :producttype")->setParameter("producttype", $search->producttype);
 
-        $products = $qb->getQuery()->getResult();
+        if ($search->availability)
+            $qb = $qb->andWhere("o.".$search->availability." > 0");
 
-        if ($search->availability && count($products) > 0)
-        {
-            $quantityMethod = 'getQuantity' . $search->availability;
-            $products = array_filter($products, function (Product $product) use ($quantityMethod) {
-                return $product->{$quantityMethod}() > 0;
+        return $qb;
+    }
+
+    /** @return \Doctrine\ORM\QueryBuilder */
+    public function queryStock(User $user, $offset = 0, $limit = null)
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('p')
+            ->from(Product::class, 'p')
+            ->join(Stock::class, 's', "WITH", "p.id=s.id")
+            ->where("s.stock>0")
+            ->orderBy("p.id", "DESC")
+            ->setFirstResult($offset);
+
+        if ($limit)
+            $qb = $qb->setMaxResults($limit);
+
+        if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
+            $qb = $qb->andWhere('IDENTITY(p.location) IN (:locationIds)')->setParameter('locationIds', $user->getLocationIds()); 
+
+        return $qb;
+    }
+
+    /** @return array */
+    public function findStock(User $user) {
+        return $this->queryStock($user)->getQuery()->getResult();
+    }
+
+    public function findStockAndNotYetInOrder(User $user, SalesOrder $order)
+    {
+        $productIds = array();
+        foreach ($order->getProductRelations() as $r)
+            $productIds[] = $r->getProduct()->getId();
+        
+        $qb = $this->queryStock($user);
+
+        if (count($productIds))
+            $qb = $qb->andWhere('p.id NOT IN (:productIds)')->setParameter('productIds', $productIds); 
+        
+        return $qb->getQuery()->getResult();
+
+        /*
+        NEW CODE ABOVE IS NOT TESTED YET
+
+        $products = $this->findStock($user);
+
+        // cannot add product to sales order twice
+        $products = array_filter($products,
+            function (Product $product) use ($order) {
+                /** @var SalesOrder $order 
+                foreach ($order->getProductRelations() as $r)
+                {
+                    if ($r->getProduct() == $product)
+                        return false;
+                }
+                return true;
             });
-        }
 
         return $products;
+        */
     }
 
     /**
@@ -107,11 +168,11 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
     {
         $result = array();
 
-        foreach ($this->findBySearchQuery($search) as $product)
+        foreach ($this->querySearch($search)->getQuery()->getResult() as $product)
         {
             /** @var Product $product */
             $result["product-".$product->getId()] = sprintf("Product '%s' with SKU %s, in quantity %s, at location %s",
-                $product->getName(), $product->getSku(), $product->getQuantityInStock(true), $product->getLocation()->getName());
+                $product->getName(), $product->getSku(), $product->getStock()->getStock(), $product->getLocation()->getName());
         }
 
         foreach ($this->_em->getRepository(SalesOrder::class)->findBySearchQuery($search) as $salesOrder)
@@ -129,38 +190,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         }
 
         return $result;
-    }
-
-    public function findStock(User $user)
-    {
-        $products = $this->findMine($user);
-
-        $products = array_filter($products,
-            function(Product $product) {
-                return $product->getQuantityInStock() > 0;
-            });
-
-        return $products;
-    }
-
-    public function findStockAndNotYetInOrder(User $user, SalesOrder $order)
-    {
-        $products = $this->findStock($user);
-
-        // cannot add product to sales order twice
-        $products = array_filter($products,
-            function (Product $product) use ($order) {
-                /** @var SalesOrder $order */
-                foreach ($order->getProductRelations() as $r)
-                {
-                    if ($r->getProduct() == $product)
-                        return false;
-                }
-                return true;
-            });
-
-        return $products;
-    }
+    }    
 
     public function findLastUpdated(User $user) {
         $qb = $this->getEntityManager()->createQueryBuilder()

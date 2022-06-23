@@ -121,7 +121,7 @@ class PrestaShopCommand extends ContainerAwareCommand
                     'id_category_default' => function (Product $p) { return $p->getType()->getExternalId(); },
                 ],
                 'stock_availables' => [
-                    'quantity' => function (Product $p) { return $p->getQuantitySaleable(); },
+                    'quantity' => function (Product $p) { return $p->getStock()->getSaleable(); },
                     // other properties are loaded from API
                 ],
 
