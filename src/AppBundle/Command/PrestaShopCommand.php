@@ -173,19 +173,11 @@ class PrestaShopCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->key = $this->container->getParameter('prestashop_key');
+        $this->baseUrl = $this->container->getParameter('prestashop_url');        
+        
         //$isDebug = $this->getContainer()->get('kernel')->isDebug();
         $isDebug = gethostname() === "YOGA";
-
-        if ($isDebug) {
-            $this->key = "ZA1UJPFTMBGJK7LZIDXB8MQHN7FVXT1K";
-            $this->baseUrl = "http://shop.mediapoints.nl/";   
-            //$this->key = 'ZAZIIVE5M7XC8C22NDTLE7UJ26T9LCIV';
-            //$this->baseUrl = 'http://www.mediapoints.nl/';                  
-        }
-        else {
-            $this->key = 'ZAZIIVE5M7XC8C22NDTLE7UJ26T9LCIV';
-            $this->baseUrl = 'http://www.mediapoints.nl/';
-        }
 
         $this->webService = new \PrestaShopWebservice($this->baseUrl, $this->key, $isDebug);
         $this->em = $this->getContainer()->get('doctrine')->getManager(); 
