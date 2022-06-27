@@ -24,6 +24,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation as Serialize;
 
 /**
  * ProductOrderRelation
@@ -47,6 +48,7 @@ class ProductOrderRelation
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Serialize\Groups({"vue:products"})
      */
     private $id;
 
@@ -218,6 +220,10 @@ class ProductOrderRelation
         return $this->services;
     }
 
+    /**
+    * @Serialize\VirtualProperty()
+    * @Serialize\Groups({"vue:products"})
+    */
     public function getServicesDone() {
         $servicesDone = $this->services->filter(function (AService $service) {
             return $service->getStatus() == AService::STATUS_DONE;

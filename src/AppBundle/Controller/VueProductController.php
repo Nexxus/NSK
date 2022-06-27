@@ -35,13 +35,14 @@ use FOS\RestBundle\Controller\FOSRestController;
 class VueProductController extends FOSRestController
 {
     /**
-     * @Rest\Get("/{offset}/{limit}")
+     * @Rest\Get("/{offset}/{limit}/{sort}/{order}")
+     * @Rest\View(serializerGroups={"vue:products"})
      */
-    public function indexAction(Request $request, $offset, $limit)
+    public function indexAction(Request $request, $offset, $limit, $sort, $order)
     {
         $repo = $this->getDoctrine()->getRepository(Product::class);
 
-        $products = $repo->queryStock($this->getUser(), $offset, $limit)->getQuery()->getResult();
+        $products = $repo->queryStock($this->getUser(), $offset, $limit, $sort, $order)->getQuery()->getResult();
 
         return $products;     
     }

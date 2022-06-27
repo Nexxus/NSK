@@ -23,7 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation as JMS;
+use JMS\Serializer\Annotation as Serialize;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
@@ -51,6 +51,7 @@ class Attribute
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $id;
 
@@ -58,6 +59,7 @@ class Attribute
      * @var int
      *
      * @ORM\Column(type="integer", nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $externalId;      
 
@@ -65,6 +67,7 @@ class Attribute
      * @var string
      *
      * @ORM\Column(type="string", length=11, unique=false)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $attr_code;
 
@@ -72,6 +75,7 @@ class Attribute
      * @var string
      *
      * @ORM\Column(type="string", length=255, unique=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      * @
      */
     private $name;
@@ -80,6 +84,7 @@ class Attribute
      * @var int Standard sales price, in eurocents, to use if type is open text field
      *
      * @ORM\Column(type="integer", nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $price;
 
@@ -87,13 +92,13 @@ class Attribute
      * @var int Use constants
      *
      * @ORM\Column(type="integer", nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $type;
 
     /**
      * @var ArrayCollection|ProductType[] Which product types can use this attribute
      * @ORM\ManyToMany(targetEntity="ProductType", mappedBy="attributes")
-     * @JMS\Exclude()
      */
     private $productTypes;
 
@@ -101,14 +106,12 @@ class Attribute
      * @var ProductType If attribute type is Product, this property filters the possible products
      * @ORM\ManyToOne(targetEntity="ProductType")
      * @ORM\JoinColumn(name="product_type_filter_id", referencedColumnName="id")
-     * @JMS\Exclude()
      */
     private $productTypeFilter;
 
     /**
      * @var ArrayCollection|ProductAttributeRelation[] Which products have this attribute
      * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="attribute", cascade={"all"}, orphanRemoval=true)
-     * @JMS\Exclude()
      */
     private $productRelations;
 
@@ -116,6 +119,7 @@ class Attribute
      * @var ArrayCollection|AttributeOption[] To use when type is SELECT
      *
      * @ORM\OneToMany(targetEntity="AttributeOption", mappedBy="attribute", cascade={"all"})
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $options;
 
@@ -123,6 +127,7 @@ class Attribute
      * @var bool If true, the ProductAttributeRelation can use quantity, meaning quantity per unit
      *
      * @ORM\Column(type="boolean", nullable=false, options={"default" : false})
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $hasQuantity = false;
 
@@ -130,6 +135,7 @@ class Attribute
      * @var bool If true, the attribute can be published to webshop
      *
      * @ORM\Column(type="boolean", nullable=false, options={"default" : true})
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $isPublic = true;    
 

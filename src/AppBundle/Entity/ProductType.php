@@ -23,7 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation as JMS;
+use JMS\Serializer\Annotation as Serialize;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
@@ -48,6 +48,7 @@ class ProductType
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $id;
 
@@ -55,6 +56,7 @@ class ProductType
      * @var int
      *
      * @ORM\Column(type="integer", nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $externalId;     
 
@@ -62,6 +64,7 @@ class ProductType
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, unique=true)
+     * @Serialize\Groups({"api:purchaseorders", "vue:products"})
      */
     private $name;
 
@@ -69,6 +72,7 @@ class ProductType
      * @var int
      *
      * @ORM\Column(name="pindex", type="integer", nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $pindex;
 
@@ -76,6 +80,7 @@ class ProductType
      * @var string
      *
      * @ORM\Column(name="comment", type="text", nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $comment = null;
 
@@ -83,6 +88,7 @@ class ProductType
      * @var bool
      *
      * @ORM\Column(type="boolean", nullable=false, options={"default" : false})
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $isAttribute = false;
 
@@ -91,7 +97,6 @@ class ProductType
      *
      * @ORM\ManyToMany(targetEntity="Attribute", inversedBy="productTypes")
      * @ORM\JoinTable(name="product_type_attribute")
-     * @JMS\Exclude()
      */
     private $attributes;
 
@@ -100,7 +105,7 @@ class ProductType
      *
      * @ORM\ManyToMany(targetEntity="Task", inversedBy="productTypes")
      * @ORM\JoinTable(name="product_type_task")
-     * @JMS\Exclude()
+     * @Serialize\Groups({"vue:products"})
      */
     private $tasks;
 
@@ -108,7 +113,6 @@ class ProductType
      * @var ArrayCollection|Product[]
      *
      * @ORM\OneToMany(targetEntity="Product", mappedBy="type")
-     * @JMS\Exclude()
      */
     private $products;
 

@@ -23,7 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation as Serialize;
 
 /**
  * Company
@@ -42,6 +42,7 @@ abstract class ACompany
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $id;
 
@@ -49,6 +50,7 @@ abstract class ACompany
      * @var int
      *
      * @ORM\Column(type="integer", nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $externalId;   
 
@@ -56,6 +58,7 @@ abstract class ACompany
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $name;
 
@@ -63,6 +66,7 @@ abstract class ACompany
      * @var int
      *
      * @ORM\Column(name="kvk_nr", type="integer", nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $kvkNr;
 
@@ -70,6 +74,7 @@ abstract class ACompany
      * @var string
      *
      * @ORM\Column(name="representative", type="string", length=255, nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $representative;
 
@@ -77,6 +82,7 @@ abstract class ACompany
      * @var string
      *
      * @ORM\Column(name="email", type="string", length=255, nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $email;
 
@@ -84,6 +90,7 @@ abstract class ACompany
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $phone;
 
@@ -91,6 +98,7 @@ abstract class ACompany
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $phone2;
 
@@ -98,6 +106,7 @@ abstract class ACompany
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $street;
 
@@ -105,6 +114,7 @@ abstract class ACompany
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $streetExtra;
 
@@ -112,6 +122,7 @@ abstract class ACompany
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $city;
 
@@ -119,6 +130,7 @@ abstract class ACompany
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $country;
 
@@ -126,6 +138,7 @@ abstract class ACompany
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $state;
 
@@ -133,6 +146,7 @@ abstract class ACompany
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $zip;
 
@@ -140,6 +154,7 @@ abstract class ACompany
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $street2;
 
@@ -147,6 +162,7 @@ abstract class ACompany
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $streetExtra2;
 
@@ -154,6 +170,7 @@ abstract class ACompany
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $city2;
 
@@ -161,6 +178,7 @@ abstract class ACompany
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $country2;
 
@@ -168,6 +186,7 @@ abstract class ACompany
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $state2;
 
@@ -175,6 +194,7 @@ abstract class ACompany
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $zip2;
 
@@ -183,6 +203,7 @@ abstract class ACompany
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Customer")
      * @ORM\JoinColumn(name="partner_id", referencedColumnName="id")
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $partner;
 

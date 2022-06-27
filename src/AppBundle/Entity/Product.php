@@ -23,7 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation as JMS;
+use JMS\Serializer\Annotation as Serialize;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use AppBundle\Entity\Supplier;
@@ -62,6 +62,7 @@ class Product
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Serialize\Groups({"api:purchaseorders", "vue:products"})
      */
     private $id;
 
@@ -69,6 +70,7 @@ class Product
      * @var int
      *
      * @ORM\Column(type="integer", nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $externalId;    
 
@@ -76,6 +78,7 @@ class Product
      * @var string
      *
      * @ORM\Column(type="string", length=16)
+     * @Serialize\Groups({"api:purchaseorders", "vue:products"})
      */
     private $sku;
 
@@ -83,6 +86,7 @@ class Product
      * @var string
      *
      * @ORM\Column(type="string", length=255)
+     * @Serialize\Groups({"api:purchaseorders", "vue:products"})
      */
     private $name;
 
@@ -91,6 +95,7 @@ class Product
      *
      * @ORM\ManyToOne(targetEntity="ProductType")
      * @ORM\JoinColumn(name="type_id", referencedColumnName="id")
+     * @Serialize\Groups({"api:purchaseorders", "vue:products"})
      */
     private $type;
 
@@ -98,6 +103,7 @@ class Product
      * @var string
      *
      * @ORM\Column(type="text", nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $description;
 
@@ -105,6 +111,7 @@ class Product
      * @var int Standard sales price, in eurocents, per unit
      *
      * @ORM\Column(type="integer", nullable=true)
+     * @Serialize\Groups({"api:purchaseorders", "vue:products"})
      */
     private $price;
 
@@ -113,6 +120,7 @@ class Product
      *
      * @ORM\ManyToOne(targetEntity="Location", inversedBy="products")
      * @ORM\JoinColumn(name="location_id", referencedColumnName="id", nullable=false)
+     * @Serialize\Groups({"api:purchaseorders", "vue:products"})
      */
     private $location;
 
@@ -120,6 +128,7 @@ class Product
      * @var \DateTime
      *
      * @ORM\Column(type="datetime")
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $createdAt;
 
@@ -127,6 +136,7 @@ class Product
      * @var \DateTime
      *
      * @ORM\Column(type="datetime")
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $updatedAt;
 
@@ -135,12 +145,14 @@ class Product
      *
      * @ORM\ManyToOne(targetEntity="ProductStatus", fetch="EAGER")
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $status;
 
     /**
      * @var ArrayCollection|ProductAttributeRelation[]
      * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="product", cascade={"all"}, orphanRemoval=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $attributeRelations;
 
@@ -150,14 +162,12 @@ class Product
      *
      * @var ArrayCollection|ProductAttributeRelation[]
      * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="valueProduct", cascade={"all"}, orphanRemoval=true)
-     * @JMS\Exclude
      */
     private $attributedRelations;
 
     /**
      * @var ArrayCollection|ProductOrderRelation[]
      * @ORM\OneToMany(targetEntity="ProductOrderRelation", mappedBy="product", fetch="EAGER", cascade={"all"}, orphanRemoval=true)
-     * @JMS\Exclude
      */
     private $orderRelations;
 
@@ -166,6 +176,7 @@ class Product
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Supplier")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id")
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $owner;
 
@@ -173,6 +184,7 @@ class Product
      * @var ArrayCollection|ProductAttributeFile[]
      *
      * @ORM\OneToMany(targetEntity="ProductAttributeFile", mappedBy="product")
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $files;
 
@@ -180,6 +192,7 @@ class Product
      * @var Stock
      * 
      * @ORM\OneToOne(targetEntity="Stock", mappedBy="product")
+     * @Serialize\Groups({"api:purchaseorders", "vue:products"})
      */
     private $stock;    
 
@@ -499,6 +512,8 @@ class Product
     #endregion
 
     /**
+     * @Serialize\VirtualProperty()
+     * @Serialize\Groups({"vue:products"})
      * @return ProductOrderRelation Relation to purchase order
      */
     public function getPurchaseOrderRelation()

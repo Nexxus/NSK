@@ -70,7 +70,9 @@ export default {
             pageLength,
             pageCount,
             page: 1,
-            products: []
+            products: [],
+            sort: "p.id",
+            order: "DESC"
         }
     },
     computed: {
@@ -79,7 +81,7 @@ export default {
         }
     },
     mounted() {
-      this.axios.get("../vue/product/" + this.offset + "/" + this.pageLength)
+      this.axios.get("../vue/product/" + this.offset + "/" + this.pageLength + "/" + this.sort + "/" + this.order)
         .then(response => {
           this.products = response.data
         })

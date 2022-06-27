@@ -23,7 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation as JMS;
+use JMS\Serializer\Annotation as Serialize;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
@@ -51,12 +51,14 @@ class Pickup
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $id;
 
     /**
      * @ORM\OneToOne(targetEntity="PurchaseOrder", inversedBy="pickup")
      * @ORM\JoinColumn(name="order_id", referencedColumnName="id")
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $order;
 
@@ -64,6 +66,7 @@ class Pickup
      * @var \DateTime As proposed by supplier in public form
      *
      * @ORM\Column(type="datetime", nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $pickupDate;
 
@@ -71,6 +74,7 @@ class Pickup
      * @var \DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $realPickupDate;
 
@@ -79,7 +83,7 @@ class Pickup
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
      * @ORM\JoinColumn(name="logistics_id", referencedColumnName="id")
-     * @JMS\MaxDepth(depth=1)
+     * @Serialize\MaxDepth(depth=1)
      */
     private $logistics;
 
@@ -87,6 +91,7 @@ class Pickup
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $origin;
 
@@ -94,6 +99,7 @@ class Pickup
      * @var int Use constants
      *
      * @ORM\Column(type="integer", nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $dataDestruction;
 
@@ -101,6 +107,7 @@ class Pickup
      * @var string
      *
      * @ORM\Column(type="text", nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $description;
 
@@ -108,6 +115,7 @@ class Pickup
      * @var ArrayCollection|PickupImageFile[]
      *
      * @ORM\OneToMany(targetEntity="PickupImageFile", mappedBy="pickup", cascade={"all"}, orphanRemoval=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $images;
 
@@ -115,6 +123,7 @@ class Pickup
      * @var PickupAgreementFile
      *
      * @ORM\OneToOne(targetEntity="PickupAgreementFile", mappedBy="pickup", cascade={"all"}, orphanRemoval=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $agreement;
 

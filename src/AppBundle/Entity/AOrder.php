@@ -24,6 +24,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation as Serialize;
 
 /**
  * AOrder
@@ -46,6 +47,7 @@ abstract class AOrder
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $id;
 
@@ -53,6 +55,7 @@ abstract class AOrder
      * @var string
      *
      * @ORM\Column(type="string", length=16, unique=true, nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $orderNr;
 
@@ -60,6 +63,7 @@ abstract class AOrder
      * @var string
      *
      * @ORM\Column(type="string", nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $remarks;
 
@@ -67,6 +71,7 @@ abstract class AOrder
      * @var \DateTime
      *
      * @ORM\Column(type="datetime")
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $orderDate;
 
@@ -74,6 +79,7 @@ abstract class AOrder
      * @var ArrayCollection|ProductOrderRelation[] Which products have this attribute
      *
      * @ORM\OneToMany(targetEntity="ProductOrderRelation", mappedBy="order", cascade={"all"}, orphanRemoval=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $productRelations;
 
@@ -82,6 +88,7 @@ abstract class AOrder
      *
      * @ORM\ManyToOne(targetEntity="OrderStatus")
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $status;
 
@@ -89,6 +96,7 @@ abstract class AOrder
      * @var int Discount price, in eurocents
      *
      * @ORM\Column(type="integer", nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $discount;
 
@@ -96,6 +104,7 @@ abstract class AOrder
      * @var int Price for transport, in eurocents
      *
      * @ORM\Column(type="integer", nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $transport;
 
@@ -103,6 +112,7 @@ abstract class AOrder
      * @var bool
      *
      * @ORM\Column(type="boolean", nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $isGift;
 
@@ -110,6 +120,7 @@ abstract class AOrder
      * @var int
      *
      * @ORM\Column(type="integer", nullable=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     protected $externalId;      
 

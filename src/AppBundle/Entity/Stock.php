@@ -23,6 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serialize;
 
 /**
  * This entity is a database view; therefor you see readOnly annotation and a private constructor
@@ -47,30 +48,35 @@ class Stock
     /**
      * @var int
      * @ORM\Column(type="integer")
+     * @Serialize\Groups({"vue:products"})
      */
     private $purchased;     
 
     /**
      * @var int
      * @ORM\Column(type="integer")
+     * @Serialize\Groups({"vue:products"})
      */
     private $stock;  
 
     /**
      * @var int
      * @ORM\Column(type="integer")
+     * @Serialize\Groups({"vue:products"})
      */
     private $saleable;  
     
     /**
      * @var int
      * @ORM\Column(type="integer")
+     * @Serialize\Groups({"vue:products"})
      */
     private $hold;  
     
     /**
      * @var int
      * @ORM\Column(type="integer")
+     * @Serialize\Groups({"vue:products"})
      */
     private $sold; 
     

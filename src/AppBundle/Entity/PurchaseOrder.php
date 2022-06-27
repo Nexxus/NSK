@@ -24,7 +24,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use JMS\Serializer\Annotation as JMS;
+use JMS\Serializer\Annotation as Serialize;
 use AppBundle\Entity\Supplier;
 
 /**
@@ -40,12 +40,13 @@ class PurchaseOrder extends AOrder
      * @Assert\Valid
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Supplier")
      * @ORM\JoinColumn(name="supplier_id", referencedColumnName="id")
-     * @JMS\MaxDepth(depth=1)
+     * @Serialize\MaxDepth(depth=1)
      */
     private $supplier;
 
     /**
      * @ORM\OneToOne(targetEntity="Pickup", mappedBy="order", cascade={"all"}, orphanRemoval=true)
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $pickup;
 

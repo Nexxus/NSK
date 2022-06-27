@@ -23,7 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation as JMS;
+use JMS\Serializer\Annotation as Serialize;
 use Doctrine\Common\Collections\ArrayCollection;
 use AppBundle\Entity\User;
 use AppBundle\Entity\Product;
@@ -35,7 +35,6 @@ use AppBundle\Entity\Product;
  *
  * @ORM\Table(name="location")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\LocationRepository")
- * @JMS\ExclusionPolicy("all")
  */
 class Location
 {
@@ -49,21 +48,21 @@ class Location
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @JMS\Expose
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $id;
 
     /**
      * @var string
      * @ORM\Column(name="name", type="string", length=255, unique=true)
-     * @JMS\Expose
+     * @Serialize\Groups({"api:purchaseorders", "vue:products"})
      */
     private $name;
 
     /**
      * @var string Comma separated list of zipcodes
      * @ORM\Column(type="string", nullable=true)
-     * @JMS\Expose
+     * @Serialize\Groups({"api:purchaseorders"})
      */
     private $zipcodes;
 

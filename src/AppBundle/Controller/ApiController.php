@@ -22,6 +22,7 @@ class ApiController extends FOSRestController
 
     /**
      * @Rest\Get("/purchaseorders/{statusId}")
+     * @Rest\View(serializerGroups={"api:purchaseorders"})
      */
     public function getPurchaseOrdersAction($statusId)
     {

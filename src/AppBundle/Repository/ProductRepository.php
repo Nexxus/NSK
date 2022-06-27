@@ -32,6 +32,8 @@ use AppBundle\Entity\TaskService;
 use AppBundle\Entity\ProductAttributeRelation;
 use AppBundle\Entity\ProductOrderRelation;
 use AppBundle\Entity\Stock;
+use AppBundle\Entity\Location;
+use AppBundle\Entity\ProductType;
 
 /**
  * ProductRepository
@@ -103,14 +105,16 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
     }
 
     /** @return \Doctrine\ORM\QueryBuilder */
-    public function queryStock(User $user, $offset = 0, $limit = null)
+    public function queryStock(User $user, $offset = 0, $limit = null, $sort = "p.id", $order = "DESC")
     {
         $qb = $this->_em->createQueryBuilder()
             ->select('p')
             ->from(Product::class, 'p')
             ->join(Stock::class, 's', "WITH", "p.id=s.id")
+            //->leftJoin(Location::class, 'l')
+            //->leftJoin(ProductType::class, "t")
             ->where("s.stock>0")
-            ->orderBy("p.id", "DESC")
+            ->orderBy($sort, $order)
             ->setFirstResult($offset);
 
         if ($limit)
