@@ -188,7 +188,7 @@
                     <td>{{ form_widget(formRelation.price) }}</td>
                     <td>{{ form_widget(formRelation.quantity) }}</td>
                     <td nowrap>
-                        <a class="btn btn-success" href="{{ path('product_edit', { 'id': product.id }) }}" data-toggle="modal" data-target="#modalEditor"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
+                        <a class="btn btn-success" href="{{ path('product_edit', { 'id': product.id }) }}" data-toggle="modal" data-target="#modalOrderEditor"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
                     </td>
                 </tr>
             {% else %}
@@ -265,10 +265,10 @@
 
          $('select[name="purchase_order_form[newProduct]"]').change(function () {
              if ($(this).val()) {
-                 $("#modalEditor .modal-content").load('{{ path('product_new', { 'purchaseOrderId': order.id }) }}/0/' + $(this).val(), function () {
+                 $("#modalOrderEditor .modal-content").load('{{ path('product_new', { 'purchaseOrderId': order.id }) }}/0/' + $(this).val(), function () {
                      focusBarcodeInput();
                  });
-                 $("#modalEditor").modal('show');
+                 $("#modalOrderEditor").modal('show');
              }
          });
 

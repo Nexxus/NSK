@@ -62,7 +62,7 @@ class Product
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Serialize\Groups({"api:purchaseorders", "vue:products"})
+     * @Serialize\Groups({"api:purchaseorders", "product:index", "product:edit", "product:attributable"})
      */
     private $id;
 
@@ -78,7 +78,7 @@ class Product
      * @var string
      *
      * @ORM\Column(type="string", length=16)
-     * @Serialize\Groups({"api:purchaseorders", "vue:products"})
+     * @Serialize\Groups({"api:purchaseorders", "product:index", "product:edit"})
      */
     private $sku;
 
@@ -86,7 +86,7 @@ class Product
      * @var string
      *
      * @ORM\Column(type="string", length=255)
-     * @Serialize\Groups({"api:purchaseorders", "vue:products"})
+     * @Serialize\Groups({"api:purchaseorders", "product:index", "product:edit", "product:attributable"})
      */
     private $name;
 
@@ -95,7 +95,7 @@ class Product
      *
      * @ORM\ManyToOne(targetEntity="ProductType")
      * @ORM\JoinColumn(name="type_id", referencedColumnName="id")
-     * @Serialize\Groups({"api:purchaseorders", "vue:products"})
+     * @Serialize\Groups({"api:purchaseorders", "product:index", "product:edit"})
      */
     private $type;
 
@@ -103,7 +103,7 @@ class Product
      * @var string
      *
      * @ORM\Column(type="text", nullable=true)
-     * @Serialize\Groups({"api:purchaseorders"})
+     * @Serialize\Groups({"api:purchaseorders", "product:edit"})
      */
     private $description;
 
@@ -111,7 +111,7 @@ class Product
      * @var int Standard sales price, in eurocents, per unit
      *
      * @ORM\Column(type="integer", nullable=true)
-     * @Serialize\Groups({"api:purchaseorders", "vue:products"})
+     * @Serialize\Groups({"api:purchaseorders", "product:index", "product:edit"})
      */
     private $price;
 
@@ -120,7 +120,7 @@ class Product
      *
      * @ORM\ManyToOne(targetEntity="Location", inversedBy="products")
      * @ORM\JoinColumn(name="location_id", referencedColumnName="id", nullable=false)
-     * @Serialize\Groups({"api:purchaseorders", "vue:products"})
+     * @Serialize\Groups({"api:purchaseorders", "product:index", "product:edit"})
      */
     private $location;
 
@@ -145,14 +145,14 @@ class Product
      *
      * @ORM\ManyToOne(targetEntity="ProductStatus", fetch="EAGER")
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
-     * @Serialize\Groups({"api:purchaseorders"})
+     * @Serialize\Groups({"api:purchaseorders", "product:edit"})
      */
     private $status;
 
     /**
      * @var ArrayCollection|ProductAttributeRelation[]
      * @ORM\OneToMany(targetEntity="ProductAttributeRelation", mappedBy="product", cascade={"all"}, orphanRemoval=true)
-     * @Serialize\Groups({"api:purchaseorders"})
+     * @Serialize\Groups({"api:purchaseorders", "product:edit"})
      */
     private $attributeRelations;
 
@@ -192,7 +192,7 @@ class Product
      * @var Stock
      * 
      * @ORM\OneToOne(targetEntity="Stock", mappedBy="product")
-     * @Serialize\Groups({"api:purchaseorders", "vue:products"})
+     * @Serialize\Groups({"api:purchaseorders", "product:index"})
      */
     private $stock;    
 
@@ -513,7 +513,7 @@ class Product
 
     /**
      * @Serialize\VirtualProperty()
-     * @Serialize\Groups({"vue:products"})
+     * @Serialize\Groups({"product:edit"})
      * @return ProductOrderRelation Relation to purchase order
      */
     public function getPurchaseOrderRelation()
@@ -526,6 +526,8 @@ class Product
     }
 
     /**
+     * @Serialize\VirtualProperty()
+     * @Serialize\Groups({"product:edit"})      
      * @return Collection|ProductOrderRelation[] Relations to sales orders
      */
     public function getSalesOrderRelations()
@@ -539,6 +541,9 @@ class Product
 
     /**
      * Standard prices multiplied by Quantities of (selected) attributes and/or attributed products
+     * 
+     * @Serialize\VirtualProperty()
+     * @Serialize\Groups({"product:edit"})        
      * @return double
      */
     public function getTotalStandardPriceOfAttributes()
@@ -554,6 +559,28 @@ class Product
     }
 
     /**
+     * @Serialize\VirtualProperty()
+     * @Serialize\Groups({"product:index"})           
+     * @return string proxy which will be filled with Vue and Axios
+     */
+    public function getServicesDone() {
+        return '...';
+    }
+
+    /**
+     * @Serialize\VirtualProperty()
+     * @Serialize\Groups({"product:index"})           
+     * @return string for use in views tooltips
+     */
+    public function getTasksCount() {
+        if ($this->type && $this->getType()->getTasks()->count())
+            return $this->getType()->getTasks()->count();
+        return 0;
+    }
+    
+    /**
+     * @Serialize\VirtualProperty()
+     * @Serialize\Groups({"product:index"})           
      * @return string for use in views tooltips
      */
     public function getAttributesList() {

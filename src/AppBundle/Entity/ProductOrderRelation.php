@@ -48,7 +48,7 @@ class ProductOrderRelation
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Serialize\Groups({"vue:products"})
+     * @Serialize\Groups({"product:edit", "product:checklist"})
      */
     private $id;
 
@@ -65,6 +65,7 @@ class ProductOrderRelation
      *
      * @ORM\ManyToOne(targetEntity="AOrder", inversedBy="productRelations", fetch="EAGER")
      * @ORM\JoinColumn(name="order_id", referencedColumnName="id", nullable=false)
+     * @Serialize\Groups({"product:edit"})
      */
     private $order;
 
@@ -72,6 +73,7 @@ class ProductOrderRelation
      * @var int Actual quantity of this product in this order
      *
      * @ORM\Column(type="integer", nullable=true)
+     * @Serialize\Groups({"product:edit"})
      */
     private $quantity;
 
@@ -215,6 +217,10 @@ class ProductOrderRelation
         $this->services->removeElement($service);
     }
 
+    /**
+    * @Serialize\VirtualProperty()
+    * @Serialize\Groups({"product:checklist"})
+    */
     public function getServices()
     {
         return $this->services;
@@ -222,7 +228,7 @@ class ProductOrderRelation
 
     /**
     * @Serialize\VirtualProperty()
-    * @Serialize\Groups({"vue:products"})
+    * @Serialize\Groups({"product:checklist"})
     */
     public function getServicesDone() {
         $servicesDone = $this->services->filter(function (AService $service) {

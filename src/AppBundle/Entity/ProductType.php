@@ -48,7 +48,7 @@ class ProductType
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Serialize\Groups({"api:purchaseorders"})
+     * @Serialize\Groups({"api:purchaseorders", "product:meta", "product:edit"})
      */
     private $id;
 
@@ -64,7 +64,7 @@ class ProductType
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, unique=true)
-     * @Serialize\Groups({"api:purchaseorders", "vue:products"})
+     * @Serialize\Groups({"api:purchaseorders", "product:index", "product:meta"})
      */
     private $name;
 
@@ -105,7 +105,7 @@ class ProductType
      *
      * @ORM\ManyToMany(targetEntity="Task", inversedBy="productTypes")
      * @ORM\JoinTable(name="product_type_task")
-     * @Serialize\Groups({"vue:products"})
+     * @Serialize\Groups({"product:index"})
      */
     private $tasks;
 

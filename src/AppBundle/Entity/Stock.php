@@ -48,35 +48,35 @@ class Stock
     /**
      * @var int
      * @ORM\Column(type="integer")
-     * @Serialize\Groups({"vue:products"})
+     * @Serialize\Groups({"product:index"})
      */
     private $purchased;     
 
     /**
      * @var int
      * @ORM\Column(type="integer")
-     * @Serialize\Groups({"vue:products"})
+     * @Serialize\Groups({"product:index"})
      */
     private $stock;  
 
     /**
      * @var int
      * @ORM\Column(type="integer")
-     * @Serialize\Groups({"vue:products"})
+     * @Serialize\Groups({"product:index"})
      */
     private $saleable;  
     
     /**
      * @var int
      * @ORM\Column(type="integer")
-     * @Serialize\Groups({"vue:products"})
+     * @Serialize\Groups({"product:index"})
      */
     private $hold;  
     
     /**
      * @var int
      * @ORM\Column(type="integer")
-     * @Serialize\Groups({"vue:products"})
+     * @Serialize\Groups({"product:index"})
      */
     private $sold; 
     

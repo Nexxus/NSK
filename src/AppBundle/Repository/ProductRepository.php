@@ -23,6 +23,7 @@
 namespace AppBundle\Repository;
 
 use AppBundle\Entity\AOrder;
+use AppBundle\Entity\Attribute;
 use AppBundle\Entity\Product;
 use AppBundle\Entity\ProductStatus;
 use AppBundle\Entity\User;
@@ -60,61 +61,63 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
      * This function searches in fields: Id, Sku, Name
      */
     /** @return \Doctrine\ORM\QueryBuilder */
-    public function querySearch(\AppBundle\Helper\IndexSearchContainer $search, $offset = 0, $limit = null)
+    public function querySearch(\AppBundle\Helper\IndexSearchContainer $search, $offset = 0, $limit = null, $sort = "p_id")
     {
         $qb = $this->_em->createQueryBuilder()
             ->select('p')
-            ->from(Product::class, 'o')
-            ->join(Stock::class, 's', "WITH", "p.id=s.id")
-            ->orderBy("p.id", "DESC")
+            ->from(Product::class, 'p')
+            ->join("p.stock", 's')
+            ->orderBy(str_replace('_', '.', $sort), $sort == "p_id" ? "DESC" : "ASC")
             ->setFirstResult($offset);
 
         if ($limit)
             $qb = $qb->setMaxResults($limit);
 
         if ($search->user->hasRole("ROLE_LOCAL") || $search->user->hasRole("ROLE_LOGISTICS"))
-            $qb = $qb->andWhere('IDENTITY(o.location) IN (:locationIds)')->setParameter('locationIds', $search->user->getLocationIds()); 
+            $qb = $qb->andWhere('IDENTITY(p.location) IN (:locationIds)')->setParameter('locationIds', $search->user->getLocationIds()); 
 
         if ($search->query)
         {
             if (is_numeric($search->query))
             {
-                $qb = $qb->andWhere("o.id = :query OR o.sku = :query")->setParameter("query", $search->query);
+                $qb = $qb->andWhere("p.id = :query OR p.sku = :query")->setParameter("query", $search->query);
             }
             else
             {
-                $qb = $qb->andWhere("o.name LIKE :queryLike OR o.sku = :query")->setParameter("query", $search->query)->setParameter("queryLike", '%'.$search->query.'%');
+                $qb = $qb->andWhere("p.name LIKE :queryLike OR p.sku = :query")->setParameter("query", $search->query)->setParameter("queryLike", '%'.$search->query.'%');
             }
         }
 
         if ($search->location)
-            $qb = $qb->andWhere("o.location = :location")->setParameter("location", $search->location);
+            $qb = $qb->andWhere("p.location = :location")->setParameter("location", $search->location);
         elseif ($search->user->hasRole("ROLE_LOCAL") || $search->user->hasRole("ROLE_LOGISTICS"))
-            $qb = $qb->andWhere('IDENTITY(o.location) IN (:locationIds)')->setParameter('locationIds', $search->user->getLocationIds()); 
+            $qb = $qb->andWhere('IDENTITY(p.location) IN (:locationIds)')->setParameter('locationIds', $search->user->getLocationIds()); 
 
         if ($search->status)
-            $qb = $qb->andWhere("o.status = :status")->setParameter("status", $search->status);
+            $qb = $qb->andWhere("p.status = :status")->setParameter("status", $search->status);
 
         if ($search->producttype)
-            $qb = $qb->andWhere("o.type = :producttype")->setParameter("producttype", $search->producttype);
+            $qb = $qb->andWhere("p.type = :producttype")->setParameter("producttype", $search->producttype);
 
         if ($search->availability)
-            $qb = $qb->andWhere("o.".$search->availability." > 0");
+            $qb = $qb->andWhere("s.".$search->availability." > 0");
+
+        $sql = $qb->getQuery()->getSQL();
 
         return $qb;
     }
 
     /** @return \Doctrine\ORM\QueryBuilder */
-    public function queryStock(User $user, $offset = 0, $limit = null, $sort = "p.id", $order = "DESC")
+    public function queryStock(User $user, $offset = 0, $limit = null, $sort = "p_id")
     {
         $qb = $this->_em->createQueryBuilder()
             ->select('p')
             ->from(Product::class, 'p')
-            ->join(Stock::class, 's', "WITH", "p.id=s.id")
-            //->leftJoin(Location::class, 'l')
-            //->leftJoin(ProductType::class, "t")
+            ->join("p.stock", 's')
+            ->leftJoin("p.location", 'l')
+            ->leftJoin("p.type", "t")
             ->where("s.stock>0")
-            ->orderBy($sort, $order)
+            ->orderBy(str_replace('_', '.', $sort), $sort == "p_id" ? "DESC" : "ASC")
             ->setFirstResult($offset);
 
         if ($limit)
@@ -197,6 +200,7 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
     }    
 
     public function findLastUpdated(User $user) {
+        
         $qb = $this->getEntityManager()->createQueryBuilder()
             ->from("AppBundle:Product", "o")
             ->select("o")
@@ -208,6 +212,28 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    public function findAttributableProducts(Product $product, Attribute $attribute) {
+
+        if ($pt = $attribute->getProductTypeFilter())
+        {
+            $qb = $this->createQueryBuilder('p')
+                ->where("p.type = :pt2")
+                ->setParameter("pt2", $pt);
+        }
+        else
+        {
+            $qb = $this->createQueryBuilder('p')
+                ->join("p.type", "t")
+                ->where('t.isAttribute = true');
+        }
+
+        $qb = $qb->andWhere("p.type <> :pt" )
+            ->setParameter("pt", $product->getType())
+            ->orderBy('p.name', 'ASC');
+
+        return $qb->getQuery()->getResult();
+    }    
 
     public function generateProductAttributeRelations(Product $product)
     {

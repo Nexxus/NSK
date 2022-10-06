@@ -23,6 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serialize;
 
 /**
  * @ORM\Table(name="product_attribute")
@@ -41,6 +42,7 @@ class ProductAttributeRelation
      * @var string Text, File path or Option text; depends on type of attribute
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Serialize\Groups({"product:edit"})
      */
     private $value;
 
@@ -67,6 +69,7 @@ class ProductAttributeRelation
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity="Attribute", inversedBy="productRelations")
      * @ORM\JoinColumn(name="attribute_id", referencedColumnName="id", nullable=false)
+     * @Serialize\Groups({"product:edit"})
      */
     private $attribute;
 
@@ -74,6 +77,7 @@ class ProductAttributeRelation
      * @var int
      *
      * @ORM\Column(type="integer", nullable=true)
+     * @Serialize\Groups({"product:edit"})
      */
     private $quantity;
 
@@ -185,12 +189,14 @@ class ProductAttributeRelation
     /**
      * Get files of product and attribute
      *
+     * @Serialize\VirtualProperty()
+     * @Serialize\Groups({"product:edit"})
      * @return \Doctrine\Common\Collections\Collection|ProductAttributeFile[]
      */
     public function getFiles()
     {
         if ($this->attribute->getType() != Attribute::TYPE_FILE)
-            throw new \Exception("Attribute must be of type File.");
+            return array();
 
         $fileIds = explode(",", $this->value);
         $fileIds = array_map('intval', $fileIds);
@@ -234,7 +240,7 @@ class ProductAttributeRelation
     #endregion
 
     /**
-     * @return AttributeOption
+     * @return AttributeOption|bool
      */
     public function getSelectedOption()
     {
@@ -249,6 +255,9 @@ class ProductAttributeRelation
 
     /**
      * Standard price multiplied by Quantity of (selected) attribute or attributed product
+     * 
+     * @Serialize\VirtualProperty()
+     * @Serialize\Groups({"product:edit"})
      * @return double
      */
     public function getTotalStandardPrice()
@@ -272,4 +281,14 @@ class ProductAttributeRelation
 
         return $price;
     }
+
+    /**
+     * @Serialize\VirtualProperty()
+     * @Serialize\Groups({"product:edit"})
+     * @return int|null
+     */    
+    public function getValueProductId()
+    {
+        return $this->valueProduct ? $this->valueProduct->getId() : null;
+    }    
 }

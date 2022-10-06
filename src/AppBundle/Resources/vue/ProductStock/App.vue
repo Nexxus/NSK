@@ -1,91 +1,173 @@
 <template>
+<div>
+    
+    <SearchForm :productStatuses="productStatuses" :productTypes="productTypes" :locations="locations" />
 
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th></th>
-                <th>SKU</th>
-                <th>Name</th>
-                <th>Type</th>
-                <th>Location</th>
-                <th width="10%">Price</th>
-                <th width="5%">Purch</th>
-                <th width="5%">Stock</th>
-                <th width="5%">Hold</th>
-                <th width="5%">Sale</th>
-                <th width="5%">Sold</th>
-                <th width="1%"></th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="product in products" :key="product.id">
-                <td><input type="checkbox" :id="'index_bulk_edit_form_index_'+product.id" name="index_bulk_edit_form[index][]" :value="product.id"></td>
-                <td><a href="#" data-target="#modalEditor" class="btn-modal" data-toggle="tooltip" title="product.getAttributesList()">{{ product.sku }}</a></td>
-                <td><a href="#" data-target="#modalEditor" class="btn-modal" data-toggle="tooltip" title="product.getAttributesList()">{{ product.name }}</a></td>
-                <td>{{ product.type.name }}</td>
-                <td>{{ product.location.name }}</td>
-                <td>&euro; {{ product.price|number_format(2, ',', '.') }}</td>
-                <td>{{ product.stock.purchased }}</td>
-                <td>{{ product.stock.stock }}</td>
-                <td>{{ product.stock.hold }}</td>
-                <td>{{ product.stock.saleable }}</td>
-                <td>{{ product.stock.sold }}</td>
-                <td nowrap align="right">
-                    <a v-if="product.purchaseOrderRelation && product.type && product.type.tasks.length > 0"
-                        class="btn btn-default btn-modal" 
-                        href="#" 
-                        data-target="#modalEditor" 
-                        title="Checklist of tasks">
-                        <span class="glyphicon glyphicon-check" aria-label="Checklist" style="margin-right: 3px"></span>
-                        {{ product.purchaseOrderRelation.servicesDone }} / {{ product.type.tasks.length }}
-                    </a>
-                    <a v-if="product.stock.purchased > 1"
-                        class="btn btn-default btn-modal" 
-                        href="#" 
-                        data-target="#modalSplitter" 
-                        title="Split bundle">
-                        <span class="glyphicon glyphicon-flash" aria-label="Split"></span>
-                    </a>
-                    <a class="btn btn-success btn-modal" href="#" data-target="#modalEditor" title="Edit"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
-                    <a class="btn btn-danger btn-delete btn-modal" href="#" title="Delete" data-class="product" :data-name="product.name"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
-                </td>
-            </tr>        
-        </tbody>
-    </table>
+    <form name="index_bulk_edit_form" method="get" action="bulkedit/0" target="_blank" class="form-horizontal">
 
+        <BulkEditForm />
+
+        <Index :products="products" :sort="sort" :loading="loading" />
+
+    </form>
+
+    <Pagination :page="page" :pageCount="pageCount" />
+
+    <ModalEdit      :productId="product.id" v-if="modal=='Edit'" :productStatuses="productStatuses" :locations="locations" :productTypes="productTypes" :saleable="product.stock.saleable" />
+    <ModalSplit     :product="product" v-if="modal=='Split'" :productStatuses="productStatuses" :productTypes="productTypes" />
+    <ModalChecklist :product="product" v-if="modal=='Checklist'" />
+    <ModalBulkEditStatus :locations="locations" :productStatuses="productStatuses" />
+
+</div>
 </template>
 
 <script>
 
+import Index from './components/Index.vue'
+import SearchForm from './components/SearchForm.vue'
+import BulkEditForm from './components/BulkEditForm.vue'
+import Pagination from './components/Pagination.vue'
+import ModalSplit from './components/modals/ModalSplit.vue'
+import ModalEdit from './components/modals/ModalEdit.vue'
+import ModalBulkEditStatus from './components/modals/ModalBulkEditStatus.vue'
+import ModalChecklist from './components/modals/ModalChecklist.vue'
+
 export default {
     name: 'App',
+    components: { Index, SearchForm, BulkEditForm, Pagination, ModalSplit, ModalEdit, ModalBulkEditStatus, ModalChecklist },
     data() { 
         var dataElement = document.querySelector('div#product-stock');
         var productCount = parseInt(dataElement.dataset.productcount);
         var pageLength = parseInt(dataElement.dataset.pagelength);
-        var pageCount = parseInt(dataElement.dataset.pagecount);
 
         return { 
             productCount,
             pageLength,
-            pageCount,
+            productStatuses: [],
+            productTypes: [],
+            locations: [],
             page: 1,
             products: [],
-            sort: "p.id",
-            order: "DESC"
+            sort: "p_id",
+            loading: false,
+            product: null,
+            modal: null,
+            search: {
+                query: '',
+                availability: '',
+                status: '',
+                type: '',
+                location: '',
+            }
         }
     },
     computed: {
         offset() {
             return (this.page-1) * this.pageLength
-        }
+        },
+        pageCount() {
+            return Math.ceil(parseFloat(this.productCount) / this.pageLength)
+        },                        
     },
     mounted() {
-      this.axios.get("../vue/product/" + this.offset + "/" + this.pageLength + "/" + this.sort + "/" + this.order)
-        .then(response => {
-          this.products = response.data
-        })
-        .catch(err => { throw err })         
+        this.loadMeta()
+        this.loadProducts()
+    },
+    methods: {
+        loadProducts() {
+            var params = {
+                offset: this.offset,
+                limit: this.pageLength,
+                sort: this.sort,
+                query: this.search.query,
+                availability: this.search.availability,
+                status: this.status,
+                type: this.search.type,
+                location: this.search.location,
+            }
+            this.products = []
+            this.loading = true
+            this.axios.get("../vue/product/index", { params })
+                .then(response => {
+                    this.products = response.data
+                    this.loading = false
+              
+                    this.$nextTick(function () {
+                        this.products.forEach(p => { 
+                            if (p.tasks_count) this.loadChecklist(p)
+                        })
+                    })
+                })
+        },
+        loadMeta() {
+            this.axios.get("../vue/product/meta")
+                .then(response => {
+                    this.productStatuses = response.data.productStatuses
+                    this.productTypes = response.data.productTypes
+                    this.locations = response.data.locations
+                })
+        },
+        loadChecklist(product) {
+            this.axios.get("../vue/product/checklist/"+product.id)
+                .then(response => {
+                    product.purchase_order_relation = response.data
+                    product.services_done = response.data.services_done
+                })
+        },        
+        deleteProduct(id) {
+            if (!confirm("Are you sure you want to delete this product from stock?")) return
+            this.axios.get("delete/"+id)
+                .then(response => {
+                    this.products = this.products.filter(p => p.id != id)
+                })
+        },
+        sortPage(s) {
+            this.sort = s
+            this.loadProducts()
+        },
+        changePage(p) {
+            this.page = p
+            this.loadProducts()
+        },         
+        showModalEdit(product) {
+            // param can also be id
+            if (typeof product !== 'object')
+                product = this.products.find(p => p.id==product)
+            
+            this.showModal(product, 'Edit')
+        },        
+        showModalSplit(product) {
+            this.showModal(product, 'Split')
+        },
+        showModalChecklist(product) {
+            this.showModal(product, 'Checklist')
+        },        
+        showModalBulkEditStatus(event) {
+            if (event.target.value == 'productstatus') {
+                this.showModal(null, 'BulkEditStatus')
+            }
+            else {
+                $('form[name="index_bulk_edit_form"]').submit()
+            }
+        },
+        showModal(product, name) {
+            this.product=product
+            this.modal=name
+            this.$nextTick(function () {
+                $('#modal'+name).modal('show')
+            })
+        },
+        closeModal() {
+            this.product=null
+            this.modal=null
+            $('.modal').modal('hide')            
+        },
+        formattedPrice(product, withEuroSign) {
+            if (!product || !product.price) return ''
+            var price = parseFloat(product.price) / 100
+            price = price.toLocaleString('nl', {minimumFractionDigits: 2, maximumFractionDigits: 2})
+            return withEuroSign ? '€ '+price : price
+        }
     }
 }
 

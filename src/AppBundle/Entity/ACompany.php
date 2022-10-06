@@ -58,7 +58,7 @@ abstract class ACompany
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @Serialize\Groups({"api:purchaseorders"})
+     * @Serialize\Groups({"api:purchaseorders", "product:edit"})
      */
     protected $name;
 

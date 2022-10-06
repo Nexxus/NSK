@@ -51,7 +51,7 @@ class Attribute
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Serialize\Groups({"api:purchaseorders"})
+     * @Serialize\Groups({"api:purchaseorders", "product:edit"})
      */
     private $id;
 
@@ -75,7 +75,7 @@ class Attribute
      * @var string
      *
      * @ORM\Column(type="string", length=255, unique=true)
-     * @Serialize\Groups({"api:purchaseorders"})
+     * @Serialize\Groups({"api:purchaseorders", "product:edit"})
      * @
      */
     private $name;
@@ -92,7 +92,7 @@ class Attribute
      * @var int Use constants
      *
      * @ORM\Column(type="integer", nullable=true)
-     * @Serialize\Groups({"api:purchaseorders"})
+     * @Serialize\Groups({"api:purchaseorders", "product:edit"})
      */
     private $type;
 
@@ -119,7 +119,7 @@ class Attribute
      * @var ArrayCollection|AttributeOption[] To use when type is SELECT
      *
      * @ORM\OneToMany(targetEntity="AttributeOption", mappedBy="attribute", cascade={"all"})
-     * @Serialize\Groups({"api:purchaseorders"})
+     * @Serialize\Groups({"api:purchaseorders", "product:edit"})
      */
     private $options;
 
@@ -127,7 +127,7 @@ class Attribute
      * @var bool If true, the ProductAttributeRelation can use quantity, meaning quantity per unit
      *
      * @ORM\Column(type="boolean", nullable=false, options={"default" : false})
-     * @Serialize\Groups({"api:purchaseorders"})
+     * @Serialize\Groups({"api:purchaseorders", "product:edit"})
      */
     private $hasQuantity = false;
 

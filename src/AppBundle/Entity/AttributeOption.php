@@ -23,6 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serialize;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
@@ -44,6 +45,7 @@ class AttributeOption
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Serialize\Groups({"api:purchaseorders", "product:edit"})
      */
     private $id;
 
@@ -58,6 +60,7 @@ class AttributeOption
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, unique=false)
+     * @Serialize\Groups({"api:purchaseorders", "product:edit"})
      * @
      */
     private $name;

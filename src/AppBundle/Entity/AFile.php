@@ -23,6 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serialize;
 
 /**
  * @ORM\Entity
@@ -48,6 +49,7 @@ abstract class AFile
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Serialize\Groups({"product:edit"})
      */
     private $id;
 
@@ -55,6 +57,7 @@ abstract class AFile
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=false)
+     * @Serialize\Groups({"product:edit"})
      */
     private $originalClientFilename;
 

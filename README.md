@@ -94,7 +94,11 @@ Don't copy these line literally, but change the name, email and password to your
 
 Now you can login and create other users in the Admin section.
 
-### 7. Build JavaScript modules
+### 7. Create stock views
+
+The database needs two views. They are not automatically created with the database creation. You need a console to execute two SQL statements on the new database. You find the two SQL statements at the bottom of the _app\src\AppBundle\Entity\Stock.php_ source file.
+
+### 8. Build JavaScript modules
 
 Almost there! Since August 2021, Nexxus is using a minor bit of Vue to improve user experience. Therefor you need to build some JavaScript modules of the application. Nexxus uses [Webpack Encore](https://symfony.com/doc/3.3/frontend.html) for this, a tool made by Symfony makers. Start with installing [Node.js](https://nodejs.org/en/download/) and the dependencies:
 ```
@@ -106,13 +110,13 @@ Then build the JavaScript modules:
 ```
 Or, if you are a developer and want to debug the JavaScript modules:
 ```
-./node_modules/.bin/encore dev --watch
+./node_modules/.bin/encore dev-server
 ```
 As a developer you get introduced to this new section of the application by inspecting file _webpack.config.js_ and the files in folder _src/AppBundle/Resources/vue_.
 
 Now Nexxus is ready to use the Vue screens.
 
-### 8. Finishing installation
+### 9. Finishing installation
 
 Finally make sure the application root can find the source code from its new location. This happens in a different folder:
 ```
@@ -129,7 +133,7 @@ rm app_dev.php
 ```
 Please check if the commands are appropiate for your specific situation. For example, you might have installed the application in different folders then _nexxus_ and _nsk_.
 
-### 9. Use Nexxus
+### 10. Use Nexxus
 
 Congratulations, Nexxus is now ready for use. To start with, go to the Admin section and configure all meta data: Users, Locations, Product types, Attributes, Product statuses, Order statuses, Tasks. Without  this meta data the application will not behave as desired.
 

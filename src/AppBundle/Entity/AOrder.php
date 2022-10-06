@@ -47,7 +47,7 @@ abstract class AOrder
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Serialize\Groups({"api:purchaseorders"})
+     * @Serialize\Groups({"api:purchaseorders", "product:edit"})
      */
     protected $id;
 
@@ -55,7 +55,7 @@ abstract class AOrder
      * @var string
      *
      * @ORM\Column(type="string", length=16, unique=true, nullable=true)
-     * @Serialize\Groups({"api:purchaseorders"})
+     * @Serialize\Groups({"api:purchaseorders", "product:edit"})
      */
     protected $orderNr;
 
@@ -71,7 +71,7 @@ abstract class AOrder
      * @var \DateTime
      *
      * @ORM\Column(type="datetime")
-     * @Serialize\Groups({"api:purchaseorders"})
+     * @Serialize\Groups({"api:purchaseorders", "product:edit"})
      */
     protected $orderDate;
 
@@ -88,7 +88,7 @@ abstract class AOrder
      *
      * @ORM\ManyToOne(targetEntity="OrderStatus")
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
-     * @Serialize\Groups({"api:purchaseorders"})
+     * @Serialize\Groups({"api:purchaseorders", "product:edit"})
      */
     protected $status;
 

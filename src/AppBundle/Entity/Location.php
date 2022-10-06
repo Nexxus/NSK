@@ -48,14 +48,14 @@ class Location
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Serialize\Groups({"api:purchaseorders"})
+     * @Serialize\Groups({"api:purchaseorders", "product:meta", "product:edit"})
      */
     private $id;
 
     /**
      * @var string
      * @ORM\Column(name="name", type="string", length=255, unique=true)
-     * @Serialize\Groups({"api:purchaseorders", "vue:products"})
+     * @Serialize\Groups({"api:purchaseorders", "product:index", "product:meta"})
      */
     private $name;
 

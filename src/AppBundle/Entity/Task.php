@@ -44,7 +44,7 @@ class Task
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Serialize\Groups({"vue:products"})
+     * @Serialize\Groups({"product:index"})
      */
     private $id;
 
@@ -59,6 +59,7 @@ class Task
      * @var string
      *
      * @ORM\Column(type="string", length=255)
+     * @Serialize\Groups({"product:index"})
      */
     private $name;
 

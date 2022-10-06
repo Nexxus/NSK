@@ -23,7 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use JMS\Serializer\Annotation as Serialize;
 
 /**
  * @ORM\MappedSuperclass
@@ -36,6 +36,7 @@ abstract class AStatus
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Serialize\Groups({"product:meta", "product:edit"})
      */
     protected $id;
 
@@ -50,6 +51,7 @@ abstract class AStatus
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @Serialize\Groups({"product:meta"})
      */
     protected $name;
 

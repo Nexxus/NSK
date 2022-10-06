@@ -23,6 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serialize;
 use AppBundle\Entity\Customer;
 
 /**
@@ -69,6 +70,7 @@ class SalesOrder extends AOrder
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Customer")
      * @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
+     * @Serialize\Groups({"product:edit"})
      */
     private $customer;
 

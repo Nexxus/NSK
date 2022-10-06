@@ -41,6 +41,7 @@ class PurchaseOrder extends AOrder
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Supplier")
      * @ORM\JoinColumn(name="supplier_id", referencedColumnName="id")
      * @Serialize\MaxDepth(depth=1)
+     * @Serialize\Groups({"product:edit"})
      */
     private $supplier;
 

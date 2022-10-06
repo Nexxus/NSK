@@ -23,9 +23,19 @@
 namespace AppBundle\Repository;
 
 use AppBundle\Entity\Location;
+use AppBundle\Entity\User;
 
 class LocationRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findMine(User $user)
+    {
+        if ($user->hasRole("ROLE_LOCAL") || $user->hasRole("ROLE_LOGISTICS"))
+            return $this->findBy(array("id" => $user->getLocationIds()), array('name' => 'ASC'));
+        else
+            return $this->findBy(array(), array('id' => 'ASC'));
+    }
+
+
     /** @return Location|null */
     public function findOneByZipcode($zipcode)
     {

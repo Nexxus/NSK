@@ -55,12 +55,10 @@ class ProductController extends Controller
 
         $productCount = $repo->queryStock($this->getUser())->select("count(p.id)")->getQuery()->getSingleScalarResult();
         $pageLength = 20;
-        $pageCount = ceil($productCount / $pageLength);
 
         return $this->render('AppBundle:Product:index.html.twig', array(
             'productCount' => $productCount,
-            'pageLength' => $pageLength,
-            'pageCount' => $pageCount
+            'pageLength' => $pageLength
             ));
     }
 
@@ -433,7 +431,7 @@ class ProductController extends Controller
         $em->remove($em->getReference(Product::class, $id));
         $em->flush();
 
-        return $this->redirectToRoute('product_index');
+        return new Response();
     }
 
     /**

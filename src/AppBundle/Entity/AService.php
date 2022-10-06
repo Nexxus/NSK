@@ -23,6 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serialize;
 
 /**
  * @ORM\Table(name="aservice")
@@ -51,6 +52,7 @@ abstract class AService
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Serialize\Groups({"product:checklist"})
      */
     protected $id;
 
@@ -58,6 +60,7 @@ abstract class AService
      * @var int Use constants
      *
      * @ORM\Column(type="integer", nullable=false)
+     * @Serialize\Groups({"product:checklist"})
      */
     protected $status;
 
@@ -73,6 +76,7 @@ abstract class AService
      * @var string
      *
      * @ORM\Column(type="text", nullable=true)
+     * @Serialize\Groups({"product:checklist"})
      */
     protected $description;
 

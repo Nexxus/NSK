@@ -32,6 +32,10 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Doctrine\ORM\EntityRepository;
 use AppBundle\Helper\IndexSearchContainer;
 
+/**
+ * For order index search only
+ * Product index search form is handled by Vue these days 
+ */
 class IndexSearchForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -58,46 +62,6 @@ class IndexSearchForm extends AbstractType
                     'Klanten' => 'customer',
                     'Leveranciers' => 'supplier'
                 ]]);
-        }
-        elseif ($container->className == \AppBundle\Entity\Product::class)
-        {
-            $builder
-            ->add('status',  EntityType::class, [
-                'class' => 'AppBundle:ProductStatus',
-                'choice_label' => 'name',
-                'placeholder' => 'All statuses',
-                'required' => false,
-                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
-            ])
-            ->add('producttype',  EntityType::class, [
-                'class' => 'AppBundle:ProductType',
-                'choice_label' => 'name',
-                'placeholder' => 'All types',
-                'required' => false,
-                'query_builder' => function (EntityRepository $er) { return $er->createQueryBuilder('x')->orderBy("x.name", "ASC"); }
-            ])
-            ->add('location',  EntityType::class, [
-                'class' => 'AppBundle:Location',
-                'choice_label' => 'name',
-                'placeholder' => 'All locations',
-                'required' => false,
-                'query_builder' => function (EntityRepository $er) use ($container) { 
-                    $qb = $er->createQueryBuilder('x')->orderBy("x.name", "ASC");
-                    /** @var IndexSearchContainer $container */
-                    if ($container->user->hasRole("ROLE_LOCAL") || $container->user->hasRole("ROLE_LOGISTICS"))
-                        $qb = $qb->where('x.id IN (:locationIds)')->setParameter('locationIds', $container->user->getLocationIds()); 
-                    return $qb;
-                }
-            ])
-            ->add('availability', ChoiceType::class, array(
-                'placeholder' => 'All availability',
-                'required' => false,
-                'choices' => [
-                    'In stock' => 'stock',
-                    'On hold' => 'hold',
-                    'For sale' => 'saleable',
-                    'Sold' => 'sold'
-            ]));
         }
         else
         {

@@ -183,7 +183,7 @@
                     <td nowrap>
                         {% if (order.repair) %}
                         <a class="btn btn-default" href="{{ path('salesorder_repair_print', { 'id': order.repair.id, 'relationId': formRelation.vars.data.id }) }}" target="_blank"><span class="glyphicon glyphicon-print" aria-label="Edit"></span></a>
-                        <a class="btn btn-success" href="{{ path('product_edit', { 'id': product.id }) }}" data-toggle="modal" data-target="#modalEditor"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
+                        <a class="btn btn-success" href="{{ path('product_edit', { 'id': product.id }) }}" data-toggle="modal" data-target="#modalOrderEditor"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
                         {% endif %}
                         {% if ( order.id > 0) %}
                         <a class="btn btn-danger btn-delete" href="{{ path('salesorder_delete_relation', { 'id': formRelation.vars.data.id }) }}" data-class="product from order" data-name="{{ product.name }}"><span class="glyphicon glyphicon-remove" aria-label="Delete"></span></a>
@@ -296,10 +296,10 @@
 
          $('select[name="sales_order_form[newProduct]"]').change(function () {
              if ($(this).val()) {
-                 $("#modalEditor .modal-content").load('{{ path('product_new', { 'purchaseOrderId': order.backingPurchaseOrder.id, 'salesOrderId': order.id }) }}/' + $(this).val(), function () {
+                 $("#modalOrderEditor .modal-content").load('{{ path('product_new', { 'purchaseOrderId': order.backingPurchaseOrder.id, 'salesOrderId': order.id }) }}/' + $(this).val(), function () {
                      focusBarcodeInput();
                  });
-                 $("#modalEditor").modal('show');
+                 $("#modalOrderEditor").modal('show');
              }
          });
 
@@ -309,10 +309,10 @@
 
          $('select[name="sales_order_form[newProduct]"]').change(function () {
              if ($(this).val()) {
-                 $("#modalEditor .modal-content").load('{{ path('product_new', { 'purchaseOrderId': 0, 'salesOrderId': order.id }) }}/' + $(this).val(), function () {
+                 $("#modalOrderEditor .modal-content").load('{{ path('product_new', { 'purchaseOrderId': 0, 'salesOrderId': order.id }) }}/' + $(this).val(), function () {
                      focusBarcodeInput();
                  });
-                 $("#modalEditor").modal('show');
+                 $("#modalOrderEditor").modal('show');
              }
          });
 

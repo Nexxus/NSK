@@ -15,18 +15,6 @@ $(document).ready(function () {
         buttonClass: 'btn'
     });
 
-    $('#index_bulk_edit_form_action').change(function (e) {
-
-        var form = $('form[name="index_bulk_edit_form"]');
-
-        if ($(this).val() != "status") 
-            form.attr('target', '_blank')
-        else 
-            form.attr('target', '')
-
-        form.submit();
-    });
-
     $('.btn-selectall').click(function (e) {
         $('input[name^="index_bulk_edit_form[index]"]').each(function() {
             $(this).prop('checked', true);

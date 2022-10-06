@@ -29,30 +29,21 @@ use AppBundle\Entity\Product;
 use AppBundle\Entity\AOrder;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * For order bulk edit only
+ * Product bulk edit form is handled by Vue these days 
+ */
 class IndexBulkEditForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $index = $builder->getData();
 
-        if ($options['index_class'] == Product::class)
-        {
-            $choices = [
-                'With selected lines...' => '',
-                'Edit status' => 'status',
-                'Print barcodes' => 'barcodes',
-                'Print price cards' => 'pricecards',
-                'Print checklists' => 'checklists'
-            ];
-        }
-        else // Order
-        {
-            $choices = [
-                'With selected lines...' => '',
-                'Edit status' => 'status',
-                'Print orders' => 'orders'
-            ];
-        }
+        $choices = [
+            'With selected lines...' => '',
+            'Edit status' => 'status',
+            'Print orders' => 'orders'
+        ];
 
         $builder
             ->setMethod('GET')
