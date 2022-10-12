@@ -8,9 +8,9 @@ if (!Encore.isRuntimeEnvironmentConfigured()) {
 
 Encore
     // directory where compiled assets will be stored
-    .setOutputPath('web/js/build/')
+    .setOutputPath(Encore.isProduction() ? '../public_html/nsk/js/build/' : 'web/js/build/')
     // public path used by the web server to access the output path
-    .setPublicPath('/js/build')
+    .setPublicPath(Encore.isProduction() ? '/nsk/js/build' : '/js/build')
 
     /*
      * ENTRY CONFIG

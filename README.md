@@ -100,7 +100,7 @@ The database needs two views. They are not automatically created with the databa
 
 ### 8. Build JavaScript modules
 
-Almost there! Since August 2021, Nexxus is using a minor bit of Vue to improve user experience. Therefor you need to build some JavaScript modules of the application. Nexxus uses [Webpack Encore](https://symfony.com/doc/3.3/frontend.html) for this, a tool made by Symfony makers. Start with installing [Node.js](https://nodejs.org/en/download/) and the dependencies:
+Almost there! Since August 2021, Nexxus is using a bit of Vue to improve user experience. Therefor you need to build some JavaScript modules of the application. Nexxus uses [Webpack Encore](https://symfony.com/doc/3.3/frontend.html) for this, a tool made by Symfony makers. Start with installing [Node.js](https://nodejs.org/en/download/) and the dependencies:
 ```
 npm install
 ```

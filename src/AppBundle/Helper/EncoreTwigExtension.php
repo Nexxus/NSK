@@ -33,7 +33,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 class EncoreTwigExtension extends AbstractExtension
 {
-    private $relativeBuildPath = "/js/build/";
+    private $relativeBuildPath = "web/js/build/";
 
     public function getName()
     {
@@ -62,7 +62,15 @@ class EncoreTwigExtension extends AbstractExtension
 
     private function getWebpackFiles(string $entryName, string $fileType): array
     {
-        $fullpath = dirname(__FILE__) . "/../../../web/" . $this->relativeBuildPath . "entrypoints.json";
+        $fullpath = dirname(__FILE__) . "/../../../" . $this->relativeBuildPath . "entrypoints.json";
+
+        // TODO: this needs improvement
+        if (!file_exists($fullpath))
+        {
+            $this->relativeBuildPath = "../public_html/nsk/js/build/";
+            $fullpath = dirname(__FILE__) . "/../../../" . $this->relativeBuildPath . "entrypoints.json";
+        }
+
         $entrypoints = json_decode(file_get_contents($fullpath), true);
         return $entrypoints['entrypoints'][$entryName][$fileType];
     }
