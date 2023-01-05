@@ -229,6 +229,8 @@
     {{ form_widget(form._token) }}            
     {{ form_end(form, {'render_rest': false}) }}
 
+    <div id="newProductModalContainer"></div>
+
  {% endblock %}
  
  {% block javascripts %}
@@ -265,10 +267,10 @@
 
          $('select[name="purchase_order_form[newProduct]"]').change(function () {
              if ($(this).val()) {
-                 $("#modalOrderEditor .modal-content").load('{{ path('product_new', { 'purchaseOrderId': order.id }) }}/0/' + $(this).val(), function () {
+                 $("#newProductModalContainer").load('{{ path('product_new', { 'purchaseOrderId': order.id }) }}/0/' + $(this).val(), function () {
                      focusBarcodeInput();
                  });
-                 $("#modalOrderEditor").modal('show');
+                 
              }
          });
 

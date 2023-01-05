@@ -23,10 +23,12 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Product;
+use AppBundle\Entity\ProductType;
+use AppBundle\Entity\PurchaseOrder;
+use AppBundle\Entity\SalesOrder;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
-use AppBundle\Entity\ProductAttributeRelation;
 
 /**
  * This controller will replace the ProductController gradually
@@ -92,20 +94,50 @@ class VueProductController extends FOSRestController
         /** @var \AppBundle\Repository\ProductRepository */
         $repo = $this->getDoctrine()->getRepository('AppBundle:Product');
 
-        if ($productId == 0)
-        {
-            $product = new Product();
-        }
-        else
-        {
-            /** @var Product */
-            $product = $repo->find($productId);
-        }
-        
+        /** @var Product */
+        $product = $repo->find($productId);
+ 
         $repo->generateProductAttributeRelations($product);
 
         return $product; 
     }   
+
+    /**
+     * @Rest\Get("/new/{purchaseOrderId}/{salesOrderId}/{productTypeId}")
+     * @Rest\View(serializerGroups={"product:edit"})
+     */
+    public function newAction(Request $request, $purchaseOrderId, $salesOrderId, $productTypeId)
+    {
+        $em = $this->getDoctrine()->getManager();
+        
+        /** @var \AppBundle\Repository\ProductRepository */
+        $repo = $em->getRepository('AppBundle:Product');
+
+        $product = new Product();
+
+        if ($productTypeId > 0)
+        {
+            $product->setType($em->getReference(ProductType::class, $productTypeId));
+        }
+
+        if ($salesOrderId > 0 && $purchaseOrderId > 0) // backorder
+        {
+            $repo->generateProductOrderRelation($product, $em->find(SalesOrder::class, $salesOrderId));
+            $repo->generateProductOrderRelation($product, $em->find(PurchaseOrder::class, $purchaseOrderId), 0);
+        }
+        elseif ($salesOrderId > 0) // repair order
+        {
+            $repo->generateProductOrderRelation($product, $em->find(SalesOrder::class, $salesOrderId));
+        }
+        elseif ($purchaseOrderId > 0) // normal purchase
+        {
+            $repo->generateProductOrderRelation($product, $em->find(PurchaseOrder::class, $purchaseOrderId));
+        }        
+
+        $repo->generateProductAttributeRelations($product);
+
+        return $product; 
+    }      
 
     /**
      * @Rest\Get("/checklist/{productId}")

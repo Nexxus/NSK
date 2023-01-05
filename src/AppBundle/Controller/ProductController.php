@@ -63,6 +63,30 @@ class ProductController extends Controller
     }
 
     /**
+     * Temporarily solution as long as New Product section is Vue and Order sections are Twig.
+     * The route is rather complex:
+     * 
+     * 1. New product selection by user in PurchaseOrder/edit.html.twig (and same for SalesOrder)
+     * 2. This action ProductController::new (just forwarding props)
+     * 3. Bare Twig container file Product/new.html.twig (again forwarding props)
+     * 4. Entrypoint config in webpack.config.js
+     * 5. ProductNew/app.js
+     * 6. ProductNew/App.vue (and again forwarding props)
+     * 7. Reuse of ModalEdit.vue (originally made for product edit)
+     * 8. Retrieval of product object by AJAX in VueProductController::new 
+     * 
+     * @Route("/new/{purchaseOrderId}/{salesOrderId}/{productTypeId}", name="product_new")
+     */
+    public function newAction(Request $request, $purchaseOrderId = 0, $salesOrderId = 0, $productTypeId = 0)
+    {
+        return $this->render('AppBundle:Product:new.html.twig', array(
+            'purchaseOrderId' => $purchaseOrderId,
+            'salesOrderId' => $salesOrderId,
+            'productTypeId' => $productTypeId
+            ));
+    }    
+
+    /**
      * @Route("/bulkedit/{success}", name="product_bulkedit")
      */
     public function bulkEditAction(Request $request, $success = null)
@@ -165,7 +189,6 @@ class ProductController extends Controller
     }
 
     /**
-     * @Route("/new/{purchaseOrderId}/{salesOrderId}/{productTypeId}", name="product_new")
      * @Route("/edit/{id}/{success}", name="product_edit")
      * @Route("/editsub/{refId}/{id}", name="product_subedit")
      */
@@ -233,7 +256,7 @@ class ProductController extends Controller
                     {
                         $file = new ProductAttributeFile($product, $v, $k);
                         $em->persist($file);
-                        $em->flush($file);
+                        $em->flush();
 
                         $val = $r->getValue() ? $r->getValue() . "," . $file->getId() : $file->getId();
                         $r->setValue($val);

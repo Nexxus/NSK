@@ -246,6 +246,8 @@
     {{ form_widget(form._token) }}            
     {{ form_end(form, {'render_rest': false}) }}
 
+    <div id="newProductModalContainer"></div>
+
  {% endblock %}
  
  {% block javascripts %}
@@ -296,10 +298,9 @@
 
          $('select[name="sales_order_form[newProduct]"]').change(function () {
              if ($(this).val()) {
-                 $("#modalOrderEditor .modal-content").load('{{ path('product_new', { 'purchaseOrderId': order.backingPurchaseOrder.id, 'salesOrderId': order.id }) }}/' + $(this).val(), function () {
+                 $("#newProductModalContainer").load('{{ path('product_new', { 'purchaseOrderId': order.backingPurchaseOrder.id, 'salesOrderId': order.id }) }}/' + $(this).val(), function () {
                      focusBarcodeInput();
                  });
-                 $("#modalOrderEditor").modal('show');
              }
          });
 
@@ -309,10 +310,9 @@
 
          $('select[name="sales_order_form[newProduct]"]').change(function () {
              if ($(this).val()) {
-                 $("#modalOrderEditor .modal-content").load('{{ path('product_new', { 'purchaseOrderId': 0, 'salesOrderId': order.id }) }}/' + $(this).val(), function () {
+                 $("#newProductModalContainer").load('{{ path('product_new', { 'purchaseOrderId': 0, 'salesOrderId': order.id }) }}/' + $(this).val(), function () {
                      focusBarcodeInput();
                  });
-                 $("#modalOrderEditor").modal('show');
              }
          });
 

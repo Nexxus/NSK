@@ -21,8 +21,8 @@ Encore
      * Each entry will result in one JavaScript file (e.g. app.js)
      * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
      */
-    .addEntry('product-stock', './src/AppBundle/Resources/vue/ProductStock/main.js')
-    //.addEntry('order-products', './src/AppBundle/Resources/vue/OrderProducts/main.js')
+    .addEntry('product-stock', './src/AppBundle/Resources/vue/ProductStock/app.js')
+    .addEntry('product-new',   './src/AppBundle/Resources/vue/ProductNew/app.js')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()

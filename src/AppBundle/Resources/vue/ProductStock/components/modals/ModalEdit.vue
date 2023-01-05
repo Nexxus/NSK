@@ -36,7 +36,7 @@
                                     <div v-if="product.sku" class="input-group">
                                         <input type="text" id="edit_sku" name="edit[sku]" placeholder="Keep empty for autogeneration" class="focus form-control" v-model="product.sku"> 
                                         <span class="input-group-btn">
-                                            <a class="btn btn-default" :href="'../barcode/single/'+product.sku" target="_blank"><span class="glyphicon glyphicon-barcode" aria-label="Barcode"></span></a>
+                                            <a class="btn btn-default" :href="this.urlPrefix+'barcode/single/'+product.sku" target="_blank"><span class="glyphicon glyphicon-barcode" aria-label="Barcode"></span></a>
                                         </span>
                                     </div>
                                     <input v-else type="text" id="edit_sku" name="edit[sku]" placeholder="Keep empty for autogeneration" class="focus form-control" v-model="product.sku"> 
@@ -72,7 +72,7 @@
                             <div class="form-group">
                                 <label class="col-sm-3 control-label required" for="edit_type">Type</label>
                                 <div class="col-sm-9">
-                                    <select id="edit_type" name="edit[type]" class="form-control" v-model="productTypeId">
+                                    <select id="edit_type" name="edit[type]" class="form-control" v-model="typeId">
                                         <option v-for="productType in productTypes" :key="productType.id" :value="productType.id">{{ productType.name }}</option>
                                     </select>
                                 </div>
@@ -80,7 +80,7 @@
                             <div class="form-group">
                                 <label class="col-sm-3 control-label required" for="edit_location">Location</label>
                                 <div class="col-sm-9">
-                                    <select id="edit_location" name="edit[location]" required="required" class="form-control" v-model="productLocationId">
+                                    <select id="edit_location" name="edit[location]" required="required" class="form-control" v-model="locationId">
                                         <option value=""></option>
                                         <option v-for="location in locations" :key="location.id" :value="location.id">{{ location.name }}</option>
                                     </select>
@@ -89,7 +89,7 @@
                             <div class="form-group">
                                 <label class="col-sm-3 control-label" for="edit_status">Status</label>
                                 <div class="col-sm-9">
-                                    <select id="edit_status" name="edit[status]" class="form-control" v-model="productStatusId">
+                                    <select id="edit_status" name="edit[status]" class="form-control" v-model="statusId">
                                         <option value=""></option>
                                         <option v-for="productStatus in productStatuses" :key="productStatus.id" :value="productStatus.id">{{ productStatus.name }}</option>
                                     </select>
@@ -117,14 +117,14 @@
                                                         <div class="panel-body panel-body-small">
                                                             <div class="row">
                                                                 <div class="col-xs-10" style="overflow:hidden; text-overflow:ellipsis;">
-                                                                    <a :href="'../download/'+file.id" :title="file.originalClientFilename" target="_blank">{{ file.originalClientFilename }}</a>
+                                                                    <a :href="this.urlPrefix+'download/'+file.id" :title="file.originalClientFilename" target="_blank">{{ file.originalClientFilename }}</a>
                                                                 </div>
                                                                 <div class="col-xs-2" style="margin-top: -4px">
                                                                     <button type="button" class="close delete-file" aria-label="Delete" @click="deleteFile(attribute_relation.attribute.id, file.id)"><span aria-hidden="true">&times;</span></button>
                                                                 </div>
                                                             </div>
                                                             
-                                                            <img :src="'../download/'+file.id" :title="file.originalClientFilename" v-if="isImage(file.originalClientFilename)" />
+                                                            <img :src="this.urlPrefix+'download/'+file.id" :title="file.originalClientFilename" v-if="isImage(file.originalClientFilename)" />
 
                                                         </div>
                                                     </div>
@@ -204,7 +204,7 @@
                                     <td>From: {{ product.purchase_order_relation.order.supplier ? product.purchase_order_relation.order.supplier.name : "" }}</td>
                                     <td>{{ product.purchase_order_relation.order.status ? product.purchase_order_relation.order.status.name : "" }}</td>
                                     <td>{{ product.purchase_order_relation.quantity }}</td>
-                                    <td><a class="btn btn-success" :href="'../purchaseorder/edit/'+product.purchase_order_relation.order.id"><span class="glyphicon glyphicon-chevron-right" aria-label="Edit"></span></a></td>
+                                    <td><a class="btn btn-success" :href="this.urlPrefix+'purchaseorder/edit/'+product.purchase_order_relation.order.id"><span class="glyphicon glyphicon-chevron-right" aria-label="Edit"></span></a></td>
                                 </tr>
                             
                                 <tr v-for="sales_order_relation in product.sales_order_relations" :key="sales_order_relation.id">
@@ -214,7 +214,7 @@
                                     <td>To: {{ sales_order_relation.order.customer ? sales_order_relation.order.customer.name : "" }}</td>
                                     <td>{{ sales_order_relation.order.status ? sales_order_relation.order.status.name : "" }}</td>
                                     <td>{{ sales_order_relation.quantity }}</td>
-                                    <td><a class="btn btn-success" :href="'../salesorder/edit/'+sales_order_relation.order.id"><span class="glyphicon glyphicon-chevron-right" aria-label="Edit"></span></a></td>
+                                    <td><a class="btn btn-success" :href="this.urlPrefix+'salesorder/edit/'+sales_order_relation.order.id"><span class="glyphicon glyphicon-chevron-right" aria-label="Edit"></span></a></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -222,8 +222,8 @@
 
                     <div class="text-center">
                         <button type="submit" id="edit_save" name="edit[save]" class="btn-success btn-120 btn">Save</button>
-                        <a v-if="productId" class="btn btn-default" role="button" :href="'print/32958'+product.id" target="_blank">Print</a>
-                        <a v-if="saleable" class="btn btn-default" role="button" :href="'../salesorder/new/'+productId">Sell</a>
+                        <a v-if="product" class="btn btn-default" role="button" :href="'print/'+product.id" target="_blank">Print</a>
+                        <a v-if="saleable" class="btn btn-default" role="button" :href="this.urlPrefix+'salesorder/new/'+productId">Sell</a>
                         <button type="button" class="btn btn-default close-modal" @click="$parent.closeModal()">Close</button>
                         <a v-if="refId" class="btn btn-default" role="button" href="#" @click.prevent="openRef()">Back</a>
                     </div>
@@ -246,7 +246,44 @@ export default {
         product: null,
         refId: null     
     }},
-    props: ['productId', 'productStatuses', 'locations', 'productTypes', 'saleable'],    
+    props: {
+        productId: {
+            type: Number,
+            default: 0 // new
+        },        
+        productStatuses: {
+            type: Array,
+            required: true
+        }, 
+        locations: {
+            type: Array,
+            required: true
+        }, 
+        productTypes: {
+            type: Array,
+            required: true
+        }, 
+        saleable: {
+            type: Boolean,
+            default: false
+        }, 
+        urlPrefix: {
+            type: String,
+            default: '../' // existing
+        },
+        purchaseOrderId: {
+            type: Number,
+            default: null // needed when new product
+        },
+        salesOrderId: {
+            type: Number,
+            default: null // needed when new product
+        },
+        productTypeId: {
+            type: Number,
+            default: null // needed when new product
+        },
+    },  
     mounted() {
         this.loadProduct()
         this.loadUploadifive()
@@ -265,7 +302,7 @@ export default {
                 this.product.price = parseInt(parseFloat(newValue.replace(",", ".")) * 100);
             }           
         },
-        productStatusId: {
+        statusId: {
             get: function () {
                 return this.product && this.product.status ? this.product.status.id : null
             },
@@ -273,15 +310,15 @@ export default {
                 if (this.product && this.product.status) this.product.status.id = newValue
             }           
         },
-        productTypeId: {
+        typeId: {
             get: function () {
-                return this.product && this.product.type ? this.product.type.id : null
+                return this.product && this.product.type ? this.product.type.id : this.productTypeId
             },
             set: function (newValue) {
                 if (this.product && this.product.type) this.product.type.id = newValue
             }           
         },
-        productLocationId: {
+        locationId: {
             get: function () {
                 return this.product && this.product.location ? this.product.location.id : null
             },
@@ -292,17 +329,24 @@ export default {
     },
     methods: {
         loadProduct() {
-            this.axios.get("../vue/product/edit/"+this.productId)
-                .then(response => {
-                    this.product = response.data
-                })
+            if (this.productId > 0)
+                this.axios.get(this.urlPrefix+"vue/product/edit/"+this.productId)
+                    .then(response => {
+                        this.product = response.data
+                    })
+            else // new product
+                this.axios.get(this.urlPrefix+"vue/product/new/"+this.purchaseOrderId+"/"+this.salesOrderId+"/"+this.productTypeId)
+                    .then(response => {
+                        this.product = response.data
+                    })
+
         },
         loadUploadifive() {
             $.getScript("/js/jquery.uploadifive.min.js", function() {
                 $('input.file-input').uploadifive({
-                    'checkScript': '../uploadexists',
+                    'checkScript': this.urlPrefix+'uploadexists',
                     'formData': {},
-                    'uploadScript': '../upload',
+                    'uploadScript': this.urlPrefix+'upload',
                     'multi': true,
                     'onUploadComplete': function (file, data) {
                         if (data.substring(0, 5) == 'Error') {
@@ -317,11 +361,11 @@ export default {
             });
         },
         async loadAttributableProducts(attributeId) {
-            let response = await this.axios.get("../vue/product/attributable/"+this.productId+"/"+attributeId)
+            let response = await this.axios.get(this.urlPrefix+"vue/product/attributable/"+this.product.id+"/"+attributeId)
             return response.data        
         },
         deleteFile(attributeId, fileId) {
-            this.axios.post("../deletefile", { attributeId, fileId })
+            this.axios.post(this.urlPrefix+"deletefile", { attributeId, fileId })
                 .then(response => {
                     const relation = this.product.attribute_relations.filter(ar => ar.attribute.id==attributeId)
                     relation.files = relation.files.filter(f => f.id != fileId)
