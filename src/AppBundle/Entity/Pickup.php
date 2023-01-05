@@ -165,7 +165,7 @@ class Pickup
     /**
      * Set dataDestruction
      *
-     * @param integer $dataDestruction
+     * @param int $dataDestruction
      */
     public function setDataDestruction($dataDestruction)
     {
@@ -177,7 +177,7 @@ class Pickup
     /**
      * Get dataDestruction
      *
-     * @return integer
+     * @return int
      */
     public function getDataDestruction()
     {

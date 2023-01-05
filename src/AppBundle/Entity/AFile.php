@@ -71,7 +71,7 @@ abstract class AFile
     /**
      * Get id
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -98,7 +98,7 @@ abstract class AFile
     /**
      * Set external id like from webshop
      *
-     * @param integer $name
+     * @param int $name
      *
      * @return AFile
      */

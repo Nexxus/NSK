@@ -109,7 +109,7 @@ class ApiController extends FOSRestController
 
         $attrfile = new ProductAttributeFile($product, $file->getClientOriginalName(), $serverFilename);
         $em->persist($attrfile);
-        $em->flush($attrfile);
+        $em->flush();
 
         $val = $relation->getValue() ? $relation->getValue() . "," . $attrfile->getId() : $attrfile->getId();
         $relation->setValue($val);
@@ -206,7 +206,7 @@ class ApiController extends FOSRestController
             return new View("No order found", Response::HTTP_NO_CONTENT);
         }
 
-        foreach ($order->getProductRelations as $r)
+        foreach ($order->getProductRelations() as $r)
         {
             /** @var ProductOrderRelation $r */
             $r->getProduct()->setLocation($em->getReference(\AppBundle\Entity\Location::class, $locationId));

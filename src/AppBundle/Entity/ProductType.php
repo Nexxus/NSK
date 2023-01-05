@@ -119,7 +119,7 @@ class ProductType
     /**
      * Get id
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -129,7 +129,7 @@ class ProductType
     /**
      * Set external id like from webshop
      *
-     * @param integer $name
+     * @param int $name
      *
      * @return ProductType
      */
@@ -177,7 +177,7 @@ class ProductType
     /**
      * Set pindex
      *
-     * @param integer $pindex
+     * @param int $pindex
      *
      * @return ProductType
      */
@@ -191,7 +191,7 @@ class ProductType
     /**
      * Get pindex
      *
-     * @return integer
+     * @return int
      */
     public function getPindex()
     {

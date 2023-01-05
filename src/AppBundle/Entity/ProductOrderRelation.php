@@ -129,7 +129,7 @@ class ProductOrderRelation
     /**
      * Set external id like from webshop
      *
-     * @param integer $name
+     * @param int $name
      *
      * @return ProductOrderRelation
      */
@@ -153,7 +153,7 @@ class ProductOrderRelation
     /**
      * Set actual quantity of this product in this order
      *
-     * @param integer $quantity
+     * @param int $quantity
      *
      * @return ProductOrderRelation
      */
@@ -167,7 +167,7 @@ class ProductOrderRelation
     /**
      * Get actual quantity of this product in this order
      *
-     * @return integer
+     * @return int
      */
     public function getQuantity()
     {

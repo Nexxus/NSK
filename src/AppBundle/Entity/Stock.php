@@ -89,7 +89,7 @@ class Stock
     private $product;    
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -102,7 +102,7 @@ class Stock
     }    
 
     /**
-     * @return integer
+     * @return int
      */
     public function getPurchased()
     {
@@ -110,7 +110,7 @@ class Stock
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getStock()
     {
@@ -118,7 +118,7 @@ class Stock
     }
     
     /**
-     * @return integer
+     * @return int
      */
     public function getSaleable()
     {
@@ -126,7 +126,7 @@ class Stock
     }
     
     /**
-     * @return integer
+     * @return int
      */
     public function getHold()
     {
@@ -134,7 +134,7 @@ class Stock
     }
     
     /**
-     * @return integer
+     * @return int
      */
     public function getSold()
     {

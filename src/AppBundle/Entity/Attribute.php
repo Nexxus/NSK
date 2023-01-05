@@ -142,7 +142,7 @@ class Attribute
     /**
      * Get id
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -152,7 +152,7 @@ class Attribute
     /**
      * Set external id like from webshop
      *
-     * @param integer $name
+     * @param int $name
      *
      * @return Attribute
      */
@@ -290,7 +290,7 @@ class Attribute
     /**
      * Set type
      *
-     * @param integer $type
+     * @param int $type
      *
      * @return Attribute
      */
@@ -304,7 +304,7 @@ class Attribute
     /**
      * Get type
      *
-     * @return integer
+     * @return int
      */
     public function getType()
     {

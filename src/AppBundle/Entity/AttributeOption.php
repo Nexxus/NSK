@@ -83,7 +83,7 @@ class AttributeOption
     /**
      * Get id
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -93,7 +93,7 @@ class AttributeOption
     /**
      * Set external id like from webshop
      *
-     * @param integer $name
+     * @param int $name
      *
      * @return AttributeOption
      */

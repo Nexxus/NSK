@@ -220,7 +220,7 @@ abstract class ACompany
     /**
      * Set external id like from webshop
      *
-     * @param integer $name
+     * @param int $name
      *
      * @return ACompany
      */
@@ -268,7 +268,7 @@ abstract class ACompany
     /**
      * Set kvkNr
      *
-     * @param integer $kvkNr
+     * @param int $kvkNr
      *
      * @return ACompany
      */
@@ -453,7 +453,7 @@ abstract class ACompany
      */
     public function setStreet2($street2)
     {
-        $this->street1 = $street2;
+        $this->street2 = $street2;
 
         return $this;
     }

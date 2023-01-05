@@ -83,7 +83,7 @@ abstract class AService
     /**
      * Get id
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -93,7 +93,7 @@ abstract class AService
     /**
      * Set status
      *
-     * @param integer $status
+     * @param int $status
      *
      * @return AService
      */
@@ -107,7 +107,7 @@ abstract class AService
     /**
      * Get status
      *
-     * @return integer
+     * @return int
      */
     public function getStatus()
     {

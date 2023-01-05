@@ -127,7 +127,7 @@ abstract class AOrder
     /**
      * Get id
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -155,7 +155,7 @@ abstract class AOrder
     /**
      * Set discount price, in euros (float), positive number
      *
-     * @param integer $discount
+     * @param int $discount
      */
     public function setDiscount($discount)
     {
@@ -167,7 +167,7 @@ abstract class AOrder
     /**
      * Get discount price, in euros (float), positive number
      *
-     * @return integer
+     * @return int
      */
     public function getDiscount()
     {
@@ -177,7 +177,7 @@ abstract class AOrder
     /**
      * Set price for transport, in euros (float)
      *
-     * @param integer $transport
+     * @param int $transport
      */
     public function setTransport($transport)
     {
@@ -189,7 +189,7 @@ abstract class AOrder
     /**
      * Get price for transport, in euros (float)
      *
-     * @return integer
+     * @return int
      */
     public function getTransport()
     {
@@ -321,7 +321,7 @@ abstract class AOrder
     /**
      * Set external id like from webshop
      *
-     * @param integer $name
+     * @param int $name
      *
      * @return AOrder
      */
@@ -346,7 +346,7 @@ abstract class AOrder
      * Total actual price of this order
      * Standard prices are NOT involved, only order prices
      *
-     * @return integer
+     * @return int
      */
     public function calculateTotalPrice()
     {
@@ -402,7 +402,7 @@ abstract class AOrder
     }
 
     /**
-     * @return integer[] key is product type name, value is quantity of that
+     * @return int[] key is product type name, value is quantity of that
      */
     public function getProductTypeQuantities() {
 

@@ -93,7 +93,7 @@ class ProductAttributeRelation
     /**
      * Set external id like from webshop
      *
-     * @param integer $name
+     * @param int $name
      *
      * @return ProductAttributeRelation
      */
@@ -210,7 +210,7 @@ class ProductAttributeRelation
     /**
      * Set quantity of attributed products (issue #87)
      *
-     * @param integer $quantity
+     * @param int $quantity
      *
      * @return ProductAttributeRelation
      */
@@ -227,7 +227,7 @@ class ProductAttributeRelation
     /**
      * Get quantity of attributed products (issue #87)
      *
-     * @return integer
+     * @return int
      */
     public function getQuantity()
     {

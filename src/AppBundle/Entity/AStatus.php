@@ -65,7 +65,7 @@ abstract class AStatus
     /**
      * Get id
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -75,7 +75,7 @@ abstract class AStatus
     /**
      * Set pindex
      *
-     * @param integer $pindex
+     * @param int $pindex
      */
     public function setPindex($pindex)
     {
@@ -87,7 +87,7 @@ abstract class AStatus
     /**
      * Get pindex
      *
-     * @return integer
+     * @return int
      */
     public function getPindex()
     {

@@ -73,7 +73,7 @@ class Task
     /**
      * Get id
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {

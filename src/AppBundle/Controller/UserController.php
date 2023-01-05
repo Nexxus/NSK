@@ -91,7 +91,7 @@ class UserController extends Controller
 
             try
             {
-                $em->flush($user);
+                $em->flush();
                 return $this->redirectToRoute('admin_user_index');
             }
             catch (UniqueConstraintViolationException $e) {

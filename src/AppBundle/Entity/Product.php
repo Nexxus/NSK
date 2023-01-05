@@ -40,7 +40,6 @@ class Product
         $this->attributeRelations = new ArrayCollection();
         $this->attributedRelations = new ArrayCollection();
         $this->orderRelations = new ArrayCollection();
-        $this->images = new ArrayCollection();
         $this->files = new ArrayCollection();
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
@@ -212,7 +211,7 @@ class Product
     /**
      * Get id
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -222,7 +221,7 @@ class Product
     /**
      * Set external id like from webshop
      *
-     * @param integer $name
+     * @param int $name
      *
      * @return Product
      */
