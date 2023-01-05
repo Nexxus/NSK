@@ -23,6 +23,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serialize;
 
 /**
  * TaskService is a task that has been applied to a product just after it is purchased,
@@ -50,6 +51,7 @@ class TaskService extends AService
      *
      * @ORM\ManyToOne(targetEntity="Task")
      * @ORM\JoinColumn(name="task_id", referencedColumnName="id", nullable=true)
+     * @Serialize\Groups({"product:checklist"})
      */
     private $task;
 

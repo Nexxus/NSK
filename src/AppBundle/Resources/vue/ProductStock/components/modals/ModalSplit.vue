@@ -4,7 +4,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
 
-                <form name="product_split_form" method="post" class="form-horizontal">
+                <form class="form-horizontal" @submit.prevent="submit">
 
                     <div class="modal-header">
                         <button type="button" class="close" @click="$parent.closeModal()"><span aria-hidden="true">&times;</span></button>
@@ -106,6 +106,15 @@ export default {
                 choices = {'Individualize whole bundle': 'individualize_bundle'};           
             }
             return choices
+        }
+    },
+    methods: {
+        submit() {
+            this.axios.post("../rest/post/product/split", { ...this.$data, id: this.product.id })
+                .then(_ => { 
+                    this.$parent.closeModal() 
+                    this.$parent.loadProducts() 
+                })
         }
     }
 }

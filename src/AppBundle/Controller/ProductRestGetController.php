@@ -33,9 +33,8 @@ use FOS\RestBundle\Controller\FOSRestController;
 /**
  * This controller will replace the ProductController gradually
  * because of implementation of Vue (issue #324)
- * It uses ajax/rest
  */
-class VueProductController extends FOSRestController
+class ProductRestGetController extends FOSRestController
 {
     /**
      * @Rest\Get("/index")
@@ -140,14 +139,22 @@ class VueProductController extends FOSRestController
     }      
 
     /**
-     * @Rest\Get("/checklist/{productId}")
+     * @Rest\Get("/checklist/{productId}", name="rest_get_checklist")
      * @Rest\View(serializerGroups={"product:checklist"})
      */
     public function checklistAction(Request $request, $productId)
     {
-        $product = $this->getDoctrine()->getRepository('AppBundle:Product')->find($productId);
+        $em = $this->getDoctrine()->getManager();
 
-        return $product->getPurchaseOrderRelation();  
+        /** @var \AppBundle\Repository\ProductRepository */
+        $repo = $em->getRepository(Product::class);
+
+        $product = $repo->find($productId);
+        $purchaseOrderRelation = $product->getPurchaseOrderRelation();
+
+        $repo->generateTaskServices($purchaseOrderRelation);
+        
+        return $purchaseOrderRelation;  
     }     
 
     /**

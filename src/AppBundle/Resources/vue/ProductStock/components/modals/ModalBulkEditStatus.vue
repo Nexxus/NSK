@@ -11,7 +11,7 @@
 
                 <div class="modal-body">
 
-                    <h1 style="margin-bottom: 30px">Product bulk edit</h1>
+                    <p style="margin-bottom: 30px">Change status and/or location for all selected products</p>
 
                     <!--
                     {% if success %}
@@ -20,7 +20,7 @@
                     <div class="alert alert-danger" role="alert">The products could not be saved. Please check details below.</div>
                     {% endif %} -->
 
-                    <form name="product_bulk_edit_form" method="post" class="form-horizontal">
+                    <form class="form-horizontal" @submit.prevent="submit">
 
                         <div class="form-group">
                             <label class="col-sm-3 control-label" for="status">Status</label>
@@ -43,7 +43,7 @@
                         <div class="form-group">
                             <div class="col-sm-3"></div>
                             <div class="col-sm-9">
-                                <button type="submit" id="product_bulk_edit_form_save" name="product_bulk_edit_form_save" class="btn-success btn-120 btn">Save</button>
+                                <button type="submit" class="btn-success btn-120 btn">Save</button>
                             </div>
                         </div>
 
@@ -65,7 +65,19 @@ export default {
         status: null,
         location: null
     }},
-    props: ['productStatuses', 'locations'],
+    props: ['productStatuses', 'locations', 'productIds'],
+    methods: {
+        submit() {
+            this.axios.post("../rest/post/product/bulkedit", { ...this.$data, productIds: this.productIds })
+                .then(_ => { 
+                    this.$parent.closeModal() 
+                    this.productIds.forEach(id => {
+                        var product = this.$parent.products.find(p => p.id == id)
+                        product.location.name = this.locations.find(l => l.id == this.location).name
+                    })
+                })
+        }
+    }    
 }
 
 </script>

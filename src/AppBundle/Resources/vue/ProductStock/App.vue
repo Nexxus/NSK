@@ -2,21 +2,14 @@
 <div>
     
     <SearchForm :productStatuses="productStatuses" :productTypes="productTypes" :locations="locations" />
-
-    <form name="index_bulk_edit_form" method="get" action="bulkedit/0" target="_blank" class="form-horizontal">
-
-        <BulkEditForm />
-
-        <Index :products="products" :sort="sort" :loading="loading" />
-
-    </form>
-
+    <BulkEditForm />
+    <Index :products="products" :sort="sort" :loading="loading" />
     <Pagination :page="page" :pageCount="pageCount" />
 
     <ModalEdit      :productId="product.id" v-if="modal=='Edit'" :productStatuses="productStatuses" :locations="locations" :productTypes="productTypes" :saleable="product.stock.saleable" />
     <ModalSplit     :product="product" v-if="modal=='Split'" :productStatuses="productStatuses" :productTypes="productTypes" />
     <ModalChecklist :product="product" v-if="modal=='Checklist'" />
-    <ModalBulkEditStatus :locations="locations" :productStatuses="productStatuses" />
+    <ModalBulkEditStatus :locations="locations" :productStatuses="productStatuses" :productIds="selectedProducts" />
 
 </div>
 </template>
@@ -52,6 +45,7 @@ export default {
             loading: false,
             product: null,
             modal: null,
+            selectedProducts: [],
             search: {
                 query: '',
                 availability: '',
@@ -87,7 +81,7 @@ export default {
             }
             this.products = []
             this.loading = true
-            this.axios.get("../vue/product/index", { params })
+            this.axios.get("../rest/get/product/index", { params })
                 .then(response => {
                     this.products = response.data
                     this.loading = false
@@ -100,7 +94,7 @@ export default {
                 })
         },
         loadMeta() {
-            this.axios.get("../vue/product/meta")
+            this.axios.get("../rest/get/product/meta")
                 .then(response => {
                     this.productStatuses = response.data.productStatuses
                     this.productTypes = response.data.productTypes
@@ -108,7 +102,7 @@ export default {
                 })
         },
         loadChecklist(product) {
-            this.axios.get("../vue/product/checklist/"+product.id)
+            this.axios.get("../rest/get/product/checklist/"+product.id)
                 .then(response => {
                     product.purchase_order_relation = response.data
                     product.services_done = response.data.services_done
@@ -116,8 +110,8 @@ export default {
         },        
         deleteProduct(id) {
             if (!confirm("Are you sure you want to delete this product from stock?")) return
-            this.axios.get("delete/"+id)
-                .then(response => {
+            this.axios.post("../rest/post/product/delete", { id })
+                .then(_ => {
                     this.products = this.products.filter(p => p.id != id)
                 })
         },
@@ -130,7 +124,7 @@ export default {
             this.loadProducts()
         },         
         showModalEdit(product) {
-            // param can also be id
+            // param may also be id
             if (typeof product !== 'object')
                 product = this.products.find(p => p.id==product)
             
@@ -140,14 +134,17 @@ export default {
             this.showModal(product, 'Split')
         },
         showModalChecklist(product) {
-            this.showModal(product, 'Checklist')
+            if (product.purchase_order_relation)
+                this.showModal(product, 'Checklist')
         },        
         showModalBulkEditStatus(event) {
-            if (event.target.value == 'productstatus') {
+            if (this.selectedProducts.length == 0)
+                return
+            else if (event.target.value == 'productstatus') {
                 this.showModal(null, 'BulkEditStatus')
             }
             else {
-                $('form[name="index_bulk_edit_form"]').submit()
+                window.open("bulkprint/"+event.target.value+"/"+this.selectedProducts.join(), '_blank');
             }
         },
         showModal(product, name) {
@@ -167,7 +164,12 @@ export default {
             var price = parseFloat(product.price) / 100
             price = price.toLocaleString('nl', {minimumFractionDigits: 2, maximumFractionDigits: 2})
             return withEuroSign ? '€ '+price : price
-        }
+        },
+        selectAll() {
+            const allWereSelected = document.querySelectorAll("input[name='bulkCheckbox']").length==document.querySelectorAll("input[name='bulkCheckbox']:checked").length
+            document.querySelectorAll("input[name='bulkCheckbox']").forEach(c => c.checked=!allWereSelected)
+            this.selectedProducts = allWereSelected ? [] : this.products
+        }        
     }
 }
 

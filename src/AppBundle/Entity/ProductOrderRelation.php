@@ -98,6 +98,7 @@ class ProductOrderRelation
      *
      * @var ArrayCollection|AService[]
      * @ORM\OneToMany(targetEntity="AService", mappedBy="productOrderRelation", cascade={"all"}, orphanRemoval=true)
+     * @Serialize\Groups({"product:checklist"})
      */
     private $services;
 
@@ -217,10 +218,6 @@ class ProductOrderRelation
         $this->services->removeElement($service);
     }
 
-    /**
-    * @Serialize\VirtualProperty()
-    * @Serialize\Groups({"product:checklist"})
-    */
     public function getServices()
     {
         return $this->services;
@@ -237,4 +234,15 @@ class ProductOrderRelation
 
         return $servicesDone->count() ?? 0;
     }
+
+    /**
+     * @return TaskService
+     */
+    public function getTaskService(int $taskId) {
+        $taskServices = $this->services->filter(function (AService $service) use ($taskId) {
+            return $service instanceof TaskService && $service->getTask()->getId() == $taskId;
+        });
+
+        return $taskServices->count() ? $taskServices->first() : null;
+    }    
 }

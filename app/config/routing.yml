@@ -3,10 +3,15 @@ api:
     type: rest
     prefix: /api
 
-vue_product:
-    resource: "@AppBundle/Controller/VueProductController.php"
+rest_get_product:
+    resource: "@AppBundle/Controller/ProductRestGetController.php"
     type: rest
-    prefix: /vue/product
+    prefix: /rest/get/product
+
+rest_post_product:
+    resource: "@AppBundle/Controller/ProductRestPostController.php"
+    type: rest
+    prefix: /rest/post/product
 
 app:
     resource: "@AppBundle/Controller/"

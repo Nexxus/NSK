@@ -10,7 +10,7 @@
             </div>            
             <div class="modal-content" v-else>
 
-                <form name="product_edit_form" method="post" enctype="multipart/form-data">
+                <form @submit.prevent="submit">
 
                 <div class="modal-header">
                     <button type="button" class="close close-modal" @click="$parent.closeModal()"><span aria-hidden="true">&times;</span></button>
@@ -131,19 +131,19 @@
                                                 </div>
                                             </div>
 
-                                            <input type="hidden" :id="'edit_attr_'+attribute_relation.attribute.id" :name="'edit_attr_'+attribute_relation.attribute.id" class="file-name" v-model="attribute_relation.value">
-                                            <input type="file" :id="'edit_attr_f_'+attribute_relation.attribute.id" :name="'edit_attr_f_'+attribute_relation.attribute.id" class="file-input">
+                                            <input type="hidden" class="file-name" v-model="attribute_relation.value">
+                                            <input type="file" class="file-input">
                 
                                         </div>
                                         <div class="col-md-5" v-else-if="attribute_relation.attribute.type == 3"><!-- Product -->                          
                                             <div class="form-group">
                                                 <div class="col-sm-3" v-if="attribute_relation.attribute.has_quantity">
-                                                    <input type="number" :id="'edit_attr_q_'+attribute_relation.attribute.id" :name="'edit_attr_q_'+attribute_relation.attribute.id" required="required" class="form-control" v-model="attribute_relation.quantity">
+                                                    <input type="number" required="required" class="form-control" v-model="attribute_relation.quantity">
                                                 </div>
                                                 <div class="col-sm-1" v-if="attribute_relation.attribute.has_quantity" style="padding: 8px 0 0 0">X</div>
                                                 <div :class="attribute_relation.attribute.has_quantity ? 'col-sm-8' : 'col-sm-12'">
                                                     <div class="input-group">
-                                                        <select :id="'edit_attr_'+attribute_relation.attribute.id" :name="'edit_attr_'+attribute_relation.attribute.id" class="form-control" v-model="attribute_relation.valueProductId">
+                                                        <select class="form-control" v-model="attribute_relation.valueProductId">
                                                             <option value=""></option>
                                                             <option v-for="p in loadAttributableProducts(attribute_relation.attribute.id)" :key="p.id" :value="p.id">{{ p.name }}</option>
                                                         </select>
@@ -156,14 +156,14 @@
                                         </div>
 
                                         <div class="col-md-5" v-else-if="attribute_relation.attribute.type == 1"><!-- Options --> 
-                                            <select :id="'edit_attr_'+attribute_relation.attribute.id" :name="'edit_attr_'+attribute_relation.attribute.id" class="form-control" v-model="attribute_relation.value">
+                                            <select class="form-control" v-model="attribute_relation.value">
                                                 <option value=""></option>
                                                 <option v-for="option in attribute_relation.attribute.options" :key="option.id" :value="option.id">{{ option.name }}</option>
                                             </select>
                                         </div> 
                                         
                                         <div class="col-md-5" v-else><!-- Open text --> 
-                                            <input type="text" :id="'edit_attr_'+attribute_relation.attribute.id" :name="'edit_attr_'+attribute_relation.attribute.id" class="form-control" v-model="attribute_relation.value" />
+                                            <input type="text" class="form-control" v-model="attribute_relation.value" />
                                         </div>                          
                         
                                         <div class="col-md-1">
@@ -264,8 +264,8 @@ export default {
             required: true
         }, 
         saleable: {
-            type: Boolean,
-            default: false
+            type: Number,
+            default: 0
         }, 
         urlPrefix: {
             type: String,
@@ -330,23 +330,24 @@ export default {
     methods: {
         loadProduct() {
             if (this.productId > 0)
-                this.axios.get(this.urlPrefix+"vue/product/edit/"+this.productId)
+                this.axios.get(this.urlPrefix+"rest/get/product/edit/"+this.productId)
                     .then(response => {
                         this.product = response.data
                     })
             else // new product
-                this.axios.get(this.urlPrefix+"vue/product/new/"+this.purchaseOrderId+"/"+this.salesOrderId+"/"+this.productTypeId)
+                this.axios.get(this.urlPrefix+"rest/get/product/new/"+this.purchaseOrderId+"/"+this.salesOrderId+"/"+this.productTypeId)
                     .then(response => {
                         this.product = response.data
                     })
 
         },
         loadUploadifive() {
+            const urlPrefix = this.urlPrefix
             $.getScript("/js/jquery.uploadifive.min.js", function() {
                 $('input.file-input').uploadifive({
-                    'checkScript': this.urlPrefix+'uploadexists',
+                    'checkScript': urlPrefix+'uploadexists',
                     'formData': {},
-                    'uploadScript': this.urlPrefix+'upload',
+                    'uploadScript': urlPrefix+'upload',
                     'multi': true,
                     'onUploadComplete': function (file, data) {
                         if (data.substring(0, 5) == 'Error') {
@@ -361,12 +362,19 @@ export default {
             });
         },
         async loadAttributableProducts(attributeId) {
-            let response = await this.axios.get(this.urlPrefix+"vue/product/attributable/"+this.product.id+"/"+attributeId)
+            let response = await this.axios.get(this.urlPrefix+"rest/get/product/attributable/"+this.product.id+"/"+attributeId)
             return response.data        
         },
+        submit() {
+            this.axios.post("../rest/post/product/edit", { ...this.product, purchaseOrderId: this.purchaseOrderId, salesOrderId: this.salesOrderId })
+                .then(response => { 
+                    const i = this.$parent.products.findIndex(p => p.id==this.productId)
+                    this.$parent.products[i] = response.data
+                })
+        },        
         deleteFile(attributeId, fileId) {
-            this.axios.post(this.urlPrefix+"deletefile", { attributeId, fileId })
-                .then(response => {
+            this.axios.post(this.urlPrefix+"rest/post/product/deletefile", { attributeId, fileId })
+                .then(_ => {
                     const relation = this.product.attribute_relations.filter(ar => ar.attribute.id==attributeId)
                     relation.files = relation.files.filter(f => f.id != fileId)
                 })

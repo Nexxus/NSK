@@ -48,7 +48,7 @@ export default {
     },
     methods: {
         loadMeta() {
-            this.axios.get("../../vue/product/meta")
+            this.axios.get("../../rest/get/product/meta")
                 .then(response => {
                     this.productStatuses = response.data.productStatuses
                     this.productTypes = response.data.productTypes

@@ -19,21 +19,21 @@
         </thead>
         <tbody v-if="loading">
         <tr>
-            <td style="height: 200px; text-align: center; padding-top: 80px" colspan="99">
+            <td style="height: 1000px; text-align: center; padding-top: 80px" colspan="99">
                 Loading...
             </td>
         </tr>
         </tbody>
         <tbody v-else-if="products.length==0">
         <tr>
-            <td style="height: 200px; text-align: center; padding-top: 80px" colspan="99">
+            <td style="height: 1000px; text-align: center; padding-top: 80px" colspan="99">
                 No records found
             </td>
         </tr>
         </tbody>        
         <tbody v-else>
             <tr v-for="product in products" :key="product.id">
-                <td><input type="checkbox" :id="'index_bulk_edit_form_index_'+product.id" name="index_bulk_edit_form_index[]" :value="product.id" v-model="checkedProducts"></td>
+                <td><input type="checkbox" name="bulkCheckbox" :value="product.id" v-model="$parent.selectedProducts"></td>
                 <td><a href="#" data-target="#modalEditor" class="btn-modal" data-toggle="tooltip" :title="product.attributesList">{{ product.sku }}</a></td>
                 <td><a href="#" data-target="#modalEditor" class="btn-modal" data-toggle="tooltip" :title="product.attributesList">{{ product.name }}</a></td>
                 <td>{{ product.type && product.type.name }}</td>
@@ -78,9 +78,6 @@
 
 export default {
     name: 'Index',
-    data() { return { 
-        checkedProducts: []
-    }},
     props: ['products', "sort", "loading"]
 }
 

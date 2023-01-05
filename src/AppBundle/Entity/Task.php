@@ -44,7 +44,7 @@ class Task
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Serialize\Groups({"product:index"})
+     * @Serialize\Groups({"product:index", "product:checklist"})
      */
     private $id;
 
@@ -59,7 +59,7 @@ class Task
      * @var string
      *
      * @ORM\Column(type="string", length=255)
-     * @Serialize\Groups({"product:index"})
+     * @Serialize\Groups({"product:index", "product:checklist"})
      */
     private $name;
 

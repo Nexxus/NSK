@@ -38,16 +38,16 @@ export default {
     name: 'ModalChecklistService',
     props: ['service'],
     data() { return {
-        done: false
+        done: this.service.status == 3
     }},
-    watch:{
-    'service.status': function (newVal){
-        this.done = newVal == 3;
-    },
-    'done': function(newVal){
-        this.service.status = newVal == true ? 3 : 0;
-    }
- }    
+    watch: {
+        'service.status': function (newVal){
+            this.done = newVal == 3;
+        },
+        'done': function(newVal){
+            this.service.status = newVal == true ? 3 : 0;
+        }
+    }    
 }
 
 </script>
