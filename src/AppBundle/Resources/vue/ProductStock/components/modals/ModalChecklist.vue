@@ -7,7 +7,7 @@
                 <form class="form-horizontal" @submit.prevent="submit">
 
                     <div class="modal-header">
-                        <button type="button" class="close" @click="$parent.closeModal()"><span aria-hidden="true">×</span></button>
+                        <button type="button" class="close" @click="$parent.closeModal('')"><span aria-hidden="true">×</span></button>
                         <h4 class="modal-title">Checklist: {{ product.name }}</h4>
                     </div>
 
@@ -26,7 +26,7 @@
                         <div class="text-center">
                             <button type="submit" class="btn-success btn-120 btn">Save</button>
                             <a class="btn btn-default" :href="'checklistprint/'+product.purchase_order_relation.id" target="_blank">Print</a>
-                            <button type="button" class="btn btn-default" @click="$parent.closeModal()">Close</button>
+                            <button type="button" class="btn btn-default" @click="$parent.closeModal('')">Close</button>
                         </div>
 
                     </div>
@@ -51,9 +51,10 @@ export default {
         submit() {
             this.axios.post("../rest/post/product/checklist", { services: this.product.purchase_order_relation.services, productId: this.product.id })
                 .then(_ => { 
-                    this.$parent.closeModal() 
+                    this.$parent.closeModal('success') 
                     this.$parent.loadChecklist(this.product) 
                 })
+                .catch(err => this.$parent.closeModal(err.message))
         }
     }    
 }

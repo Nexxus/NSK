@@ -4,7 +4,7 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content" v-if="!product">
                 <div class="modal-header">
-                    <button type="button" class="close close-modal" @click="$parent.closeModal()"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close close-modal" @click="$parent.closeModal('')"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title">Loading product...</h4>
                 </div>            
             </div>            
@@ -13,7 +13,7 @@
                 <form @submit.prevent="submit">
 
                 <div class="modal-header">
-                    <button type="button" class="close close-modal" @click="$parent.closeModal()"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close close-modal" @click="$parent.closeModal('')"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title">Edit product: {{ product ? product.name : "[new]" }}</h4>
                 </div>
 
@@ -36,7 +36,7 @@
                                     <div v-if="product.sku" class="input-group">
                                         <input type="text" id="edit_sku" name="edit[sku]" placeholder="Keep empty for autogeneration" class="focus form-control" v-model="product.sku"> 
                                         <span class="input-group-btn">
-                                            <a class="btn btn-default" :href="this.urlPrefix+'barcode/single/'+product.sku" target="_blank"><span class="glyphicon glyphicon-barcode" aria-label="Barcode"></span></a>
+                                            <a class="btn btn-default" :href="urlPrefix+'barcode/single/'+product.sku" target="_blank"><span class="glyphicon glyphicon-barcode" aria-label="Barcode"></span></a>
                                         </span>
                                     </div>
                                     <input v-else type="text" id="edit_sku" name="edit[sku]" placeholder="Keep empty for autogeneration" class="focus form-control" v-model="product.sku"> 
@@ -106,7 +106,7 @@
                         <div class="panel-body">
 
                             <div v-if="product.attribute_relations.length>0">
-                                <div class="row" style="margin-bottom: 2px" v-for="attribute_relation in product.attribute_relations" :key="attribute_relation.attribute.id">
+                                <div class="row" style="margin-bottom: 2px" v-for="(attribute_relation, idx) in sortedAttributeRelations" :key="attribute_relation.attribute.id">
                                     <div class="col-md-3 col-md-offset-1">
                                         {{ attribute_relation.attribute.name }}
                                     </div>
@@ -117,22 +117,21 @@
                                                         <div class="panel-body panel-body-small">
                                                             <div class="row">
                                                                 <div class="col-xs-10" style="overflow:hidden; text-overflow:ellipsis;">
-                                                                    <a :href="this.urlPrefix+'download/'+file.id" :title="file.originalClientFilename" target="_blank">{{ file.originalClientFilename }}</a>
+                                                                    <a :href="urlPrefix+'download/'+file.id" :title="file.original_client_filename" target="_blank">{{ file.original_client_filename }}</a>
                                                                 </div>
                                                                 <div class="col-xs-2" style="margin-top: -4px">
                                                                     <button type="button" class="close delete-file" aria-label="Delete" @click="deleteFile(attribute_relation.attribute.id, file.id)"><span aria-hidden="true">&times;</span></button>
                                                                 </div>
                                                             </div>
                                                             
-                                                            <img :src="this.urlPrefix+'download/'+file.id" :title="file.originalClientFilename" v-if="isImage(file.originalClientFilename)" />
+                                                            <img :src="urlPrefix+'download/'+file.id" :title="file.original_client_filename" v-if="isImage(file.original_client_filename)" />
 
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <input type="hidden" class="file-name" v-model="attribute_relation.value">
-                                            <input type="file" class="file-input">
+                                            <input type="file" class="file-input" :data-attribute-relation-idx="idx">
                 
                                         </div>
                                         <div class="col-md-5" v-else-if="attribute_relation.attribute.type == 3"><!-- Product -->                          
@@ -143,12 +142,12 @@
                                                 <div class="col-sm-1" v-if="attribute_relation.attribute.has_quantity" style="padding: 8px 0 0 0">X</div>
                                                 <div :class="attribute_relation.attribute.has_quantity ? 'col-sm-8' : 'col-sm-12'">
                                                     <div class="input-group">
-                                                        <select class="form-control" v-model="attribute_relation.valueProductId">
+                                                        <select class="form-control" v-model="attribute_relation.value">
                                                             <option value=""></option>
                                                             <option v-for="p in loadAttributableProducts(attribute_relation.attribute.id)" :key="p.id" :value="p.id">{{ p.name }}</option>
                                                         </select>
                                                         <span class="input-group-btn">
-                                                            <a href="#" @click.prevent="openSub(attribute_relation.valueProductId)" class="btn btn-success"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
+                                                            <a href="#" @click.prevent="openSub(attribute_relation.value)" class="btn btn-success"><span class="glyphicon glyphicon-pencil" aria-label="Edit"></span></a>
                                                         </span>
                                                     </div>
                                                 </div>
@@ -204,7 +203,7 @@
                                     <td>From: {{ product.purchase_order_relation.order.supplier ? product.purchase_order_relation.order.supplier.name : "" }}</td>
                                     <td>{{ product.purchase_order_relation.order.status ? product.purchase_order_relation.order.status.name : "" }}</td>
                                     <td>{{ product.purchase_order_relation.quantity }}</td>
-                                    <td><a class="btn btn-success" :href="this.urlPrefix+'purchaseorder/edit/'+product.purchase_order_relation.order.id"><span class="glyphicon glyphicon-chevron-right" aria-label="Edit"></span></a></td>
+                                    <td><a class="btn btn-success" :href="urlPrefix+'purchaseorder/edit/'+product.purchase_order_relation.order.id"><span class="glyphicon glyphicon-chevron-right" aria-label="Edit"></span></a></td>
                                 </tr>
                             
                                 <tr v-for="sales_order_relation in product.sales_order_relations" :key="sales_order_relation.id">
@@ -214,7 +213,7 @@
                                     <td>To: {{ sales_order_relation.order.customer ? sales_order_relation.order.customer.name : "" }}</td>
                                     <td>{{ sales_order_relation.order.status ? sales_order_relation.order.status.name : "" }}</td>
                                     <td>{{ sales_order_relation.quantity }}</td>
-                                    <td><a class="btn btn-success" :href="this.urlPrefix+'salesorder/edit/'+sales_order_relation.order.id"><span class="glyphicon glyphicon-chevron-right" aria-label="Edit"></span></a></td>
+                                    <td><a class="btn btn-success" :href="urlPrefix+'salesorder/edit/'+sales_order_relation.order.id"><span class="glyphicon glyphicon-chevron-right" aria-label="Edit"></span></a></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -223,8 +222,8 @@
                     <div class="text-center">
                         <button type="submit" id="edit_save" name="edit[save]" class="btn-success btn-120 btn">Save</button>
                         <a v-if="product" class="btn btn-default" role="button" :href="'print/'+product.id" target="_blank">Print</a>
-                        <a v-if="saleable" class="btn btn-default" role="button" :href="this.urlPrefix+'salesorder/new/'+productId">Sell</a>
-                        <button type="button" class="btn btn-default close-modal" @click="$parent.closeModal()">Close</button>
+                        <a v-if="saleable" class="btn btn-default" role="button" :href="urlPrefix+'salesorder/new/'+productId">Sell</a>
+                        <button type="button" class="btn btn-default close-modal" @click="$parent.closeModal('')">Close</button>
                         <a v-if="refId" class="btn btn-default" role="button" href="#" @click.prevent="openRef()">Back</a>
                     </div>
 
@@ -289,10 +288,12 @@ export default {
         this.loadUploadifive()
     },
     computed: {
-        isImage(originalClientFilename) {
-            if (!originalClientFilename) return false
-            const ext = originalClientFilename.slice(-3).toLowerCase()
-            return ext == "jpg" || ext == "png" || ext == "gif"
+        sortedAttributeRelations() {
+            if (!this.product || !this.product.attribute_relations) 
+                return [];
+            return this.product.attribute_relations.sort(
+                (ar1, ar2) => 
+                (ar1.attribute.id > ar2.attribute.id) ? 1 : (ar1.attribute.id < ar2.attribute.id) ? -1 : 0);
         },
         formattedPrice: {
             get: function () {
@@ -342,20 +343,23 @@ export default {
 
         },
         loadUploadifive() {
-            const urlPrefix = this.urlPrefix
+            var that = this
             $.getScript("/js/jquery.uploadifive.min.js", function() {
                 $('input.file-input').uploadifive({
-                    'checkScript': urlPrefix+'uploadexists',
+                    'checkScript': that.urlPrefix+'uploadexists',
                     'formData': {},
-                    'uploadScript': urlPrefix+'upload',
+                    'uploadScript': that.urlPrefix+'upload',
                     'multi': true,
                     'onUploadComplete': function (file, data) {
                         if (data.substring(0, 5) == 'Error') {
                             alert(data)
                         }
                         else {
-                            var fileNameElement = $(this).closest("div.uploadifive-button").siblings("input.file-name");
-                            fileNameElement.val(fileNameElement.val() + ',' + data);
+                            var idx = parseInt($(this).data('attribute-relation-idx'));
+                            if (that.product.attribute_relations[idx].value)
+                                that.product.attribute_relations[idx].value += ',' + data
+                            else
+                                that.product.attribute_relations[idx].value = data
                         }
                     }
                 });
@@ -369,15 +373,27 @@ export default {
             this.axios.post("../rest/post/product/edit", { ...this.product, purchaseOrderId: this.purchaseOrderId, salesOrderId: this.salesOrderId })
                 .then(response => { 
                     const i = this.$parent.products.findIndex(p => p.id==this.productId)
-                    this.$parent.products[i] = response.data
+                    var old = this.$parent.products[i]
+                    var nww = response.data
+                    var two = {...old, ...nww}
+                    this.$parent.products[i] = two
+                    this.$parent.closeModal('success')
                 })
-        },        
+                .catch(err => this.$parent.closeModal(err.message))
+        },  
+        isImage(originalClientFilename) {
+            if (!originalClientFilename) return false
+            const ext = originalClientFilename.slice(-3).toLowerCase()
+            return ext == "jpg" || ext == "png" || ext == "gif"
+        },      
         deleteFile(attributeId, fileId) {
+            var that = this
             this.axios.post(this.urlPrefix+"rest/post/product/deletefile", { attributeId, fileId })
                 .then(_ => {
-                    const relation = this.product.attribute_relations.filter(ar => ar.attribute.id==attributeId)
+                    var relation = that.product.attribute_relations.find(ar => ar.attribute.id==attributeId)
                     relation.files = relation.files.filter(f => f.id != fileId)
                 })
+                .catch(err => this.$parent.closeModal(err.message))
         },
         openSub(productId) {
             this.refId = this.productId

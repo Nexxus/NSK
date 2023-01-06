@@ -55,7 +55,7 @@ class Location
     /**
      * @var string
      * @ORM\Column(name="name", type="string", length=255, unique=true)
-     * @Serialize\Groups({"api:purchaseorders", "product:index", "product:meta"})
+     * @Serialize\Groups({"api:purchaseorders", "product:index", "product:edit", "product:meta"})
      */
     private $name;
 

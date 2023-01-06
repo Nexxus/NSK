@@ -39,9 +39,9 @@ class ProductAttributeRelation
     }
 
     /**
-     * @var string Text, File path or Option text; depends on type of attribute
+     * @var string Text, File path, Option text, Product id; depends on type of attribute
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=false)
      * @Serialize\Groups({"product:edit"})
      */
     private $value;
@@ -191,7 +191,7 @@ class ProductAttributeRelation
      *
      * @Serialize\VirtualProperty()
      * @Serialize\Groups({"product:edit"})
-     * @return \Doctrine\Common\Collections\Collection|ProductAttributeFile[]
+     * @return ProductAttributeFile[]
      */
     public function getFiles()
     {
@@ -199,12 +199,19 @@ class ProductAttributeRelation
             return array();
 
         $fileIds = explode(",", $this->value);
-        $fileIds = array_map('intval', $fileIds);
 
-        return $this->getProduct()->getFiles()
+        if (!count($fileIds))
+            return array();        
+
+        $result = $this->getProduct()->getFiles()
             ->filter(function ($file) use ($fileIds) {
-                         return in_array($file->getId(), $fileIds);
-                     });
+                        if (is_numeric($fileIds[0]))
+                            return in_array($file->getId(), array_map('intval', $fileIds));
+                        else
+                            return in_array($file->getUniqueServerFilename(), $fileIds);
+                    });
+
+        return array_values($result->toArray());
     }
 
     /**
@@ -280,15 +287,5 @@ class ProductAttributeRelation
         }
 
         return $price;
-    }
-
-    /**
-     * @Serialize\VirtualProperty()
-     * @Serialize\Groups({"product:edit"})
-     * @return int|null
-     */    
-    public function getValueProductId()
-    {
-        return $this->valueProduct ? $this->valueProduct->getId() : null;
-    }    
+    }  
 }

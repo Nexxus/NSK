@@ -7,7 +7,7 @@
                 <form class="form-horizontal" @submit.prevent="submit">
 
                     <div class="modal-header">
-                        <button type="button" class="close" @click="$parent.closeModal()"><span aria-hidden="true">&times;</span></button>
+                        <button type="button" class="close" @click="$parent.closeModal('')"><span aria-hidden="true">&times;</span></button>
                         <h4 class="modal-title">Split: {{ product.name }}</h4>
                     </div>
 
@@ -112,9 +112,10 @@ export default {
         submit() {
             this.axios.post("../rest/post/product/split", { ...this.$data, id: this.product.id })
                 .then(_ => { 
-                    this.$parent.closeModal() 
+                    this.$parent.closeModal('success') 
                     this.$parent.loadProducts() 
                 })
+                .catch(err => this.$parent.closeModal(err.message))
         }
     }
 }

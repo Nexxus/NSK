@@ -235,6 +235,9 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getResult();
     }    
 
+    /**
+     * This function does not persist new relations
+     */
     public function generateProductAttributeRelations(Product $product)
     {
         if (!$product->getType())
@@ -254,6 +257,18 @@ class ProductRepository extends \Doctrine\ORM\EntityRepository
             if (!$exists)
             {
                 $r = new ProductAttributeRelation($product, $newAttribute);
+            }
+        }
+    }
+
+    public function persistProductAttributeRelations(Product $product)
+    {
+        /** @var ProductAttributeRelation $r */
+        foreach ($product->getAttributeRelations() as $r) {
+            if ($r->getValue() === null || trim($r->getValue()) === "") {
+                $product->getAttributeRelations()->removeElement($r);
+            }
+            else {
                 $this->_em->persist($r);
             }
         }

@@ -45,6 +45,7 @@ export default {
             loading: false,
             product: null,
             modal: null,
+            modalResult: null,
             selectedProducts: [],
             search: {
                 query: '',
@@ -114,6 +115,7 @@ export default {
                 .then(_ => {
                     this.products = this.products.filter(p => p.id != id)
                 })
+                .catch(err => this.closeModal(err.message))
         },
         sortPage(s) {
             this.sort = s
@@ -154,10 +156,16 @@ export default {
                 $('#modal'+name).modal('show')
             })
         },
-        closeModal() {
+        closeModal(result) {
             this.product=null
             this.modal=null
-            $('.modal').modal('hide')            
+            this.modalResult=result
+            $('.modal').modal('hide')  
+            if (result=='success') {
+                setTimeout(() => {
+                    this.modalResult=null
+                }, 3000)                
+            }
         },
         formattedPrice(product, withEuroSign) {
             if (!product || !product.price) return ''

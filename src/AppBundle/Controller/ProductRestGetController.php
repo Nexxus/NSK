@@ -30,10 +30,6 @@ use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 
-/**
- * This controller will replace the ProductController gradually
- * because of implementation of Vue (issue #324)
- */
 class ProductRestGetController extends FOSRestController
 {
     /**

@@ -28,15 +28,12 @@ use AppBundle\Entity\ProductAttributeRelation;
 use AppBundle\Entity\ProductType;
 use AppBundle\Entity\ProductStatus;
 use AppBundle\Entity\Location;
+use AppBundle\Entity\Attribute;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * This controller will replace the ProductController gradually
- * because of implementation of Vue (issue #324)
- */
 class ProductRestPostController extends FOSRestController
 {
     /**
@@ -54,7 +51,10 @@ class ProductRestPostController extends FOSRestController
 
         if (!$id)
         {
+            // Create new product
+            
             $product = new Product();
+            $em->persist($product);
 
             $salesOrderId = $request->get("salesOrderId");
             $purchaseOrderId = $request->get("purchaseOrderId");
@@ -79,8 +79,7 @@ class ProductRestPostController extends FOSRestController
             $product = $repo->find($id);
         }
 
-        $repo->generateProductAttributeRelations($product);
-
+        // Set product properties
         $product->setSku($request->get("sku") ? $request->get("sku") : time());
         $product->setName($request->get("name"));
         $product->setDescription($request->get("description"));
@@ -89,14 +88,59 @@ class ProductRestPostController extends FOSRestController
         $product->setLocation($request->get("location") ? $em->find(Location::class, $request->get("location")['id']) : null);
         $product->setStatus($request->get("status") ? $em->find(ProductStatus::class, $request->get("status")['id']) : null);
 
+        // (Temporarily) create all possible relations
+        $repo->generateProductAttributeRelations($product);
 
+        foreach ($request->get('attribute_relations') as $ar) {
 
+            $a = $ar['attribute'];
+            $val = array_key_exists('value', $ar) ? $ar['value'] : null;
 
+            // Get relation, either existing/persisted or temp/empty             
+            $attributeRelation = $product->getAttributeRelation($a['id']);
 
-        // TODO
+            switch ($a['type'])
+            {
+                case Attribute::TYPE_FILE:
+                    $this->addFiles($attributeRelation, $val);
+                    break;
+                case Attribute::TYPE_PRODUCT:
+                    $attributeRelation->setValueProduct($val ? $em->find(Product::class, $val) : null);
+                default:
+                    $attributeRelation->setValue($val);
+            }
+        }
 
+        // persist relations with value and remove relations without value
+        $repo->persistProductAttributeRelations($product);
+
+        try {
+            $em->flush();
+        }
+        catch (\Doctrine\DBAL\Exception\UniqueConstraintViolationException $e) {
+            throw new \Exception("Product SKU already exists", 0, $e);
+        }
 
         return $product;
+    }
+
+    private function addFiles(ProductAttributeRelation $r, $filenamesVal) 
+    {
+        if (!$filenamesVal)
+            return;
+        
+        $em = $this->getDoctrine()->getManager();
+        
+        $fileNames = UploadifiveController::splitFilenames($filenamesVal);
+
+        foreach ($fileNames as $k => $v)
+        {
+            $file = new ProductAttributeFile($r->getProduct(), $v, $k);
+            $em->persist($file);
+            
+            $val = $r->getValue() ? $r->getValue() . "," . $k : $k;
+            $r->setValue($val);
+        }
     }
 
     /**
@@ -225,7 +269,7 @@ class ProductRestPostController extends FOSRestController
         $vals = explode(",", $val);
 
         // remove file id from relation value
-        if (($key = array_search($fileId, $vals)) !== false) {
+        if (($key = array_search($fileId, $vals)) !== false || ($key = array_search($file->getUniqueServerFilename(), $vals)) !== false) {
             unset($vals[$key]);
         }
 

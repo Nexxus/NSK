@@ -460,6 +460,20 @@ class Product
     }
 
     /**
+     * Get attributeRelation
+     *
+     * @return ProductAttributeRelation
+     */
+    public function getAttributeRelation(int $attributeId)
+    {
+        $coll = $this->attributeRelations->filter(function (ProductAttributeRelation $par) use ($attributeId) {
+            return $par->getAttribute()->getId() == $attributeId;
+        });
+
+        return $coll->count() == 1 ? $coll->first() : null;
+    }    
+
+    /**
      * Add orderRelation
      *
      * @param ProductOrderRelation $orderRelation
@@ -588,7 +602,7 @@ class Product
 
         foreach ($this->attributeRelations as $r) {
 
-            if ($r->getAttribute()->getType() == Attribute::TYPE_FILE && $r->getFiles()->count()) {
+            if ($r->getAttribute()->getType() == Attribute::TYPE_FILE && count($r->getFiles())) {
 
                 $filesList = array();
                 foreach ($r->getFiles() as $f) {

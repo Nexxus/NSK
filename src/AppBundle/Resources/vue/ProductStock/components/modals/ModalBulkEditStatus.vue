@@ -5,7 +5,7 @@
             <div class="modal-content">
 
                 <div class="modal-header">
-                    <button type="button" class="close" @click="$parent.closeModal()"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" @click="$parent.closeModal('')"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title">Bulk edit</h4>
                 </div>
 
@@ -76,6 +76,7 @@ export default {
                         product.location.name = this.locations.find(l => l.id == this.location).name
                     })
                 })
+                .catch(err => this.$parent.closeModal(err.message))
         }
     }    
 }
