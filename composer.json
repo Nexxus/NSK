@@ -34,7 +34,7 @@
     "friendsofsymfony/rest-bundle": "^2.4",
     "jms/serializer-bundle": "^2.4",
     "nelmio/cors-bundle": "^1.5",
-    "lexik/jwt-authentication-bundle": "2.4.4",
+    "lexik/jwt-authentication-bundle": "2.10.7",
     "beberlei/doctrineextensions": "1.*",
     "prestashop/prestashop-webservice-lib": "dev-master"
   },
